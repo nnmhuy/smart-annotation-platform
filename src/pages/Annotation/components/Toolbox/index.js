@@ -2,11 +2,16 @@
 import React, { Component } from 'react'
 
 import ToolboxButton from './ToolboxButton'
+import {theme} from '../../../../theme'
 import {MODE} from '../../../../constant'
 
-import {ReactComponent as RectangleIcon} from './ToolboxIcon/rectangle.svg'
-import {ReactComponent as PolygonIcon} from './ToolboxIcon/polygon.svg'
-import {ReactComponent as CursorIcon} from './ToolboxIcon/cursor.svg'
+import {CursorIcon, PolygonIcon, RectangleIcon} from './ToolboxIcon'
+
+const styles = {
+  toolboxWrapper: {
+    backgroundColor: theme.light.backgroundColor
+  }
+}
 export default class Toolbox extends Component {
   constructor(props) {
     super(props)
@@ -17,24 +22,24 @@ export default class Toolbox extends Component {
   }
   render() {
     return (
-      <div>
+      <div style={styles.toolboxWrapper}>
         <ToolboxButton
           mode={MODE.CURSOR}
           onClickHandler={this.changeMode}
           currentMode={this.state.currentMode}
-          component={<CursorIcon/>}
+          component={CursorIcon}
         />
         <ToolboxButton
           mode={MODE.RECTANGLE}
           onClickHandler={this.changeMode}
           currentMode={this.state.currentMode}
-          component={<RectangleIcon/>}
+          component={RectangleIcon}
         />
         <ToolboxButton
           mode={MODE.POLYGON}
           onClickHandler={this.changeMode}
           currentMode={this.state.currentMode}
-          component={<PolygonIcon/>}
+          component={PolygonIcon}
         />
       </div>
     )

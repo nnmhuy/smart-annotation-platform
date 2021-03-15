@@ -8,13 +8,18 @@ import Annotator from './components/Annotator/index'
 
 const useStyles = makeStyles(() => ({
   root: {
-    background: '#f8f8f8'
+    background: '#555555'
   }
 }))
 
 const GridContainer = styled(Grid)({
   height: '100vh'
 })
+
+const demoAnnotateData = [
+  {id: 1, label: 'Cat', isHidden: true},
+  {id: 2, label: 'Dog', isHidden: false}
+] 
 
 const Annotation = (props) => {
   const classes = useStyles()
@@ -27,7 +32,7 @@ const Annotation = (props) => {
         <Annotator/>
       </GridContainer>
       <GridContainer container item xs={3}>
-        <Sidebar/>
+        <Sidebar data={demoAnnotateData}/>
       </GridContainer>
     </GridContainer>
   );
