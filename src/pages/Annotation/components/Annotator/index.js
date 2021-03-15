@@ -1,5 +1,5 @@
 import React from 'react'
-import DeckGL, { BitmapLayer } from 'deck.gl'
+import DeckGL, { OrthographicView, BitmapLayer } from 'deck.gl'
 import { 
   EditableGeoJsonLayer,
   ViewMode,
@@ -11,13 +11,10 @@ import {
 import { CUSTOM_MODIFY_MODE } from '../../constants'
 
 const INITIAL_VIEW_STATE = {
-  longitude: 0,
-  latitude: 0,
+  target: [0, 0, 0],
   zoom: 1,
-  minZoom: 0.5,
+  minZoom: -2,
   maxZoom: 5,
-  bearing: 0,
-  pitch: 0
 }
 
 const Annotator = (props) => {
@@ -27,6 +24,7 @@ const Annotator = (props) => {
     selectedFeatureIndexes, setSelectedFeatureIndexes
   } = props
 
+  console.log(features)
 
   const bitmapLayer = new BitmapLayer({
     id: 'bitmap-layer',
@@ -86,14 +84,27 @@ const Annotator = (props) => {
 
   const layers = [bitmapLayer, geoJsonLayer]
 
+  const view = new OrthographicView({ 
+    id: '2d-scene', 
+    flipY: false,
+    controller: {
+      doubleClickZoom: activeMode === ViewMode
+    } 
+  });
+
+
   return (
     <DeckGL
+      views={view}
       initialViewState={INITIAL_VIEW_STATE}
-      controller={true}
       layers={layers}
       getCursor={geoJsonLayer.getCursor.bind(geoJsonLayer)}
       style={{ position: 'relative' }}
       onClick={_onLayerClick}
+      _subLayerProps= {{
+        geojson: {
+        }
+      }}
     >
     </DeckGL>
   );
