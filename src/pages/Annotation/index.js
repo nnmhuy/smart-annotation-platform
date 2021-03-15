@@ -1,85 +1,35 @@
 import React from 'react'
-import DeckGL, { BitmapLayer } from 'deck.gl'
-import { 
-  EditableGeoJsonLayer,
-  DrawPolygonMode
-} from 'nebula.gl'
+import { makeStyles, styled } from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid'
+
+import Toolbox from './components/Toolbox/index'
+import Sidebar from './components/Sidebar/index'
+import Annotator from './components/Annotator/index'
+
+const useStyles = makeStyles(() => ({
+  root: {
+    background: '#f8f8f8'
+  }
+}))
+
+const GridContainer = styled(Grid)({
+  height: '100vh'
+})
 
 const Annotation = (props) => {
-  const [features, setFeatures] = React.useState({
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "properties": {},
-        "geometry": {
-          "coordinates": [
-            [
-              [ -20, -20 ],
-              [ 20, -20 ],
-              [ 20, 20 ],
-              [ -20, 20 ],
-              [ -20, -20]
-            ],
-            [
-              [ 5, 5 ],
-              [ 15, 15 ],
-              [ 15, -7],
-              [ 5, 5]
-            ]
-          ],
-          "type": "Polygon"
-        }
-      }
-    ]
-  });
-
-  const [mode, setMode] = React.useState(() => DrawPolygonMode);
-  const [selectedFeatureIndexes] = React.useState([]);
-
-  const geoJsonLayer = new EditableGeoJsonLayer({
-    id: "geojson-layer",
-    data: features,
-    mode,
-    selectedFeatureIndexes,
-
-    onEdit: ({ updatedData }) => {
-      setFeatures(updatedData);
-    }
-  });
-
-
-  const bitmapLayer = new BitmapLayer({
-    id: 'bitmap-layer',
-    bounds: [-100, -50, 100, 50],
-    image: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/68C3/production/_93791862_thinkstockphotos-585524268.jpg'
-  });
-
+  const classes = useStyles()
   return (
-    <>
-      <DeckGL
-        initialViewState={{
-          longitude: 0,
-          latitude: 0,
-          zoom: 1,
-          bearing: 0,
-          pitch: 0
-        }}
-        controller={true}
-        layers={[bitmapLayer, geoJsonLayer]}
-        getCursor={geoJsonLayer.getCursor.bind(geoJsonLayer)}
-      >
-      </DeckGL>
-      {/* <Toolbox
-        mode={mode}
-        onSetMode={setMode}
-        modeConfig={modeConfig}
-        onSetModeConfig={setModeConfig}
-        geoJson={features}
-        onSetGeoJson={setFeatures}
-        onImport={setFeatures}
-      /> */}
-    </>
+    <GridContainer container className={classes.root}>
+      <GridContainer container item xs={1}>
+        <Toolbox/>
+      </GridContainer>
+      <GridContainer container item xs={8}>
+        <Annotator/>
+      </GridContainer>
+      <GridContainer container item xs={3}>
+        <Sidebar/>
+      </GridContainer>
+    </GridContainer>
   );
 }
 
