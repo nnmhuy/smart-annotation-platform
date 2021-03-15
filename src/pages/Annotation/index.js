@@ -6,9 +6,11 @@ import {
   ViewMode,
 } from 'nebula.gl'
 
+
 import Toolbox from './components/Toolbox/index'
 import Sidebar from './components/Sidebar/index'
 import Annotator from './components/Annotator'
+import { CUSTOM_MODIFY_MODE } from './constants'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -24,14 +26,17 @@ const Annotation = (props) => {
   const classes = useStyles()
 
   const [activeMode, setActiveMode] = React.useState(() => ViewMode)
-  const setMode = (mode) => {
-    setActiveMode(() => mode)
-  }
   const [features, setFeatures] = React.useState({
     type: "FeatureCollection",
     features: []
   })
   const [selectedFeatureIndexes, setSelectedFeatureIndexes] = React.useState([]);
+  const setMode = (mode) => {
+    if (mode !== CUSTOM_MODIFY_MODE) {
+      setSelectedFeatureIndexes([])
+    }
+    setActiveMode(() => mode)
+  }
 
   return (
     <GridContainer container className={classes.root}>

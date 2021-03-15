@@ -5,7 +5,7 @@ import {
   ViewMode,
   SelectionLayer,
 
-  SELECTION_TYPE
+  SELECTION_TYPE,
 } from 'nebula.gl'
 
 import { CUSTOM_MODIFY_MODE } from '../../constants'
@@ -24,8 +24,6 @@ const Annotator = (props) => {
     selectedFeatureIndexes, setSelectedFeatureIndexes
   } = props
 
-  console.log(features)
-
   const bitmapLayer = new BitmapLayer({
     id: 'bitmap-layer',
     bounds: [-100, -50, 100, 50],
@@ -34,34 +32,29 @@ const Annotator = (props) => {
 
 
   const _onLayerClick = (info) => {
-    console.log('onLayerClick', info); // eslint-disable-line
-    if (activeMode !== ViewMode && activeMode !== CUSTOM_MODIFY_MODE) {
-      // don't change selection while drawing
+    if (activeMode !== CUSTOM_MODIFY_MODE) {
       return;
     }
 
     if (info && info.index >= 0) {
-      console.log(`select editing feature ${info.index}`); // eslint-disable-line
       // a feature was clicked
       setSelectedFeatureIndexes([info.index]);
-      // setMode(CUSTOM_MODIFY_MODE)
     } else {
-      console.log('deselect editing feature'); // eslint-disable-line
       // open space was clicked, so stop editing
-      setMode(ViewMode)
       setSelectedFeatureIndexes([]);
     }
   };
 
   const geoJsonLayer = new EditableGeoJsonLayer({
     id: "geojson-layer",
+
     data: features,
     mode: activeMode,
     modeConfig: {
       enableSnapping: true,
     },
     selectedFeatureIndexes,
-
+    
     onEdit: ({ updatedData }) => {
       setFeatures(updatedData)
     }
@@ -87,9 +80,11 @@ const Annotator = (props) => {
   const view = new OrthographicView({ 
     id: '2d-scene', 
     flipY: false,
+    width: '100%',
+    height: '100%',
     controller: {
       doubleClickZoom: activeMode === ViewMode
-    } 
+    }
   });
 
 
