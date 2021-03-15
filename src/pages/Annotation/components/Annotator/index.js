@@ -3,15 +3,12 @@ import DeckGL, { BitmapLayer } from 'deck.gl'
 import { 
   EditableGeoJsonLayer,
   ViewMode,
-  DrawPolygonMode,
-  TransformMode,
-  TranslateMode,
-  ModifyMode,
   SelectionLayer,
-  CompositeMode,
 
   SELECTION_TYPE
 } from 'nebula.gl'
+
+import { CUSTOM_MODIFY_MODE } from '../../constants'
 
 const INITIAL_VIEW_STATE = {
   longitude: 0,
@@ -24,55 +21,51 @@ const INITIAL_VIEW_STATE = {
 }
 
 const Annotator = (props) => {
-  const [features, setFeatures] = React.useState({
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "properties": {},
-        "geometry": {
-          "coordinates": [
-            [
-              [ -20, -20 ],
-              [ 20, -20 ],
-              [ 20, 20 ],
-              [ -20, 20 ],
-              [ -20, -20]
-            ],
-            // [
-            //   [ 5, 5 ],
-            //   [ 15, 15 ],
-            //   [ 15, -7],
-            //   [ 5, 5]
-            // ]
-          ],
-          "type": "Polygon"
-        }
-      }
-    ]
+  const { 
+    activeMode, setMode,
+    features, setFeatures,
+    selectedFeatureIndexes, setSelectedFeatureIndexes
+  } = props
+
+
+  const bitmapLayer = new BitmapLayer({
+    id: 'bitmap-layer',
+    bounds: [-100, -50, 100, 50],
+    image: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/68C3/production/_93791862_thinkstockphotos-585524268.jpg'
   });
 
-  const compositeMode = new CompositeMode([new ViewMode(), new DrawPolygonMode(), new ModifyMode()])
 
-  const [mode, setMode] = React.useState(() => new ViewMode());
-  const [selectedFeatureIndexes, setSelectedFeatureIndexes] = React.useState([]);
+  const _onLayerClick = (info) => {
+    console.log('onLayerClick', info); // eslint-disable-line
+    if (activeMode !== ViewMode && activeMode !== CUSTOM_MODIFY_MODE) {
+      // don't change selection while drawing
+      return;
+    }
 
-  console.log(selectedFeatureIndexes)
+    if (info && info.index >= 0) {
+      console.log(`select editing feature ${info.index}`); // eslint-disable-line
+      // a feature was clicked
+      setSelectedFeatureIndexes([info.index]);
+      // setMode(CUSTOM_MODIFY_MODE)
+    } else {
+      console.log('deselect editing feature'); // eslint-disable-line
+      // open space was clicked, so stop editing
+      setMode(ViewMode)
+      setSelectedFeatureIndexes([]);
+    }
+  };
 
   const geoJsonLayer = new EditableGeoJsonLayer({
     id: "geojson-layer",
     data: features,
-    mode,
+    mode: activeMode,
     modeConfig: {
       enableSnapping: true,
     },
-    pickable: true,
     selectedFeatureIndexes,
 
-    onEdit: ({ updatedData, editType, featureIndexes }) => {
-      console.log(editType)
-      console.log(featureIndexes)
-      setFeatures(updatedData);
+    onEdit: ({ updatedData }) => {
+      setFeatures(updatedData)
     }
   });
 
@@ -88,23 +81,19 @@ const Annotator = (props) => {
     getTentativeFillColor: () => [255, 0, 255, 100],
     getTentativeLineColor: () => [0, 0, 255, 255],
     getTentativeLineDashArray: () => [0, 0],
-    lineWidthMinPixels: 3
+    lineWidthMinPixels: 1
   })
 
-
-  const bitmapLayer = new BitmapLayer({
-    id: 'bitmap-layer',
-    bounds: [-100, -50, 100, 50],
-    image: 'https://ichef.bbci.co.uk/news/976/cpsprodpb/68C3/production/_93791862_thinkstockphotos-585524268.jpg'
-  });
+  const layers = [bitmapLayer, geoJsonLayer]
 
   return (
     <DeckGL
       initialViewState={INITIAL_VIEW_STATE}
       controller={true}
-      layers={[bitmapLayer, geoJsonLayer]}
+      layers={layers}
       getCursor={geoJsonLayer.getCursor.bind(geoJsonLayer)}
       style={{ position: 'relative' }}
+      onClick={_onLayerClick}
     >
     </DeckGL>
   );
