@@ -38,10 +38,12 @@ const LeafletGeoman = (props) => {
     const control = L.control.layers(null, overlayMaps).addTo(map);
 
 
+    // set custom properties for drawing new layers
     // map.pm.setPathOptions({
     //   color: 'orange',
     //   fillColor: 'green',
     //   fillOpacity: 0.4,
+    //   className: 'myClassName'
     // });
 
     map.on('pm:remove', ({ layer, shape }) => {
@@ -58,14 +60,10 @@ const LeafletGeoman = (props) => {
         default:
           break;
       }
-
       console.log('create')
 
-      // set colors here
-      // store back layer + coordinate
-      layer.on('pm:edit', e => {
+      layer.on('pm:edit', ({layer}) => {
         console.log('edit')
-        console.log(e);
       });  
     });
   })
