@@ -5,6 +5,7 @@ import {
 import LeafletGeoman from './LeafletGeoman'
 
 const Annotator = (props) => {
+  const { setMap } = props
   return (
     <MapContainer
       center={[0, 0]} 
@@ -28,7 +29,7 @@ const Annotator = (props) => {
         opacity={1}
         zIndex={10}
       />
-      <LeafletGeoman/>
+      <LeafletGeoman setMap={setMap}/>
     </MapContainer>
   );
 }

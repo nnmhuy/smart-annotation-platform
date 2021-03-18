@@ -1,5 +1,7 @@
-import React, { PureComponent } from 'react'
+import React from 'react'
 import { makeStyles, SvgIcon } from '@material-ui/core'
+import clsx from 'clsx'
+
 import { theme } from '../../../../theme'
 
 function isSelected(props) {
@@ -19,19 +21,23 @@ const useStyles = makeStyles((props) => ({
   icon: {
     width: 20,
     height: 20,
-    color: props => isSelected(props) ? theme.light.secondaryColor : theme.light.darkColor
+    color: theme.light.darkColor
+  },
+  activeIcon: {
+    color: theme.light.secondaryColor
   }
 }))
 
 export default function ToolboxButton(props) {
-    const classes = useStyles(props)
-    return (
-      <div>
-        <div className={classes.button} onClick={() => props.onClickHandler(props.mode)}>
-          <SvgIcon className={classes.icon}>
-            {props.component}
-          </SvgIcon>
-        </div>
-      </div>
-    )
+  const { name, component, handleClick, getStatus, status } = props
+  const isActive = getStatus()
+
+  const classes = useStyles(props)
+  return (
+    <div className={classes.button} onClick={handleClick}>
+      <SvgIcon className={clsx(classes.icon, isActive && classes.activeIcon)}>
+        {component}
+      </SvgIcon>
+    </div>
+  )
 }

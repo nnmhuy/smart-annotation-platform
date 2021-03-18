@@ -4,27 +4,16 @@ import { useMap } from 'react-leaflet'
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 
+import { MAP_OPTIONS } from '../../constants'
+
 const LeafletGeoman = (props) => {
+  const { setMap } = props
   const map = useMap()
 
   React.useEffect(() => {
-    var options = {
-      position: 'topleft', // toolbar position, options are 'topleft', 'topright', 'bottomleft', 'bottomright'
-      drawPolygon: true,  // adds button to draw a polygon
-      editPolygon: true,  // adds button to toggle global edit mode
-
-      drawMarker: false,  // adds button to draw markers
-      drawCircleMarker: false, // adds button to draw CircleMarkers
-      drawPolyline: false,  // adds button to draw a polyline
-      drawCircle: false,  // adds button to draw a cricle
-
-      editMode: true,
-      dragMode: true,
-      removalMode: true,
-      cutPolygon: true,
-    };
+    setMap(map)
     // add leaflet.pm controls to the map
-    map.pm.addControls(options);
+    map.pm.addControls(MAP_OPTIONS);
 
     // const layer = L.polygon([[-10, -10], [-10, 10], [10, 10], [10, -10]]).addTo(map);
     
@@ -66,7 +55,7 @@ const LeafletGeoman = (props) => {
         console.log('edit')
       });  
     });
-  })
+  }, [map])
 
   return null
 }

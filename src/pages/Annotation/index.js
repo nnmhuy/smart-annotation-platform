@@ -18,13 +18,20 @@ const GridContainer = styled(Grid)({
 
 const Annotation = (props) => {
   const classes = useStyles()
+
+  const [map, setMap] = React.useState(null)
+
   return (
     <GridContainer container className={classes.root}>
       <GridContainer container item xs={1}>
-        <Toolbox/>
+        <Toolbox
+          map={map}
+        />
       </GridContainer>
       <GridContainer container item xs={9}>
-        <Annotator/>
+        <Annotator
+          setMap={setMap}
+        />
       </GridContainer>
       <GridContainer container item xs={2}>
         <Sidebar/>
