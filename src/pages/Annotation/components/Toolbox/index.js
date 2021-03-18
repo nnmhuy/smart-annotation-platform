@@ -44,7 +44,7 @@ const toolBoxButtons = [
   {
     name: 'Delete',
     handleClick: map => () => map.pm.Toolbar.buttons.removalMode._triggerClick(),
-    getStatus: map => () => map && map.pm.Toolbar.buttons.removalMode._button.toggleStatus,
+    getStatus: map => () => map && map.pm.Toolbar.buttons.removalMode.toggled(),
     component: <DeleteIcon />,
   },
 ]
