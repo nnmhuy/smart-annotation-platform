@@ -23,17 +23,17 @@ const Annotation = (props) => {
 
   return (
     <GridContainer container className={classes.root}>
-      <GridContainer container item xs={1}>
+      {/* <GridContainer container item xs={1}>
         <Toolbox
           map={map}
         />
-      </GridContainer>
+      </GridContainer> */}
       <GridContainer container item xs={9}>
         <Annotator
           setMap={setMap}
         />
       </GridContainer>
-      <GridContainer container item xs={2}>
+      <GridContainer container item xs={3}>
         <Sidebar/>
       </GridContainer>
     </GridContainer>
