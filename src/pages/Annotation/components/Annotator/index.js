@@ -1,36 +1,47 @@
 import React from 'react'
 import { Stage, Layer } from 'react-konva'
+import { MODES } from '../../constants'
 
 import Rectangle from './Rectangle'
 
 const Annotator = (props) => {
-  const { rectangles, setRectangles } = props
+  const { 
+    activeMode,
+    rectangles, setRectangles 
+  } = props
   const stageRef = React.createRef()
 
   const [selectedId, selectShape] = React.useState(null)
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
+  const [drawingRectangle, setDrawingRectangle] = React.useState(null)
 
-  const handleDragStart = (e) => {
-    e.evt.preventDefault();
+  React.useEffect(() => { // change mode => reset all states
+    setDrawingRectangle(null)
+  }, [activeMode])
 
-    const stage = stageRef.current
-    const pointer = stage.getPointerPosition();
-
-    setViewportStartPos(pointer)
+  const handleViewportStart = (e) => {
+    if (activeMode === MODES.CURSOR) {
+      e.evt.preventDefault();
+      const stage = stageRef.current
+  
+      const pointer = stage.getPointerPosition();
+  
+      setViewportStartPos(pointer)
+    }
   }
 
-  const handleDragEnd = (e) => {
+  const handleViewportEnd = (e) => {
     e.evt.preventDefault();
 
     setViewportStartPos(null)
   }
 
-  const handleDragMove = (e) => {
+  const handleViewportMove = (e) => {
     e.evt.preventDefault();
 
+    const stage = stageRef.current
+
     if (viewportStartPos) {
-      const stage = stageRef.current
-  
       const pointer = stage.getPointerPosition();
       const stagePos = stage.position()
   
@@ -50,13 +61,13 @@ const Annotator = (props) => {
     const clickedOnEmpty = e.target === e.target.getStage();
     if (clickedOnEmpty) {
       selectShape(null);
-      handleDragStart(e);
     }
+    return clickedOnEmpty
   };
 
   const handleZoom = (e) => {
     e.evt.preventDefault();
-
+    
     const stage = stageRef.current
     const scaleBy = 1.05;
     const oldScale = stage.scaleX();
@@ -81,19 +92,105 @@ const Annotator = (props) => {
     stage.batchDraw();
   }
 
+  const handleClickDrawRectangle = (e) => {
+    const stage = stageRef.current
+    const pointer = stage.getPointerPosition();
+
+    if (drawingRectangle === null) {
+      setDrawingRectangle({
+        x: pointer.x,
+        y: pointer.y,
+        width: 0,
+        height: 0,
+        fill: 'green',
+        opacity: 0.2,
+        stroke: 'black',
+        strokeWidth: 3,
+        id: 'current-rectangle',
+      })
+    } else {
+      setRectangles([...rectangles, drawingRectangle])
+      setDrawingRectangle(null)
+    }
+  }
+
+  const handleDragDrawRectangle = (e) => {
+    const stage = stageRef.current
+    const pointer = stage.getPointerPosition();
+
+    if (drawingRectangle !== null) {
+      setDrawingRectangle({
+        ...drawingRectangle,
+        width: pointer.x - drawingRectangle.x,
+        height: pointer.y - drawingRectangle.y,
+      })
+    }
+  }
+
+
+  const handleMouseDown = (e) => {
+    if (activeMode === MODES.CURSOR) {
+      if (checkDeselect(e)) {
+        handleViewportStart(e)
+      }
+    }
+  }
+
+  const handleMouseMove = (e) => {
+    if (activeMode === MODES.CURSOR) {
+      handleViewportMove(e)
+    }
+    if (activeMode === MODES.DRAW_RECTANGLE) {
+      handleDragDrawRectangle(e)
+    }
+  }
+
+  const handleMouseUp = (e) => {
+    if (activeMode === MODES.CURSOR) {
+      handleViewportEnd(e)
+    }
+  }
+
+  const handleMouseOut = (e) => {
+    if (activeMode === MODES.CURSOR) {
+      handleViewportEnd(e)
+    }
+  }
+
+  const handleTouchStart = (e) => {
+    if (activeMode === MODES.CURSOR) {
+      if (checkDeselect(e)) {
+        handleViewportStart(e)
+      }
+    }
+  }
+
+  const handleClick = (e) => {
+    if (activeMode === MODES.DRAW_RECTANGLE) {
+      handleClickDrawRectangle(e)
+    } else {
+      setDrawingRectangle(null)
+    }
+  }
+
   return (
     <Stage
       ref={stageRef}
       width={window.innerWidth}
       height={window.innerHeight}
-      onMouseDown={checkDeselect}
-      onMouseMove={handleDragMove}
-      onMouseUp={handleDragEnd}
-      onTouchStart={checkDeselect}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseOut={handleMouseOut}
+      onTouchStart={handleTouchStart}
       onWheel={handleZoom}
-      // onDragStart={handleDragStart}
-      // onDragEnd={handleDragEnd}
-      // onDragMove={handleDragMove}
+      onClick={handleClick}
+      style={{
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        cursor: activeMode.cursor,
+      }}
     >
       <Layer>
         {rectangles.map((rect, i) => {
@@ -103,7 +200,9 @@ const Annotator = (props) => {
               shapeProps={rect}
               isSelected={rect.id === selectedId}
               onSelect={() => {
-                selectShape(rect.id);
+                if (activeMode === MODES.CURSOR) {
+                  selectShape(rect.id);
+                }
               }}
               onChange={(newAttrs) => {
                 const rects = rectangles.slice();
@@ -113,6 +212,13 @@ const Annotator = (props) => {
             />
           );
         })}
+        {drawingRectangle && 
+          <Rectangle
+            key={'drawing-rectangle'}
+            shapeProps={drawingRectangle}
+            isSelected={true}
+          />
+        }
       </Layer>
     </Stage>
   );

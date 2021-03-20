@@ -2,6 +2,8 @@ import React from 'react'
 import { makeStyles, styled } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 
+import { MODES } from './constants'
+
 import Toolbox from './components/Toolbox/index'
 import Sidebar from './components/Sidebar/index'
 import Annotator from './components/Annotator'
@@ -46,15 +48,20 @@ const initialRectangles = [
 
 const Annotation = (props) => {
   const classes = useStyles()
+  const [activeMode, setActiveMode] = React.useState(MODES.CURSOR)
   const [rectangles, setRectangles] = React.useState(initialRectangles);
 
   return (
     <GridContainer container className={classes.root}>
       <GridContainer container item xs={1}>
-        <Toolbox/>
+        <Toolbox
+          activeMode={activeMode}
+          setActiveMode={setActiveMode}
+        />
       </GridContainer>
       <GridContainer container item xs={9} className={classes.annotatorContainer}>
         <Annotator
+          activeMode={activeMode}
           rectangles={rectangles}
           setRectangles={setRectangles}
         />

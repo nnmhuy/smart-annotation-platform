@@ -29,8 +29,7 @@ const useStyles = makeStyles((props) => ({
 }))
 
 export default function ToolboxButton(props) {
-  const { name, component, handleClick, getStatus } = props
-  const isActive = getStatus()
+  const { name, component, handleClick, isActive } = props
 
   const classes = useStyles(props)
   return (

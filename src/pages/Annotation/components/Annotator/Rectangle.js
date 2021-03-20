@@ -23,11 +23,13 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
         {...shapeProps}
         draggable
         onDragEnd={(e) => {
-          onChange({
-            ...shapeProps,
-            x: e.target.x(),
-            y: e.target.y(),
-          });
+          if (onChange) {
+            onChange({
+              ...shapeProps,
+              x: e.target.x(),
+              y: e.target.y(),
+            });
+          }
         }}
         onTransformEnd={(e) => {
           // transformer is changing scale of the node
@@ -41,14 +43,16 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
           // we will reset it back
           node.scaleX(1);
           node.scaleY(1);
-          onChange({
-            ...shapeProps,
-            x: node.x(),
-            y: node.y(),
-            // set minimal value
-            width: Math.max(5, node.width() * scaleX),
-            height: Math.max(node.height() * scaleY),
-          });
+          if (onChange) {
+            onChange({
+              ...shapeProps,
+              x: node.x(),
+              y: node.y(),
+              // set minimal value
+              width: Math.max(5, node.width() * scaleX),
+              height: Math.max(node.height() * scaleY),
+            });
+          }
         }}
       />
       {isSelected && (
