@@ -1,12 +1,29 @@
 import React from 'react'
+import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
+
 import { MODES } from '../../constants'
 
 import Rectangle from './Rectangle'
+import Image from './KonvaImage'
+
+import getPointerPosition from './getPointerPosition'
+
+
+const useStyles = makeStyles(() => ({
+  stage: {
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+    cursor: props => props.activeMode.cursor,
+  }
+}))
 
 const Annotator = (props) => {
+  const classes = useStyles(props)
   const { 
     activeMode,
+    image,
     rectangles, setRectangles 
   } = props
   const stageRef = React.createRef()
@@ -18,6 +35,13 @@ const Annotator = (props) => {
   React.useEffect(() => { // change mode => reset all states
     setDrawingRectangle(null)
   }, [activeMode])
+
+  React.useEffect(() => { // upload new image => reset all states & drawn polygons
+    if (image) {
+      setRectangles([])
+      setDrawingRectangle(null)
+    }
+  }, [image])
 
   const handleViewportStart = (e) => {
     if (activeMode === MODES.CURSOR) {
@@ -59,10 +83,12 @@ const Annotator = (props) => {
   const checkDeselect = (e) => {
     // deselect when clicked on empty area
     const clickedOnEmpty = e.target === e.target.getStage();
-    if (clickedOnEmpty) {
+    const clickedOnImage = e.target.getClassName() === "Image"
+    const deselect = clickedOnEmpty || clickedOnImage
+    if (deselect) {
       selectShape(null);
     }
-    return clickedOnEmpty
+    return deselect
   };
 
   const handleZoom = (e) => {
@@ -94,7 +120,7 @@ const Annotator = (props) => {
 
   const handleClickDrawRectangle = (e) => {
     const stage = stageRef.current
-    const pointer = stage.getPointerPosition();
+    const pointer = getPointerPosition(stage)
 
     if (drawingRectangle === null) {
       setDrawingRectangle({
@@ -103,7 +129,7 @@ const Annotator = (props) => {
         width: 0,
         height: 0,
         fill: 'green',
-        opacity: 0.2,
+        opacity: 0.4,
         stroke: 'black',
         strokeWidth: 3,
         id: 'current-rectangle',
@@ -116,7 +142,7 @@ const Annotator = (props) => {
 
   const handleDragDrawRectangle = (e) => {
     const stage = stageRef.current
-    const pointer = stage.getPointerPosition();
+    const pointer = getPointerPosition(stage)
 
     if (drawingRectangle !== null) {
       setDrawingRectangle({
@@ -185,14 +211,12 @@ const Annotator = (props) => {
       onTouchStart={handleTouchStart}
       onWheel={handleZoom}
       onClick={handleClick}
-      style={{
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-        cursor: activeMode.cursor,
-      }}
+      className={classes.stage}
     >
       <Layer>
+        {image && 
+          <Image src={image.imagePreviewUrl} />
+        }
         {rectangles.map((rect, i) => {
           return (
             <Rectangle

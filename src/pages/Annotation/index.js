@@ -28,7 +28,7 @@ const initialRectangles = [
     width: 100,
     height: 100,
     fill: 'red',
-    opacity: 0.2,
+    opacity: 0.4,
     stroke: 'black',
     strokeWidth: 3,
     id: 'rect1',
@@ -39,7 +39,7 @@ const initialRectangles = [
     width: 100,
     height: 100,
     fill: 'green',
-    opacity: 0.2,
+    opacity: 0.4,
     stroke: 'black',
     strokeWidth: 3,
     id: 'rect2',
@@ -52,6 +52,7 @@ const demoAnnotateData = [
 
 const Annotation = (props) => {
   const classes = useStyles()
+  const [image, setImage] = React.useState(null)
   const [activeMode, setActiveMode] = React.useState(MODES.CURSOR)
   const [rectangles, setRectangles] = React.useState(initialRectangles);
 
@@ -66,12 +67,16 @@ const Annotation = (props) => {
       <GridContainer container item xs={9} className={classes.annotatorContainer}>
         <Annotator
           activeMode={activeMode}
+          image={image}
           rectangles={rectangles}
           setRectangles={setRectangles}
         />
       </GridContainer>
       <GridContainer container item xs={2}>
-        <Sidebar data={demoAnnotateData}/>
+        <Sidebar 
+          data={demoAnnotateData}
+          setImage={setImage}
+        />
       </GridContainer>
     </GridContainer>
   );

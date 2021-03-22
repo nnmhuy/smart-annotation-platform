@@ -1,7 +1,10 @@
 import { Icon, SvgIcon, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core'
 import React, { Component } from 'react'
-import { theme } from '../../../../theme'
+
+import ImageUploader from './ImageUploader'
 import { InvisibleIcon, VisibleIcon } from './SidebarIcon'
+
+import { theme } from '../../../../theme'
 
 
 const columns = [
@@ -22,9 +25,10 @@ const styles = {
 
 export default class Sidebar extends Component {
   render() {
-    const { data } = this.props
+    const { data, setImage } = this.props
     return (
       <div style={styles.sideBarWrapper}>
+        <ImageUploader setImage={setImage}/>
         <Table>
           <TableHead>
             <TableRow>
