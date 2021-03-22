@@ -45,6 +45,10 @@ const initialRectangles = [
     id: 'rect2',
   },
 ];
+const demoAnnotateData = [
+  {id: 1, label: 'Cat', isHidden: true},
+  {id: 2, label: 'Dog', isHidden: false}
+] 
 
 const Annotation = (props) => {
   const classes = useStyles()
@@ -67,7 +71,7 @@ const Annotation = (props) => {
         />
       </GridContainer>
       <GridContainer container item xs={2}>
-        <Sidebar/>
+        <Sidebar data={demoAnnotateData}/>
       </GridContainer>
     </GridContainer>
   );
