@@ -40,6 +40,13 @@ const Annotator = (props) => {
     if (image) {
       setRectangles([])
       setDrawingRectangle(null)
+
+      const stage = stageRef.current
+      stage.position({
+        x: 250,
+        y: 100
+      });
+
     }
   }, [image])
 
@@ -215,7 +222,7 @@ const Annotator = (props) => {
     >
       <Layer>
         {image && 
-          <Image src={image.imagePreviewUrl} />
+          <Image src={image.resizedImg} />
         }
         {rectangles.map((rect, i) => {
           return (
