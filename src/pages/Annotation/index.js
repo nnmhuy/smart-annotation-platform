@@ -21,40 +21,36 @@ const GridContainer = styled(Grid)({
   height: '100vh'
 })
 
-const initialRectangles = [
-  {
-    x: 10,
-    y: 10,
-    width: 100,
-    height: 100,
-    fill: 'red',
-    opacity: 0.4,
-    stroke: 'black',
-    strokeWidth: 3,
-    id: 'rect1',
-  },
-  {
-    x: 150,
-    y: 150,
-    width: 100,
-    height: 100,
-    fill: 'green',
-    opacity: 0.4,
-    stroke: 'black',
-    strokeWidth: 3,
-    id: 'rect2',
-  },
-];
 const demoAnnotateData = [
-  {id: 1, label: 'Cat', isHidden: true},
-  {id: 2, label: 'Dog', isHidden: false}
+  { id: 1, label: 'Cat', isHidden: true, color: 'red' },
+  { id: 2, label: 'Dog', isHidden: false, color: 'green' }
 ] 
 
 const Annotation = (props) => {
   const classes = useStyles()
+  const annotationContainer = React.createRef(null)
+
+  const [stageSize, setStageSize] = React.useState({ width: 0, height: 0 })
   const [image, setImage] = React.useState(null)
   const [activeMode, setActiveMode] = React.useState(MODES.CURSOR)
-  const [rectangles, setRectangles] = React.useState(initialRectangles);
+  const [rectangles, setRectangles] = React.useState([])
+  const [annotationClasses, setAnnotationClasses] = React.useState(demoAnnotateData)
+
+  const handleNewStageSize = () => {
+    const container = document.getElementById('stage-container')
+    setStageSize({
+      width: container.clientWidth,
+      height: container.clientHeight,
+    })
+  }
+
+  React.useEffect(() => {
+    handleNewStageSize()
+    window.addEventListener('resize', handleNewStageSize)
+    return () => {
+      window.removeEventListener('resize', handleNewStageSize)
+    }
+  }, [])
 
   return (
     <GridContainer container className={classes.root}>
@@ -64,17 +60,19 @@ const Annotation = (props) => {
           setActiveMode={setActiveMode}
         />
       </GridContainer>
-      <GridContainer container item xs={9} className={classes.annotatorContainer}>
+      <GridContainer container item xs={9} className={classes.annotatorContainer} id='stage-container'>
         <Annotator
           activeMode={activeMode}
           image={image}
           rectangles={rectangles}
           setRectangles={setRectangles}
+          stageSize={stageSize}
         />
       </GridContainer>
       <GridContainer container item xs={2}>
         <Sidebar 
-          data={demoAnnotateData}
+          annotationClasses={annotationClasses}
+          setAnnotationClasses={setAnnotationClasses}
           setImage={setImage}
         />
       </GridContainer>

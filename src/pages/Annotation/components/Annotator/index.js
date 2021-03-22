@@ -12,9 +12,6 @@ import getPointerPosition from './getPointerPosition'
 
 const useStyles = makeStyles(() => ({
   stage: {
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
     cursor: props => props.activeMode.cursor,
   }
 }))
@@ -22,12 +19,13 @@ const useStyles = makeStyles(() => ({
 const Annotator = (props) => {
   const classes = useStyles(props)
   const { 
+    stageSize,
     activeMode,
     image,
     rectangles, setRectangles 
   } = props
-  const stageRef = React.createRef()
-
+  const stageRef = React.createRef(null)
+  
   const [selectedId, selectShape] = React.useState(null)
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
   const [drawingRectangle, setDrawingRectangle] = React.useState(null)
@@ -209,8 +207,8 @@ const Annotator = (props) => {
   return (
     <Stage
       ref={stageRef}
-      width={window.innerWidth}
-      height={window.innerHeight}
+      width={stageSize.width}
+      height={stageSize.height}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
