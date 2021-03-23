@@ -174,6 +174,8 @@ const Annotator = (props) => {
       setDrawingPolygon({
         ...DEFAULT_SHAPE_ATTRS,
         id: uidgen.generateSync(),
+        x: 0,
+        y: 0,
         points: [[currentMousePos.x, currentMousePos.y]]
       })
     } else {
@@ -203,6 +205,7 @@ const Annotator = (props) => {
     if (!isEmptyPosition(e)) {
       const shapeId = e.target.attrs.id
       setRectangles(rectangles.filter(rect => rect.id !== shapeId))
+      setPolygons(polygons.filter(poly => poly.id !== shapeId))
     }
   }
 
@@ -342,6 +345,7 @@ const Annotator = (props) => {
                 polys[i] = newAttrs;
                 setPolygons(polys);
               }}
+              currentMousePos={currentMousePos}
             />
           )
         })}

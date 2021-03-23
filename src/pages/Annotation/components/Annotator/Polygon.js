@@ -6,8 +6,10 @@ const Polygon = (props) => {
     polygon, currentMousePos, 
     isDrawing, 
     isSelected, onSelect,
-    setIsMouseOverPolygonStart, handleChange 
+    setIsMouseOverPolygonStart, onChange 
   } = props
+
+  const [dragStartPos, setDragStartPos] = React.useState(null)
 
   const { points, ...others } = polygon
 
@@ -33,11 +35,8 @@ const Polygon = (props) => {
 
   const handleDragMovePoint = event => {
     const index = event.target.index - 1;
-    console.log(event.target);
     const pos = [event.target.attrs.x, event.target.attrs.y];
-    console.log("move", event);
-    console.log(pos);
-    handleChange({
+    onChange({
       ...polygon,
       points: [...points.slice(0, index), pos, ...points.slice(index + 1)]
     })
@@ -45,6 +44,29 @@ const Polygon = (props) => {
 
   const handleDragOutPoint = event => {
     console.log("end", event);
+  }
+
+  const onDragStart = event => {
+    const pos = [event.target.x(), event.target.y()];
+    setDragStartPos(pos)
+  }
+
+  const onDragMove = event => {
+    onChange({
+      ...polygon,
+      x: event.target.x(),
+      y: event.target.y()
+    })
+  }
+
+  const onDragEnd = event => {
+    setDragStartPos(null)
+    onChange({
+      ...polygon,
+      points: polygon.points.map(p => [p[0] + polygon.x, p[1] + polygon.y]),
+      x: 0,
+      y: 0
+    })
   }
 
   return (
@@ -55,6 +77,10 @@ const Polygon = (props) => {
         closed={true}
         onClick={onSelect}
         onTap={onSelect}
+        onDragStart={onDragStart}
+        onDragMove={onDragMove}
+        onDragEnd={onDragEnd}
+        draggable={isSelected}
         {...others}
       />
       {(isDrawing || isSelected) && 
@@ -67,17 +93,18 @@ const Polygon = (props) => {
               ? {
                 hitStrokeWidth: 12,
                 onMouseOver: handleMouseOverStartPoint,
-                onMouseOut: handleMouseOutStartPoint
+                onMouseOut: handleMouseOutStartPoint,
+                fill: "red"
               }
               : null;
           return (
             <Rect
               key={index}
-              x={x}
-              y={y}
+              x={x + polygon.x}
+              y={y + polygon.y}
               width={width}
               height={width}
-              fill={index === 0 ? "red" : "white"}
+              fill="white"
               stroke="black"
               strokeWidth={3}
               onDragStart={handleDragStartPoint}
