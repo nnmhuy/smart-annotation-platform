@@ -1,14 +1,18 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
+import UIDGenerator from 'uid-generator'
 
 import { MODES } from '../../constants'
 
 import Rectangle from './Rectangle'
 import Image from './KonvaImage'
+import Portal from './Portal'
+import ClassSelectionPopover from './ClassSelectionPopover'
 
 import getPointerPosition from './getPointerPosition'
 
+const uidgen = new UIDGenerator();
 
 const useStyles = makeStyles(() => ({
   stage: {
@@ -27,6 +31,8 @@ const Annotator = (props) => {
   const stageRef = React.createRef(null)
   
   const [selectedId, selectShape] = React.useState(null)
+  const [highlightId, setHighlightId] = React.useState(null)
+  const [contextMenuPosition, setContextMenuPosition] = React.useState(null)
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
   const [drawingRectangle, setDrawingRectangle] = React.useState(null)
 
@@ -85,11 +91,16 @@ const Annotator = (props) => {
     }
   } 
 
-  const checkDeselect = (e) => {
+  const isEmptyPosition = (e) => {
     // deselect when clicked on empty area
     const clickedOnEmpty = e.target === e.target.getStage();
     const clickedOnImage = e.target.getClassName() === "Image"
-    const deselect = clickedOnEmpty || clickedOnImage
+    return clickedOnEmpty || clickedOnImage
+  }
+
+  const checkDeselect = (e) => {
+    // deselect when clicked on empty area
+    const deselect = isEmptyPosition(e)
     if (deselect) {
       selectShape(null);
     }
@@ -137,7 +148,7 @@ const Annotator = (props) => {
         opacity: 0.4,
         stroke: 'black',
         strokeWidth: 3,
-        id: 'current-rectangle',
+        id: uidgen.generateSync(),
       })
     } else {
       setRectangles([...rectangles, drawingRectangle])
@@ -158,6 +169,15 @@ const Annotator = (props) => {
     }
   }
 
+  const handleHighlightShape = (e) => {
+    if (!isEmptyPosition(e)) {
+      const shapeId = e.target.attrs.id
+      setHighlightId(shapeId)
+    } else {
+      setHighlightId(null)
+    }
+  }
+
 
   const handleMouseDown = (e) => {
     if (activeMode === MODES.CURSOR) {
@@ -170,6 +190,7 @@ const Annotator = (props) => {
   const handleMouseMove = (e) => {
     if (activeMode === MODES.CURSOR) {
       handleViewportMove(e)
+      handleHighlightShape(e)
     }
     if (activeMode === MODES.DRAW_RECTANGLE) {
       handleDragDrawRectangle(e)
@@ -204,6 +225,18 @@ const Annotator = (props) => {
     }
   }
 
+  const handleContextMenu = (e) => {
+    e.evt.preventDefault();
+    if (activeMode === MODES.CURSOR) {
+      if (!isEmptyPosition(e)) {
+        setContextMenuPosition({
+          x: e.evt.x,
+          y: e.evt.y
+        })
+      }
+    }
+  }
+
   return (
     <Stage
       ref={stageRef}
@@ -216,6 +249,7 @@ const Annotator = (props) => {
       onTouchStart={handleTouchStart}
       onWheel={handleZoom}
       onClick={handleClick}
+      onContextMenu={handleContextMenu}
       className={classes.stage}
     >
       <Layer>
@@ -226,7 +260,10 @@ const Annotator = (props) => {
           return (
             <Rectangle
               key={i}
-              shapeProps={rect}
+              shapeProps={{
+                ...rect,
+                opacity: (rect.id === highlightId || rect.id === selectedId) ? 0.5 : 0.4,
+              }}
               isSelected={rect.id === selectedId}
               onSelect={() => {
                 if (activeMode === MODES.CURSOR) {
@@ -248,6 +285,12 @@ const Annotator = (props) => {
             isSelected={true}
           />
         }
+        <Portal>
+          <ClassSelectionPopover
+            contextMenuPosition={contextMenuPosition}
+            setContextMenuPosition={setContextMenuPosition}
+          />
+        </Portal>
       </Layer>
     </Stage>
   );

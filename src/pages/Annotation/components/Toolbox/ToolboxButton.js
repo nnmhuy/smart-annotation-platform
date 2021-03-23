@@ -1,4 +1,5 @@
 import React from 'react'
+import Tooltip from '@material-ui/core/Tooltip'
 import { makeStyles, SvgIcon } from '@material-ui/core'
 import clsx from 'clsx'
 
@@ -33,10 +34,12 @@ export default function ToolboxButton(props) {
 
   const classes = useStyles(props)
   return (
-    <div className={classes.button} onClick={handleClick}>
-      <SvgIcon className={clsx(classes.icon, isActive && classes.activeIcon)}>
-        {component}
-      </SvgIcon>
-    </div>
+    <Tooltip title={name} placement="right">
+      <div className={classes.button} onClick={handleClick}>
+        <SvgIcon className={clsx(classes.icon, isActive && classes.activeIcon)}>
+          {component}
+        </SvgIcon>
+      </div>
+    </Tooltip>
   )
 }

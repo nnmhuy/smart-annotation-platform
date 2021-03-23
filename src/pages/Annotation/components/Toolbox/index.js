@@ -77,6 +77,7 @@ export default class Toolbox extends Component {
             return (
               <ToolboxButton
                 key={`toolbox-button-${name}`}
+                name={name}
                 handleClick={() => setActiveMode(mode)}
                 isActive={mode === activeMode}
                 component={component}
