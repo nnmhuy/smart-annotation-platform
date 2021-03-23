@@ -1,6 +1,6 @@
 const getPointerPosition = (stage) => {
   const scale = stage.scaleX();
-  const pointer = stage.getPointerPosition();
+  const pointer = stage.getPointerPosition() || { x: 0, y: 0 };
 
   const mousePointTo = {
     x: (pointer.x - stage.x()) / scale,

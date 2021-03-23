@@ -60,6 +60,16 @@ const toolBoxButtons = [
     mode: MODES.DRAW_RECTANGLE,
     component: <RectangleIcon />,
   },
+  {
+    name: 'Polygon',
+    mode: MODES.DRAW_POLYGON,
+    component: <PolygonIcon />,
+  },
+  {
+    name: 'Delete',
+    mode: MODES.DELETE,
+    component: <DeleteIcon />,
+  },
 ]
 
 export default class Toolbox extends Component {
