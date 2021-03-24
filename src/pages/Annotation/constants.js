@@ -10,7 +10,22 @@ const MODES = {
   DRAW_POLYGON: {
     name: 'DRAW_POLYGON',
     cursor: 'crosshair',
-  }
+  },
+  CUT: {
+    name: 'CUT_POLYGON',
+    cursor: 'nw-resize'
+  },
+  DELETE: {
+    name: 'DELETE',
+    cursor: 'not-allowed'
+  },
+}
+
+const DEFAULT_SHAPE_ATTRS = {
+  fill: 'green',
+  opacity: 0.4,
+  stroke: 'black',
+  strokeWidth: 3,
 }
 
 export {
