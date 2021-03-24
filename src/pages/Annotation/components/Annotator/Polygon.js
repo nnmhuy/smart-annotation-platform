@@ -4,13 +4,14 @@ import { Group, Line, Circle } from 'react-konva'
 const Polygon = (props) => {
   const { 
     polygon, currentMousePos, 
-    isDrawing, 
+    isDrawing, isCutting,
     isSelected, onSelect,
-    setIsMouseOverPolygonStart, onChange 
+    setIsMouseOverPolygonStart, onChange,
+    setCuttingPolygon, setIsMouseOverPolygonCutStart,
   } = props
 
   const groupRef = React.useRef(null)
-  const { points, ...others } = polygon
+  const { id, points, holes, ...others } = polygon
   const [draggingIndex, setDraggingIndex] = React.useState(null)
 
   const isFinished = !!!isDrawing
@@ -46,7 +47,7 @@ const Polygon = (props) => {
     const pos = [event.target.attrs.x, event.target.attrs.y];
     onChange({
       ...polygon,
-      points: [...points.slice(0, index), pos, ...points.slice(index + 1)]
+      points: [...points.slice(0, index), pos, ...points.slice(index + 1)],
     })
   }
 
@@ -70,18 +71,31 @@ const Polygon = (props) => {
     onChange({
       ...polygon,
       points: polygon.points.map(p => [p[0] + polygon.x, p[1] + polygon.y]),
+      holes: holes.map(hole => hole.map(p => [p[0] + polygon.x, p[1] + polygon.y])),
       x: 0,
       y: 0
     })
+    if (isCutting) {
+      setCuttingPolygon(holes[holes.length - 1].map(p => [p[0] + polygon.x, p[1] + polygon.y]))
+    }
+  }
+
+  const handleMouseOverCutStartPoint = event => {
+    setIsMouseOverPolygonCutStart(true)
+  }
+
+  const handleMouseOutCutStartPoint = event => {
+    setIsMouseOverPolygonCutStart(false)
   }
 
   return (
     <Group
       ref={groupRef}
+      id={id}
     >
       <Line
+        id={id}
         points={flattenedPoints}
-        // closed={isFinished}
         closed={true}
         onClick={onSelect}
         onTap={onSelect}
@@ -96,8 +110,6 @@ const Polygon = (props) => {
           const x = point[0];
           const y = point[1];
           const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
-          console.log(groupRef)
-          console.log(scale)
           const startPointAttr =
             (index === 0 && isDrawing)
               ? {
@@ -109,7 +121,7 @@ const Polygon = (props) => {
               : null;
           return (
             <Circle
-              key = { index }
+              key = {`poly-${id}-${index}`}
               x = {x + polygon.x}
               y = {y + polygon.y}
               radius={5 / scale}
@@ -119,19 +131,71 @@ const Polygon = (props) => {
               onDragStart={handleDragStartPoint}
               onDragMove={handleDragMovePoint}
               onDragEnd={handleDragOutPoint}
-              draggable
+              draggable={isSelected}
               {...startPointAttr}
             />
           );
         }
       )}
-      <Circle
-        x={0}
-        y={0}
-        radius={50}
-        fill="black"
-        globalCompositeOperation='destination-out'
-      />
+      {holes.map((holePoints, holeIndex) => {
+        const holeFlattenedPoints = holePoints
+          .concat((isCutting && holeIndex === holes.length - 1) ? [currentMousePos.x + polygon.x, currentMousePos.y + polygon.y] : [])
+          .reduce((a, b) => a.concat(b), [])
+        let filledHoleFlattenedPoints = holeFlattenedPoints
+        if (filledHoleFlattenedPoints.length) {
+          filledHoleFlattenedPoints = [...filledHoleFlattenedPoints, holeFlattenedPoints[0], holeFlattenedPoints[1]]
+        }
+        return (
+          <>
+            <Line
+              points={filledHoleFlattenedPoints}
+              id={id}
+              {...others}
+            />
+            <Line
+              closed={true}
+              points={holeFlattenedPoints}
+              fill="white"
+              globalCompositeOperation='destination-out'
+              id={id}
+              {...others}
+            />
+            {(isSelected || isCutting) &&
+              holePoints.map((point, index) => {
+                const x = point[0];
+                const y = point[1];
+                const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
+                const startPointAttr =
+                  (index === 0 && isCutting && holeIndex === holes.length - 1)
+                    ? {
+                      hitStrokeWidth: 6,
+                      onMouseOver: handleMouseOverCutStartPoint,
+                      onMouseOut: handleMouseOutCutStartPoint,
+                      fill: "red"
+                    }
+                    : null;
+                return (
+                  <Circle
+                    key={`poly-${id}-${holeIndex}-${index}`}
+                    x={x + polygon.x}
+                    y={y + polygon.y}
+                    radius={5 / scale}
+                    fill="white"
+                    stroke="black"
+                    strokeWidth={2}
+                    onDragStart={handleDragStartPoint}
+                    onDragMove={handleDragMovePoint}
+                    onDragEnd={handleDragOutPoint}
+                    draggable={isSelected}
+                    {...startPointAttr}
+                  />
+                );
+              }
+              )}
+          </>
+        )
+      })
+      }
     </Group>
   )
 }
