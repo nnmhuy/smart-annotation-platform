@@ -42,20 +42,26 @@ const Annotator = (props) => {
   const [isMouseOverPolygonStart, setIsMouseOverPolygonStart] = React.useState(false)
 
   React.useEffect(() => { // change mode => reset all states
+    selectShape(null)
     setDrawingRectangle(null)
+    setDrawingPolygon(null)
   }, [activeMode])
 
   React.useEffect(() => { // upload new image => reset all states & drawn polygons
     if (image) {
+      selectShape(null)
       setRectangles([])
+      setPolygons([])
       setDrawingRectangle(null)
+      setDrawingPolygon(null)
+      setIsMouseOverPolygonStart(false)
 
       const stage = stageRef.current
       stage.position({
         x: 250,
         y: 100
       });
-
+      stage.scale({ x: 1, y: 1 })
     }
   }, [image])
 

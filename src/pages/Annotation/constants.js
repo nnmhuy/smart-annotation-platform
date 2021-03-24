@@ -25,7 +25,7 @@ const DEFAULT_SHAPE_ATTRS = {
   fill: 'green',
   opacity: 0.4,
   stroke: 'black',
-  strokeWidth: 3,
+  strokeWidth: 2,
 }
 
 export {

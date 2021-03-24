@@ -20,6 +20,7 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef}
+        strokeScaleEnabled={false}
         {...shapeProps}
         draggable
         onDragEnd={(e) => {
@@ -58,6 +59,8 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
       {isSelected && (
         <Transformer
           ref={trRef}
+          keepRatio={false}
+          ignoreStroke={true}
           boundBoxFunc={(oldBox, newBox) => {
             // limit resize
             if (newBox.width < 5 || newBox.height < 5) {

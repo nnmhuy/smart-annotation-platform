@@ -1,5 +1,5 @@
 import React from 'react'
-import { Line, Rect } from 'react-konva'
+import { Line, Circle } from 'react-konva'
 
 const Polygon = (props) => {
   const { 
@@ -9,9 +9,8 @@ const Polygon = (props) => {
     setIsMouseOverPolygonStart, onChange 
   } = props
 
-  const [dragStartPos, setDragStartPos] = React.useState(null)
-
   const { points, ...others } = polygon
+  const [draggingIndex, setDraggingIndex] = React.useState(null)
 
   const isFinished = !!!isDrawing
   const flattenedPoints = points
@@ -31,10 +30,18 @@ const Polygon = (props) => {
 
   const handleDragStartPoint = event => {
     console.log("start", event);
+    const index = event.target.index - 1;
+
+    if (!draggingIndex) {
+      setDraggingIndex(index)
+    }
   }
 
   const handleDragMovePoint = event => {
     const index = event.target.index - 1;
+    if (index !== draggingIndex) { // prevent dragging 2 near points
+      return
+    }
     const pos = [event.target.attrs.x, event.target.attrs.y];
     onChange({
       ...polygon,
@@ -44,11 +51,10 @@ const Polygon = (props) => {
 
   const handleDragOutPoint = event => {
     console.log("end", event);
+    setDraggingIndex(null)
   }
 
   const onDragStart = event => {
-    const pos = [event.target.x(), event.target.y()];
-    setDragStartPos(pos)
   }
 
   const onDragMove = event => {
@@ -60,7 +66,6 @@ const Polygon = (props) => {
   }
 
   const onDragEnd = event => {
-    setDragStartPos(null)
     onChange({
       ...polygon,
       points: polygon.points.map(p => [p[0] + polygon.x, p[1] + polygon.y]),
@@ -85,28 +90,27 @@ const Polygon = (props) => {
       />
       {(isDrawing || isSelected) && 
         points.map((point, index) => {
-          const width = 6;
-          const x = point[0] - width / 2;
-          const y = point[1] - width / 2;
+          // TODO: relative size when zoom in
+          const x = point[0];
+          const y = point[1];
           const startPointAttr =
             (index === 0 && isDrawing)
               ? {
-                hitStrokeWidth: 12,
+                hitStrokeWidth: 6,
                 onMouseOver: handleMouseOverStartPoint,
                 onMouseOut: handleMouseOutStartPoint,
                 fill: "red"
               }
               : null;
           return (
-            <Rect
-              key={index}
-              x={x + polygon.x}
-              y={y + polygon.y}
-              width={width}
-              height={width}
+            <Circle
+              key = { index }
+              x = {x + polygon.x}
+              y = {y + polygon.y}
+              radius={5}
               fill="white"
               stroke="black"
-              strokeWidth={3}
+              strokeWidth={2}
               onDragStart={handleDragStartPoint}
               onDragMove={handleDragMovePoint}
               onDragEnd={handleDragOutPoint}
