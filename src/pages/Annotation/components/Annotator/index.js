@@ -3,11 +3,12 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import UIDGenerator from 'uid-generator'
 
-import { MODES } from '../../constants'
+import { MODES, DEFAULT_SHAPE_ATTRS } from '../../constants'
 
-import Rectangle from './Rectangle'
 import Image from './KonvaImage'
 import Portal from './Portal'
+import Rectangle from './Rectangle'
+import Polygon from './Polygon'
 import ClassSelectionPopover from './ClassSelectionPopover'
 
 import getPointerPosition from './getPointerPosition'
@@ -26,15 +27,19 @@ const Annotator = (props) => {
     stageSize,
     activeMode,
     image,
-    rectangles, setRectangles 
+    rectangles, setRectangles,
+    polygons, setPolygons,
   } = props
   const stageRef = React.createRef(null)
   
+  const [currentMousePos, setCurrentMousePos] = React.useState(null)
   const [selectedId, selectShape] = React.useState(null)
   const [highlightId, setHighlightId] = React.useState(null)
   const [contextMenuPosition, setContextMenuPosition] = React.useState(null)
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
   const [drawingRectangle, setDrawingRectangle] = React.useState(null)
+  const [drawingPolygon, setDrawingPolygon] = React.useState(null)
+  const [isMouseOverPolygonStart, setIsMouseOverPolygonStart] = React.useState(false)
 
   React.useEffect(() => { // change mode => reset all states
     setDrawingRectangle(null)
@@ -136,18 +141,14 @@ const Annotator = (props) => {
 
   const handleClickDrawRectangle = (e) => {
     const stage = stageRef.current
-    const pointer = getPointerPosition(stage)
 
     if (drawingRectangle === null) {
       setDrawingRectangle({
-        x: pointer.x,
-        y: pointer.y,
+        ...DEFAULT_SHAPE_ATTRS,
+        x: currentMousePos.x,
+        y: currentMousePos.y,
         width: 0,
         height: 0,
-        fill: 'green',
-        opacity: 0.4,
-        stroke: 'black',
-        strokeWidth: 3,
         id: uidgen.generateSync(),
       })
     } else {
@@ -158,14 +159,35 @@ const Annotator = (props) => {
 
   const handleDragDrawRectangle = (e) => {
     const stage = stageRef.current
-    const pointer = getPointerPosition(stage)
 
     if (drawingRectangle !== null) {
       setDrawingRectangle({
         ...drawingRectangle,
-        width: pointer.x - drawingRectangle.x,
-        height: pointer.y - drawingRectangle.y,
+        width: currentMousePos.x - drawingRectangle.x,
+        height: currentMousePos.y - drawingRectangle.y,
       })
+    }
+  }
+
+  const handleClickDrawPolygon = (e) => {
+    if (drawingPolygon === null) {
+      setDrawingPolygon({
+        ...DEFAULT_SHAPE_ATTRS,
+        id: uidgen.generateSync(),
+        x: 0,
+        y: 0,
+        points: [[currentMousePos.x, currentMousePos.y]]
+      })
+    } else {
+      if (isMouseOverPolygonStart) {
+        setPolygons([...polygons, drawingPolygon])
+        setDrawingPolygon(null)
+      } else {
+        setDrawingPolygon({
+          ...drawingPolygon,
+          points: [...drawingPolygon.points, [currentMousePos.x, currentMousePos.y]]
+        })
+      }
     }
   }
 
@@ -179,6 +201,14 @@ const Annotator = (props) => {
   }
 
 
+  const handleClickDelete = (e) => {
+    if (!isEmptyPosition(e)) {
+      const shapeId = e.target.attrs.id
+      setRectangles(rectangles.filter(rect => rect.id !== shapeId))
+      setPolygons(polygons.filter(poly => poly.id !== shapeId))
+    }
+  }
+
   const handleMouseDown = (e) => {
     if (activeMode === MODES.CURSOR) {
       if (checkDeselect(e)) {
@@ -188,6 +218,9 @@ const Annotator = (props) => {
   }
 
   const handleMouseMove = (e) => {
+    const stage = stageRef.current
+    setCurrentMousePos(getPointerPosition(stage))
+
     if (activeMode === MODES.CURSOR) {
       handleViewportMove(e)
       handleHighlightShape(e)
@@ -222,6 +255,14 @@ const Annotator = (props) => {
       handleClickDrawRectangle(e)
     } else {
       setDrawingRectangle(null)
+    }
+    if (activeMode === MODES.DRAW_POLYGON) {
+      handleClickDrawPolygon(e)
+    } else {
+      setDrawingPolygon(null)
+    }
+    if (activeMode === MODES.DELETE) {
+      handleClickDelete(e)
     }
   }
 
@@ -259,7 +300,7 @@ const Annotator = (props) => {
         {rectangles.map((rect, i) => {
           return (
             <Rectangle
-              key={i}
+              key={rect.id}
               shapeProps={{
                 ...rect,
                 opacity: (rect.id === highlightId || rect.id === selectedId) ? 0.5 : 0.4,
@@ -283,6 +324,38 @@ const Annotator = (props) => {
             key={'drawing-rectangle'}
             shapeProps={drawingRectangle}
             isSelected={true}
+          />
+        }
+        {polygons.map((poly, i) => {
+          return (
+            <Polygon
+              key={poly.id}
+              polygon={{
+                ...poly,
+                opacity: (poly.id === highlightId || poly.id === selectedId) ? 0.5 : 0.4,
+              }}
+              isSelected={poly.id === selectedId}
+              onSelect={() => {
+                if (activeMode === MODES.CURSOR) {
+                  selectShape(poly.id);
+                }
+              }}
+              onChange={(newAttrs) => {
+                const polys = polygons.slice();
+                polys[i] = newAttrs;
+                setPolygons(polys);
+              }}
+              currentMousePos={currentMousePos}
+            />
+          )
+        })}
+        {drawingPolygon &&
+          <Polygon
+            key={'drawing-polygon'}
+            isDrawing={true}
+            currentMousePos={currentMousePos}
+            polygon={drawingPolygon}
+            setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
           />
         }
         <Portal>

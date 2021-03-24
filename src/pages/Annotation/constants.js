@@ -30,4 +30,5 @@ const DEFAULT_SHAPE_ATTRS = {
 
 export {
   MODES,
+  DEFAULT_SHAPE_ATTRS,
 }

@@ -34,6 +34,7 @@ const Annotation = (props) => {
   const [image, setImage] = React.useState(null)
   const [activeMode, setActiveMode] = React.useState(MODES.CURSOR)
   const [rectangles, setRectangles] = React.useState([])
+  const [polygons, setPolygons] = React.useState([])
   const [annotationClasses, setAnnotationClasses] = React.useState(demoAnnotateData)
 
   const handleNewStageSize = () => {
@@ -66,6 +67,8 @@ const Annotation = (props) => {
           image={image}
           rectangles={rectangles}
           setRectangles={setRectangles}
+          polygons={polygons}
+          setPolygons={setPolygons}
           stageSize={stageSize}
         />
       </GridContainer>
