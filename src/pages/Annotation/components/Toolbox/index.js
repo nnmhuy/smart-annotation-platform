@@ -5,6 +5,7 @@ import { MODES } from '../../constants'
 
 import {ReactComponent as RectangleIcon} from './ToolboxIcon/rectangle.svg'
 import {ReactComponent as PolygonIcon} from './ToolboxIcon/polygon.svg'
+import {ReactComponent as CursorIcon} from './ToolboxIcon/cursor.svg'
 import {ReactComponent as EditIcon} from './ToolboxIcon/edit.svg'
 import {ReactComponent as CutIcon} from './ToolboxIcon/cut.svg'
 import {ReactComponent as DeleteIcon} from './ToolboxIcon/delete.svg'
@@ -13,6 +14,11 @@ const toolBoxButtons = [
   {
     name: 'Cursor',
     mode: MODES.CURSOR,
+    component: <CursorIcon />,
+  },
+  {
+    name: 'Edit',
+    mode: MODES.EDIT,
     component: <EditIcon />,
   },
   { 

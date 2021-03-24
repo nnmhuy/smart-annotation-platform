@@ -1,5 +1,5 @@
 import React from 'react'
-import { Line, Circle } from 'react-konva'
+import { Group, Line, Circle } from 'react-konva'
 
 const Polygon = (props) => {
   const { 
@@ -9,6 +9,7 @@ const Polygon = (props) => {
     setIsMouseOverPolygonStart, onChange 
   } = props
 
+  const groupRef = React.useRef(null)
   const { points, ...others } = polygon
   const [draggingIndex, setDraggingIndex] = React.useState(null)
 
@@ -75,24 +76,28 @@ const Polygon = (props) => {
   }
 
   return (
-    <>
+    <Group
+      ref={groupRef}
+    >
       <Line
         points={flattenedPoints}
         // closed={isFinished}
         closed={true}
         onClick={onSelect}
         onTap={onSelect}
+        draggable={isSelected}
         onDragStart={onDragStart}
         onDragMove={onDragMove}
         onDragEnd={onDragEnd}
-        draggable={isSelected}
         {...others}
       />
       {(isDrawing || isSelected) && 
         points.map((point, index) => {
-          // TODO: relative size when zoom in
           const x = point[0];
           const y = point[1];
+          const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
+          console.log(groupRef)
+          console.log(scale)
           const startPointAttr =
             (index === 0 && isDrawing)
               ? {
@@ -107,7 +112,7 @@ const Polygon = (props) => {
               key = { index }
               x = {x + polygon.x}
               y = {y + polygon.y}
-              radius={5}
+              radius={5 / scale}
               fill="white"
               stroke="black"
               strokeWidth={2}
@@ -120,7 +125,14 @@ const Polygon = (props) => {
           );
         }
       )}
-    </>
+      <Circle
+        x={0}
+        y={0}
+        radius={50}
+        fill="black"
+        globalCompositeOperation='destination-out'
+      />
+    </Group>
   )
 }
 

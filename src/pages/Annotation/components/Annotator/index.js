@@ -66,14 +66,12 @@ const Annotator = (props) => {
   }, [image])
 
   const handleViewportStart = (e) => {
-    if (activeMode === MODES.CURSOR) {
-      e.evt.preventDefault();
-      const stage = stageRef.current
-  
-      const pointer = stage.getPointerPosition();
-  
-      setViewportStartPos(pointer)
-    }
+    e.evt.preventDefault();
+    const stage = stageRef.current
+
+    const pointer = stage.getPointerPosition();
+
+    setViewportStartPos(pointer)
   }
 
   const handleViewportEnd = (e) => {
@@ -217,6 +215,9 @@ const Annotator = (props) => {
 
   const handleMouseDown = (e) => {
     if (activeMode === MODES.CURSOR) {
+      handleViewportStart(e)
+    }
+    if (activeMode === MODES.EDIT) {
       if (checkDeselect(e)) {
         handleViewportStart(e)
       }
@@ -229,6 +230,9 @@ const Annotator = (props) => {
 
     if (activeMode === MODES.CURSOR) {
       handleViewportMove(e)
+    }
+    if (activeMode === MODES.EDIT) {
+      handleViewportMove(e)
       handleHighlightShape(e)
     }
     if (activeMode === MODES.DRAW_RECTANGLE) {
@@ -237,19 +241,22 @@ const Annotator = (props) => {
   }
 
   const handleMouseUp = (e) => {
-    if (activeMode === MODES.CURSOR) {
+    if (activeMode === MODES.CURSOR || activeMode === MODES.EDIT) {
       handleViewportEnd(e)
     }
   }
 
   const handleMouseOut = (e) => {
-    if (activeMode === MODES.CURSOR) {
+    if (activeMode === MODES.CURSOR || activeMode === MODES.EDIT) {
       handleViewportEnd(e)
     }
   }
 
   const handleTouchStart = (e) => {
     if (activeMode === MODES.CURSOR) {
+      handleViewportStart(e)
+    }
+    if (activeMode === MODES.EDIT) {
       if (checkDeselect(e)) {
         handleViewportStart(e)
       }
@@ -274,7 +281,7 @@ const Annotator = (props) => {
 
   const handleContextMenu = (e) => {
     e.evt.preventDefault();
-    if (activeMode === MODES.CURSOR) {
+    if (activeMode === MODES.EDIT) {
       if (!isEmptyPosition(e)) {
         setContextMenuPosition({
           x: e.evt.x,
@@ -313,7 +320,7 @@ const Annotator = (props) => {
               }}
               isSelected={rect.id === selectedId}
               onSelect={() => {
-                if (activeMode === MODES.CURSOR) {
+                if (activeMode === MODES.EDIT) {
                   selectShape(rect.id);
                 }
               }}
@@ -342,7 +349,7 @@ const Annotator = (props) => {
               }}
               isSelected={poly.id === selectedId}
               onSelect={() => {
-                if (activeMode === MODES.CURSOR) {
+                if (activeMode === MODES.EDIT) {
                   selectShape(poly.id);
                 }
               }}

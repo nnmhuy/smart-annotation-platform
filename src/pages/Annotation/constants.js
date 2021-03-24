@@ -1,6 +1,10 @@
 const MODES = {
   CURSOR: {
     name: 'CURSOR',
+    cursor: 'pointer',
+  },
+  EDIT: {
+    name: 'EDIT',
     cursor: 'default',
   },
   DRAW_RECTANGLE: {

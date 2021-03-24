@@ -22,7 +22,7 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
         ref={shapeRef}
         strokeScaleEnabled={false}
         {...shapeProps}
-        draggable
+        draggable={isSelected}
         onDragEnd={(e) => {
           if (onChange) {
             onChange({
