@@ -60,7 +60,9 @@ const Annotator = (props) => {
       setPolygons([])
       setDrawingRectangle(null)
       setDrawingPolygon(null)
+      setCuttingPolygon(null)
       setIsMouseOverPolygonStart(false)
+      setIsMouseOverPolygonCutStart(false)
 
       const stage = stageRef.current
       stage.position({
@@ -245,7 +247,7 @@ const Annotator = (props) => {
   const handleHighlightShape = (e, classList) => {
     const className = e.target.getClassName()
 
-    if (!isEmptyPosition(e) && classList && classList.includes(className)) {
+    if (!isEmptyPosition(e) && (!classList || classList.includes(className))) {
       const shapeId = e.target.attrs.id
       setHighlightId(shapeId)
     } else {
