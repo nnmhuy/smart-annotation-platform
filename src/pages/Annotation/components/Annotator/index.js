@@ -41,7 +41,6 @@ const Annotator = (props) => {
   const [drawingPolygon, setDrawingPolygon] = React.useState(null)
   const [cuttingPolygon, setCuttingPolygon] = React.useState(null)
   const [isMouseOverPolygonStart, setIsMouseOverPolygonStart] = React.useState(false)
-  const [isMouseOverPolygonCutStart, setIsMouseOverPolygonCutStart] = React.useState(false)
 
 
   React.useEffect(() => { // change mode => reset all states
@@ -50,7 +49,6 @@ const Annotator = (props) => {
     setDrawingPolygon(null)
     setCuttingPolygon(null)
     setIsMouseOverPolygonStart(false)
-    setIsMouseOverPolygonCutStart(false)
   }, [activeMode])
 
   React.useEffect(() => { // upload new image => reset all states & drawn polygons
@@ -62,7 +60,6 @@ const Annotator = (props) => {
       setDrawingPolygon(null)
       setCuttingPolygon(null)
       setIsMouseOverPolygonStart(false)
-      setIsMouseOverPolygonCutStart(false)
 
       const stage = stageRef.current
       stage.position({
@@ -193,8 +190,7 @@ const Annotator = (props) => {
         id: uidgen.generateSync(),
         x: 0,
         y: 0,
-        points: [[currentMousePos.x, currentMousePos.y]],
-        holes: []
+        polys: [[[currentMousePos.x, currentMousePos.y]]],
       })
     } else {
       if (isMouseOverPolygonStart) {
@@ -203,31 +199,31 @@ const Annotator = (props) => {
       } else {
         setDrawingPolygon({
           ...drawingPolygon,
-          points: [...drawingPolygon.points, [currentMousePos.x, currentMousePos.y]]
+          polys: [[...drawingPolygon.polys[0], [currentMousePos.x, currentMousePos.y]]]
         })
       }
     }
   }
 
   const handleClickFinishCutPolygon = () => {
-    setPolygons(polygons.map(poly => {
-      if (poly.id !== selectedId) {
-        return poly
+    setPolygons(polygons.map(polygon => {
+      if (polygon.id !== selectedId) {
+        return polygon
       } else {
         return ({
-          ...poly,
-          holes: [...poly.holes, cuttingPolygon]
+          ...polygon,
+          polys: [...polygon.polys, cuttingPolygon]
         })
       }
     }))
     setCuttingPolygon([])
     selectShape(null)
-    setIsMouseOverPolygonCutStart(false)
+    setIsMouseOverPolygonStart(false)
   }
 
   const handleClickCutPolygon = (e) => {
     const shapeId = e.target.attrs.id
-    if (isMouseOverPolygonCutStart && cuttingPolygon.length >= 3) {
+    if (isMouseOverPolygonStart) {
       handleClickFinishCutPolygon()
       return
     }
@@ -415,25 +411,21 @@ const Annotator = (props) => {
           />
         </Portal>
       </Layer>
-        {polygons.map((poly, i) => {
-          const isCutting = Boolean(poly.id === selectedId && cuttingPolygon)
-          let holes = poly.holes
-          if (isCutting) {
-            holes = [...holes, cuttingPolygon]
-          }
+        {polygons.map((polygon, i) => {
+          const isCutting = Boolean(polygon.id === selectedId && cuttingPolygon)
           return (
-            <Layer key={poly.id}>
+            <Layer key={polygon.id}>
               <Polygon
                 polygon={{
-                  ...poly,
-                  holes,
-                  opacity: (poly.id === highlightId || poly.id === selectedId) ? 0.5 : 0.4,
+                  ...polygon,
+                  opacity: (polygon.id === highlightId || polygon.id === selectedId) ? 0.5 : 0.4,
+                  polys: isCutting ? [...polygon.polys, cuttingPolygon] : polygon.polys
                 }}
-                isSelected={poly.id === selectedId}
+                isSelected={polygon.id === selectedId}
                 isCutting={isCutting}
                 onSelect={() => {
                   if (activeMode === MODES.EDIT) {
-                    selectShape(poly.id);
+                    selectShape(polygon.id);
                   }
                 }}
                 onChange={(newAttrs) => {
@@ -443,7 +435,7 @@ const Annotator = (props) => {
                 }}
                 currentMousePos={currentMousePos}
                 setCuttingPolygon={isCutting && setCuttingPolygon}
-                setIsMouseOverPolygonCutStart={isCutting && setIsMouseOverPolygonCutStart}
+                setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
               />
             </Layer>
           )

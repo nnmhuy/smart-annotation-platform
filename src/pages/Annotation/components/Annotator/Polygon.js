@@ -7,20 +7,15 @@ const Polygon = (props) => {
     isDrawing, isCutting,
     isSelected, onSelect,
     setIsMouseOverPolygonStart, onChange,
-    setCuttingPolygon, setIsMouseOverPolygonCutStart,
+    setCuttingPolygon,
   } = props
 
   const groupRef = React.useRef(null)
-  const { id, points, holes, ...others } = polygon
-  const [draggingIndex, setDraggingIndex] = React.useState(null)
+  const { id, polys, ...others } = polygon
+  const [draggingKey, setDraggingKey] = React.useState(null)
 
-  const isFinished = !!!isDrawing
-  const flattenedPoints = points
-    .concat(isFinished ? [] : [currentMousePos.x, currentMousePos.y])
-    .reduce((a, b) => a.concat(b), [])
-
-  const handleMouseOverStartPoint = event => {
-    if (isFinished || points.length < 3) return;
+  const handleMouseOverStartPoint = (event, polyIndex) => {
+    if (polys[polyIndex].length < 3) return;
     event.target.scale({ x: 2, y: 2 });
     setIsMouseOverPolygonStart(true)
   }
@@ -32,28 +27,34 @@ const Polygon = (props) => {
 
   const handleDragStartPoint = event => {
     console.log("start", event);
-    const index = event.target.index - 1;
+    const key = event.target.key;
 
-    if (!draggingIndex) {
-      setDraggingIndex(index)
+    if (!draggingKey) {
+      setDraggingKey(key)
     }
   }
 
-  const handleDragMovePoint = event => {
-    const index = event.target.index - 1;
-    if (index !== draggingIndex) { // prevent dragging 2 near points
+  const handleDragMovePoint = (event, polyIndex, pointIndex) => {
+    const key = event.target.key;
+    if (key !== draggingKey) { // prevent dragging 2 near points
       return
     }
     const pos = [event.target.attrs.x, event.target.attrs.y];
     onChange({
       ...polygon,
-      points: [...points.slice(0, index), pos, ...points.slice(index + 1)],
+      polys: polys.map((poly, index) => {
+        if (index !== polyIndex) {
+          return poly
+        } else {
+          return [...poly.slice(0, pointIndex), pos, ...poly.slice(pointIndex + 1)]
+        }
+      })
     })
   }
 
   const handleDragOutPoint = event => {
     console.log("end", event);
-    setDraggingIndex(null)
+    setDraggingKey(null)
   }
 
   const onDragStart = event => {
@@ -68,24 +69,25 @@ const Polygon = (props) => {
   }
 
   const onDragEnd = event => {
-    onChange({
-      ...polygon,
-      points: polygon.points.map(p => [p[0] + polygon.x, p[1] + polygon.y]),
-      holes: holes.map(hole => hole.map(p => [p[0] + polygon.x, p[1] + polygon.y])),
-      x: 0,
-      y: 0
-    })
+    const dX = polygon.x
+    const dY = polygon.y
     if (isCutting) {
-      setCuttingPolygon(holes[holes.length - 1].map(p => [p[0] + polygon.x, p[1] + polygon.y]))
+      const holes = polys[polys.length - 1]
+      setCuttingPolygon(holes.map(p => [p[0] + dX, p[1] + dY]))
+      onChange({
+        ...polygon,
+        polys: polys.slice(-1).map(poly => poly.map(p => [p[0] + dX, p[1] + dY])),
+        x: 0,
+        y: 0
+      })
+    } else {
+      onChange({
+        ...polygon,
+        polys: polys.map(poly => poly.map(p => [p[0] + dX, p[1] + dY])),
+        x: 0,
+        y: 0
+      })
     }
-  }
-
-  const handleMouseOverCutStartPoint = event => {
-    setIsMouseOverPolygonCutStart(true)
-  }
-
-  const handleMouseOutCutStartPoint = event => {
-    setIsMouseOverPolygonCutStart(false)
   }
 
   return (
@@ -93,109 +95,80 @@ const Polygon = (props) => {
       ref={groupRef}
       id={id}
     >
-      <Line
-        id={id}
-        points={flattenedPoints}
-        closed={true}
-        onClick={onSelect}
-        onTap={onSelect}
-        draggable={isSelected}
-        onDragStart={onDragStart}
-        onDragMove={onDragMove}
-        onDragEnd={onDragEnd}
-        {...others}
-      />
-      {(isDrawing || isSelected) && 
-        points.map((point, index) => {
-          const x = point[0];
-          const y = point[1];
-          const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
-          const startPointAttr =
-            (index === 0 && isDrawing)
-              ? {
-                hitStrokeWidth: 6,
-                onMouseOver: handleMouseOverStartPoint,
-                onMouseOut: handleMouseOutStartPoint,
-                fill: "red"
-              }
-              : null;
+      {polys.map((points, polyIndex) => {
+          const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
+
+          const flattenedPoints = points
+            .concat(isActivePoly ? [currentMousePos.x, currentMousePos.y] : [])
+            .reduce((a, b) => a.concat(b), [])
+
+          let filledHoleFlattenedPoints = flattenedPoints
+          if (filledHoleFlattenedPoints.length) {
+            filledHoleFlattenedPoints = [...filledHoleFlattenedPoints, flattenedPoints[0], flattenedPoints[1]]
+          }
+
           return (
-            <Circle
-              key = {`poly-${id}-${index}`}
-              x = {x + polygon.x}
-              y = {y + polygon.y}
-              radius={5 / scale}
-              fill="white"
-              stroke="black"
-              strokeWidth={2}
-              onDragStart={handleDragStartPoint}
-              onDragMove={handleDragMovePoint}
-              onDragEnd={handleDragOutPoint}
-              draggable={isSelected}
-              {...startPointAttr}
-            />
-          );
+            <>
+              {polyIndex >= 1 && 
+                <Line
+                  points={filledHoleFlattenedPoints}
+                  id={id}
+                  {...others}
+                  fill={polyIndex >= 1 ? 'white' : others.fill}
+                />
+              }
+              <Line
+                id={id}
+                points={flattenedPoints}
+                closed={true}
+                onClick={onSelect}
+                onTap={onSelect}
+                draggable={isSelected && polyIndex === 0}
+                onDragStart={onDragStart}
+                onDragMove={onDragMove}
+                onDragEnd={onDragEnd}
+                globalCompositeOperation={polyIndex >= 1 && 'destination-out'}
+                {...others}
+                fill={polyIndex >= 1 ? 'white' : others.fill}
+                opacity={polyIndex >= 1 ? 1 : others.opacity}
+                strokeEnabled={polyIndex === 0}
+              />
+              {(isDrawing || isSelected) &&
+                points.map((point, pointIndex) => {
+                  const x = point[0] + polygon.x;
+                  const y = point[1] + polygon.y;
+                  const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
+                  const startPointAttr =
+                    (pointIndex === 0 && isActivePoly)
+                      ? {
+                        hitStrokeWidth: 6,
+                        onMouseOver: (e) => handleMouseOverStartPoint(e, polyIndex),
+                        onMouseOut: handleMouseOutStartPoint,
+                        fill: "red"
+                      }
+                      : null;
+                  return (
+                    <Circle
+                      key={`poly-${id}-${polyIndex}-${pointIndex}`}
+                      x={x}
+                      y={y}
+                      radius={5 / scale}
+                      fill="white"
+                      stroke="black"
+                      strokeWidth={2}
+                      onDragStart={handleDragStartPoint}
+                      onDragMove={(e) => handleDragMovePoint(e, polyIndex, pointIndex)}
+                      onDragEnd={handleDragOutPoint}
+                      draggable={isSelected && !isCutting}
+                      {...startPointAttr}
+                    />
+                  );
+                }
+                )}
+            </>
+          )
         }
       )}
-      {holes.map((holePoints, holeIndex) => {
-        const holeFlattenedPoints = holePoints
-          .concat((isCutting && holeIndex === holes.length - 1) ? [currentMousePos.x + polygon.x, currentMousePos.y + polygon.y] : [])
-          .reduce((a, b) => a.concat(b), [])
-        let filledHoleFlattenedPoints = holeFlattenedPoints
-        if (filledHoleFlattenedPoints.length) {
-          filledHoleFlattenedPoints = [...filledHoleFlattenedPoints, holeFlattenedPoints[0], holeFlattenedPoints[1]]
-        }
-        return (
-          <>
-            <Line
-              points={filledHoleFlattenedPoints}
-              id={id}
-              {...others}
-            />
-            <Line
-              closed={true}
-              points={holeFlattenedPoints}
-              fill="white"
-              globalCompositeOperation='destination-out'
-              id={id}
-              {...others}
-            />
-            {(isSelected || isCutting) &&
-              holePoints.map((point, index) => {
-                const x = point[0];
-                const y = point[1];
-                const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
-                const startPointAttr =
-                  (index === 0 && isCutting && holeIndex === holes.length - 1)
-                    ? {
-                      hitStrokeWidth: 6,
-                      onMouseOver: handleMouseOverCutStartPoint,
-                      onMouseOut: handleMouseOutCutStartPoint,
-                      fill: "red"
-                    }
-                    : null;
-                return (
-                  <Circle
-                    key={`poly-${id}-${holeIndex}-${index}`}
-                    x={x + polygon.x}
-                    y={y + polygon.y}
-                    radius={5 / scale}
-                    fill="white"
-                    stroke="black"
-                    strokeWidth={2}
-                    onDragStart={handleDragStartPoint}
-                    onDragMove={handleDragMovePoint}
-                    onDragEnd={handleDragOutPoint}
-                    draggable={isSelected}
-                    {...startPointAttr}
-                  />
-                );
-              }
-              )}
-          </>
-        )
-      })
-      }
     </Group>
   )
 }
