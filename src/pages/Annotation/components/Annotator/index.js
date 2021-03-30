@@ -448,15 +448,20 @@ const Annotator = (props) => {
                 }}
                 isSelected={polygon.id === selectedId}
                 isCutting={isCutting}
+                isEditing={activeMode === MODES.EDIT}
                 onSelect={() => {
                   if (activeMode === MODES.EDIT) {
                     selectShape(polygon.id);
                   }
                 }}
-                onChange={(newAttrs) => {
-                  const polys = polygons.slice();
-                  polys[i] = newAttrs;
-                  setPolygons(polys);
+                onChange={(newPolygon) => {
+                  if (newPolygon.polys.length > 0) {
+                    const polys = polygons.slice();
+                    polys[i] = newPolygon;
+                    setPolygons(polys);
+                  } else {
+                    setPolygons(polygons.filter(poly => poly.id !== newPolygon.id))
+                  }
                 }}
                 currentMousePos={currentMousePos}
                 cutMousePos={cutMousePos}

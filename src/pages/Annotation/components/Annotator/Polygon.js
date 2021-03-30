@@ -6,7 +6,7 @@ import { getDistancePointAndPoint } from '../../../../helpers/getDistance'
 const Polygon = (props) => {
   const { 
     polygon, currentMousePos, cutMousePos,
-    isDrawing, isCutting,
+    isDrawing, isCutting, isEditing,
     isSelected, onSelect,
     isMouseOverPolygonStart, setIsMouseOverPolygonStart, 
     onChange,
@@ -93,6 +93,26 @@ const Polygon = (props) => {
     }
   }
 
+  const handleDoubleClickDeletePoint = (event, polyIndex, pointIndex) => {
+    const key = event.target.key;
+    if (!isEditing) { // only allow in edit mode
+      return
+    }
+
+    let newPolygon = {
+      ...polygon,
+      polys: polys.map((poly, index) => {
+        if (index !== polyIndex) {
+          return poly
+        } else {
+          return [...poly.slice(0, pointIndex), ...poly.slice(pointIndex + 1)]
+        }
+      }).filter(poly => poly.length >= 3)
+    }
+
+    onChange(newPolygon)
+  }
+
   return (
     <Group
       ref={groupRef}
@@ -166,6 +186,7 @@ const Polygon = (props) => {
                       onDragStart={handleDragStartPoint}
                       onDragMove={(e) => handleDragMovePoint(e, polyIndex, pointIndex)}
                       onDragEnd={handleDragOutPoint}
+                      onDblClick={(e) => handleDoubleClickDeletePoint(e, polyIndex, pointIndex)}
                       draggable={isSelected && !isCutting}
                       {...startPointAttr}
                     />
