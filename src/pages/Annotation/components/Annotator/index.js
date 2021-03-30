@@ -2,6 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import UIDGenerator from 'uid-generator'
+import { findIndex } from 'lodash'
 
 import { MODES, DEFAULT_SHAPE_ATTRS } from '../../constants'
 
@@ -12,6 +13,7 @@ import Polygon from './Polygon'
 import ClassSelectionPopover from './ClassSelectionPopover'
 
 import getPointerPosition from './getPointerPosition'
+import { getIntersectionLineAndPolygon } from '../../../../helpers/getIntersection'
 
 const uidgen = new UIDGenerator();
 
@@ -39,27 +41,28 @@ const Annotator = (props) => {
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
   const [drawingRectangle, setDrawingRectangle] = React.useState(null)
   const [drawingPolygon, setDrawingPolygon] = React.useState(null)
+  const [cutMousePos, setCutMousePos] = React.useState(null)
   const [cuttingPolygon, setCuttingPolygon] = React.useState(null)
   const [isMouseOverPolygonStart, setIsMouseOverPolygonStart] = React.useState(false)
 
-
-  React.useEffect(() => { // change mode => reset all states
+  const resetAllState = () => {
     selectShape(null)
     setDrawingRectangle(null)
     setDrawingPolygon(null)
     setCuttingPolygon(null)
+    setCutMousePos(null)
     setIsMouseOverPolygonStart(false)
+  }
+
+  React.useEffect(() => { // change mode => reset all states
+    resetAllState()
   }, [activeMode])
 
   React.useEffect(() => { // upload new image => reset all states & drawn polygons
     if (image) {
-      selectShape(null)
+      resetAllState()
       setRectangles([])
       setPolygons([])
-      setDrawingRectangle(null)
-      setDrawingPolygon(null)
-      setCuttingPolygon(null)
-      setIsMouseOverPolygonStart(false)
 
       const stage = stageRef.current
       stage.position({
@@ -216,9 +219,10 @@ const Annotator = (props) => {
         })
       }
     }))
-    setCuttingPolygon([])
+    setCuttingPolygon(null)
     selectShape(null)
     setIsMouseOverPolygonStart(false)
+    setCutMousePos(null)
   }
 
   const handleClickCutPolygon = (e) => {
@@ -227,16 +231,21 @@ const Annotator = (props) => {
       handleClickFinishCutPolygon()
       return
     }
-    if (isClickOn(e, ['Line']) && cuttingPolygon) {
-      if (shapeId === selectedId) {
-        setCuttingPolygon([...cuttingPolygon, [currentMousePos.x, currentMousePos.y]])
+    if (cuttingPolygon) {
+      if (cuttingPolygon.length === 0) {
+        if (shapeId === selectedId) {
+          setCuttingPolygon([...cuttingPolygon, [currentMousePos.x, currentMousePos.y]])
+        }
       } else {
-        setCuttingPolygon(null)
-        selectShape(null)
+        if (cutMousePos) {
+          setCuttingPolygon([...cuttingPolygon, [cutMousePos.x, cutMousePos.y]])
+        }
       }
     } else {
-      setCuttingPolygon([])
-      selectShape(shapeId)
+      if (isClickOn(e, ['Line'])) {
+        setCuttingPolygon([])
+        selectShape(shapeId)
+      }
     }
   }
 
@@ -291,6 +300,22 @@ const Annotator = (props) => {
       handleDragDrawRectangle(e)
     }
     if (activeMode === MODES.CUT) {
+      if (selectedId && cuttingPolygon) {
+        // TODO: handle point on edges
+        const polygon = polygons[findIndex(polygons, { id: selectedId })]
+
+        const intersectionPoint = getIntersectionLineAndPolygon(
+          [currentMousePos.x, currentMousePos.y],
+          cuttingPolygon[cuttingPolygon.length - 1] || [currentMousePos.x, currentMousePos.y],
+          polygon.polys[0]
+        ) || [currentMousePos.x, currentMousePos.y]
+
+        setCutMousePos({
+          x: intersectionPoint[0],
+          y: intersectionPoint[1]
+        })
+      }
+
       handleViewportMove(e)
       handleHighlightShape(e, ['Line'])
     }
@@ -434,7 +459,9 @@ const Annotator = (props) => {
                   setPolygons(polys);
                 }}
                 currentMousePos={currentMousePos}
+                cutMousePos={cutMousePos}
                 setCuttingPolygon={isCutting && setCuttingPolygon}
+                isMouseOverPolygonStart={isMouseOverPolygonStart}
                 setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
               />
             </Layer>
@@ -447,6 +474,7 @@ const Annotator = (props) => {
               isDrawing={true}
               currentMousePos={currentMousePos}
               polygon={drawingPolygon}
+              isMouseOverPolygonStart={isMouseOverPolygonStart}
               setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
             />
           }

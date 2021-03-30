@@ -1,12 +1,15 @@
 import React from 'react'
 import { Group, Line, Circle } from 'react-konva'
 
+import { getDistancePointAndPoint } from '../../../../helpers/getDistance'
+
 const Polygon = (props) => {
   const { 
-    polygon, currentMousePos, 
+    polygon, currentMousePos, cutMousePos,
     isDrawing, isCutting,
     isSelected, onSelect,
-    setIsMouseOverPolygonStart, onChange,
+    isMouseOverPolygonStart, setIsMouseOverPolygonStart, 
+    onChange,
     setCuttingPolygon,
   } = props
 
@@ -98,14 +101,17 @@ const Polygon = (props) => {
       {polys.map((points, polyIndex) => {
           const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
 
-          const flattenedPoints = points
-            .concat(isActivePoly ? [currentMousePos.x, currentMousePos.y] : [])
-            .reduce((a, b) => a.concat(b), [])
+          const addMousePos = (isCutting && cutMousePos) ? [cutMousePos.x, cutMousePos.y] : [currentMousePos.x, currentMousePos.y]
+          const addedPoints = points.concat(isActivePoly ? [addMousePos] : [])
+
+          const flattenedPoints = addedPoints.reduce((a, b) => a.concat(b), [])
 
           let filledHoleFlattenedPoints = flattenedPoints
           if (filledHoleFlattenedPoints.length) {
             filledHoleFlattenedPoints = [...filledHoleFlattenedPoints, flattenedPoints[0], flattenedPoints[1]]
           }
+
+          const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
 
           return (
             <>
@@ -115,6 +121,7 @@ const Polygon = (props) => {
                   id={id}
                   {...others}
                   fill={polyIndex >= 1 ? 'white' : others.fill}
+                  strokeWidth={others.strokeWidth / scale}
                 />
               }
               <Line
@@ -132,19 +139,19 @@ const Polygon = (props) => {
                 fill={polyIndex >= 1 ? 'white' : others.fill}
                 opacity={polyIndex >= 1 ? 1 : others.opacity}
                 strokeEnabled={polyIndex === 0}
+                strokeWidth={others.strokeWidth / scale}
               />
               {(isDrawing || isSelected) &&
-                points.map((point, pointIndex) => {
+                (getDistancePointAndPoint(addMousePos, points[0]) <= 10 ? points : addedPoints).map((point, pointIndex) => {
                   const x = point[0] + polygon.x;
                   const y = point[1] + polygon.y;
-                  const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
                   const startPointAttr =
                     (pointIndex === 0 && isActivePoly)
                       ? {
-                        hitStrokeWidth: 6,
+                        hitStrokeWidth: 6 / scale,
                         onMouseOver: (e) => handleMouseOverStartPoint(e, polyIndex),
                         onMouseOut: handleMouseOutStartPoint,
-                        fill: "red"
+                        fill: "red",
                       }
                       : null;
                   return (
@@ -155,7 +162,7 @@ const Polygon = (props) => {
                       radius={5 / scale}
                       fill="white"
                       stroke="black"
-                      strokeWidth={2}
+                      strokeWidth={2 / scale}
                       onDragStart={handleDragStartPoint}
                       onDragMove={(e) => handleDragMovePoint(e, polyIndex, pointIndex)}
                       onDragEnd={handleDragOutPoint}
