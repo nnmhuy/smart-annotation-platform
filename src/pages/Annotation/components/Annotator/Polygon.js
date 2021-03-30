@@ -94,10 +94,11 @@ const Polygon = (props) => {
   }
 
   const handleDoubleClickDeletePoint = (event, polyIndex, pointIndex) => {
-    const key = event.target.key;
     if (!isEditing) { // only allow in edit mode
       return
     }
+
+    // TODO: handle holes
 
     let newPolygon = {
       ...polygon,
