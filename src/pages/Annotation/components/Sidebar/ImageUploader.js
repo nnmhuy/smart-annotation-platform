@@ -3,11 +3,12 @@ import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(() => ({
   container: {
-    
+    width: '100%',
   }
 }))
 
 const ImageUploader = (props) => {
+  const classes = useStyles()
   const { setImage } = props
 
   const handleChange = (e) => {
@@ -62,7 +63,7 @@ const ImageUploader = (props) => {
   }
 
   return (
-    <div>
+    <div className={classes.container}>
       <label htmlFor="img">Select image:</label>
       <input type="file" id="img" name="img" accept="image/*" onChange={handleChange}/>
     </div>

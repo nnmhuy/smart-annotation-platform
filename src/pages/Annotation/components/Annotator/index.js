@@ -249,6 +249,15 @@ const Annotator = (props) => {
     }
   }
 
+  const handleClickSelectShape = (e) => {
+    if (!isEmptyPosition(e)) {
+      const shapeId = e.target.attrs.id
+      selectShape(shapeId)
+    } else {
+      selectShape(null)
+    }
+  }
+
   const handleHighlightShape = (e, classList) => {
     const className = e.target.getClassName()
 
@@ -361,6 +370,9 @@ const Annotator = (props) => {
     } else {
       setDrawingPolygon(null)
     }
+    if (activeMode === MODES.EDIT) {
+      handleClickSelectShape(e)
+    }
     if (activeMode === MODES.CUT) {
       handleClickCutPolygon(e)
     }
@@ -409,11 +421,6 @@ const Annotator = (props) => {
                 opacity: (rect.id === highlightId || rect.id === selectedId) ? 0.5 : 0.4,
               }}
               isSelected={rect.id === selectedId}
-              onSelect={() => {
-                if (activeMode === MODES.EDIT) {
-                  selectShape(rect.id);
-                }
-              }}
               onChange={(newAttrs) => {
                 const rects = rectangles.slice();
                 rects[i] = newAttrs;
@@ -449,11 +456,6 @@ const Annotator = (props) => {
                 isSelected={polygon.id === selectedId}
                 isCutting={isCutting}
                 isEditing={activeMode === MODES.EDIT}
-                onSelect={() => {
-                  if (activeMode === MODES.EDIT) {
-                    selectShape(polygon.id);
-                  }
-                }}
                 onChange={(newPolygon) => {
                   if (newPolygon.polys.length > 0) {
                     const polys = polygons.slice();
