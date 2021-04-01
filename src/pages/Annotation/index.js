@@ -28,7 +28,6 @@ const demoAnnotateData = [
 
 const Annotation = (props) => {
   const classes = useStyles()
-  const annotationContainer = React.createRef(null)
 
   const [stageSize, setStageSize] = React.useState({ width: 0, height: 0 })
   const [image, setImage] = React.useState(null)

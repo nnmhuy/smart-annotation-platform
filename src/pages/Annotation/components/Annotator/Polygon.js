@@ -11,7 +11,7 @@ const Polygon = (props) => {
     polygon, currentMousePos, cutMousePos,
     isDrawing, isCutting, isEditing,
     isSelected, onSelect,
-    isMouseOverPolygonStart, setIsMouseOverPolygonStart, 
+    setIsMouseOverPolygonStart, 
     onChange,
     setCuttingPolygon,
   } = props

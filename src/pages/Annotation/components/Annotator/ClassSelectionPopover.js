@@ -1,12 +1,8 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
 import Popover from '@material-ui/core/Popover'
 
-const useStyles = makeStyles(() => ({
-}))
 
 const ClassSelectionPopover = (props) => {
-  const classes = useStyles()
   const { contextMenuPosition, setContextMenuPosition } = props
   const open = Boolean(contextMenuPosition)
   

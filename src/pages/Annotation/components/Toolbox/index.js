@@ -44,10 +44,6 @@ const toolBoxButtons = [
 ]
 
 export default class Toolbox extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   render() {
     const { activeMode, setActiveMode } = this.props
     return (

@@ -157,8 +157,6 @@ const Annotator = (props) => {
   }
 
   const handleClickDrawRectangle = (e) => {
-    const stage = stageRef.current
-
     if (drawingRectangle === null) {
       setDrawingRectangle({
         ...DEFAULT_SHAPE_ATTRS,
@@ -175,8 +173,6 @@ const Annotator = (props) => {
   }
 
   const handleDragDrawRectangle = (e) => {
-    const stage = stageRef.current
-
     if (drawingRectangle !== null) {
       setDrawingRectangle({
         ...drawingRectangle,
@@ -471,7 +467,6 @@ const Annotator = (props) => {
               currentMousePos={currentMousePos}
               cutMousePos={cutMousePos}
               setCuttingPolygon={isCutting && setCuttingPolygon}
-              isMouseOverPolygonStart={isMouseOverPolygonStart}
               setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
             />
           </Layer>
@@ -484,7 +479,6 @@ const Annotator = (props) => {
             isDrawing={true}
             currentMousePos={currentMousePos}
             polygon={drawingPolygon}
-            isMouseOverPolygonStart={isMouseOverPolygonStart}
             setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
           />
         }
