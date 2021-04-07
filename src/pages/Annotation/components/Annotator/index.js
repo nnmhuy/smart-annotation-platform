@@ -2,7 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import UIDGenerator from 'uid-generator'
-import { findIndex } from 'lodash'
+import { findIndex, get } from 'lodash'
 
 import { MODES, DEFAULT_SHAPE_ATTRS } from '../../constants'
 
@@ -65,9 +65,12 @@ const Annotator = (props) => {
       setPolygons([])
 
       const stage = stageRef.current
+      const imageWidth = get(image, 'resizedImageSize.width', 0)
+      const imageHeight = get(image, 'resizedImageSize.height', 0)
+      debugger
       stage.position({
-        x: 250,
-        y: 100
+        x: (stageSize.width - imageWidth) / 2,
+        y: (stageSize.height - imageHeight) / 2,
       });
       stage.scale({ x: 1, y: 1 })
     }
@@ -335,17 +338,6 @@ const Annotator = (props) => {
     }
   }
 
-  const handleTouchStart = (e) => {
-    if (activeMode === MODES.CURSOR) {
-      handleViewportStart(e)
-    }
-    if (activeMode === MODES.EDIT) {
-      if (checkDeselect(e)) {
-        handleViewportStart(e)
-      }
-    }
-  }
-
   const handleClick = (e) => {
     if (activeMode === MODES.DRAW_RECTANGLE) {
       handleClickDrawRectangle(e)
@@ -388,7 +380,9 @@ const Annotator = (props) => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseOut={handleMouseOut}
-      onTouchStart={handleTouchStart}
+      onTouchStart={handleMouseDown}
+      onTouchMove={handleMouseMove}
+      onTouchEnd={handleMouseUp}
       onWheel={handleZoom}
       onClick={handleClick}
       onContextMenu={handleContextMenu}

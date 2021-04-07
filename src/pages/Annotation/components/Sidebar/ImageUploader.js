@@ -9,7 +9,7 @@ const useStyles = makeStyles(() => ({
 
 const ImageUploader = (props) => {
   const classes = useStyles()
-  const { setImage } = props
+  const { stageSize, setImage } = props
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -31,19 +31,19 @@ const ImageUploader = (props) => {
       image.onload = function (imageEvent) {
         // Resize the image
         let canvas = document.createElement('canvas'),
-          max_size = 500,
-          width = image.width,
-          height = image.height;
-        if (width > height) {
-          if (width > max_size) {
-            height *= max_size / width;
-            width = max_size;
-          }
+            width = image.width,
+            height = image.height;
+        let { width: maxWidth, height: maxHeight } = stageSize
+        // padding
+        maxWidth -= 50
+        maxHeight -= 50
+
+        if ((width / height) > (maxWidth / maxHeight)) {
+          height *= maxWidth / width;
+          width = maxWidth;
         } else {
-          if (height > max_size) {
-            width *= max_size / height;
-            height = max_size;
-          }
+          width *= maxHeight / height;
+          height = maxHeight;
         }
         canvas.width = width;
         canvas.height = height;
@@ -51,7 +51,15 @@ const ImageUploader = (props) => {
         resizedImage = canvas.toDataURL('image/jpeg');
         setImage({
           resizedImg: resizedImage,
-          img: image.src
+          resizedImageSize: {
+            width,
+            height,
+          },
+          img: image.src,
+          imgSize: {
+            width: image.width,
+            height: image.height,
+          }
         })
       }
 

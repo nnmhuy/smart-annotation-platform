@@ -76,6 +76,7 @@ const Annotation = (props) => {
           annotationClasses={annotationClasses}
           setAnnotationClasses={setAnnotationClasses}
           setImage={setImage}
+          stageSize={stageSize}
         />
       </GridContainer>
     </GridContainer>

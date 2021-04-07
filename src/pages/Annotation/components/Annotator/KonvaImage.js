@@ -6,7 +6,7 @@ const KonvaImage = (props) => {
   const { src } = props
   const [image] = useImage(src)
   return (
-    <Image image={image}/>
+    <Image image={image} offsetX={0} offsetY={0}/>
   )
 }
 

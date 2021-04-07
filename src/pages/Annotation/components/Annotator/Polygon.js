@@ -218,7 +218,7 @@ const Polygon = (props) => {
               closed={true}
               onClick={onSelect}
               onTap={onSelect}
-              draggable={isSelected && polyIndex === 0}
+              draggable={isEditing}
               onDragStart={onDragStart}
               onDragMove={onDragMove}
               onDragEnd={onDragEnd}
