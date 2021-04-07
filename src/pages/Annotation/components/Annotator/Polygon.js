@@ -13,7 +13,7 @@ const Polygon = (props) => {
     isSelected, onSelect,
     setIsMouseOverPolygonStart, 
     onChange,
-    setCuttingPolygon,
+    setCuttingPolygon, setIsMouseOverCuttingPolygon,
   } = props
 
   const groupRef = React.useRef(null)
@@ -201,8 +201,27 @@ const Polygon = (props) => {
 
         const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
 
+        // TODO: handle mouse cursor when mouse out of cutting polygon
+        const conditionalPolygonAttr =
+          (polyIndex === 0)
+            ? {
+              onMouseOver: isCutting ? () => setIsMouseOverCuttingPolygon(true) : null,
+              onMouseOut: isCutting ? () => setIsMouseOverCuttingPolygon(false) : null,
+              strokeEnabled: true,
+            }
+            : {
+              globalCompositeOperation: 'destination-out',
+              strokeEnabled: false,
+              //hitFunc: function (context) {
+                // disable hitFunc for holes
+              //},
+              fill: 'white',
+              opacity: 1,
+            };
+
         return (
           <>
+            {/* For showing border of holes */}
             {polyIndex >= 1 && 
               <Line
                 points={filledHoleFlattenedPoints}
@@ -210,6 +229,9 @@ const Polygon = (props) => {
                 {...others}
                 fill={polyIndex >= 1 ? 'white' : others.fill}
                 strokeWidth={others.strokeWidth / scale}
+                hitFunc={function (context) {
+                  // disable hitFunc
+                }}
               />
             }
             <Line
@@ -222,13 +244,11 @@ const Polygon = (props) => {
               onDragStart={onDragStart}
               onDragMove={onDragMove}
               onDragEnd={onDragEnd}
-              globalCompositeOperation={polyIndex >= 1 && 'destination-out'}
               {...others}
-              fill={polyIndex >= 1 ? 'white' : others.fill}
-              opacity={polyIndex >= 1 ? 1 : others.opacity}
-              strokeEnabled={polyIndex === 0}
               strokeWidth={others.strokeWidth / scale}
+              {...conditionalPolygonAttr}
             />
+            {/* Rendering polygon's main points */}
             {(isDrawing || isSelected) &&
               mainPoints.map((point, pointIndex) => {
                 const x = point[0] + polygon.x;
@@ -240,6 +260,7 @@ const Polygon = (props) => {
                       onMouseOver: (e) => handleMouseOverStartPoint(e, polyIndex),
                       onMouseOut: handleMouseOutStartPoint,
                       fill: "red",
+                      hitFunc: null,
                     }
                     : null;
                 return (
@@ -256,11 +277,15 @@ const Polygon = (props) => {
                     onDragEnd={handleDragEndPoint}
                     onDblClick={(e) => handleDoubleClickDeletePoint(e, polyIndex, pointIndex)}
                     draggable={isEditing}
+                    hitFunc={function (context) {
+                      // disable hitFunc
+                    }}
                     {...startPointAttr}
                   />
                 );
               }
               )}
+              {/* Rendering mid points for editing */}
               {isEditing &&
                 midPoints.map((point, pointIndex) => {
                   const x = point[0] + polygon.x;

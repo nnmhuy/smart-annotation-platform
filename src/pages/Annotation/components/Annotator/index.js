@@ -43,6 +43,7 @@ const Annotator = (props) => {
   const [drawingPolygon, setDrawingPolygon] = React.useState(null)
   const [cutMousePos, setCutMousePos] = React.useState(null)
   const [cuttingPolygon, setCuttingPolygon] = React.useState(null)
+  const [isMouseOverCuttingPolygon, setIsMouseOverCuttingPolygon] = React.useState(false)
   const [isMouseOverPolygonStart, setIsMouseOverPolygonStart] = React.useState(false)
 
   const resetAllState = () => {
@@ -245,12 +246,12 @@ const Annotator = (props) => {
       return
     }
     if (cuttingPolygon) {
-      if (cuttingPolygon.length === 0) {
-        if (shapeId === selectedId) {
-          setCuttingPolygon([...cuttingPolygon, [currentMousePos.x, currentMousePos.y]])
-        }
+      if (cuttingPolygon.length === 0 && shapeId === selectedId) {
+        // TODO: use curMousePos instead cutMousePos
+        setIsMouseOverCuttingPolygon(true)
+        setCuttingPolygon([...cuttingPolygon, [cutMousePos.x, cutMousePos.y]])
       } else {
-        if (cutMousePos) {
+        if (isMouseOverCuttingPolygon) {
           setCuttingPolygon([...cuttingPolygon, [cutMousePos.x, cutMousePos.y]])
         }
       }
@@ -326,19 +327,7 @@ const Annotator = (props) => {
     }
     if (activeMode === MODES.CUT) {
       if (selectedId && cuttingPolygon) {
-        // TODO: handle point on edges
-        const polygon = polygons[findIndex(polygons, { id: selectedId })]
-
-        const intersectionPoint = getIntersectionLineAndPolygon(
-          [currentMousePos.x, currentMousePos.y],
-          cuttingPolygon[cuttingPolygon.length - 1] || [currentMousePos.x, currentMousePos.y],
-          polygon.polys[0]
-        ) || [currentMousePos.x, currentMousePos.y]
-
-        setCutMousePos({
-          x: intersectionPoint[0],
-          y: intersectionPoint[1]
-        })
+        setCutMousePos(currentMousePos)
       }
 
       handleViewportMove(e)
@@ -498,6 +487,7 @@ const Annotator = (props) => {
               currentMousePos={currentMousePos}
               cutMousePos={cutMousePos}
               setCuttingPolygon={isCutting && setCuttingPolygon}
+              setIsMouseOverCuttingPolygon={setIsMouseOverCuttingPolygon}
               setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
             />
           </Layer>
