@@ -8,7 +8,7 @@ const MIN_DIST_TO_START_POINT = 10
 
 const Polygon = (props) => {
   const { 
-    polygon, currentMousePos, cutMousePos,
+    polygon, currentMousePos,
     isDrawing, isCutting, isEditing,
     isSelected, onSelect,
     setIsMouseOverPolygonStart, 
@@ -173,7 +173,7 @@ const Polygon = (props) => {
       {polys.map((points, polyIndex) => {
         const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
 
-        const addMousePos = (isCutting && cutMousePos) ? [cutMousePos.x, cutMousePos.y] : [currentMousePos.x, currentMousePos.y]
+        const addMousePos = [currentMousePos.x, currentMousePos.y]
         let mainPoints = points
         if (isActivePoly && getDistancePointAndPoint(addMousePos, points[0]) > MIN_DIST_TO_START_POINT) {
           mainPoints = mainPoints.concat([addMousePos])
@@ -277,8 +277,8 @@ const Polygon = (props) => {
                     onDragEnd={handleDragEndPoint}
                     onDblClick={(e) => handleDoubleClickDeletePoint(e, polyIndex, pointIndex)}
                     draggable={isEditing}
-                    hitFunc={function (context) {
-                      // disable hitFunc
+                    hitFunc={isCutting && function (context) {
+                      // disable hitFunc while cutting
                     }}
                     {...startPointAttr}
                   />

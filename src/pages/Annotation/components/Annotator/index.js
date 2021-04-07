@@ -13,7 +13,6 @@ import Polygon from './Polygon'
 import ClassSelectionPopover from './ClassSelectionPopover'
 
 import getPointerPosition from './getPointerPosition'
-import { getIntersectionLineAndPolygon } from '../../../../helpers/getIntersection'
 
 const uidgen = new UIDGenerator();
 
@@ -41,7 +40,6 @@ const Annotator = (props) => {
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
   const [drawingRectangle, setDrawingRectangle] = React.useState(null)
   const [drawingPolygon, setDrawingPolygon] = React.useState(null)
-  const [cutMousePos, setCutMousePos] = React.useState(null)
   const [cuttingPolygon, setCuttingPolygon] = React.useState(null)
   const [isMouseOverCuttingPolygon, setIsMouseOverCuttingPolygon] = React.useState(false)
   const [isMouseOverPolygonStart, setIsMouseOverPolygonStart] = React.useState(false)
@@ -51,7 +49,6 @@ const Annotator = (props) => {
     setDrawingRectangle(null)
     setDrawingPolygon(null)
     setCuttingPolygon(null)
-    setCutMousePos(null)
     setIsMouseOverPolygonStart(false)
   }
 
@@ -236,7 +233,6 @@ const Annotator = (props) => {
     setCuttingPolygon(null)
     selectShape(null)
     setIsMouseOverPolygonStart(false)
-    setCutMousePos(null)
   }
 
   const handleClickCutPolygon = (e) => {
@@ -247,12 +243,11 @@ const Annotator = (props) => {
     }
     if (cuttingPolygon) {
       if (cuttingPolygon.length === 0 && shapeId === selectedId) {
-        // TODO: use curMousePos instead cutMousePos
         setIsMouseOverCuttingPolygon(true)
-        setCuttingPolygon([...cuttingPolygon, [cutMousePos.x, cutMousePos.y]])
+        setCuttingPolygon([...cuttingPolygon, [currentMousePos.x, currentMousePos.y]])
       } else {
         if (isMouseOverCuttingPolygon) {
-          setCuttingPolygon([...cuttingPolygon, [cutMousePos.x, cutMousePos.y]])
+          setCuttingPolygon([...cuttingPolygon, [currentMousePos.x, currentMousePos.y]])
         }
       }
     } else {
@@ -326,10 +321,6 @@ const Annotator = (props) => {
       handleDragDrawRectangle(e)
     }
     if (activeMode === MODES.CUT) {
-      if (selectedId && cuttingPolygon) {
-        setCutMousePos(currentMousePos)
-      }
-
       handleViewportMove(e)
       handleHighlightShape(e, ['Line'])
     }
@@ -485,7 +476,6 @@ const Annotator = (props) => {
                 }
               }}
               currentMousePos={currentMousePos}
-              cutMousePos={cutMousePos}
               setCuttingPolygon={isCutting && setCuttingPolygon}
               setIsMouseOverCuttingPolygon={setIsMouseOverCuttingPolygon}
               setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
