@@ -67,7 +67,6 @@ const Annotator = (props) => {
       const stage = stageRef.current
       const imageWidth = get(image, 'resizedImageSize.width', 0)
       const imageHeight = get(image, 'resizedImageSize.height', 0)
-      debugger
       stage.position({
         x: (stageSize.width - imageWidth) / 2,
         y: (stageSize.height - imageHeight) / 2,
@@ -207,6 +206,21 @@ const Annotator = (props) => {
     }
   }
 
+  const handleRightClickDrawPolygon = (e) => {
+    if (drawingPolygon !== null) {
+      const drawingPoly = drawingPolygon.polys[0]
+      drawingPoly.pop()
+      if (drawingPoly.length === 0) { // remove all drawing polygon's points
+        setDrawingPolygon(null)
+      } else {
+        setDrawingPolygon({
+          ...drawingPolygon,
+          polys: [drawingPoly]
+        })
+      }
+    }
+  }
+
   const handleClickFinishCutPolygon = () => {
     setPolygons(polygons.map(polygon => {
       if (polygon.id !== selectedId) {
@@ -244,6 +258,18 @@ const Annotator = (props) => {
       if (isClickOn(e, ['Line'])) {
         setCuttingPolygon([])
         selectShape(shapeId)
+      }
+    }
+  }
+
+  const handleRightClickCutPolygon = (e) => {
+    if (cuttingPolygon) {
+      const newCuttingPolygon = cuttingPolygon
+      newCuttingPolygon.pop()
+      if (newCuttingPolygon.length === 0) { // remove all cutting polygon's points
+        setCuttingPolygon([])
+      } else {
+        setCuttingPolygon(newCuttingPolygon)
       }
     }
   }
@@ -339,6 +365,10 @@ const Annotator = (props) => {
   }
 
   const handleClick = (e) => {
+    // only detect left click
+    if (e.evt.which !== 1) {
+      return
+    }
     if (activeMode === MODES.DRAW_RECTANGLE) {
       handleClickDrawRectangle(e)
     } else {
@@ -369,6 +399,12 @@ const Annotator = (props) => {
         })
       }
     }
+    if (activeMode === MODES.DRAW_POLYGON) {
+      handleRightClickDrawPolygon(e)
+    }
+    if (activeMode === MODES.CUT) {
+      handleRightClickCutPolygon(e)
+    }
   }
 
   return (
@@ -385,6 +421,7 @@ const Annotator = (props) => {
       onTouchEnd={handleMouseUp}
       onWheel={handleZoom}
       onClick={handleClick}
+      onTap={handleClick}
       onContextMenu={handleContextMenu}
       className={classes.stage}
     >
