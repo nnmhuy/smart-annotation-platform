@@ -254,7 +254,7 @@ const Polygon = (props) => {
                     onDragStart={handleDragStartPoint}
                     onDragMove={(e) => handleDragMovePoint(e, polyIndex, pointIndex)}
                     onDragEnd={handleDragEndPoint}
-                    // onDblClick={(e) => handleDoubleClickDeletePoint(e, polyIndex, pointIndex)}
+                    onDblClick={(e) => handleDoubleClickDeletePoint(e, polyIndex, pointIndex)}
                     onDblClick={(e) => alert("dbclick")}
                     draggable={isEditing}
                     {...startPointAttr}
