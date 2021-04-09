@@ -2,7 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import UIDGenerator from 'uid-generator'
-import { findIndex, get } from 'lodash'
+import { get } from 'lodash'
 
 import { MODES, DEFAULT_SHAPE_ATTRS } from '../../constants'
 
@@ -10,6 +10,7 @@ import Image from './KonvaImage'
 import Portal from './Portal'
 import Rectangle from './Rectangle'
 import Polygon from './Polygon'
+import BrushPolygon from './BrushPolygon'
 import ClassSelectionPopover from './ClassSelectionPopover'
 
 import getPointerPosition from './getPointerPosition'
@@ -43,17 +44,46 @@ const Annotator = (props) => {
   const [cuttingPolygon, setCuttingPolygon] = React.useState(null)
   const [isMouseOverCuttingPolygon, setIsMouseOverCuttingPolygon] = React.useState(false)
   const [isMouseOverPolygonStart, setIsMouseOverPolygonStart] = React.useState(false)
+  const [drawingBrushPolygon, setDrawingBrushPolygon] = React.useState(null)
+  const [drawingBrush, setDrawingBrush] = React.useState(null)
 
+
+  const initializeDrawPolygonByBrush = () => {
+    setDrawingBrushPolygon({
+      ...DEFAULT_SHAPE_ATTRS,
+      id: uidgen.generateSync(),
+      x: 0,
+      y: 0,
+      strokeWidth: 15,
+      stroke: 'red',
+      polys: [],
+    })
+  }
+
+  const finishDrawPolygonByBrush = () => {
+    // TODO: done (enter) or cancel button -> convert to image -> find contour -> to polygon -> insert to polygon list
+    // TODO: handle keyboard -> may continue to draw new polygon
+    setPolygons([...polygons, drawingBrushPolygon])
+    setDrawingBrushPolygon(null)
+  }
+  
   const resetAllState = () => {
     selectShape(null)
     setDrawingRectangle(null)
     setDrawingPolygon(null)
     setCuttingPolygon(null)
     setIsMouseOverPolygonStart(false)
+    setDrawingBrushPolygon(null)
+    setDrawingBrush(null)
   }
 
   React.useEffect(() => { // change mode => reset all states
     resetAllState()
+    if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
+      initializeDrawPolygonByBrush()
+    } else {
+      finishDrawPolygonByBrush(null)
+    }
   }, [activeMode])
 
   React.useEffect(() => { // upload new image => reset all states & drawn polygons
@@ -270,6 +300,24 @@ const Annotator = (props) => {
     }
   }
 
+  const handleStartDrawByBrush = (e) => {
+    setDrawingBrush([[currentMousePos.x, currentMousePos.y]])
+  }
+
+  const handleDrawByBrush = (e) => {
+    if (drawingBrush) { // wait initialization to finish
+      setDrawingBrush([...drawingBrush, [currentMousePos.x, currentMousePos.y]])
+    }
+  }
+
+  const handleFinishDrawByBrush = (e) => {
+    setDrawingBrushPolygon({
+      ...drawingBrushPolygon,
+      polys: [...drawingBrushPolygon.polys, drawingBrush]
+    })
+    setDrawingBrush(null)
+  }
+
   const handleHighlightShape = (e, classList) => {
     const className = e.target.getClassName()
 
@@ -304,6 +352,9 @@ const Annotator = (props) => {
         handleViewportStart(e)
       }
     }
+    if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
+      handleStartDrawByBrush()
+    }
   }
 
   const handleMouseMove = (e) => {
@@ -324,6 +375,9 @@ const Annotator = (props) => {
       handleViewportMove(e)
       handleHighlightShape(e, ['Line'])
     }
+    if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
+      handleDrawByBrush()
+    }
   }
 
   const handleMouseUp = (e) => {
@@ -335,6 +389,9 @@ const Annotator = (props) => {
     }
     if (activeMode === MODES.CUT) {
       handleViewportEnd(e)
+    }
+    if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
+      handleFinishDrawByBrush(e)
     }
   }
 
@@ -483,8 +540,8 @@ const Annotator = (props) => {
           </Layer>
         )
       })}
-      <Layer>
-        {drawingPolygon &&
+      {drawingPolygon &&
+        <Layer>
           <Polygon
             key={'drawing-polygon'}
             isDrawing={true}
@@ -492,8 +549,19 @@ const Annotator = (props) => {
             polygon={drawingPolygon}
             setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
           />
-        }
-      </Layer>
+        </Layer>
+      }
+      {drawingBrushPolygon &&
+        <Layer>
+          <BrushPolygon
+            key='drawing-brush-polygon'
+            brushPolygon={{
+              ...drawingBrushPolygon,
+              polys: drawingBrush ? [...drawingBrushPolygon.polys, drawingBrush] : drawingBrushPolygon.polys
+            }}
+          />
+        </Layer>
+      }
     </Stage>
   );
 }
