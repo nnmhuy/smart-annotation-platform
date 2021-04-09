@@ -3,12 +3,13 @@ import React, { Component } from 'react'
 import ToolboxButton from './ToolboxButton'
 import { MODES } from '../../constants'
 
-import {ReactComponent as RectangleIcon} from './ToolboxIcon/rectangle.svg'
-import {ReactComponent as PolygonIcon} from './ToolboxIcon/polygon.svg'
-import {ReactComponent as CursorIcon} from './ToolboxIcon/cursor.svg'
-import {ReactComponent as EditIcon} from './ToolboxIcon/edit.svg'
-import {ReactComponent as CutIcon} from './ToolboxIcon/cut.svg'
-import {ReactComponent as DeleteIcon} from './ToolboxIcon/delete.svg'
+import { ReactComponent as RectangleIcon } from './ToolboxIcon/rectangle.svg'
+import { ReactComponent as PolygonIcon } from './ToolboxIcon/polygon.svg'
+import { ReactComponent as PainBrushIcon } from './ToolboxIcon/paintbrush.svg'
+import { ReactComponent as CursorIcon } from './ToolboxIcon/cursor.svg'
+import { ReactComponent as EditIcon } from './ToolboxIcon/edit.svg'
+import { ReactComponent as CutIcon } from './ToolboxIcon/cut.svg'
+import { ReactComponent as DeleteIcon } from './ToolboxIcon/delete.svg'
 
 const toolBoxButtons = [
   {
@@ -21,7 +22,7 @@ const toolBoxButtons = [
     mode: MODES.EDIT,
     component: <EditIcon />,
   },
-  { 
+  {
     name: 'Rectangle',
     mode: MODES.DRAW_RECTANGLE,
     component: <RectangleIcon />,
@@ -32,9 +33,14 @@ const toolBoxButtons = [
     component: <PolygonIcon />,
   },
   {
+    name: 'Brush',
+    mode: MODES.DRAW_POLYGON_BY_BRUSH,
+    component: <PainBrushIcon />,
+  },
+  {
     name: 'Cut',
     mode: MODES.CUT,
-    component: <CutIcon/>
+    component: <CutIcon />
   },
   {
     name: 'Delete',

@@ -15,6 +15,10 @@ const MODES = {
     name: 'DRAW_POLYGON',
     cursor: 'crosshair',
   },
+  DRAW_POLYGON_BY_BRUSH: {
+    name: 'DRAW_POLYGON_BY_BRUSH',
+    cursor: 'grab',
+  },
   CUT: {
     name: 'CUT_POLYGON',
     cursor: 'nw-resize'
