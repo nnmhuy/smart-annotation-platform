@@ -63,8 +63,13 @@ const Annotator = (props) => {
   const finishDrawPolygonByBrush = () => {
     // TODO: done (enter) or cancel button -> convert to image -> find contour -> to polygon -> insert to polygon list
     // TODO: handle keyboard -> may continue to draw new polygon
-    setPolygons([...polygons, drawingBrushPolygon])
-    setDrawingBrushPolygon(null)
+    if (drawingBrushPolygon && 
+      drawingBrushPolygon.polys.length > 0 &&
+      drawingBrushPolygon.polys[0].length > 2
+    ) {
+      setPolygons([...polygons, drawingBrushPolygon])
+      setDrawingBrushPolygon(null)
+    }
   }
   
   const resetAllState = () => {
