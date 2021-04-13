@@ -16,10 +16,11 @@ const BrushPolygon = (props) => {
       ref={groupRef}
       id={id}
     > 
-      {polys.map(poly => {
+      {polys.map((poly, polyIndex) => {
         const points = pointArrayToFlattenPointArray(poly)
         return (
           <Line
+            key={`brush-polygon-${polyIndex}`}
             points={points}
             id={id}
             {...others}
