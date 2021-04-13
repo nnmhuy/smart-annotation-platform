@@ -14,6 +14,7 @@ import BrushPolygon from './BrushPolygon'
 import ClassSelectionPopover from './ClassSelectionPopover'
 
 import getPointerPosition from './getPointerPosition'
+import convertBrushToPolygon from '../../../../helpers/convertBrushToPolygon'
 
 const uidgen = new UIDGenerator();
 
@@ -56,6 +57,7 @@ const Annotator = (props) => {
       y: 0,
       strokeWidth: 15,
       stroke: 'red',
+      lineJoin: 'round',
       polys: [],
     })
   }
@@ -316,10 +318,14 @@ const Annotator = (props) => {
   }
 
   const handleFinishDrawByBrush = (e) => {
-    setDrawingBrushPolygon({
-      ...drawingBrushPolygon,
-      polys: [...drawingBrushPolygon.polys, drawingBrush]
+    const canvasWidth = get(image, 'resizedImageSize.width', stageSize.width)
+    const canvasHeight = get(image, 'resizedImageSize.height', stageSize.height)
+    const newDrawingBrushPolygon = convertBrushToPolygon(drawingBrushPolygon, drawingBrush, {
+      canvasWidth,
+      canvasHeight,
     })
+
+    setDrawingBrushPolygon(newDrawingBrushPolygon)
     setDrawingBrush(null)
   }
 
@@ -450,6 +456,7 @@ const Annotator = (props) => {
   }
 
   return (
+    <>
     <Stage
       ref={stageRef}
       width={stageSize.width}
@@ -568,6 +575,9 @@ const Annotator = (props) => {
         </Layer>
       }
     </Stage>
+    <canvas id="tmpCanvas" width={stageSize.width} height={stageSize.height}/>
+    <canvas id="canvasOutput" width={stageSize.width} height={stageSize.height}/>
+    </>
   );
 }
 
