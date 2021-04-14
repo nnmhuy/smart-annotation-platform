@@ -309,6 +309,7 @@ const Annotator = (props) => {
 
   const finishDrawPolygonByBrush = () => {
     // TODO: eraser
+    // TODO: lineWidth customization
     if (drawingBrushPolygon &&
       drawingBrushPolygon.polys.length > 0 &&
       drawingBrushPolygon.polys[0].length > 2
@@ -338,12 +339,15 @@ const Annotator = (props) => {
     }
   }
 
+  const deleteById = (shapeId) => {
+    setRectangles(rectangles.filter(rect => rect.id !== shapeId))
+    setPolygons(polygons.filter(poly => poly.id !== shapeId))
+  }
 
   const handleClickDelete = (e) => {
     if (!isEmptyPosition(e)) {
       const shapeId = e.target.attrs.id
-      setRectangles(rectangles.filter(rect => rect.id !== shapeId))
-      setPolygons(polygons.filter(poly => poly.id !== shapeId))
+      deleteById(shapeId)
     }
   }
 
@@ -574,7 +578,7 @@ const Annotator = (props) => {
         }
       </Stage>
       {/* TODO: create separate component for keyboard handling */}
-      {/* Handle key enter */}
+      {/* Handle key enter: finish drawing */}
       <KeyboardEventHandler
         handleKeys={['enter']}
         onKeyEvent={() => {
@@ -583,10 +587,20 @@ const Annotator = (props) => {
           }
         }}   
       />
-      {/* Handle key Esc */}
+      {/* Handle key Esc: reset all state */}
       <KeyboardEventHandler
         handleKeys={['esc']}
         onKeyEvent={() => resetAllState()}
+      />
+      {/* Handle key Delete: delete shape */}
+      <KeyboardEventHandler
+        handleKeys={['backspace']}
+        onKeyEvent={() => {
+          if (activeMode === MODES.EDIT && selectedId) {
+            deleteById(selectedId)
+            selectShape(null)
+          }
+        }}
       />
       <canvas id="tmpCanvas" width={stageSize.width} height={stageSize.height}/>
       <canvas id="canvasOutput" width={stageSize.width} height={stageSize.height}/>
