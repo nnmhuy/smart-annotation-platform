@@ -2,7 +2,7 @@
 /*eslint no-undef: "error"*/
 import flattenPointArrayToPointArray from './flattenPointArrayToPointArray'
 
-const APPROXIMATION_COEFFICIENT = 5 // smaller -> more similar
+const APPROXIMATION_COEFFICIENT = 2 // smaller -> more similar
 
 // Step 1: Draw all polygons to canvas
 // Step 2: Apply closing operation
