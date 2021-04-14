@@ -55,7 +55,7 @@ const Annotator = (props) => {
       id: uidgen.generateSync(),
       x: 0,
       y: 0,
-      strokeWidth: 15,
+      strokeWidth: 2,
       stroke: 'red',
       lineJoin: 'round',
       polys: [],
@@ -63,13 +63,24 @@ const Annotator = (props) => {
   }
 
   const finishDrawPolygonByBrush = () => {
-    // TODO: done (enter) or cancel button -> convert to image -> find contour -> to polygon -> insert to polygon list
+    // TODO: button to handle save / cancel
     // TODO: handle keyboard -> may continue to draw new polygon
+    // TODO: eraser
+    // TODO: idea - draw close path instead of brush
     if (drawingBrushPolygon && 
       drawingBrushPolygon.polys.length > 0 &&
       drawingBrushPolygon.polys[0].length > 2
     ) {
-      setPolygons([...polygons, drawingBrushPolygon])
+      const canvasWidth = get(image, 'resizedImageSize.width', stageSize.width)
+      const canvasHeight = get(image, 'resizedImageSize.height', stageSize.height)
+      const newDrawingBrushPolygon = convertBrushToPolygon(drawingBrushPolygon, {
+        canvasWidth,
+        canvasHeight,
+      })
+      setPolygons([...polygons, {
+        ...newDrawingBrushPolygon,
+        ...DEFAULT_SHAPE_ATTRS
+      }])
       setDrawingBrushPolygon(null)
     }
   }
@@ -81,16 +92,17 @@ const Annotator = (props) => {
     setCuttingPolygon(null)
     setIsMouseOverPolygonStart(false)
     setDrawingBrushPolygon(null)
+    if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
+      initializeDrawPolygonByBrush()
+    } else {
+      finishDrawPolygonByBrush()
+      // setDrawingBrushPolygon(null)
+    }
     setDrawingBrush(null)
   }
 
   React.useEffect(() => { // change mode => reset all states
     resetAllState()
-    if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
-      initializeDrawPolygonByBrush()
-    } else {
-      finishDrawPolygonByBrush(null)
-    }
   }, [activeMode])
 
   React.useEffect(() => { // upload new image => reset all states & drawn polygons
@@ -318,14 +330,10 @@ const Annotator = (props) => {
   }
 
   const handleFinishDrawByBrush = (e) => {
-    const canvasWidth = get(image, 'resizedImageSize.width', stageSize.width)
-    const canvasHeight = get(image, 'resizedImageSize.height', stageSize.height)
-    const newDrawingBrushPolygon = convertBrushToPolygon(drawingBrushPolygon, drawingBrush, {
-      canvasWidth,
-      canvasHeight,
+    setDrawingBrushPolygon({
+      ...drawingBrushPolygon,
+      polys: [...drawingBrushPolygon.polys, drawingBrush],
     })
-
-    setDrawingBrushPolygon(newDrawingBrushPolygon)
     setDrawingBrush(null)
   }
 
