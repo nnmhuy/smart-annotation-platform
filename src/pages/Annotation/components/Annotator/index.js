@@ -48,20 +48,6 @@ const Annotator = (props) => {
   const [drawingBrushPolygon, setDrawingBrushPolygon] = React.useState(null)
   const [drawingBrush, setDrawingBrush] = React.useState(null)
 
-
-  const initializeDrawPolygonByBrush = () => {
-    setDrawingBrushPolygon({
-      ...DEFAULT_SHAPE_ATTRS,
-      id: uidgen.generateSync(),
-      x: 0,
-      y: 0,
-      strokeWidth: 2,
-      stroke: 'red',
-      lineJoin: 'round',
-      polys: [],
-    })
-  }
-
   const finishDrawPolygonByBrush = () => {
     // TODO: button to handle save / cancel
     // TODO: handle keyboard -> may continue to draw new polygon
@@ -92,12 +78,8 @@ const Annotator = (props) => {
     setCuttingPolygon(null)
     setIsMouseOverPolygonStart(false)
     setDrawingBrushPolygon(null)
-    if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
-      initializeDrawPolygonByBrush()
-    } else {
-      finishDrawPolygonByBrush()
-      // setDrawingBrushPolygon(null)
-    }
+    setDrawingBrushPolygon(null)
+    finishDrawPolygonByBrush()  // TODO: should be called on DONE click
     setDrawingBrush(null)
   }
 
@@ -320,6 +302,18 @@ const Annotator = (props) => {
   }
 
   const handleStartDrawByBrush = (e) => {
+    if (!drawingBrushPolygon) {
+      setDrawingBrushPolygon({
+        ...DEFAULT_SHAPE_ATTRS,
+        id: uidgen.generateSync(),
+        x: 0,
+        y: 0,
+        strokeWidth: 2,
+        stroke: 'red',
+        lineJoin: 'round',
+        polys: [],
+      })
+    }
     setDrawingBrush([[currentMousePos.x, currentMousePos.y]])
   }
 

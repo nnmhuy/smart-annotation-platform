@@ -42,7 +42,7 @@ const convertBrushToPolygon = (drawingBrushPolygon, options) => {
   let src = cv.matFromImageData(imgData);
   // Apply closing operation
   let closedImgData = cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
-  let M = cv.Mat.ones(5, 5, cv.CV_8U);
+  let M = cv.Mat.ones(10, 10, cv.CV_8U);
   cv.morphologyEx(src, closedImgData, cv.MORPH_CLOSE, M);
   cv.imshow('tmpCanvas', closedImgData);
 
