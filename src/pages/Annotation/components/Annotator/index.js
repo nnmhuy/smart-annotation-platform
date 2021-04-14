@@ -2,6 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import UIDGenerator from 'uid-generator'
+import KeyboardEventHandler from 'react-keyboard-event-handler';
 import { get } from 'lodash'
 
 import { MODES, DEFAULT_SHAPE_ATTRS } from '../../constants'
@@ -47,29 +48,6 @@ const Annotator = (props) => {
   const [isMouseOverPolygonStart, setIsMouseOverPolygonStart] = React.useState(false)
   const [drawingBrushPolygon, setDrawingBrushPolygon] = React.useState(null)
   const [drawingBrush, setDrawingBrush] = React.useState(null)
-
-  const finishDrawPolygonByBrush = () => {
-    // TODO: button to handle save / cancel
-    // TODO: handle keyboard -> may continue to draw new polygon
-    // TODO: eraser
-    // TODO: idea - draw close path instead of brush
-    if (drawingBrushPolygon && 
-      drawingBrushPolygon.polys.length > 0 &&
-      drawingBrushPolygon.polys[0].length > 2
-    ) {
-      const canvasWidth = get(image, 'resizedImageSize.width', stageSize.width)
-      const canvasHeight = get(image, 'resizedImageSize.height', stageSize.height)
-      const newDrawingBrushPolygon = convertBrushToPolygon(drawingBrushPolygon, {
-        canvasWidth,
-        canvasHeight,
-      })
-      setPolygons([...polygons, {
-        ...newDrawingBrushPolygon,
-        ...DEFAULT_SHAPE_ATTRS
-      }])
-      setDrawingBrushPolygon(null)
-    }
-  }
   
   const resetAllState = () => {
     selectShape(null)
@@ -78,8 +56,6 @@ const Annotator = (props) => {
     setCuttingPolygon(null)
     setIsMouseOverPolygonStart(false)
     setDrawingBrushPolygon(null)
-    setDrawingBrushPolygon(null)
-    finishDrawPolygonByBrush()  // TODO: should be called on DONE click
     setDrawingBrush(null)
   }
 
@@ -331,6 +307,26 @@ const Annotator = (props) => {
     setDrawingBrush(null)
   }
 
+  const finishDrawPolygonByBrush = () => {
+    // TODO: eraser
+    if (drawingBrushPolygon &&
+      drawingBrushPolygon.polys.length > 0 &&
+      drawingBrushPolygon.polys[0].length > 2
+    ) {
+      const canvasWidth = get(image, 'resizedImageSize.width', stageSize.width)
+      const canvasHeight = get(image, 'resizedImageSize.height', stageSize.height)
+      const newDrawingBrushPolygon = convertBrushToPolygon(drawingBrushPolygon, {
+        canvasWidth,
+        canvasHeight,
+      })
+      setPolygons([...polygons, {
+        ...newDrawingBrushPolygon,
+        ...DEFAULT_SHAPE_ATTRS
+      }])
+    }
+    setDrawingBrushPolygon(null)
+  }
+
   const handleHighlightShape = (e, classList) => {
     const className = e.target.getClassName()
 
@@ -459,126 +455,141 @@ const Annotator = (props) => {
 
   return (
     <>
-    <Stage
-      ref={stageRef}
-      width={stageSize.width}
-      height={stageSize.height}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseOut={handleMouseOut}
-      onTouchStart={handleMouseDown}
-      onTouchMove={handleMouseMove}
-      onTouchEnd={handleMouseUp}
-      onWheel={handleZoom}
-      onClick={handleClick}
-      onTap={handleClick}
-      onContextMenu={handleContextMenu}
-      className={classes.stage}
-    >
-      <Layer>
-        {image && 
-          <Image src={image.resizedImg} />
-        }
-        {rectangles.map((rect, i) => {
-          return (
+      <Stage
+        ref={stageRef}
+        width={stageSize.width}
+        height={stageSize.height}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseOut={handleMouseOut}
+        onTouchStart={handleMouseDown}
+        onTouchMove={handleMouseMove}
+        onTouchEnd={handleMouseUp}
+        onWheel={handleZoom}
+        onClick={handleClick}
+        onTap={handleClick}
+        onContextMenu={handleContextMenu}
+        className={classes.stage}
+      >
+        <Layer>
+          {image && 
+            <Image src={image.resizedImg} />
+          }
+          {rectangles.map((rect, i) => {
+            return (
+              <Rectangle
+                key={rect.id}
+                shapeProps={{
+                  ...rect,
+                  opacity: (rect.id === highlightId || rect.id === selectedId) ? 0.5 : 0.4,
+                }}
+                isSelected={rect.id === selectedId}
+                onChange={(newAttrs) => {
+                  const rects = rectangles.slice();
+                  rects[i] = newAttrs;
+                  setRectangles(rects);
+                }}
+                onSelect={() => {
+                  if (activeMode === MODES.EDIT) {
+                    selectShape(rect.id);
+                  }
+                }}
+              />
+            );
+          })}
+          {drawingRectangle && 
             <Rectangle
-              key={rect.id}
-              shapeProps={{
-                ...rect,
-                opacity: (rect.id === highlightId || rect.id === selectedId) ? 0.5 : 0.4,
-              }}
-              isSelected={rect.id === selectedId}
-              onChange={(newAttrs) => {
-                const rects = rectangles.slice();
-                rects[i] = newAttrs;
-                setRectangles(rects);
-              }}
-              onSelect={() => {
-                if (activeMode === MODES.EDIT) {
-                  selectShape(rect.id);
-                }
-              }}
+              key={'drawing-rectangle'}
+              shapeProps={drawingRectangle}
+              isSelected={true}
             />
-          );
+          }
+          <Portal>
+            <ClassSelectionPopover
+              contextMenuPosition={contextMenuPosition}
+              setContextMenuPosition={setContextMenuPosition}
+            />
+          </Portal>
+        </Layer>
+        
+        {polygons.map((polygon, i) => {
+          const isCutting = Boolean(polygon.id === selectedId && cuttingPolygon)
+          const isEditing = Boolean(polygon.id === selectedId &&  activeMode === MODES.EDIT)
+          return (
+            <Layer key={polygon.id}>
+              <Polygon
+                key={polygon.id}
+                polygon={{
+                  ...polygon,
+                  opacity: (polygon.id === highlightId || polygon.id === selectedId) ? 0.5 : 0.4,
+                  polys: isCutting ? [...polygon.polys, cuttingPolygon] : polygon.polys
+                }}
+                isSelected={polygon.id === selectedId}
+                isCutting={isCutting}
+                isEditing={isEditing}
+                onChange={(newPolygon) => {
+                  if (newPolygon.polys.length > 0) {
+                    const polys = polygons.slice();
+                    polys[i] = newPolygon;
+                    setPolygons(polys);
+                  } else {
+                    setPolygons(polygons.filter(poly => poly.id !== newPolygon.id))
+                  }
+                }}
+                onSelect={() => {
+                  if (activeMode === MODES.EDIT) {
+                    selectShape(polygon.id);
+                  }
+                }}
+                currentMousePos={currentMousePos}
+                setCuttingPolygon={isCutting && setCuttingPolygon}
+                setIsMouseOverCuttingPolygon={setIsMouseOverCuttingPolygon}
+                setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
+              />
+            </Layer>
+          )
         })}
-        {drawingRectangle && 
-          <Rectangle
-            key={'drawing-rectangle'}
-            shapeProps={drawingRectangle}
-            isSelected={true}
-          />
-        }
-        <Portal>
-          <ClassSelectionPopover
-            contextMenuPosition={contextMenuPosition}
-            setContextMenuPosition={setContextMenuPosition}
-          />
-        </Portal>
-      </Layer>
-      
-      {polygons.map((polygon, i) => {
-        const isCutting = Boolean(polygon.id === selectedId && cuttingPolygon)
-        const isEditing = Boolean(polygon.id === selectedId &&  activeMode === MODES.EDIT)
-        return (
-          <Layer key={polygon.id}>
+        {drawingPolygon &&
+          <Layer>
             <Polygon
-              key={polygon.id}
-              polygon={{
-                ...polygon,
-                opacity: (polygon.id === highlightId || polygon.id === selectedId) ? 0.5 : 0.4,
-                polys: isCutting ? [...polygon.polys, cuttingPolygon] : polygon.polys
-              }}
-              isSelected={polygon.id === selectedId}
-              isCutting={isCutting}
-              isEditing={isEditing}
-              onChange={(newPolygon) => {
-                if (newPolygon.polys.length > 0) {
-                  const polys = polygons.slice();
-                  polys[i] = newPolygon;
-                  setPolygons(polys);
-                } else {
-                  setPolygons(polygons.filter(poly => poly.id !== newPolygon.id))
-                }
-              }}
-              onSelect={() => {
-                if (activeMode === MODES.EDIT) {
-                  selectShape(polygon.id);
-                }
-              }}
+              key={'drawing-polygon'}
+              isDrawing={true}
               currentMousePos={currentMousePos}
-              setCuttingPolygon={isCutting && setCuttingPolygon}
-              setIsMouseOverCuttingPolygon={setIsMouseOverCuttingPolygon}
+              polygon={drawingPolygon}
               setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
             />
           </Layer>
-        )
-      })}
-      {drawingPolygon &&
-        <Layer>
-          <Polygon
-            key={'drawing-polygon'}
-            isDrawing={true}
-            currentMousePos={currentMousePos}
-            polygon={drawingPolygon}
-            setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
-          />
-        </Layer>
-      }
-      {drawingBrushPolygon &&
-        <Layer>
-          <BrushPolygon
-            key='drawing-brush-polygon'
-            brushPolygon={{
-              ...drawingBrushPolygon,
-              polys: drawingBrush ? [...drawingBrushPolygon.polys, drawingBrush] : drawingBrushPolygon.polys
-            }}
-          />
-        </Layer>
-      }
-    </Stage>
-    <canvas id="tmpCanvas" width={stageSize.width} height={stageSize.height}/>
-    <canvas id="canvasOutput" width={stageSize.width} height={stageSize.height}/>
+        }
+        {drawingBrushPolygon &&
+          <Layer>
+            <BrushPolygon
+              key='drawing-brush-polygon'
+              brushPolygon={{
+                ...drawingBrushPolygon,
+                polys: drawingBrush ? [...drawingBrushPolygon.polys, drawingBrush] : drawingBrushPolygon.polys
+              }}
+            />
+          </Layer>
+        }
+      </Stage>
+      {/* TODO: create separate component for keyboard handling */}
+      {/* Handle key enter */}
+      <KeyboardEventHandler
+        handleKeys={['enter']}
+        onKeyEvent={() => {
+          if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
+            finishDrawPolygonByBrush()
+          }
+        }}   
+      />
+      {/* Handle key Esc */}
+      <KeyboardEventHandler
+        handleKeys={['esc']}
+        onKeyEvent={() => resetAllState()}
+      />
+      <canvas id="tmpCanvas" width={stageSize.width} height={stageSize.height}/>
+      <canvas id="canvasOutput" width={stageSize.width} height={stageSize.height}/>
     </>
   );
 }
