@@ -12,11 +12,10 @@ const APPROXIMATION_COEFFICIENT = 2 // smaller -> more similar
 const convertBrushToPolygon = (drawingBrushPolygon, options) => {
   const { canvasWidth, canvasHeight } = options
 
-  // let tmpCanvas = document.createElement("canvas")
-  // tmpCanvas.setAttribute("id", "tmpCanvas")
-  // tmpCanvas.setAttribute("width", canvasWidth)
-  // tmpCanvas.setAttribute("height", canvasHeight)
-  let tmpCanvas = document.getElementById("tmpCanvas")
+  let tmpCanvas = document.createElement("canvas")
+  tmpCanvas.setAttribute("id", "tmpCanvas")
+  tmpCanvas.setAttribute("width", canvasWidth)
+  tmpCanvas.setAttribute("height", canvasHeight)
 
   const polygons = drawingBrushPolygon.polys
 
@@ -25,14 +24,20 @@ const convertBrushToPolygon = (drawingBrushPolygon, options) => {
   // Step 1: Draw all polygons to canvas
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
-  ctx.fillStyle = '#fff';
-  ctx.strokeStyle = '#fff';
   ctx.lineJoin = 'round'
-  ctx.lineWidth = 2
-  polygons.forEach((poly, polyIndex) => {
+  polygons.forEach((poly) => {
+    const { points, type, strokeWidth } = poly
+    if (type === 'brush') {
+      ctx.fillStyle = '#fff';
+      ctx.strokeStyle = '#fff';
+    } else {
+      ctx.fillStyle = '#000';
+      ctx.strokeStyle = '#000';
+    }
+    ctx.lineWidth = strokeWidth
     ctx.beginPath();
-    ctx.moveTo(poly[0][0], poly[0][1]);
-    poly.forEach(point => {
+    ctx.moveTo(points[0][0], points[0][1]);
+    points.forEach(point => {
       ctx.lineTo(point[0], point[1])
     });
     ctx.stroke();
@@ -44,7 +49,6 @@ const convertBrushToPolygon = (drawingBrushPolygon, options) => {
   let closedImgData = cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
   let M = cv.Mat.ones(10, 10, cv.CV_8U);
   cv.morphologyEx(src, closedImgData, cv.MORPH_CLOSE, M);
-  cv.imshow('tmpCanvas', closedImgData);
 
   // Step 2: Find one external contour that wrap all polygons
   let dst = cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
@@ -77,13 +81,11 @@ const convertBrushToPolygon = (drawingBrushPolygon, options) => {
     approxContour.delete()
   }
 
-  console.log(newDrawingBrushPolygon)
-
-  cv.imshow('canvasOutput', dst);
   src.delete(); dst.delete(); contours.delete(); hierarchy.delete();
 
-  // tmpCanvas.remove()
+  tmpCanvas.remove()
 
+  if (newDrawingBrushPolygon.polys.length <= 0) return null
   return newDrawingBrushPolygon
 }
 

@@ -30,6 +30,7 @@ const Annotator = (props) => {
   const { 
     stageSize,
     activeMode,
+    toolboxConfig,
     image,
     rectangles, setRectangles,
     polygons, setPolygons,
@@ -290,29 +291,35 @@ const Annotator = (props) => {
         polys: [],
       })
     }
-    setDrawingBrush([[currentMousePos.x, currentMousePos.y]])
+    setDrawingBrush({
+      points: [[currentMousePos.x, currentMousePos.y]],
+      type: toolboxConfig.brushType,
+      strokeWidth: toolboxConfig.brushSize,
+    })
   }
 
   const handleDrawByBrush = (e) => {
     if (drawingBrush) { // wait initialization to finish
-      setDrawingBrush([...drawingBrush, [currentMousePos.x, currentMousePos.y]])
+      setDrawingBrush({
+        ...drawingBrush,
+        points: [...drawingBrush.points, [currentMousePos.x, currentMousePos.y]]
+      })
     }
   }
 
   const handleFinishDrawByBrush = (e) => {
-    setDrawingBrushPolygon({
-      ...drawingBrushPolygon,
-      polys: [...drawingBrushPolygon.polys, drawingBrush],
-    })
-    setDrawingBrush(null)
+    if (drawingBrushPolygon && drawingBrush) { // wait initialization to finish
+      setDrawingBrushPolygon({
+        ...drawingBrushPolygon,
+        polys: [...drawingBrushPolygon.polys, drawingBrush],
+      })
+      setDrawingBrush(null)
+    }
   }
 
   const finishDrawPolygonByBrush = () => {
-    // TODO: eraser
-    // TODO: lineWidth customization
     if (drawingBrushPolygon &&
-      drawingBrushPolygon.polys.length > 0 &&
-      drawingBrushPolygon.polys[0].length > 2
+      drawingBrushPolygon.polys.length > 0
     ) {
       const canvasWidth = get(image, 'resizedImageSize.width', stageSize.width)
       const canvasHeight = get(image, 'resizedImageSize.height', stageSize.height)
@@ -320,10 +327,12 @@ const Annotator = (props) => {
         canvasWidth,
         canvasHeight,
       })
-      setPolygons([...polygons, {
-        ...newDrawingBrushPolygon,
-        ...DEFAULT_SHAPE_ATTRS
-      }])
+      if (newDrawingBrushPolygon) {
+        setPolygons([...polygons, {
+          ...newDrawingBrushPolygon,
+          ...DEFAULT_SHAPE_ATTRS
+        }])
+      }
     }
     setDrawingBrushPolygon(null)
   }
@@ -602,8 +611,6 @@ const Annotator = (props) => {
           }
         }}
       />
-      <canvas id="tmpCanvas" width={stageSize.width} height={stageSize.height}/>
-      <canvas id="canvasOutput" width={stageSize.width} height={stageSize.height}/>
     </>
   );
 }

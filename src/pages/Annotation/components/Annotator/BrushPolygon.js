@@ -17,13 +17,17 @@ const BrushPolygon = (props) => {
       id={id}
     > 
       {polys.map((poly, polyIndex) => {
-        const points = pointArrayToFlattenPointArray(poly)
+        const points = pointArrayToFlattenPointArray(poly.points)
+        const { strokeWidth, type } = poly
         return (
           <Line
             key={`brush-polygon-${polyIndex}`}
             points={points}
             id={id}
             {...others}
+            strokeWidth={strokeWidth}
+            globalCompositeOperation={type === 'eraser' ? 'destination-out' : undefined}
+            opacity={type === 'eraser' ? 1 : others.opacity}
           />
         )
       })}

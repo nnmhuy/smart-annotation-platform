@@ -11,6 +11,8 @@ import Annotator from './components/Annotator'
 const useStyles = makeStyles(() => ({
   root: {
     // background: '#f8f8f8'
+    width: '100vw',
+    overflow: 'hidden'
   },
   annotatorContainer: {
     background: '#f8f8f8'
@@ -18,7 +20,7 @@ const useStyles = makeStyles(() => ({
 }))
 
 const GridContainer = styled(Grid)({
-  height: '100vh'
+  height: '100vh',
 })
 
 const demoAnnotateData = [
@@ -32,6 +34,10 @@ const Annotation = (props) => {
   const [stageSize, setStageSize] = React.useState({ width: 0, height: 0 })
   const [image, setImage] = React.useState(null)
   const [activeMode, setActiveMode] = React.useState(MODES.CURSOR)
+  const [toolboxConfig, setToolboxConfig] = React.useState({
+    brushType: 'brush',
+    brushSize: 2,
+  })
   const [rectangles, setRectangles] = React.useState([])
   const [polygons, setPolygons] = React.useState([])
   const [annotationClasses, setAnnotationClasses] = React.useState(demoAnnotateData)
@@ -54,15 +60,18 @@ const Annotation = (props) => {
 
   return (
     <GridContainer container className={classes.root}>
-      <GridContainer container item xs={1}>
+      <GridContainer container item xs={2} direction='column' alignItems='center' justify='space-between'>
         <Toolbox
           activeMode={activeMode}
           setActiveMode={setActiveMode}
+          toolboxConfig={toolboxConfig}
+          setToolboxConfig={setToolboxConfig}
         />
       </GridContainer>
-      <GridContainer container item xs={9} className={classes.annotatorContainer} id='stage-container'>
+      <GridContainer container item xs={8} className={classes.annotatorContainer} id='stage-container'>
         <Annotator
           activeMode={activeMode}
+          toolboxConfig={toolboxConfig}
           image={image}
           rectangles={rectangles}
           setRectangles={setRectangles}
