@@ -41,6 +41,7 @@ const Annotator = (props) => {
   const [selectedId, selectShape] = React.useState(null)
   const [highlightId, setHighlightId] = React.useState(null)
   const [contextMenuPosition, setContextMenuPosition] = React.useState(null)
+  const [forceViewportHandling, setForceViewportHandling] = React.useState(false)
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
   const [drawingRectangle, setDrawingRectangle] = React.useState(null)
   const [drawingPolygon, setDrawingPolygon] = React.useState(null)
@@ -85,7 +86,7 @@ const Annotator = (props) => {
       });
       stage.scale({ x: 1, y: 1 })
     }
-  }, [image])
+  }, [image]) // eslint-disable-line
 
   const handleViewportStart = (e) => {
     e.evt.preventDefault();
@@ -368,6 +369,10 @@ const Annotator = (props) => {
   }
 
   const handleMouseDown = (e) => {
+    if (forceViewportHandling) {
+      handleViewportStart(e)
+      return
+    }
     if (activeMode === MODES.CURSOR) {
       handleViewportStart(e)
     }
@@ -390,6 +395,10 @@ const Annotator = (props) => {
     const stage = stageRef.current
     setCurrentMousePos(getPointerPosition(stage))
 
+    if (forceViewportHandling) {
+      handleViewportMove(e)
+      return
+    }
     if (activeMode === MODES.CURSOR) {
       handleViewportMove(e)
     }
@@ -410,6 +419,10 @@ const Annotator = (props) => {
   }
 
   const handleMouseUp = (e) => {
+    if (forceViewportHandling) {
+      handleViewportEnd(e)
+      return
+    }
     if (activeMode === MODES.CURSOR) {
       handleViewportEnd(e)
     }
@@ -618,6 +631,22 @@ const Annotator = (props) => {
             deleteById(selectedId)
             selectShape(null)
           }
+        }}
+      />
+      {/* Handle key Space: force viewport handling */}
+      <KeyboardEventHandler
+        handleKeys={['space']}
+        handleEventType='keydown'
+        onKeyEvent={() => {
+          setForceViewportHandling(true)
+        }}
+      />
+      <KeyboardEventHandler
+        handleKeys={['space']}
+        handleEventType='keyup'
+        onKeyEvent={(key, evt) => {
+          setForceViewportHandling(false)
+          handleViewportEnd({ evt })
         }}
       />
     </>
