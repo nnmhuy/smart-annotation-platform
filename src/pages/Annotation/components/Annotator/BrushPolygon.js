@@ -6,6 +6,8 @@ import pointArrayToFlattenPointArray from '../../../../helpers/pointArrayToFlatt
 const BrushPolygon = (props) => {
   const { 
     brushPolygon,
+    currentMousePos,
+    currentStrokeWidth,
   } = props
 
   const groupRef = React.useRef(null)
@@ -31,6 +33,13 @@ const BrushPolygon = (props) => {
           />
         )
       })}
+      <Circle
+        x={currentMousePos.x}
+        y={currentMousePos.y}
+        radius={currentStrokeWidth / 2}
+        fill={"red"}
+        opacity={brushPolygon.opacity}
+      />
     </Group>
   )
 }

@@ -19,7 +19,7 @@ const useStyles = makeStyles(() => ({
 
 const BrushConfig = (props) => {
   const classes = useStyles()
-  const { toolboxConfig, setToolboxConfig } = props
+  const { toolboxConfig, setToolboxConfig, } = props
   const { brushType, brushSize, } = toolboxConfig
   return (
     <div className={classes.root}>
@@ -47,11 +47,11 @@ const BrushConfig = (props) => {
           Brush size
         </Typography>
         <Slider
-          defaultValue={2}
+          defaultValue={brushSize}
           aria-labelledby="brush-size-slider"
-          step={1}
+          step={2}
           min={1}
-          max={10}
+          max={20}
           valueLabelDisplay="auto"
           marks
           onChange={(e, newValue) => setToolboxConfig({ ...toolboxConfig, brushSize: newValue})}

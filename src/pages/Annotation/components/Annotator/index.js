@@ -62,6 +62,12 @@ const Annotator = (props) => {
 
   React.useEffect(() => { // change mode => reset all states
     resetAllState()
+
+    if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
+      initializeDrawByBrush()
+    } else {
+      setDrawingBrushPolygon(null)
+    }
   }, [activeMode])
 
   React.useEffect(() => { // upload new image => reset all states & drawn polygons
@@ -278,19 +284,20 @@ const Annotator = (props) => {
     }
   }
 
+  const initializeDrawByBrush = () => {
+    setDrawingBrushPolygon({
+      ...DEFAULT_SHAPE_ATTRS,
+      id: uidgen.generateSync(),
+      x: 0,
+      y: 0,
+      strokeWidth: 2,
+      stroke: 'red',
+      lineJoin: 'round',
+      polys: [],
+    })
+  }
+
   const handleStartDrawByBrush = (e) => {
-    if (!drawingBrushPolygon) {
-      setDrawingBrushPolygon({
-        ...DEFAULT_SHAPE_ATTRS,
-        id: uidgen.generateSync(),
-        x: 0,
-        y: 0,
-        strokeWidth: 2,
-        stroke: 'red',
-        lineJoin: 'round',
-        polys: [],
-      })
-    }
     setDrawingBrush({
       points: [[currentMousePos.x, currentMousePos.y]],
       type: toolboxConfig.brushType,
@@ -334,7 +341,7 @@ const Annotator = (props) => {
         }])
       }
     }
-    setDrawingBrushPolygon(null)
+    initializeDrawByBrush()
   }
 
   const handleHighlightShape = (e, classList) => {
@@ -582,6 +589,8 @@ const Annotator = (props) => {
                 ...drawingBrushPolygon,
                 polys: drawingBrush ? [...drawingBrushPolygon.polys, drawingBrush] : drawingBrushPolygon.polys
               }}
+              currentMousePos={currentMousePos}
+              currentStrokeWidth={toolboxConfig.brushSize}
             />
           </Layer>
         }
