@@ -47,7 +47,7 @@ const BrushConfig = (props) => {
           Brush size
         </Typography>
         <Slider
-          defaultValue={brushSize}
+          value={brushSize}
           aria-labelledby="brush-size-slider"
           step={2}
           min={1}

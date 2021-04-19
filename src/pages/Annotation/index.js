@@ -72,6 +72,7 @@ const Annotation = (props) => {
         <Annotator
           activeMode={activeMode}
           toolboxConfig={toolboxConfig}
+          setToolboxConfig={setToolboxConfig}
           image={image}
           rectangles={rectangles}
           setRectangles={setRectangles}

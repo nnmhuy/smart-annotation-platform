@@ -2,7 +2,6 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import UIDGenerator from 'uid-generator'
-import KeyboardEventHandler from 'react-keyboard-event-handler';
 import { get } from 'lodash'
 
 import { MODES, DEFAULT_SHAPE_ATTRS } from '../../constants'
@@ -13,6 +12,7 @@ import Rectangle from './Rectangle'
 import Polygon from './Polygon'
 import BrushPolygon from './BrushPolygon'
 import ClassSelectionPopover from './ClassSelectionPopover'
+import KeyboardHandler from './KeyboardHandler'
 
 import getPointerPosition from './getPointerPosition'
 import convertBrushToPolygon from '../../../../helpers/convertBrushToPolygon'
@@ -30,7 +30,7 @@ const Annotator = (props) => {
   const { 
     stageSize,
     activeMode,
-    toolboxConfig,
+    toolboxConfig, setToolboxConfig,
     image,
     rectangles, setRectangles,
     polygons, setPolygons,
@@ -608,46 +608,18 @@ const Annotator = (props) => {
           </Layer>
         }
       </Stage>
-      {/* TODO: create separate component for keyboard handling */}
-      {/* Handle key enter: finish drawing */}
-      <KeyboardEventHandler
-        handleKeys={['enter']}
-        onKeyEvent={() => {
-          if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
-            finishDrawPolygonByBrush()
-          }
-        }}   
-      />
-      {/* Handle key Esc: reset all state */}
-      <KeyboardEventHandler
-        handleKeys={['esc']}
-        onKeyEvent={() => resetAllState()}
-      />
-      {/* Handle key Delete: delete shape */}
-      <KeyboardEventHandler
-        handleKeys={['backspace']}
-        onKeyEvent={() => {
-          if (activeMode === MODES.EDIT && selectedId) {
-            deleteById(selectedId)
-            selectShape(null)
-          }
-        }}
-      />
-      {/* Handle key Space: force viewport handling */}
-      <KeyboardEventHandler
-        handleKeys={['space']}
-        handleEventType='keydown'
-        onKeyEvent={() => {
-          setForceViewportHandling(true)
-        }}
-      />
-      <KeyboardEventHandler
-        handleKeys={['space']}
-        handleEventType='keyup'
-        onKeyEvent={(key, evt) => {
-          setForceViewportHandling(false)
-          handleViewportEnd({ evt })
-        }}
+      <KeyboardHandler
+        activeMode={activeMode}
+        toolboxConfig={toolboxConfig}
+        setToolboxConfig={setToolboxConfig}
+        resetAllState={resetAllState}
+        selectedId={selectedId}
+        selectShape={selectShape}
+        setForceViewportHandling={setForceViewportHandling}
+        handleViewportEnd={handleViewportEnd}
+        initializeDrawByBrush={initializeDrawByBrush}
+        finishDrawPolygonByBrush={finishDrawPolygonByBrush}
+        deleteById={deleteById}
       />
     </>
   );

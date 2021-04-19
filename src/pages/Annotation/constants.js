@@ -36,7 +36,13 @@ const DEFAULT_SHAPE_ATTRS = {
   strokeWidth: 2,
 }
 
+const MAX_BRUSH_SIZE = 20
+const MIN_BRUSH_SIZE = 1
+
 export {
   MODES,
   DEFAULT_SHAPE_ATTRS,
+
+  MAX_BRUSH_SIZE,
+  MIN_BRUSH_SIZE,
 }
