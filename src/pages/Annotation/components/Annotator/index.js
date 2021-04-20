@@ -3,6 +3,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import UIDGenerator from 'uid-generator'
 import { get } from 'lodash'
+import { polygon, point } from '@flatten-js/core';
+
 
 import { MODES, DEFAULT_SHAPE_ATTRS } from '../../constants'
 
@@ -204,16 +206,20 @@ const Annotator = (props) => {
         id: uidgen.generateSync(),
         x: 0,
         y: 0,
-        polys: [[[currentMousePos.x, currentMousePos.y]]],
+        polys: [[[currentMousePos.x, currentMousePos.y]]]
       })
     } else {
       if (isMouseOverPolygonStart) {
+        // setPolygons([...polygons, drawingPolygon])
         setPolygons([...polygons, drawingPolygon])
+        let testPolygon = polygon(drawingPolygon.polys[0])
+        console.log(testPolygon)
+        debugger
         setDrawingPolygon(null)
       } else {
         setDrawingPolygon({
           ...drawingPolygon,
-          polys: [[...drawingPolygon.polys[0], [currentMousePos.x, currentMousePos.y]]]
+          polys: [[...drawingPolygon.polys[0], [currentMousePos.x, currentMousePos.y]]],
         })
       }
     }
@@ -258,7 +264,6 @@ const Annotator = (props) => {
     }
     if (cuttingPolygon) {
       if (cuttingPolygon.length === 0 && shapeId === selectedId) {
-        setIsMouseOverCuttingPolygon(true)
         setCuttingPolygon([...cuttingPolygon, [currentMousePos.x, currentMousePos.y]])
       } else {
         if (isMouseOverCuttingPolygon) {
@@ -266,7 +271,7 @@ const Annotator = (props) => {
         }
       }
     } else {
-      if (isClickOn(e, ['Line'])) {
+      if (isClickOn(e, ['Line', 'Path'])) {
         setCuttingPolygon([])
         selectShape(shapeId)
       }

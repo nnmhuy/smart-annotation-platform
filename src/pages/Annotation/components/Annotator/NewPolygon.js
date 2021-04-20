@@ -1,6 +1,7 @@
 import React from 'react'
-import { Group, Circle, Path } from 'react-konva'
-import Flatten from '@flatten-js/core';
+import { Group, Line, Circle } from 'react-konva'
+
+import { getDistancePointAndPoint } from '../../../../helpers/getDistance'
 
 
 const MIN_DIST_TO_START_POINT = 10
@@ -16,9 +17,8 @@ const Polygon = (props) => {
   } = props
 
   const groupRef = React.useRef(null)
-  const { id, polys, ...others } = polygon
+  const { id, polys, poly, ...others } = polygon
   const [draggingKey, setDraggingKey] = React.useState(null)
-  const [isDraggingPolygon, setIsDraggingPolygon] = React.useState(false)
   const [polysMidPoints, setPolysMidPoints] = React.useState([])
 
   // update mid points when polygon is edited
@@ -109,7 +109,6 @@ const Polygon = (props) => {
   }
 
   const onDragStart = event => {
-    setIsDraggingPolygon(true)
   }
 
   const onDragMove = event => {
@@ -120,6 +119,7 @@ const Polygon = (props) => {
       x: dX,
       y: dY
     })
+    setPolysMidPoints(polysMidPoints.map(poly => poly.map(p => [p[0] + dX, p[1] + dY])))
   }
 
   const onDragEnd = event => {
@@ -142,7 +142,6 @@ const Polygon = (props) => {
         y: 0
       })
     }
-    setIsDraggingPolygon(false)
   }
 
   const handleDoubleClickDeletePoint = (event, polyIndex, pointIndex) => {
@@ -166,63 +165,105 @@ const Polygon = (props) => {
     onChange(newPolygon)
   }
 
-  const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
+  const mainPoints = Array.from(poly.vertices)
+  const midPoints = Array.from(poly.edges).map(edge => edge.middle())
 
-  let toDrawPolys = polys.map((points, polyIndex) => {
-    const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
-  
-    const addMousePos = [currentMousePos.x, currentMousePos.y]
-    let mainPoints = points
-    if (isActivePoly && points[0] && Flatten.point(addMousePos).distanceTo(Flatten.point(points[0]))[0] > MIN_DIST_TO_START_POINT) {
-      mainPoints = mainPoints.concat([addMousePos])
-    }
-
-    return mainPoints
-  })
-
-  let fullPolygon = Flatten.polygon()
-  toDrawPolys.forEach((points, polyIndex) => {
-    if (points.length < 3) {
-      return
-    }
-    let newFace = fullPolygon.addFace(points)
-    if ((polyIndex === 0 && newFace.orientation() === Flatten.ORIENTATION.CCW) ||
-      (polyIndex !== 0 && newFace.orientation() === Flatten.ORIENTATION.CW)
-    ) {
-      newFace.reverse()
-    }
-  })
-  if (isCutting) {
-    setIsMouseOverCuttingPolygon(fullPolygon.contains(Flatten.point(currentMousePos.x, currentMousePos.y)))
-  }
-  
   return (
     <Group
       ref={groupRef}
       id={id}
     >
-      <Path 
-        id={id}
-        data={fullPolygon.svg()}
-        onClick={onSelect}
-        onTap={onSelect}
-        draggable={isEditing}
-        onDragStart={onDragStart}
-        onDragMove={onDragMove}
-        onDragEnd={onDragEnd}
-        strokeWidth={others.strokeWidth / scale}
-        {...others}
-      />
-      {toDrawPolys.map((mainPoints, polyIndex) => {
+      {
+        
+      }
+    </Group>
+  )
+
+  return (
+    <Group
+      ref={groupRef}
+      id={id}
+    >
+      {polys.map((points, polyIndex) => {
         const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
 
+        const addMousePos = [currentMousePos.x, currentMousePos.y]
+        let mainPoints = points
+        if (isActivePoly && getDistancePointAndPoint(addMousePos, points[0]) > MIN_DIST_TO_START_POINT) {
+          mainPoints = mainPoints.concat([addMousePos])
+        }
+
+        let shapePoints = []
         const midPoints = polysMidPoints[polyIndex]
+        if (isEditing) {
+          midPoints.forEach((p, pIndex) => {
+            if (pIndex < mainPoints.length) {
+              shapePoints.push(mainPoints[pIndex])
+            }
+            shapePoints.push(p)
+          })
+        } else {
+          shapePoints = mainPoints
+        }
+
+        const flattenedPoints = shapePoints.reduce((a, b) => a.concat(b), [])
+
+        let filledHoleFlattenedPoints = flattenedPoints
+        if (filledHoleFlattenedPoints.length) {
+          filledHoleFlattenedPoints = [...filledHoleFlattenedPoints, flattenedPoints[0], flattenedPoints[1]]
+        }
+
         const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
+
+        // TODO: handle mouse cursor when mouse out of cutting polygon
+        const conditionalPolygonAttr =
+          (polyIndex === 0)
+            ? {
+              onMouseOver: isCutting ? () => setIsMouseOverCuttingPolygon(true) : null,
+              onMouseOut: isCutting ? () => setIsMouseOverCuttingPolygon(false) : null,
+              strokeEnabled: true,
+            }
+            : {
+              globalCompositeOperation: 'destination-out',
+              strokeEnabled: false,
+              //hitFunc: function (context) {
+                // disable hitFunc for holes
+              //},
+              fill: 'white',
+              opacity: 1,
+            };
 
         return (
           <>
+            {/* For showing border of holes */}
+            {polyIndex >= 1 && 
+              <Line
+                points={filledHoleFlattenedPoints}
+                id={id}
+                {...others}
+                fill={polyIndex >= 1 ? 'white' : others.fill}
+                strokeWidth={others.strokeWidth / scale}
+                hitFunc={function (context) {
+                  // disable hitFunc
+                }}
+              />
+            }
+            <Line
+              id={id}
+              points={flattenedPoints}
+              closed={true}
+              onClick={onSelect}
+              onTap={onSelect}
+              draggable={isEditing}
+              onDragStart={onDragStart}
+              onDragMove={onDragMove}
+              onDragEnd={onDragEnd}
+              {...others}
+              strokeWidth={others.strokeWidth / scale}
+              {...conditionalPolygonAttr}
+            />
             {/* Rendering polygon's main points */}
-            {(!isDraggingPolygon && (isDrawing || isSelected)) &&
+            {(isDrawing || isSelected) &&
               mainPoints.map((point, pointIndex) => {
                 const x = point[0] + polygon.x;
                 const y = point[1] + polygon.y;
@@ -259,7 +300,7 @@ const Polygon = (props) => {
               }
               )}
               {/* Rendering mid points for editing */}
-              {(!isDraggingPolygon && isEditing) &&
+              {isEditing &&
                 midPoints.map((point, pointIndex) => {
                   const x = point[0] + polygon.x;
                   const y = point[1] + polygon.y;
