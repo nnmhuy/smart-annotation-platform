@@ -122,20 +122,34 @@ const Annotator = (props) => {
       const imageHeight = get(image, 'resizedImageSize.height', 0)
 
       // limit viewport movement base on scale
+      // allow at most half of each dimension out of viewport
       let newPos = {
         x: stagePos.x + (pointer.x - viewportStartPos.x),
         y: stagePos.y + (pointer.y - viewportStartPos.y),
       }
-      if (scale <= 1) {
-        newPos = {
-          x: Math.min(Math.max(newPos.x, 0), (stageSize.width - (imageWidth * scale))),
-          y: Math.min(Math.max(newPos.y, 0), (stageSize.height - (imageHeight * scale))),
-        }
+      let posLimit = {}
+      if (imageWidth * scale <= stageSize.width) {
+        let acceptedOutWidth = (imageWidth * scale / 2)
+        posLimit.xMin = Math.min(0 - acceptedOutWidth, stagePos.x)
+        posLimit.xMax = Math.max(stageSize.width - (imageWidth * scale) + acceptedOutWidth, stagePos.x)
       } else {
-        newPos = {
-          x: Math.min(Math.max(newPos.x, stageSize.width - imageWidth * scale), imageWidth * scale - stageSize.width),
-          y: Math.min(Math.max(newPos.y, stageSize.height - imageHeight * scale), imageHeight * scale - stageSize.height),
-        }
+        let acceptedOutWidth = (stageSize.width / 2)
+        posLimit.xMin = Math.min(stageSize.width - imageWidth * scale - acceptedOutWidth, stagePos.x)
+        posLimit.xMax = Math.max(0 + acceptedOutWidth, stagePos.x)
+      }
+      if (imageHeight * scale <= stageSize.height) {
+        let acceptedOutHeight = (imageHeight / 2)
+        posLimit.yMin = Math.min(0 - acceptedOutHeight, stagePos.y)
+        posLimit.yMax = Math.max(stageSize.height - (imageHeight * scale) + acceptedOutHeight, stagePos.y)
+      } else {
+        let acceptedOutHeight = (stageSize.height / 2)
+        posLimit.yMin = Math.min(stageSize.height - imageHeight * scale - acceptedOutHeight, stagePos.y)
+        posLimit.yMax = Math.max(0 + acceptedOutHeight, stagePos.y)
+      }
+
+      newPos = {
+        x: Math.min(Math.max(newPos.x, posLimit.xMin), posLimit.xMax),
+        y: Math.min(Math.max(newPos.y, posLimit.yMin), posLimit.yMax),
       }
 
       stage.position(newPos);
