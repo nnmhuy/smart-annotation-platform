@@ -3,10 +3,13 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import UIDGenerator from 'uid-generator'
 import { get } from 'lodash'
-import { polygon, point } from '@flatten-js/core';
 
 
-import { MODES, DEFAULT_SHAPE_ATTRS } from '../../constants'
+import { 
+  MODES, DEFAULT_SHAPE_ATTRS,
+  MIN_ZOOM_SCALE,
+  MAX_ZOOM_SCALE,
+} from '../../constants'
 
 import Image from './KonvaImage'
 import Portal from './Portal'
@@ -114,10 +117,27 @@ const Annotator = (props) => {
       const pointer = stage.getPointerPosition();
       const stagePos = stage.position()
   
-      const newPos = {
+      const scale = stage.scaleX();
+      const imageWidth = get(image, 'resizedImageSize.width', 0)
+      const imageHeight = get(image, 'resizedImageSize.height', 0)
+
+      // limit viewport movement base on scale
+      let newPos = {
         x: stagePos.x + (pointer.x - viewportStartPos.x),
-        y: stagePos.y + (pointer.y - viewportStartPos.y)
+        y: stagePos.y + (pointer.y - viewportStartPos.y),
       }
+      if (scale <= 1) {
+        newPos = {
+          x: Math.min(Math.max(newPos.x, 0), (stageSize.width - (imageWidth * scale))),
+          y: Math.min(Math.max(newPos.y, 0), (stageSize.height - (imageHeight * scale))),
+        }
+      } else {
+        newPos = {
+          x: Math.min(Math.max(newPos.x, stageSize.width - imageWidth * scale), imageWidth * scale - stageSize.width),
+          y: Math.min(Math.max(newPos.y, stageSize.height - imageHeight * scale), imageHeight * scale - stageSize.height),
+        }
+      }
+
       stage.position(newPos);
       stage.batchDraw();
   
@@ -163,14 +183,17 @@ const Annotator = (props) => {
     const newScale =
       e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
 
-    stage.scale({ x: newScale, y: newScale });
-
-    const newPos = {
-      x: pointer.x - mousePointTo.x * newScale,
-      y: pointer.y - mousePointTo.y * newScale,
-    };
-    stage.position(newPos);
-    stage.batchDraw();
+    // limit zoom scale
+    if (newScale >= MIN_ZOOM_SCALE && newScale <= MAX_ZOOM_SCALE) {
+      stage.scale({ x: newScale, y: newScale });
+  
+      const newPos = {
+        x: pointer.x - mousePointTo.x * newScale,
+        y: pointer.y - mousePointTo.y * newScale,
+      };
+      stage.position(newPos);
+      stage.batchDraw();
+    }
   }
 
   const handleClickDrawRectangle = (e) => {
@@ -212,9 +235,6 @@ const Annotator = (props) => {
       if (isMouseOverPolygonStart) {
         // setPolygons([...polygons, drawingPolygon])
         setPolygons([...polygons, drawingPolygon])
-        let testPolygon = polygon(drawingPolygon.polys[0])
-        console.log(testPolygon)
-        debugger
         setDrawingPolygon(null)
       } else {
         setDrawingPolygon({
@@ -387,7 +407,7 @@ const Annotator = (props) => {
       }
     }
     if (activeMode === MODES.CUT) {
-      if (!isClickOn(e, ['Line'])) {
+      if (!isClickOn(e, ['Line', 'Path'])) {
         handleViewportStart(e)
       }
     }
@@ -416,7 +436,7 @@ const Annotator = (props) => {
     }
     if (activeMode === MODES.CUT) {
       handleViewportMove(e)
-      handleHighlightShape(e, ['Line'])
+      handleHighlightShape(e, ['Line', 'Path'])
     }
     if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
       handleDrawByBrush()
