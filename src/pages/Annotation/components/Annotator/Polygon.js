@@ -168,6 +168,7 @@ const Polygon = (props) => {
 
   const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
 
+  // TODO: handle click cut inside polygon checking
   let toDrawPolys = polys.map((points, polyIndex) => {
     const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
   
