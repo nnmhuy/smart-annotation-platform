@@ -238,7 +238,13 @@ const Polygon = (props) => {
                       onMouseOver: (e) => handleMouseOverStartPoint(e, polyIndex),
                       onMouseOut: handleMouseOutStartPoint,
                       fill: "red",
-                      hitFunc: null,
+                      hitFunc: null, // enable default hitFunc
+                      hitFunc: function (context) {
+                        context.beginPath();
+                        context.arc(0, 0, 6 / scale + MIN_DIST_TO_START_POINT, 0, Math.PI * 2, true);
+                        context.closePath();
+                        context.fillStrokeShape(this);
+                      },
                     }
                     : null;
                 return (
