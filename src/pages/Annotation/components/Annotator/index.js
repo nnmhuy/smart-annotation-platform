@@ -51,7 +51,7 @@ const Annotator = (props) => {
   const [drawingRectangle, setDrawingRectangle] = React.useState(null)
   const [drawingPolygon, setDrawingPolygon] = React.useState(null)
   const [cuttingPolygon, setCuttingPolygon] = React.useState(null)
-  const [isMouseOverCuttingPolygon, setIsMouseOverCuttingPolygon] = React.useState(false)
+  const [isValidProcessingPolygon, setIsValidProcessingPolygon] = React.useState(false)
   const [isMouseOverPolygonStart, setIsMouseOverPolygonStart] = React.useState(false)
   const [drawingBrushPolygon, setDrawingBrushPolygon] = React.useState(null)
   const [drawingBrush, setDrawingBrush] = React.useState(null)
@@ -257,10 +257,12 @@ const Annotator = (props) => {
         setPolygons([...polygons, drawingPolygon])
         setDrawingPolygon(null)
       } else {
-        setDrawingPolygon({
-          ...drawingPolygon,
-          polys: [[...drawingPolygon.polys[0], [currentMousePos.x, currentMousePos.y]]],
-        })
+        if (isValidProcessingPolygon) {
+          setDrawingPolygon({
+            ...drawingPolygon,
+            polys: [[...drawingPolygon.polys[0], [currentMousePos.x, currentMousePos.y]]],
+          })
+        }
       }
     }
   }
@@ -306,7 +308,7 @@ const Annotator = (props) => {
       if (cuttingPolygon.length === 0 && shapeId === selectedId) {
         setCuttingPolygon([...cuttingPolygon, [currentMousePos.x, currentMousePos.y]])
       } else {
-        if (isMouseOverCuttingPolygon) {
+        if (isValidProcessingPolygon) {
           setCuttingPolygon([...cuttingPolygon, [currentMousePos.x, currentMousePos.y]])
         }
       }
@@ -637,8 +639,8 @@ const Annotator = (props) => {
               }}
               currentMousePos={currentMousePos}
               setCuttingPolygon={isCutting && setCuttingPolygon}
-              isMouseOverCuttingPolygon={isCutting && isMouseOverCuttingPolygon}
-              setIsMouseOverCuttingPolygon={setIsMouseOverCuttingPolygon}
+              isValidProcessingPolygon={isValidProcessingPolygon}
+              setIsValidProcessingPolygon={setIsValidProcessingPolygon}
               setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
               isDraggingViewport={!!viewportStartPos}
             />
@@ -653,6 +655,8 @@ const Annotator = (props) => {
               currentMousePos={currentMousePos}
               polygon={drawingPolygon}
               setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
+              isValidProcessingPolygon={isValidProcessingPolygon}
+              setIsValidProcessingPolygon={setIsValidProcessingPolygon}
               isDraggingViewport={!!viewportStartPos}
             />
           </Layer>

@@ -13,7 +13,8 @@ const Polygon = (props) => {
     isSelected, onSelect,
     setIsMouseOverPolygonStart, 
     onChange,
-    setCuttingPolygon, isMouseOverCuttingPolygon, setIsMouseOverCuttingPolygon,
+    setCuttingPolygon,
+    isValidProcessingPolygon, setIsValidProcessingPolygon,
     isDraggingViewport,
   } = props
 
@@ -192,18 +193,38 @@ const Polygon = (props) => {
       currentPoly.addFace(points)
 
       const intersectionPoints = cuttingPoly.intersect(currentPoly)
-      console.log(intersectionPoints)
       hasIntersection = hasIntersection || (intersectionPoints.length > 0)
     })
-    setIsMouseOverCuttingPolygon(!hasIntersection && cuttingPoly.isValid())
+
+    setIsValidProcessingPolygon(!hasIntersection && cuttingPoly.isValid())
   }
 
+  // handle drawing polygon self-intersection checking
+  if (isDrawing) {
+    const drawingPoly = Flatten.polygon()
+
+    let drawingPolyPoints = cloneDeep(polys[0])
+    const addMousePos = [currentMousePos.x, currentMousePos.y]
+    if (drawingPolyPoints[0] && Flatten.point(addMousePos).distanceTo(Flatten.point(drawingPolyPoints[0]))[0] > MIN_DIST_TO_START_POINT) {
+      drawingPolyPoints.push(addMousePos)
+    }
+
+    drawingPoly.addFace(drawingPolyPoints)
+    console.log(drawingPoly.isValid())
+    setIsValidProcessingPolygon(drawingPoly.isValid())
+  }
+
+
   let toDrawPolys = polys.map((points, polyIndex) => {
-    const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1 && isMouseOverCuttingPolygon)
+    const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
   
     const addMousePos = [currentMousePos.x, currentMousePos.y]
     let mainPoints = points
-    if (isActivePoly && points[0] && Flatten.point(addMousePos).distanceTo(Flatten.point(points[0]))[0] > MIN_DIST_TO_START_POINT) {
+    if (isActivePoly 
+      && isValidProcessingPolygon 
+      && points[0] 
+      && Flatten.point(addMousePos).distanceTo(Flatten.point(points[0]))[0] > MIN_DIST_TO_START_POINT
+    ) {
       mainPoints = mainPoints.concat([addMousePos])
     }
 
@@ -222,7 +243,6 @@ const Polygon = (props) => {
       newFace.reverse()
     }
   })
-
   
   return (
     <Group
