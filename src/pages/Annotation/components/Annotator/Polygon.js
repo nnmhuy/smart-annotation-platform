@@ -1,6 +1,7 @@
 import React from 'react'
 import { Group, Circle, Path } from 'react-konva'
 import Flatten from '@flatten-js/core';
+import { cloneDeep } from 'lodash'
 
 
 const MIN_DIST_TO_START_POINT = 10
@@ -169,7 +170,34 @@ const Polygon = (props) => {
 
   const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
 
-  // TODO: handle click cut inside polygon checking
+  // handle click cut inside polygon checking
+  if (isCutting) {
+    const cuttingPoly = Flatten.polygon()
+    let cutPolyPoints = cloneDeep(polys[polys.length - 1])
+
+    const addMousePos = [currentMousePos.x, currentMousePos.y]
+    if (cutPolyPoints[0] && Flatten.point(addMousePos).distanceTo(Flatten.point(cutPolyPoints[0]))[0] > MIN_DIST_TO_START_POINT) {
+      cutPolyPoints.push(addMousePos)
+    }
+
+    cuttingPoly.addFace(cutPolyPoints)
+
+    let hasIntersection = false
+    polys.forEach((points, polyIndex) => {
+      if (polyIndex === polys.length - 1) {
+        return
+      }
+
+      const currentPoly = Flatten.polygon()
+      currentPoly.addFace(points)
+
+      const intersectionPoints = cuttingPoly.intersect(currentPoly)
+      console.log(intersectionPoints)
+      hasIntersection = hasIntersection || (intersectionPoints.length > 0)
+    })
+    setIsMouseOverCuttingPolygon(!hasIntersection)
+  }
+
   let toDrawPolys = polys.map((points, polyIndex) => {
     const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1 && isMouseOverCuttingPolygon)
   
@@ -193,10 +221,8 @@ const Polygon = (props) => {
     ) {
       newFace.reverse()
     }
-    if (polyIndex === 0 && isCutting) {
-      setIsMouseOverCuttingPolygon(fullPolygon.contains(Flatten.point(currentMousePos.x, currentMousePos.y)))
-    }
   })
+
   
   return (
     <Group

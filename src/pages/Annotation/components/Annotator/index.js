@@ -4,7 +4,6 @@ import { Stage, Layer } from 'react-konva'
 import UIDGenerator from 'uid-generator'
 import { get } from 'lodash'
 
-
 import { 
   MODES, DEFAULT_SHAPE_ATTRS,
   MIN_ZOOM_SCALE,
@@ -21,6 +20,7 @@ import KeyboardHandler from './KeyboardHandler'
 
 import getPointerPosition from './getPointerPosition'
 import convertBrushToPolygon from '../../../../helpers/convertBrushToPolygon'
+import formatPolygonsToRightCCW from '../../../../helpers/formatPolygonsToRightCCW'
 
 const uidgen = new UIDGenerator();
 
@@ -253,7 +253,7 @@ const Annotator = (props) => {
       })
     } else {
       if (isMouseOverPolygonStart) {
-        // setPolygons([...polygons, drawingPolygon])
+        drawingPolygon.polys = formatPolygonsToRightCCW(drawingPolygon.polys)
         setPolygons([...polygons, drawingPolygon])
         setDrawingPolygon(null)
       } else {
@@ -287,7 +287,7 @@ const Annotator = (props) => {
       } else {
         return ({
           ...polygon,
-          polys: [...polygon.polys, cuttingPolygon]
+          polys: formatPolygonsToRightCCW([...polygon.polys, cuttingPolygon])
         })
       }
     }))
