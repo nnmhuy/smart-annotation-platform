@@ -2,7 +2,7 @@ import React from 'react'
 import { Rect, Transformer } from 'react-konva';
 
 
-const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
+const Rectangle = ({ shapeProps, isSelected, onSelect, onChange, isDraggingViewport }) => {
   const shapeRef = React.useRef();
   const trRef = React.useRef();
 
@@ -55,6 +55,9 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
             });
           }
         }}
+        hitFunc={isDraggingViewport && function (context) {
+          // disable hitFunc while dragging viewport
+        }}
       />
       {isSelected && (
         <Transformer
@@ -68,6 +71,9 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
               return oldBox;
             }
             return newBox;
+          }}
+          hitFunc={isDraggingViewport && function (context) {
+            // disable hitFunc while dragging viewport
           }}
         />
       )}

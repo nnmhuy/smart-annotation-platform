@@ -98,7 +98,6 @@ const Annotator = (props) => {
     const stage = stageRef.current
 
     const pointer = stage.getPointerPosition();
-
     setViewportStartPos(pointer)
   }
 
@@ -108,11 +107,11 @@ const Annotator = (props) => {
     setViewportStartPos(null)
   }
 
-  const handleViewportMove = (e) => {
+  const handleViewportMove = (e) => {    
     e.evt.preventDefault();
-
+    
     const stage = stageRef.current
-
+    
     if (viewportStartPos) {
       const pointer = stage.getPointerPosition();
       const stagePos = stage.position()
@@ -127,24 +126,31 @@ const Annotator = (props) => {
         x: stagePos.x + (pointer.x - viewportStartPos.x),
         y: stagePos.y + (pointer.y - viewportStartPos.y),
       }
-      let posLimit = {}
-      if (imageWidth * scale <= stageSize.width) {
-        let acceptedOutWidth = (imageWidth * scale / 2)
-        posLimit.xMin = Math.min(0 - acceptedOutWidth, stagePos.x)
-        posLimit.xMax = Math.max(stageSize.width - (imageWidth * scale) + acceptedOutWidth, stagePos.x)
-      } else {
-        let acceptedOutWidth = (stageSize.width / 2)
-        posLimit.xMin = Math.min(stageSize.width - imageWidth * scale - acceptedOutWidth, stagePos.x)
-        posLimit.xMax = Math.max(0 + acceptedOutWidth, stagePos.x)
+      let posLimit = {
+        xMin: -stageSize.width / 2,
+        xMax: stageSize.width / 2,
+        yMin: -stageSize.height / 2,
+        yMax: stageSize.height / 2,
       }
-      if (imageHeight * scale <= stageSize.height) {
-        let acceptedOutHeight = (imageHeight / 2)
-        posLimit.yMin = Math.min(0 - acceptedOutHeight, stagePos.y)
-        posLimit.yMax = Math.max(stageSize.height - (imageHeight * scale) + acceptedOutHeight, stagePos.y)
-      } else {
-        let acceptedOutHeight = (stageSize.height / 2)
-        posLimit.yMin = Math.min(stageSize.height - imageHeight * scale - acceptedOutHeight, stagePos.y)
-        posLimit.yMax = Math.max(0 + acceptedOutHeight, stagePos.y)
+      if (imageWidth && imageHeight) {
+        if (imageWidth * scale <= stageSize.width) {
+          let acceptedOutWidth = (imageWidth * scale / 2)
+          posLimit.xMin = Math.min(0 - acceptedOutWidth, stagePos.x)
+          posLimit.xMax = Math.max(stageSize.width - (imageWidth * scale) + acceptedOutWidth, stagePos.x)
+        } else {
+          let acceptedOutWidth = (stageSize.width / 2)
+          posLimit.xMin = Math.min(stageSize.width - imageWidth * scale - acceptedOutWidth, stagePos.x)
+          posLimit.xMax = Math.max(0 + acceptedOutWidth, stagePos.x)
+        }
+        if (imageHeight * scale <= stageSize.height) {
+          let acceptedOutHeight = (imageHeight / 2)
+          posLimit.yMin = Math.min(0 - acceptedOutHeight, stagePos.y)
+          posLimit.yMax = Math.max(stageSize.height - (imageHeight * scale) + acceptedOutHeight, stagePos.y)
+        } else {
+          let acceptedOutHeight = (stageSize.height / 2)
+          posLimit.yMin = Math.min(stageSize.height - imageHeight * scale - acceptedOutHeight, stagePos.y)
+          posLimit.yMax = Math.max(0 + acceptedOutHeight, stagePos.y)
+        }
       }
 
       newPos = {
@@ -365,6 +371,7 @@ const Annotator = (props) => {
   }
 
   const finishDrawPolygonByBrush = () => {
+    // Note: this can be converted to one choices of methods to convert from brush to polygon mask
     if (drawingBrushPolygon &&
       drawingBrushPolygon.polys.length > 0
     ) {
@@ -477,6 +484,14 @@ const Annotator = (props) => {
   }
 
   const handleMouseOut = (e) => {
+    // if (activeMode === MODES.CURSOR || activeMode === MODES.EDIT) {
+    //   handleViewportEnd(e)
+    // }
+  }
+
+  const handleMouseEnter = (e) => {
+    // handle viewport end here instead of when mouse out for smooth dragging
+    // konva listen to mouse on elements without hitFunc as move out
     if (activeMode === MODES.CURSOR || activeMode === MODES.EDIT) {
       handleViewportEnd(e)
     }
@@ -535,6 +550,7 @@ const Annotator = (props) => {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseOut={handleMouseOut}
+        onMouseEnter={handleMouseEnter}
         onTouchStart={handleMouseDown}
         onTouchMove={handleMouseMove}
         onTouchEnd={handleMouseUp}
@@ -546,7 +562,10 @@ const Annotator = (props) => {
       >
         <Layer>
           {image && 
-            <Image src={image.resizedImg} />
+            <Image 
+              src={image.resizedImg} 
+              isDraggingViewport={!!viewportStartPos}
+            />
           }
           {rectangles.map((rect, i) => {
             return (
@@ -567,6 +586,7 @@ const Annotator = (props) => {
                     selectShape(rect.id);
                   }
                 }}
+                isDraggingViewport={!!viewportStartPos}
               />
             );
           })}
@@ -575,6 +595,7 @@ const Annotator = (props) => {
               key={'drawing-rectangle'}
               shapeProps={drawingRectangle}
               isSelected={true}
+              isDraggingViewport={!!viewportStartPos}
             />
           }
           <Portal>
@@ -618,6 +639,7 @@ const Annotator = (props) => {
                 setCuttingPolygon={isCutting && setCuttingPolygon}
                 setIsMouseOverCuttingPolygon={setIsMouseOverCuttingPolygon}
                 setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
+                isDraggingViewport={!!viewportStartPos}
               />
             </Layer>
           )
@@ -630,6 +652,7 @@ const Annotator = (props) => {
               currentMousePos={currentMousePos}
               polygon={drawingPolygon}
               setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
+              isDraggingViewport={!!viewportStartPos}
             />
           </Layer>
         }

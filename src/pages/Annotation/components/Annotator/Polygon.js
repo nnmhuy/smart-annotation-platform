@@ -13,6 +13,7 @@ const Polygon = (props) => {
     setIsMouseOverPolygonStart, 
     onChange,
     setCuttingPolygon, setIsMouseOverCuttingPolygon,
+    isDraggingViewport,
   } = props
 
   const groupRef = React.useRef(null)
@@ -212,6 +213,9 @@ const Polygon = (props) => {
         onDragMove={onDragMove}
         onDragEnd={onDragEnd}
         strokeWidth={others.strokeWidth / scale}
+        hitFunc={isDraggingViewport && function (context) {
+          // disable hitFunc while dragging viewport
+        }}
         {...others}
       />
       {toDrawPolys.map((mainPoints, polyIndex) => {
@@ -251,8 +255,8 @@ const Polygon = (props) => {
                     onDragEnd={handleDragEndPoint}
                     onDblClick={(e) => handleDoubleClickDeletePoint(e, polyIndex, pointIndex)}
                     draggable={isEditing}
-                    hitFunc={isCutting && function (context) {
-                      // disable hitFunc while cutting
+                    hitFunc={(isCutting || isDraggingViewport) && function (context) {
+                      // disable hitFunc while cutting or dragging viewport
                     }}
                     {...startPointAttr}
                   />
@@ -278,6 +282,9 @@ const Polygon = (props) => {
                       onDragMove={(e) => handleDragMovePoint(e, polyIndex, pointIndex, true)}
                       onDragEnd={(e) => handleDragEndPoint(e, polyIndex, pointIndex, true)}
                       draggable={isEditing}
+                      hitFunc={isDraggingViewport && function (context) {
+                        // disable hitFunc while dragging viewport
+                      }}
                     />
                   );
                 })
