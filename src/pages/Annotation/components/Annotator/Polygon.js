@@ -12,7 +12,7 @@ const Polygon = (props) => {
     isSelected, onSelect,
     setIsMouseOverPolygonStart, 
     onChange,
-    setCuttingPolygon, setIsMouseOverCuttingPolygon,
+    setCuttingPolygon, isMouseOverCuttingPolygon, setIsMouseOverCuttingPolygon,
     isDraggingViewport,
   } = props
 
@@ -171,7 +171,7 @@ const Polygon = (props) => {
 
   // TODO: handle click cut inside polygon checking
   let toDrawPolys = polys.map((points, polyIndex) => {
-    const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
+    const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1 && isMouseOverCuttingPolygon)
   
     const addMousePos = [currentMousePos.x, currentMousePos.y]
     let mainPoints = points
@@ -193,10 +193,10 @@ const Polygon = (props) => {
     ) {
       newFace.reverse()
     }
+    if (polyIndex === 0 && isCutting) {
+      setIsMouseOverCuttingPolygon(fullPolygon.contains(Flatten.point(currentMousePos.x, currentMousePos.y)))
+    }
   })
-  if (isCutting) {
-    setIsMouseOverCuttingPolygon(fullPolygon.contains(Flatten.point(currentMousePos.x, currentMousePos.y)))
-  }
   
   return (
     <Group

@@ -637,6 +637,7 @@ const Annotator = (props) => {
               }}
               currentMousePos={currentMousePos}
               setCuttingPolygon={isCutting && setCuttingPolygon}
+              isMouseOverCuttingPolygon={isCutting && isMouseOverCuttingPolygon}
               setIsMouseOverCuttingPolygon={setIsMouseOverCuttingPolygon}
               setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
               isDraggingViewport={!!viewportStartPos}
