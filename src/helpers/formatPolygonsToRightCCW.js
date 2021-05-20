@@ -1,6 +1,8 @@
 import Flatten from '@flatten-js/core';
 import { cloneDeep } from 'lodash'
 
+// outer polygon must be CW
+// inner polygons must be CCW
 const formatPolygonsToRightCCW = (polygons) => {
   let newPolygons = cloneDeep(polygons)
   let fullPolygon = Flatten.polygon()

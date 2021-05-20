@@ -195,7 +195,7 @@ const Polygon = (props) => {
       console.log(intersectionPoints)
       hasIntersection = hasIntersection || (intersectionPoints.length > 0)
     })
-    setIsMouseOverCuttingPolygon(!hasIntersection)
+    setIsMouseOverCuttingPolygon(!hasIntersection && cuttingPoly.isValid())
   }
 
   let toDrawPolys = polys.map((points, polyIndex) => {
