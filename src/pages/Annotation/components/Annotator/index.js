@@ -606,44 +606,44 @@ const Annotator = (props) => {
           </Portal>
         </Layer>
         
+        <Layer>
         {polygons.map((polygon, i) => {
           const isCutting = Boolean(polygon.id === selectedId && cuttingPolygon)
           const isEditing = Boolean(polygon.id === selectedId &&  activeMode === MODES.EDIT)
           return (
-            <Layer key={polygon.id}>
-              <Polygon
-                key={polygon.id}
-                polygon={{
-                  ...polygon,
-                  opacity: (polygon.id === highlightId || polygon.id === selectedId) ? 0.5 : 0.4,
-                  polys: isCutting ? [...polygon.polys, cuttingPolygon] : polygon.polys
-                }}
-                isSelected={polygon.id === selectedId}
-                isCutting={isCutting}
-                isEditing={isEditing}
-                onChange={(newPolygon) => {
-                  if (newPolygon.polys.length > 0) {
-                    const polys = polygons.slice();
-                    polys[i] = newPolygon;
-                    setPolygons(polys);
-                  } else {
-                    setPolygons(polygons.filter(poly => poly.id !== newPolygon.id))
-                  }
-                }}
-                onSelect={() => {
-                  if (activeMode === MODES.EDIT) {
-                    selectShape(polygon.id);
-                  }
-                }}
-                currentMousePos={currentMousePos}
-                setCuttingPolygon={isCutting && setCuttingPolygon}
-                setIsMouseOverCuttingPolygon={setIsMouseOverCuttingPolygon}
-                setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
-                isDraggingViewport={!!viewportStartPos}
-              />
-            </Layer>
+            <Polygon
+              key={`polygon-${polygon.id}`}
+              polygon={{
+                ...polygon,
+                opacity: (polygon.id === highlightId || polygon.id === selectedId) ? 0.5 : 0.4,
+                polys: isCutting ? [...polygon.polys, cuttingPolygon] : polygon.polys
+              }}
+              isSelected={polygon.id === selectedId}
+              isCutting={isCutting}
+              isEditing={isEditing}
+              onChange={(newPolygon) => {
+                if (newPolygon.polys.length > 0) {
+                  const polys = polygons.slice();
+                  polys[i] = newPolygon;
+                  setPolygons(polys);
+                } else {
+                  setPolygons(polygons.filter(poly => poly.id !== newPolygon.id))
+                }
+              }}
+              onSelect={() => {
+                if (activeMode === MODES.EDIT) {
+                  selectShape(polygon.id);
+                }
+              }}
+              currentMousePos={currentMousePos}
+              setCuttingPolygon={isCutting && setCuttingPolygon}
+              setIsMouseOverCuttingPolygon={setIsMouseOverCuttingPolygon}
+              setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
+              isDraggingViewport={!!viewportStartPos}
+            />
           )
         })}
+        </Layer>
         {drawingPolygon &&
           <Layer>
             <Polygon

@@ -203,7 +203,7 @@ const Polygon = (props) => {
       ref={groupRef}
       id={id}
     >
-      <Path 
+      <Path
         id={id}
         data={fullPolygon.svg()}
         onClick={onSelect}
@@ -238,7 +238,6 @@ const Polygon = (props) => {
                       onMouseOver: (e) => handleMouseOverStartPoint(e, polyIndex),
                       onMouseOut: handleMouseOutStartPoint,
                       fill: "red",
-                      hitFunc: null, // enable default hitFunc
                       hitFunc: function (context) {
                         context.beginPath();
                         context.arc(0, 0, 6 / scale + MIN_DIST_TO_START_POINT, 0, Math.PI * 2, true);
@@ -249,7 +248,7 @@ const Polygon = (props) => {
                     : null;
                 return (
                   <Circle
-                    key={`poly-${id}-${polyIndex}-${pointIndex}`}
+                    key={`poly-main_points-${id}-${polyIndex}-${pointIndex}`}
                     x={x}
                     y={y}
                     radius={6 / scale}
