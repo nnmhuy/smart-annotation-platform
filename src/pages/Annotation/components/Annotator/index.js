@@ -20,6 +20,7 @@ import BrushPolygon from './BrushPolygon'
 import ClassSelectionPopover from './ClassSelectionPopover'
 import KeyboardHandler from './KeyboardHandler'
 import PolygonLayer from './PolygonLayer'
+import RectangleLayer from './RectangleLayer'
 
 import getPointerPosition from './getPointerPosition'
 import convertBrushToPolygon from '../../../../helpers/convertBrushToPolygon'
@@ -42,8 +43,10 @@ const Annotator = (props) => {
     rectangles, setRectangles,
     polygons, setPolygons,
   } = props
+
   const stageRef = React.createRef(null)
   const polygonLayerRef = React.createRef(null)
+  const rectangleLayerRef = React.createRef(null)
 
   
   const [currentMousePos, setCurrentMousePos] = React.useState(null)
@@ -62,8 +65,7 @@ const Annotator = (props) => {
     setDrawingBrushPolygon(null)
     setDrawingBrush(null)
 
-    const polygonLayer = polygonLayerRef.current
-    polygonLayer.fire(MANUAL_EVENTS.RESET_ALL_STATE)
+    handlePropagateStageEventToChildrenLayers(MANUAL_EVENTS.RESET_ALL_STATE)
   }
 
   React.useEffect(() => { // change mode => reset all states
@@ -165,8 +167,10 @@ const Annotator = (props) => {
     }
   } 
 
+  /**
+  * check clicking on empty area
+  */
   const isEmptyPosition = (e) => {
-    // deselect when clicked on empty area
     const clickedOnEmpty = e.target === e.target.getStage();
     const clickedOnImage = e.target.getClassName() === "Image"
     return clickedOnEmpty || clickedOnImage
@@ -178,7 +182,7 @@ const Annotator = (props) => {
   }
 
   /**
-   * check click on empty area
+   * deselect when clicking on empty area
    */
   const checkDeselect = (e) => {
     const deselect = isEmptyPosition(e)
@@ -215,32 +219,6 @@ const Annotator = (props) => {
       };
       stage.position(newPos);
       stage.batchDraw();
-    }
-  }
-
-  const handleClickDrawRectangle = (e) => {
-    if (drawingRectangle === null) {
-      setDrawingRectangle({
-        ...DEFAULT_SHAPE_ATTRS,
-        x: currentMousePos.x,
-        y: currentMousePos.y,
-        width: 0,
-        height: 0,
-        id: uidgen.generateSync(),
-      })
-    } else {
-      setRectangles([...rectangles, drawingRectangle])
-      setDrawingRectangle(null)
-    }
-  }
-
-  const handleDragDrawRectangle = (e) => {
-    if (drawingRectangle !== null) {
-      setDrawingRectangle({
-        ...drawingRectangle,
-        width: currentMousePos.x - drawingRectangle.x,
-        height: currentMousePos.y - drawingRectangle.y,
-      })
     }
   }
 
@@ -328,6 +306,13 @@ const Annotator = (props) => {
     }
   }
 
+  const handlePropagateStageEventToChildrenLayers = (evt, e) => {
+    const stage = stageRef.current
+
+    const childrenLayers = stage.getLayers()
+    childrenLayers.forEach(layer => layer.fire(evt))
+  }
+
   const handleStageMouseDown = (e) => {
     if (forceViewportHandling) {
       handleViewportStart(e)
@@ -359,11 +344,14 @@ const Annotator = (props) => {
   const handleStageMouseMove = (e) => {
     const stage = stageRef.current
     setCurrentMousePos(getPointerPosition(stage))
-
+    console.log(currentMousePos)
     if (forceViewportHandling) {
       handleViewportMove(e)
       return
     }
+
+    handlePropagateStageEventToChildrenLayers(MANUAL_EVENTS.LAYER_MOUSE_MOVE, e)
+
     if (activeMode === MODES.CURSOR) {
       handleViewportMove(e)
     }
@@ -379,9 +367,7 @@ const Annotator = (props) => {
       handleViewportMove(e)
       handleHighlightShape(e, ANNOTATION_SHAPE_LIST.POLYGON) // highlight polygons only
     }
-    // if (activeMode === MODES.DRAW_RECTANGLE) {
-    //   handleDragDrawRectangle(e)
-    // }
+    
     // if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
     //   handleDrawByBrush()
     // }
@@ -404,9 +390,9 @@ const Annotator = (props) => {
     if (activeMode === MODES.CUT) {
       handleViewportEnd(e)
     }
-    if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
-      handleFinishDrawByBrush(e)
-    }
+    // if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
+    //   handleFinishDrawByBrush(e)
+    // }
   }
 
   /**
@@ -432,16 +418,8 @@ const Annotator = (props) => {
       return
     }
 
-    const polygonLayer = polygonLayerRef.current
-    polygonLayer.fire("click")
+    handlePropagateStageEventToChildrenLayers(MANUAL_EVENTS.LAYER_MOUSE_CLICK, e)
 
-    // if (activeMode === MODES.DRAW_RECTANGLE) {
-    //   handleClickDrawRectangle(e)
-    // } else {
-    //   setDrawingRectangle(null)
-    // }
-    // if (activeMode === MODES.EDIT) {
-    // }
     if (activeMode === MODES.DELETE) {
       handleClickDelete(e)
     }
@@ -450,8 +428,7 @@ const Annotator = (props) => {
   const handleStageContextMenu = (e) => {
     e.evt.preventDefault()
 
-    const polygonLayer = polygonLayerRef.current
-    polygonLayer.fire("contextmenu")
+    handlePropagateStageEventToChildrenLayers("contextmenu", e)
 
     if (activeMode === MODES.EDIT) {
       if (!isEmptyPosition(e)) {
@@ -496,41 +473,21 @@ const Annotator = (props) => {
           isDraggingViewport={!!viewportStartPos}
           isClickOn={isClickOn}
         />
+        {/* <RectangleLayer
+          layerRef={rectangleLayerRef}
+          rectangles={rectangles}
+          setRectangles={setRectangles}
+          activeMode={activeMode}
+          selectedId={selectedId}
+          selectShape={selectShape}
+          highlightId={highlightId}
+          currentMousePos={currentMousePos}
+          isDraggingViewport={!!viewportStartPos}
+        /> */}
         {/* <Layer>
           {image && 
             <Image 
               src={image.resizedImg} 
-              isDraggingViewport={!!viewportStartPos}
-            />
-          }
-          {rectangles.map((rect, i) => {
-            return (
-              <Rectangle
-                key={rect.id}
-                shapeProps={{
-                  ...rect,
-                  opacity: (rect.id === highlightId || rect.id === selectedId) ? 0.5 : 0.4,
-                }}
-                isSelected={rect.id === selectedId}
-                onChange={(newAttrs) => {
-                  const rects = rectangles.slice();
-                  rects[i] = newAttrs;
-                  setRectangles(rects);
-                }}
-                onSelect={() => {
-                  if (activeMode === MODES.EDIT) {
-                    selectShape(rect.id);
-                  }
-                }}
-                isDraggingViewport={!!viewportStartPos}
-              />
-            );
-          })}
-          {drawingRectangle && 
-            <Rectangle
-              key={'drawing-rectangle'}
-              shapeProps={drawingRectangle}
-              isSelected={true}
               isDraggingViewport={!!viewportStartPos}
             />
           }

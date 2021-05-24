@@ -54,7 +54,7 @@ const PolygonLayer = (props) => {
       })
     } else {
       if (isMouseOverPolygonStart) {
-        handleClickFinishDrawPolygon()
+        finishDrawPolygon()
       } else {
         if (isValidProcessingPolygon) {
           setDrawingPolygon({
@@ -82,7 +82,7 @@ const PolygonLayer = (props) => {
   }
 
 
-  const handleClickFinishDrawPolygon = () => {
+  const finishDrawPolygon = () => {
     drawingPolygon.polys = formatPolygonsToRightCCW(drawingPolygon.polys)
     setPolygons([...polygons, drawingPolygon])
     setDrawingPolygon(null)
@@ -156,7 +156,9 @@ const PolygonLayer = (props) => {
     // prevent propagate to stage click
     e.cancelBubble = true
     // prevent rendering browser context menu
-    e.evt.preventDefault()
+    if (e.evt) {
+      e.evt.preventDefault()
+    }
 
     if (activeMode === MODES.DRAW_POLYGON) {
       handleRightClickDrawPolygon(e)
@@ -168,6 +170,7 @@ const PolygonLayer = (props) => {
 
   return (
     <Layer
+      id="polygon-layer"
       ref={layerRef}
       onClick={handleLayerClick}
       onTap={handleLayerClick}

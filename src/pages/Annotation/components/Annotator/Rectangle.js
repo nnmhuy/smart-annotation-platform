@@ -17,6 +17,7 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange, isDraggingViewp
   return (
     <React.Fragment>
       <Rect
+        // listening={false}
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef}
@@ -61,6 +62,7 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange, isDraggingViewp
       />
       {isSelected && (
         <Transformer
+          // listening={false}
           ref={trRef}
           keepRatio={false}
           ignoreStroke={true}
