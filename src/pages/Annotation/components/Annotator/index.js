@@ -11,13 +11,11 @@ import {
   ANNOTATION_SHAPE_LIST,
 } from '../../constants'
 
-import Image from './KonvaImage'
-import Portal from './Portal'
-import ClassSelectionPopover from './ClassSelectionPopover'
 import KeyboardHandler from './KeyboardHandler'
 import PolygonLayer from './PolygonLayer'
 import BrushPolygonLayer from './BrushPolygonLayer'
 import RectangleLayer from './RectangleLayer'
+import CommonLayer from './CommonLayer'
 
 import getPointerPosition from './getPointerPosition'
 
@@ -39,6 +37,7 @@ const Annotator = (props) => {
   } = props
 
   const stageRef = React.createRef(null)
+  const commonLayerRef = React.createRef(null)
   const polygonLayerRef = React.createRef(null)
   const rectangleLayerRef = React.createRef(null)
   const brushPolygonLayerRef = React.createRef(null)
@@ -47,7 +46,6 @@ const Annotator = (props) => {
   const [currentMousePos, setCurrentMousePos] = React.useState({ x: 0, y: 0})
   const [selectedId, selectShape] = React.useState(null)
   const [highlightId, setHighlightId] = React.useState(null)
-  const [contextMenuPosition, setContextMenuPosition] = React.useState(null)
   const [forceViewportHandling, setForceViewportHandling] = React.useState(false)
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
   
@@ -348,15 +346,6 @@ const Annotator = (props) => {
     e.evt.preventDefault()
 
     handlePropagateStageEventToChildrenLayers("contextmenu", e)
-
-    if (activeMode === MODES.EDIT) {
-      if (!isEmptyPosition(e)) {
-        setContextMenuPosition({
-          x: e.evt.x,
-          y: e.evt.y
-        })
-      }
-    }
   }
 
   return (
@@ -381,6 +370,13 @@ const Annotator = (props) => {
         onClick={handleStageClick}
         onTap={handleStageClick}
       >
+        <CommonLayer
+          layerRef={commonLayerRef}
+          image={image}
+          activeMode={activeMode}
+          isDraggingViewport={!!viewportStartPos}
+          isEmptyPosition={isEmptyPosition}
+        />
         <PolygonLayer
           layerRef={polygonLayerRef}
           polygons={polygons}
@@ -414,23 +410,6 @@ const Annotator = (props) => {
           currentMousePos={currentMousePos}
           isDraggingViewport={!!viewportStartPos}
         />
-        {/* <Layer>
-          {image && 
-            <Image 
-              src={image.resizedImg} 
-              isDraggingViewport={!!viewportStartPos}
-            />
-          }
-          <Portal>
-            <ClassSelectionPopover
-              contextMenuPosition={contextMenuPosition}
-              setContextMenuPosition={setContextMenuPosition}
-            />
-          </Portal>
-        </Layer>
-        
-        
-      */}
       </Stage>
       <KeyboardHandler
         activeMode={activeMode}
