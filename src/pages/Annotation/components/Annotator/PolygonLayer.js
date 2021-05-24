@@ -141,30 +141,34 @@ const PolygonLayer = (props) => {
 
 
   const handleLayerClick = (e) => {
-    // prevent propagate to stage click
-    e.cancelBubble = true
+    if (e.manually_triggered) {
+      // prevent propagate to stage click
+      e.cancelBubble = true
 
-    if (activeMode === MODES.DRAW_POLYGON) {
-      handleClickDrawPolygon(e)
-    }
-    if (activeMode === MODES.CUT) {
-      handleClickCutPolygon(e)
+      if (activeMode === MODES.DRAW_POLYGON) {
+        handleClickDrawPolygon(e)
+      }
+      if (activeMode === MODES.CUT) {
+        handleClickCutPolygon(e)
+      }
     }
   }
 
   const handleLayerRightClick = (e) => {
-    // prevent propagate to stage click
-    e.cancelBubble = true
-    // prevent rendering browser context menu
-    if (e.evt) {
-      e.evt.preventDefault()
-    }
+    if (e.manually_triggered) {
+      // prevent propagate to stage click
+      e.cancelBubble = true
+      // // prevent rendering browser context menu
+      // if (e.evt) {
+      //   e.evt.preventDefault()
+      // }
 
-    if (activeMode === MODES.DRAW_POLYGON) {
-      handleRightClickDrawPolygon(e)
-    }
-    if (activeMode === MODES.CUT) {
-      handleRightClickCutPolygon(e)
+      if (activeMode === MODES.DRAW_POLYGON) {
+        handleRightClickDrawPolygon(e)
+      }
+      if (activeMode === MODES.CUT) {
+        handleRightClickCutPolygon(e)
+      }
     }
   }
 

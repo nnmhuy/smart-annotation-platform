@@ -71,7 +71,6 @@ const KeyboardHandler = (props) => {
             handleKeys={['meta+]', 'ctrl+]']}
             onKeyEvent={(key, e) => {
               e.preventDefault()
-              debugger
               setToolboxConfig({
                 ...toolboxConfig,
                 brushSize: Math.min(toolboxConfig.brushSize + 1, MAX_BRUSH_SIZE),

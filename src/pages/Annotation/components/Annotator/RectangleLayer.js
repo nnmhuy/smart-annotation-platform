@@ -46,7 +46,6 @@ const RectangleLayer = (props) => {
   }
 
   const handleDragDrawRectangle = (e) => {
-    console.log(currentMousePos)
     if (drawingRectangle !== null) {
       setDrawingRectangle({
         ...drawingRectangle,
@@ -57,21 +56,24 @@ const RectangleLayer = (props) => {
   }
 
   const handleLayerClick = (e) => {
-    // prevent propagate to stage click
-    e.cancelBubble = true
-
-    console.log(activeMode)
-    if (activeMode === MODES.DRAW_RECTANGLE) {
-      handleClickDrawRectangle(e)
+    if (e.manually_triggered) {
+      // prevent propagate to stage click
+      e.cancelBubble = true
+  
+      if (activeMode === MODES.DRAW_RECTANGLE) {
+        handleClickDrawRectangle(e)
+      }
     }
   }
 
   const handleLayerMouseMove = (e) => {
-    // prevent propagate to stage mousemove
-    // e.cancelBubble = true
+    if (e.manually_triggered) {
+      // prevent propagate to stage mousemove
+      // e.cancelBubble = true
 
-    if (activeMode === MODES.DRAW_RECTANGLE) {
-      handleDragDrawRectangle(e)
+      if (activeMode === MODES.DRAW_RECTANGLE) {
+        handleDragDrawRectangle(e)
+      }
     }
   }
 

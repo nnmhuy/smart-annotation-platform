@@ -306,11 +306,12 @@ const Annotator = (props) => {
     }
   }
 
-  const handlePropagateStageEventToChildrenLayers = (evt, e) => {
+  const handlePropagateStageEventToChildrenLayers = (evt, e = {}) => {
     const stage = stageRef.current
 
     const childrenLayers = stage.getLayers()
-    childrenLayers.forEach(layer => layer.fire(evt))
+    e.manually_triggered = true
+    childrenLayers.forEach(layer => layer.fire(evt, e))
   }
 
   const handleStageMouseDown = (e) => {
