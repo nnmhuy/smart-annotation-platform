@@ -55,13 +55,11 @@ const Annotator = (props) => {
   const [contextMenuPosition, setContextMenuPosition] = React.useState(null)
   const [forceViewportHandling, setForceViewportHandling] = React.useState(false)
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
-  const [drawingRectangle, setDrawingRectangle] = React.useState(null)
   const [drawingBrushPolygon, setDrawingBrushPolygon] = React.useState(null)
   const [drawingBrush, setDrawingBrush] = React.useState(null)
   
   const resetAllState = () => {
     selectShape(null)
-    setDrawingRectangle(null)
     setDrawingBrushPolygon(null)
     setDrawingBrush(null)
 

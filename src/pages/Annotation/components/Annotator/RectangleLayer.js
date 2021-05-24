@@ -24,6 +24,14 @@ const RectangleLayer = (props) => {
 
   const [drawingRectangle, setDrawingRectangle] = React.useState(null)
 
+  const resetAllStage = () => {
+    setDrawingRectangle(null)
+  }
+
+  React.useEffect(() => {
+    const layer = layerRef.current
+    layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllStage)
+  }, [layerRef])
 
   const handleClickDrawRectangle = (e) => {
     if (drawingRectangle === null) {
