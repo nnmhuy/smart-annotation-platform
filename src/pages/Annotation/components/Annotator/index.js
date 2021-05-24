@@ -1,13 +1,11 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Stage, Layer } from 'react-konva'
-import UIDGenerator from 'uid-generator'
+import { Stage } from 'react-konva'
 import { get } from 'lodash'
 
 import { 
   MODES, 
   MANUAL_EVENTS,
-  DEFAULT_SHAPE_ATTRS,
   MIN_ZOOM_SCALE,
   MAX_ZOOM_SCALE,
   ANNOTATION_SHAPE_LIST,
@@ -15,17 +13,13 @@ import {
 
 import Image from './KonvaImage'
 import Portal from './Portal'
-import Rectangle from './Rectangle'
-import BrushPolygon from './BrushPolygon'
 import ClassSelectionPopover from './ClassSelectionPopover'
 import KeyboardHandler from './KeyboardHandler'
 import PolygonLayer from './PolygonLayer'
+import BrushPolygonLayer from './BrushPolygonLayer'
 import RectangleLayer from './RectangleLayer'
 
 import getPointerPosition from './getPointerPosition'
-import convertBrushToPolygon from '../../../../helpers/convertBrushToPolygon'
-
-const uidgen = new UIDGenerator();
 
 const useStyles = makeStyles(() => ({
   stage: {
@@ -47,34 +41,25 @@ const Annotator = (props) => {
   const stageRef = React.createRef(null)
   const polygonLayerRef = React.createRef(null)
   const rectangleLayerRef = React.createRef(null)
+  const brushPolygonLayerRef = React.createRef(null)
 
   
-  const [currentMousePos, setCurrentMousePos] = React.useState(null)
+  const [currentMousePos, setCurrentMousePos] = React.useState({ x: 0, y: 0})
   const [selectedId, selectShape] = React.useState(null)
   const [highlightId, setHighlightId] = React.useState(null)
   const [contextMenuPosition, setContextMenuPosition] = React.useState(null)
   const [forceViewportHandling, setForceViewportHandling] = React.useState(false)
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
-  const [drawingBrushPolygon, setDrawingBrushPolygon] = React.useState(null)
-  const [drawingBrush, setDrawingBrush] = React.useState(null)
   
   const resetAllState = () => {
     selectShape(null)
-    setDrawingBrushPolygon(null)
-    setDrawingBrush(null)
 
     handlePropagateStageEventToChildrenLayers(MANUAL_EVENTS.RESET_ALL_STATE)
   }
 
   React.useEffect(() => { // change mode => reset all states
     resetAllState()
-
-    if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
-      initializeDrawByBrush()
-    } else {
-      setDrawingBrushPolygon(null)
-    }
-  }, [activeMode])
+  }, [activeMode]) // eslint-disable-line
 
   React.useEffect(() => { // upload new image => reset all states & drawn polygons
     if (image) {
@@ -220,67 +205,6 @@ const Annotator = (props) => {
     }
   }
 
-  const initializeDrawByBrush = () => {
-    setDrawingBrushPolygon({
-      ...DEFAULT_SHAPE_ATTRS,
-      id: uidgen.generateSync(),
-      x: 0,
-      y: 0,
-      strokeWidth: 2,
-      stroke: 'red',
-      lineJoin: 'round',
-      polys: [],
-    })
-  }
-
-  const handleStartDrawByBrush = (e) => {
-    setDrawingBrush({
-      points: [[currentMousePos.x, currentMousePos.y]],
-      type: toolboxConfig.brushType,
-      strokeWidth: toolboxConfig.brushSize,
-    })
-  }
-
-  const handleDrawByBrush = (e) => {
-    if (drawingBrush) { // wait initialization to finish
-      setDrawingBrush({
-        ...drawingBrush,
-        points: [...drawingBrush.points, [currentMousePos.x, currentMousePos.y]]
-      })
-    }
-  }
-
-  const handleFinishDrawByBrush = (e) => {
-    if (drawingBrushPolygon && drawingBrush) { // wait initialization to finish
-      setDrawingBrushPolygon({
-        ...drawingBrushPolygon,
-        polys: [...drawingBrushPolygon.polys, drawingBrush],
-      })
-      setDrawingBrush(null)
-    }
-  }
-
-  const finishDrawPolygonByBrush = () => {
-    // Note: this can be converted to one choices of methods to convert from brush to polygon mask
-    if (drawingBrushPolygon &&
-      drawingBrushPolygon.polys.length > 0
-    ) {
-      const canvasWidth = get(image, 'resizedImageSize.width', stageSize.width)
-      const canvasHeight = get(image, 'resizedImageSize.height', stageSize.height)
-      const newDrawingBrushPolygon = convertBrushToPolygon(drawingBrushPolygon, {
-        canvasWidth,
-        canvasHeight,
-      })
-      if (newDrawingBrushPolygon) {
-        setPolygons([...polygons, {
-          ...newDrawingBrushPolygon,
-          ...DEFAULT_SHAPE_ATTRS
-        }])
-      }
-    }
-    initializeDrawByBrush()
-  }
-
   const handleHighlightShape = (e, classList) => {
     const className = e.target.getClassName()
 
@@ -317,6 +241,9 @@ const Annotator = (props) => {
       handleViewportStart(e)
       return
     }
+
+    handlePropagateStageEventToChildrenLayers("mousedown", e)
+
     if (activeMode === MODES.CURSOR) {
       handleViewportStart(e)
     }
@@ -335,9 +262,6 @@ const Annotator = (props) => {
         handleViewportStart(e)
       }
     }
-    // if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
-    //   handleStartDrawByBrush()
-    // }
   }
 
   const handleStageMouseMove = (e) => {
@@ -366,10 +290,6 @@ const Annotator = (props) => {
       handleViewportMove(e)
       handleHighlightShape(e, ANNOTATION_SHAPE_LIST.POLYGON) // highlight polygons only
     }
-    
-    // if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
-    //   handleDrawByBrush()
-    // }
   }
 
   const handleStageMouseUp = (e) => {
@@ -377,6 +297,9 @@ const Annotator = (props) => {
       handleViewportEnd(e)
       return
     }
+
+    handlePropagateStageEventToChildrenLayers("mouseup", e)
+
     if (activeMode === MODES.CURSOR) {
       handleViewportEnd(e)
     }
@@ -389,9 +312,6 @@ const Annotator = (props) => {
     if (activeMode === MODES.CUT) {
       handleViewportEnd(e)
     }
-    // if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
-    //   handleFinishDrawByBrush(e)
-    // }
   }
 
   /**
@@ -445,6 +365,8 @@ const Annotator = (props) => {
         ref={stageRef}
         width={stageSize.width}
         height={stageSize.height}
+        className={classes.stage}
+
         onMouseOut={handleStageMouseOut}
         onMouseEnter={handleStageMouseEnter}
         onWheel={handleZoom}
@@ -458,7 +380,6 @@ const Annotator = (props) => {
         onTouchEnd={handleStageMouseUp}
         onClick={handleStageClick}
         onTap={handleStageClick}
-        className={classes.stage}
       >
         <PolygonLayer
           layerRef={polygonLayerRef}
@@ -471,6 +392,16 @@ const Annotator = (props) => {
           currentMousePos={currentMousePos}
           isDraggingViewport={!!viewportStartPos}
           isClickOn={isClickOn}
+        />
+        <BrushPolygonLayer
+          layerRef={brushPolygonLayerRef}
+          polygons={polygons}
+          setPolygons={setPolygons}
+          toolboxConfig={toolboxConfig}
+          activeMode={activeMode}
+          currentMousePos={currentMousePos}
+          stageSize={stageSize}
+          image={image}
         />
         <RectangleLayer
           layerRef={rectangleLayerRef}
@@ -498,19 +429,8 @@ const Annotator = (props) => {
           </Portal>
         </Layer>
         
-        {drawingBrushPolygon &&
-          <Layer>
-            <BrushPolygon
-              key='drawing-brush-polygon'
-              brushPolygon={{
-                ...drawingBrushPolygon,
-                polys: drawingBrush ? [...drawingBrushPolygon.polys, drawingBrush] : drawingBrushPolygon.polys
-              }}
-              currentMousePos={currentMousePos}
-              currentStrokeWidth={toolboxConfig.brushSize}
-            />
-          </Layer>
-        } */}
+        
+      */}
       </Stage>
       <KeyboardHandler
         activeMode={activeMode}
@@ -521,8 +441,8 @@ const Annotator = (props) => {
         selectShape={selectShape}
         setForceViewportHandling={setForceViewportHandling}
         handleViewportEnd={handleViewportEnd}
-        initializeDrawByBrush={initializeDrawByBrush}
-        finishDrawPolygonByBrush={finishDrawPolygonByBrush}
+        initializeDrawByBrush={() => handlePropagateStageEventToChildrenLayers(MANUAL_EVENTS.INITIALIZE_POLYGON_BY_BRUSH)}
+        finishDrawPolygonByBrush={() => handlePropagateStageEventToChildrenLayers(MANUAL_EVENTS.FINISH_DRAW_POLYGON_BY_BRUSH)}
         deleteById={deleteById}
       />
     </>

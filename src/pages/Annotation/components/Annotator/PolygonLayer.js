@@ -28,7 +28,7 @@ const PolygonLayer = (props) => {
   const [isValidProcessingPolygon, setIsValidProcessingPolygon] = React.useState(false)
   const [isMouseOverPolygonStart, setIsMouseOverPolygonStart] = React.useState(false)
 
-  const resetAllStage = () => {
+  const resetAllState = () => {
     setDrawingPolygon(null)
     setCuttingPolygon(null)
     setIsMouseOverPolygonStart(false)
@@ -36,7 +36,7 @@ const PolygonLayer = (props) => {
 
   React.useEffect(() => {
     const layer = layerRef.current
-    layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllStage)
+    layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllState)
   }, [layerRef])
 
   const isClickOnPolygon = (e) => {
@@ -158,10 +158,6 @@ const PolygonLayer = (props) => {
     if (e.manually_triggered) {
       // prevent propagate to stage click
       e.cancelBubble = true
-      // // prevent rendering browser context menu
-      // if (e.evt) {
-      //   e.evt.preventDefault()
-      // }
 
       if (activeMode === MODES.DRAW_POLYGON) {
         handleRightClickDrawPolygon(e)
