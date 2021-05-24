@@ -1,7 +1,7 @@
 import React from 'react'
 import { Group, Line, Circle } from 'react-konva'
 
-import pointArrayToFlattenPointArray from '../../../../helpers/pointArrayToFlattenPointArray'
+import pointArrayToFlattenPointArray from '../../utils/pointArrayToFlattenPointArray'
 
 const BrushPolygon = (props) => {
   const { 

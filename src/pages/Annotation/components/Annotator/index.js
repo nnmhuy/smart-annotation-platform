@@ -6,8 +6,6 @@ import { get } from 'lodash'
 import { 
   MODES, 
   MANUAL_EVENTS,
-  MIN_ZOOM_SCALE,
-  MAX_ZOOM_SCALE,
   ANNOTATION_SHAPE_LIST,
 } from '../../constants'
 
@@ -17,7 +15,9 @@ import BrushPolygonLayer from './BrushPolygonLayer'
 import RectangleLayer from './RectangleLayer'
 import CommonLayer from './CommonLayer'
 
-import getPointerPosition from './getPointerPosition'
+import getPointerPosition from '../../utils/getPointerPosition'
+import getStagePosLimit from '../../utils/getStagePosLimit'
+import handleStageZoom from '../../utils/handleStageZoom'
 
 const useStyles = makeStyles(() => ({
   stage: {
@@ -98,10 +98,6 @@ const Annotator = (props) => {
     if (viewportStartPos) {
       const pointer = stage.getPointerPosition();
       const stagePos = stage.position()
-  
-      const scale = stage.scaleX();
-      const imageWidth = get(image, 'resizedImageSize.width', 0)
-      const imageHeight = get(image, 'resizedImageSize.height', 0)
 
       // limit viewport movement base on scale
       // allow at most half of each dimension out of viewport
@@ -109,32 +105,7 @@ const Annotator = (props) => {
         x: stagePos.x + (pointer.x - viewportStartPos.x),
         y: stagePos.y + (pointer.y - viewportStartPos.y),
       }
-      let posLimit = {
-        xMin: -stageSize.width / 2,
-        xMax: stageSize.width / 2,
-        yMin: -stageSize.height / 2,
-        yMax: stageSize.height / 2,
-      }
-      if (imageWidth && imageHeight) {
-        if (imageWidth * scale <= stageSize.width) {
-          let acceptedOutWidth = (imageWidth * scale / 2)
-          posLimit.xMin = Math.min(0 - acceptedOutWidth, stagePos.x)
-          posLimit.xMax = Math.max(stageSize.width - (imageWidth * scale) + acceptedOutWidth, stagePos.x)
-        } else {
-          let acceptedOutWidth = (stageSize.width / 2)
-          posLimit.xMin = Math.min(stageSize.width - imageWidth * scale - acceptedOutWidth, stagePos.x)
-          posLimit.xMax = Math.max(0 + acceptedOutWidth, stagePos.x)
-        }
-        if (imageHeight * scale <= stageSize.height) {
-          let acceptedOutHeight = (imageHeight / 2)
-          posLimit.yMin = Math.min(0 - acceptedOutHeight, stagePos.y)
-          posLimit.yMax = Math.max(stageSize.height - (imageHeight * scale) + acceptedOutHeight, stagePos.y)
-        } else {
-          let acceptedOutHeight = (stageSize.height / 2)
-          posLimit.yMin = Math.min(stageSize.height - imageHeight * scale - acceptedOutHeight, stagePos.y)
-          posLimit.yMax = Math.max(0 + acceptedOutHeight, stagePos.y)
-        }
-      }
+      let posLimit = getStagePosLimit(stage, stageSize, image)
 
       newPos = {
         x: Math.min(Math.max(newPos.x, posLimit.xMin), posLimit.xMax),
@@ -174,33 +145,9 @@ const Annotator = (props) => {
   };
 
   const handleZoom = (e) => {
-    e.evt.preventDefault();
-    
     const stage = stageRef.current
-    const scaleBy = 1.05;
-    const oldScale = stage.scaleX();
 
-    const pointer = stage.getPointerPosition();
-
-    const mousePointTo = {
-      x: (pointer.x - stage.x()) / oldScale,
-      y: (pointer.y - stage.y()) / oldScale,
-    };
-
-    const newScale =
-      e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
-
-    // limit zoom scale
-    if (newScale >= MIN_ZOOM_SCALE && newScale <= MAX_ZOOM_SCALE) {
-      stage.scale({ x: newScale, y: newScale });
-  
-      const newPos = {
-        x: pointer.x - mousePointTo.x * newScale,
-        y: pointer.y - mousePointTo.y * newScale,
-      };
-      stage.position(newPos);
-      stage.batchDraw();
-    }
+    handleStageZoom(stage, e)
   }
 
   const handleHighlightShape = (e, classList) => {

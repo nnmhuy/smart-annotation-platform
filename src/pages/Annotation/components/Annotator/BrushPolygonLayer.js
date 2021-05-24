@@ -10,8 +10,8 @@ import {
   MANUAL_EVENTS,
   DEFAULT_SHAPE_ATTRS,
 } from '../../constants'
-import formatPolygonsToRightCCW from '../../../../helpers/formatPolygonsToRightCCW'
-import convertBrushToPolygon from '../../../../helpers/convertBrushToPolygon'
+import formatPolygonsToRightCCW from '../../utils/formatPolygonsToRightCCW'
+import convertBrushToPolygon from '../../utils/convertBrushToPolygon'
 
 const uidgen = new UIDGenerator();
 

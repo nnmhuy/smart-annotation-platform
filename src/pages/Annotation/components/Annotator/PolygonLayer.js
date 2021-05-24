@@ -9,7 +9,7 @@ import {
   MANUAL_EVENTS,
   DEFAULT_SHAPE_ATTRS,
 } from '../../constants'
-import formatPolygonsToRightCCW from '../../../../helpers/formatPolygonsToRightCCW'
+import formatPolygonsToRightCCW from '../../utils/formatPolygonsToRightCCW'
 
 const uidgen = new UIDGenerator();
 
