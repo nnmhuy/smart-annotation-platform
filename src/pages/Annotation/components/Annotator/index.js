@@ -344,13 +344,13 @@ const Annotator = (props) => {
   const handleStageMouseMove = (e) => {
     const stage = stageRef.current
     setCurrentMousePos(getPointerPosition(stage))
-    console.log(currentMousePos)
+
     if (forceViewportHandling) {
       handleViewportMove(e)
       return
     }
 
-    handlePropagateStageEventToChildrenLayers(MANUAL_EVENTS.LAYER_MOUSE_MOVE, e)
+    handlePropagateStageEventToChildrenLayers("mousemove", e)
 
     if (activeMode === MODES.CURSOR) {
       handleViewportMove(e)
@@ -418,7 +418,7 @@ const Annotator = (props) => {
       return
     }
 
-    handlePropagateStageEventToChildrenLayers(MANUAL_EVENTS.LAYER_MOUSE_CLICK, e)
+    handlePropagateStageEventToChildrenLayers("click", e)
 
     if (activeMode === MODES.DELETE) {
       handleClickDelete(e)
@@ -473,7 +473,7 @@ const Annotator = (props) => {
           isDraggingViewport={!!viewportStartPos}
           isClickOn={isClickOn}
         />
-        {/* <RectangleLayer
+        <RectangleLayer
           layerRef={rectangleLayerRef}
           rectangles={rectangles}
           setRectangles={setRectangles}
@@ -483,7 +483,7 @@ const Annotator = (props) => {
           highlightId={highlightId}
           currentMousePos={currentMousePos}
           isDraggingViewport={!!viewportStartPos}
-        /> */}
+        />
         {/* <Layer>
           {image && 
             <Image 

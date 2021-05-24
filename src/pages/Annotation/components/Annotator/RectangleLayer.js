@@ -58,7 +58,7 @@ const RectangleLayer = (props) => {
 
   const handleLayerClick = (e) => {
     // prevent propagate to stage click
-    // e.cancelBubble = true
+    e.cancelBubble = true
 
     console.log(activeMode)
     if (activeMode === MODES.DRAW_RECTANGLE) {
@@ -75,24 +75,14 @@ const RectangleLayer = (props) => {
     }
   }
 
-  React.useEffect(() => {
-    if (layerRef) {
-      console.log("One time")
-      const layer = layerRef.current
-
-      layer.off(MANUAL_EVENTS.LAYER_MOUSE_MOVE)
-      layer.on(MANUAL_EVENTS.LAYER_MOUSE_MOVE, handleLayerMouseMove)
-    }
-  }, [])
-
   return (
     <Layer
       id="rectangle-layer"
       ref={layerRef}
-      // onClick={handleLayerClick}
-      // onTap={handleLayerClick}
-      // onMouseMove={handleLayerMouseMove}
-      // onTouchMove={handleLayerMouseMove}
+      onClick={handleLayerClick}
+      onTap={handleLayerClick}
+      onMouseMove={handleLayerMouseMove}
+      onTouchMove={handleLayerMouseMove}
     >
       {rectangles.map((rect, i) => {
         return (
