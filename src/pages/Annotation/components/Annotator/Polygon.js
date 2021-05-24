@@ -11,7 +11,7 @@ const Polygon = (props) => {
     polygon, currentMousePos,
     isDrawing, isCutting, isEditing,
     isSelected, onSelect,
-    setIsMouseOverPolygonStart, 
+    setIsMouseOverPolygonStart,
     onChange,
     setCuttingPolygon,
     isValidProcessingPolygon, setIsValidProcessingPolygon,
@@ -210,7 +210,6 @@ const Polygon = (props) => {
     }
 
     drawingPoly.addFace(drawingPolyPoints)
-    console.log(drawingPoly.isValid())
     setIsValidProcessingPolygon(drawingPoly.isValid())
   }
 
@@ -286,7 +285,7 @@ const Polygon = (props) => {
                       fill: "red",
                       hitFunc: function (context) {
                         context.beginPath();
-                        context.arc(0, 0, 6 / scale + MIN_DIST_TO_START_POINT, 0, Math.PI * 2, true);
+                        context.arc(0, 0, 6 / scale, 0, Math.PI * 2, true);
                         context.closePath();
                         context.fillStrokeShape(this);
                       },
