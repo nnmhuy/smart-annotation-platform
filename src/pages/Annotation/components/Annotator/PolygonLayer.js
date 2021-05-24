@@ -6,6 +6,7 @@ import Polygon from './Polygon'
 
 import {
   MODES,
+  MANUAL_EVENTS,
   DEFAULT_SHAPE_ATTRS,
 } from '../../constants'
 import formatPolygonsToRightCCW from '../../../../helpers/formatPolygonsToRightCCW'
@@ -22,11 +23,21 @@ const PolygonLayer = (props) => {
     isClickOn,
   } = props
 
-  // const layerRef = React.createRef(null)
   const [drawingPolygon, setDrawingPolygon] = React.useState(null)
   const [cuttingPolygon, setCuttingPolygon] = React.useState(null)
   const [isValidProcessingPolygon, setIsValidProcessingPolygon] = React.useState(false)
   const [isMouseOverPolygonStart, setIsMouseOverPolygonStart] = React.useState(false)
+
+  const resetAllStage = () => {
+    setDrawingPolygon(null)
+    setCuttingPolygon(null)
+    setIsMouseOverPolygonStart(false)
+  }
+
+  React.useEffect(() => {
+    const layer = layerRef.current
+    layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllStage)
+  }, [layerRef])
 
   const isClickOnPolygon = (e) => {
     return isClickOn(e, ['Path'])

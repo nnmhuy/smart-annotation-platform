@@ -2,18 +2,20 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import UIDGenerator from 'uid-generator'
-import { get, cloneDeep } from 'lodash'
+import { get } from 'lodash'
 
 import { 
-  MODES, DEFAULT_SHAPE_ATTRS,
+  MODES, 
+  MANUAL_EVENTS,
+  DEFAULT_SHAPE_ATTRS,
   MIN_ZOOM_SCALE,
   MAX_ZOOM_SCALE,
+  ANNOTATION_SHAPE_LIST,
 } from '../../constants'
 
 import Image from './KonvaImage'
 import Portal from './Portal'
 import Rectangle from './Rectangle'
-import Polygon from './Polygon'
 import BrushPolygon from './BrushPolygon'
 import ClassSelectionPopover from './ClassSelectionPopover'
 import KeyboardHandler from './KeyboardHandler'
@@ -21,7 +23,6 @@ import PolygonLayer from './PolygonLayer'
 
 import getPointerPosition from './getPointerPosition'
 import convertBrushToPolygon from '../../../../helpers/convertBrushToPolygon'
-import formatPolygonsToRightCCW from '../../../../helpers/formatPolygonsToRightCCW'
 
 const uidgen = new UIDGenerator();
 
@@ -52,21 +53,17 @@ const Annotator = (props) => {
   const [forceViewportHandling, setForceViewportHandling] = React.useState(false)
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
   const [drawingRectangle, setDrawingRectangle] = React.useState(null)
-  const [drawingPolygon, setDrawingPolygon] = React.useState(null)
-  const [cuttingPolygon, setCuttingPolygon] = React.useState(null)
-  const [isValidProcessingPolygon, setIsValidProcessingPolygon] = React.useState(false)
-  const [isMouseOverPolygonStart, setIsMouseOverPolygonStart] = React.useState(false)
   const [drawingBrushPolygon, setDrawingBrushPolygon] = React.useState(null)
   const [drawingBrush, setDrawingBrush] = React.useState(null)
   
   const resetAllState = () => {
     selectShape(null)
     setDrawingRectangle(null)
-    setDrawingPolygon(null)
-    setCuttingPolygon(null)
-    setIsMouseOverPolygonStart(false)
     setDrawingBrushPolygon(null)
     setDrawingBrush(null)
+
+    const polygonLayer = polygonLayerRef.current
+    polygonLayer.fire(MANUAL_EVENTS.RESET_ALL_STATE)
   }
 
   React.useEffect(() => { // change mode => reset all states
@@ -180,8 +177,10 @@ const Annotator = (props) => {
     return (!isEmptyPosition(e) && classList.includes(className))
   }
 
+  /**
+   * check click on empty area
+   */
   const checkDeselect = (e) => {
-    // deselect when clicked on empty area
     const deselect = isEmptyPosition(e)
     if (deselect) {
       selectShape(null);
@@ -329,7 +328,7 @@ const Annotator = (props) => {
     }
   }
 
-  const handleMouseDown = (e) => {
+  const handleStageMouseDown = (e) => {
     if (forceViewportHandling) {
       handleViewportStart(e)
       return
@@ -342,17 +341,22 @@ const Annotator = (props) => {
         handleViewportStart(e)
       }
     }
-    if (activeMode === MODES.CUT) {
-      if (!isClickOn(e, ['Line', 'Path'])) {
+    if (activeMode === MODES.DELETE) {
+      if (checkDeselect(e)) {
         handleViewportStart(e)
       }
     }
-    if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
-      handleStartDrawByBrush()
+    if (activeMode === MODES.CUT) {
+      if (!isClickOn(e, ANNOTATION_SHAPE_LIST.POLYGON)) { // not clicking to select/cut polygon
+        handleViewportStart(e)
+      }
     }
+    // if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
+    //   handleStartDrawByBrush()
+    // }
   }
 
-  const handleMouseMove = (e) => {
+  const handleStageMouseMove = (e) => {
     const stage = stageRef.current
     setCurrentMousePos(getPointerPosition(stage))
 
@@ -367,19 +371,23 @@ const Annotator = (props) => {
       handleViewportMove(e)
       handleHighlightShape(e)
     }
+    if (activeMode === MODES.DELETE) {
+      handleViewportMove(e)
+      handleHighlightShape(e)
+    }
+    if (activeMode === MODES.CUT) {
+      handleViewportMove(e)
+      handleHighlightShape(e, ANNOTATION_SHAPE_LIST.POLYGON) // highlight polygons only
+    }
     // if (activeMode === MODES.DRAW_RECTANGLE) {
     //   handleDragDrawRectangle(e)
-    // }
-    // if (activeMode === MODES.CUT) {
-    //   handleViewportMove(e)
-    //   handleHighlightShape(e, ['Line', 'Path'])
     // }
     // if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
     //   handleDrawByBrush()
     // }
   }
 
-  const handleMouseUp = (e) => {
+  const handleStageMouseUp = (e) => {
     if (forceViewportHandling) {
       handleViewportEnd(e)
       return
@@ -388,6 +396,9 @@ const Annotator = (props) => {
       handleViewportEnd(e)
     }
     if (activeMode === MODES.EDIT) {
+      handleViewportEnd(e)
+    }
+    if (activeMode === MODES.DELETE) {
       handleViewportEnd(e)
     }
     if (activeMode === MODES.CUT) {
@@ -401,7 +412,7 @@ const Annotator = (props) => {
   /**
    * Trigger when mouse move outside the stage
    */
-  const handleMouseOut = (e) => {
+  const handleStageMouseOut = (e) => {
   }
 
   /**
@@ -409,13 +420,13 @@ const Annotator = (props) => {
    * handle viewport end here instead of when mouse out for smooth dragging
    * konva listen to mouse on elements without hitFunc as move out
    */
-  const handleMouseEnter = (e) => {
+  const handleStageMouseEnter = (e) => {
     if (activeMode === MODES.CURSOR || activeMode === MODES.EDIT || forceViewportHandling) {
       handleViewportEnd(e)
     }
   }
 
-  const handleClick = (e) => {
+  const handleStageClick = (e) => {
     // only detect left click
     if (e.evt.which !== 1) {
       return
@@ -431,25 +442,25 @@ const Annotator = (props) => {
     // }
     // if (activeMode === MODES.EDIT) {
     // }
-    // if (activeMode === MODES.DELETE) {
-    //   handleClickDelete(e)
-    // }
+    if (activeMode === MODES.DELETE) {
+      handleClickDelete(e)
+    }
   }
 
-  const handleContextMenu = (e) => {
+  const handleStageContextMenu = (e) => {
     e.evt.preventDefault()
 
     const polygonLayer = polygonLayerRef.current
     polygonLayer.fire("contextmenu")
 
-    // if (activeMode === MODES.EDIT) {
-    //   if (!isEmptyPosition(e)) {
-    //     setContextMenuPosition({
-    //       x: e.evt.x,
-    //       y: e.evt.y
-    //     })
-    //   }
-    // }
+    if (activeMode === MODES.EDIT) {
+      if (!isEmptyPosition(e)) {
+        setContextMenuPosition({
+          x: e.evt.x,
+          y: e.evt.y
+        })
+      }
+    }
   }
 
   return (
@@ -458,19 +469,19 @@ const Annotator = (props) => {
         ref={stageRef}
         width={stageSize.width}
         height={stageSize.height}
-        onMouseOut={handleMouseOut}
-        onMouseEnter={handleMouseEnter}
+        onMouseOut={handleStageMouseOut}
+        onMouseEnter={handleStageMouseEnter}
         onWheel={handleZoom}
-        onContextMenu={handleContextMenu}
+        onContextMenu={handleStageContextMenu}
 
-        // onMouseDown={handleMouseDown}
-        // onTouchStart={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onTouchMove={handleMouseMove}
-        // onMouseUp={handleMouseUp}
-        // onTouchEnd={handleMouseUp}
-        onClick={handleClick}
-        onTap={handleClick}
+        onMouseDown={handleStageMouseDown}
+        onTouchStart={handleStageMouseDown}
+        onMouseMove={handleStageMouseMove}
+        onTouchMove={handleStageMouseMove}
+        onMouseUp={handleStageMouseUp}
+        onTouchEnd={handleStageMouseUp}
+        onClick={handleStageClick}
+        onTap={handleStageClick}
         className={classes.stage}
       >
         <PolygonLayer
@@ -531,59 +542,6 @@ const Annotator = (props) => {
           </Portal>
         </Layer>
         
-        <Layer>
-        {polygons.map((polygon, i) => {
-          const isCutting = Boolean(polygon.id === selectedId && cuttingPolygon)
-          const isEditing = Boolean(polygon.id === selectedId &&  activeMode === MODES.EDIT)
-          return (
-            <Polygon
-              key={`polygon-${polygon.id}`}
-              polygon={{
-                ...polygon,
-                opacity: (polygon.id === highlightId || polygon.id === selectedId) ? 0.5 : 0.4,
-                polys: isCutting ? [...polygon.polys, cuttingPolygon] : polygon.polys
-              }}
-              isSelected={polygon.id === selectedId}
-              isCutting={isCutting}
-              isEditing={isEditing}
-              onChange={(newPolygon) => {
-                if (newPolygon.polys.length > 0) {
-                  const polys = polygons.slice();
-                  polys[i] = newPolygon;
-                  setPolygons(polys);
-                } else {
-                  setPolygons(polygons.filter(poly => poly.id !== newPolygon.id))
-                }
-              }}
-              onSelect={() => {
-                if (activeMode === MODES.EDIT) {
-                  selectShape(polygon.id);
-                }
-              }}
-              currentMousePos={currentMousePos}
-              setCuttingPolygon={isCutting && setCuttingPolygon}
-              isValidProcessingPolygon={isValidProcessingPolygon}
-              setIsValidProcessingPolygon={setIsValidProcessingPolygon}
-              setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
-              isDraggingViewport={!!viewportStartPos}
-            />
-          )
-        })}
-        </Layer>
-        {drawingPolygon &&
-          <Layer>
-            <Polygon
-              key={'drawing-polygon'}
-              isDrawing={true}
-              currentMousePos={currentMousePos}
-              polygon={drawingPolygon}
-              setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
-              isValidProcessingPolygon={isValidProcessingPolygon}
-              setIsValidProcessingPolygon={setIsValidProcessingPolygon}
-              isDraggingViewport={!!viewportStartPos}
-            />
-          </Layer>
-        }
         {drawingBrushPolygon &&
           <Layer>
             <BrushPolygon

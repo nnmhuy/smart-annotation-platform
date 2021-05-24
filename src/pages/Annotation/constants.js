@@ -29,6 +29,15 @@ const MODES = {
   },
 }
 
+const MANUAL_EVENTS = {
+  RESET_ALL_STATE: "RESET_ALL_STATE",
+}
+
+const ANNOTATION_SHAPE_LIST = {
+  RECTANGLE: ['Rect'],
+  POLYGON: ['Path'],
+}
+
 const DEFAULT_SHAPE_ATTRS = {
   fill: 'green',
   opacity: 0.4,
@@ -44,7 +53,10 @@ const MAX_ZOOM_SCALE = 5
 
 export {
   MODES,
+  MANUAL_EVENTS,
+
   DEFAULT_SHAPE_ATTRS,
+  ANNOTATION_SHAPE_LIST,
 
   MAX_BRUSH_SIZE,
   MIN_BRUSH_SIZE,
