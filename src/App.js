@@ -1,6 +1,6 @@
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 
-import Annotation from './pages/Annotation/index'
+import AnnotationPage from './pages/Annotation/index'
 
 import './App.css';
 
@@ -9,7 +9,7 @@ function App() {
     <div className="App">
       <Router>
         <Switch>
-          <Route path="/" exact component={Annotation}/>
+          <Route path="/" exact component={AnnotationPage}/>
         </Switch>
       </Router>
     </div>

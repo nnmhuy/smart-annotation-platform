@@ -25,15 +25,15 @@ const Polygon = (props) => {
   const [polysMidPoints, setPolysMidPoints] = React.useState([])
 
   // update mid points when polygon is edited
-  React.useEffect(() => {
-    setPolysMidPoints(polygon.polys.map(poly => poly.map((curPoint, index) => {
-      const nextPoint = poly[(index + 1) % poly.length]
-      return [
-        (curPoint[0] + nextPoint[0]) / 2,
-        (curPoint[1] + nextPoint[1]) / 2,
-      ]
-    })))
-  }, [polygon])
+  // React.useEffect(() => {
+  //   setPolysMidPoints(polygon.polys.map(poly => poly.map((curPoint, index) => {
+  //     const nextPoint = poly[(index + 1) % poly.length]
+  //     return [
+  //       (curPoint[0] + nextPoint[0]) / 2,
+  //       (curPoint[1] + nextPoint[1]) / 2,
+  //     ]
+  //   })))
+  // }, [polygon])
 
   React.useEffect(() => {
     if (isSelected) {

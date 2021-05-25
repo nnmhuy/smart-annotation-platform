@@ -7,6 +7,7 @@ import {
   MODES, 
   MANUAL_EVENTS,
   ANNOTATION_SHAPE_LIST,
+  ANNOTATION_TYPE,
 } from '../../constants'
 
 import KeyboardHandler from './KeyboardHandler'
@@ -18,6 +19,9 @@ import CommonLayer from './CommonLayer'
 import getPointerPosition from '../../utils/getPointerPosition'
 import getStagePosLimit from '../../utils/getStagePosLimit'
 import handleStageZoom from '../../utils/handleStageZoom'
+import PolygonAnnotation from '../../../../classes/PolygonAnnotationClass'
+import BboxAnnotation from '../../../../classes/BBoxAnnotationClass'
+import ClassSelectionPopover from './ClassSelectionPopover'
 
 const useStyles = makeStyles(() => ({
   stage: {
@@ -34,6 +38,8 @@ const Annotator = (props) => {
     image,
     rectangles, setRectangles,
     polygons, setPolygons,
+    annotations, setAnnotations,
+    annotationClasses,
   } = props
 
   const stageRef = React.createRef(null)
@@ -44,11 +50,12 @@ const Annotator = (props) => {
 
   
   const [currentMousePos, setCurrentMousePos] = React.useState({ x: 0, y: 0})
+  const [contextMenuPosition, setContextMenuPosition] = React.useState({x: 0, y: 0})
+  const [isOpenClassSelection, setIsOpenClassSelection] = React.useState(false)
   const [selectedId, selectShape] = React.useState(null)
   const [highlightId, setHighlightId] = React.useState(null)
   const [forceViewportHandling, setForceViewportHandling] = React.useState(false)
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
-  
   const resetAllState = () => {
     selectShape(null)
 
@@ -295,6 +302,38 @@ const Annotator = (props) => {
     handlePropagateStageEventToChildrenLayers("contextmenu", e)
   }
 
+  const handleFinishDraw = (type) => (data) => {
+    let annotation
+    switch (type) {
+      case ANNOTATION_TYPE.MASK:
+        annotation = new PolygonAnnotation(data.id, '', '', data.polys)
+        break
+      case ANNOTATION_TYPE.BBOX:
+        annotation = new BboxAnnotation(data.id, '', '', data)
+        break
+      default:
+        break
+    }
+    setAnnotations([...annotations, annotation])
+    setContextMenuPosition(currentMousePos)
+    setIsOpenClassSelection(true)
+  }
+
+  const handleSelectClass = (labelId) => {
+    const newAnnotations = annotations.map((annotation) => {
+      if (annotation.id === selectedId)
+      {
+        const newAnnotation = {...annotation, labelId}
+        return newAnnotation
+      }
+      return annotation
+    })
+    setAnnotations(newAnnotations)
+    selectShape('')
+    console.log(newAnnotations)
+  }
+
+
   return (
     <>
       <Stage
@@ -328,12 +367,16 @@ const Annotator = (props) => {
           layerRef={polygonLayerRef}
           polygons={polygons}
           setPolygons={setPolygons}
+          annotations={annotations}
+          setAnnotations={setAnnotations}
           activeMode={activeMode}
           selectedId={selectedId}
           selectShape={selectShape}
           highlightId={highlightId}
           currentMousePos={currentMousePos}
           isDraggingViewport={!!viewportStartPos}
+          setPositionClassSelection={setContextMenuPosition}
+          handleFinishDraw={handleFinishDraw(ANNOTATION_TYPE.MASK)}
           isClickOn={isClickOn}
         />
         <BrushPolygonLayer
@@ -356,8 +399,17 @@ const Annotator = (props) => {
           highlightId={highlightId}
           currentMousePos={currentMousePos}
           isDraggingViewport={!!viewportStartPos}
+          handleFinishDraw={handleFinishDraw(ANNOTATION_TYPE.BBOX)}
         />
       </Stage>
+      <ClassSelectionPopover
+        isOpen={isOpenClassSelection}
+        annotationClasses={annotationClasses}
+        setOpenState={setIsOpenClassSelection}
+        contextMenuPosition={contextMenuPosition}
+        setContextMenuPosition={setContextMenuPosition}
+        handleSelectClass={handleSelectClass}
+      />
       <KeyboardHandler
         activeMode={activeMode}
         toolboxConfig={toolboxConfig}

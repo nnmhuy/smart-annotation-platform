@@ -16,6 +16,7 @@ const uidgen = new UIDGenerator();
 const PolygonLayer = (props) => {
   const { 
     layerRef,
+    handleFinishDraw,
     polygons, setPolygons,
     activeMode, highlightId,
     selectedId, selectShape,
@@ -78,15 +79,19 @@ const PolygonLayer = (props) => {
           polys: [drawingPoly]
         })
       }
+      selectShape('')
     }
   }
 
 
   const finishDrawPolygon = () => {
     drawingPolygon.polys = formatPolygonsToRightCCW(drawingPolygon.polys)
+    // handleNewAnnotation(drawingPolygon)
     setPolygons([...polygons, drawingPolygon])
     setDrawingPolygon(null)
     setIsMouseOverPolygonStart(false)
+    selectShape(drawingPolygon.id)
+    handleFinishDraw(drawingPolygon)
   }
 
   const handleClickCutPolygon = (e) => {

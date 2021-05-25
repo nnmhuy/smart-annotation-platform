@@ -20,6 +20,7 @@ const RectangleLayer = (props) => {
     selectedId, highlightId, selectShape,
     currentMousePos,
     isDraggingViewport,
+    handleFinishDraw,
   } = props
 
   const [drawingRectangle, setDrawingRectangle] = React.useState(null)
@@ -44,12 +45,14 @@ const RectangleLayer = (props) => {
         id: uidgen.generateSync(),
       })
     } else {
+      selectShape(drawingRectangle.id)
       finishDrawRectangle()
     }
   }
 
   const finishDrawRectangle = () => {
     setRectangles([...rectangles, drawingRectangle])
+    handleFinishDraw(drawingRectangle)
     setDrawingRectangle(null)
   }
 
