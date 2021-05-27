@@ -17,16 +17,13 @@ const useStyles = makeStyles((props) => ({
     margin: 10,
     borderRadius: 10,
     alignItem: 'center',
-    backgroundColor: props => isSelected(props) ? theme.light.primaryColor : theme.light.backgroundColor
+    backgroundColor: props => !props.isActive ? theme.light.primaryColor : theme.light.secondaryColor
   },
   icon: {
     width: 20,
     height: 20,
     color: theme.light.darkColor
   },
-  activeIcon: {
-    color: theme.light.secondaryColor
-  }
 }))
 
 export default function ToolboxButton(props) {
@@ -35,8 +32,8 @@ export default function ToolboxButton(props) {
   const classes = useStyles(props)
   return (
     <Tooltip title={name} placement="right">
-      <div className={classes.button} onClick={handleClick}>
-        <SvgIcon className={clsx(classes.icon, isActive && classes.activeIcon)}>
+      <div className={clsx(classes.button, isActive && classes.activeIcon)} onClick={handleClick}>
+        <SvgIcon className={classes.icon}>
           {component}
         </SvgIcon>
       </div>

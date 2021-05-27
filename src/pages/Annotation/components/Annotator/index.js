@@ -3,10 +3,11 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Stage } from 'react-konva'
 import { get } from 'lodash'
 
-import { 
-  MODES, 
+import {
+  MODES,
   MANUAL_EVENTS,
   ANNOTATION_SHAPE_LIST,
+  ANNOTATION_TYPE,
 } from '../../constants'
 
 import KeyboardHandler from './KeyboardHandler'
@@ -18,6 +19,9 @@ import CommonLayer from './CommonLayer'
 import getPointerPosition from '../../utils/getPointerPosition'
 import getStagePosLimit from '../../utils/getStagePosLimit'
 import handleStageZoom from '../../utils/handleStageZoom'
+import PolygonAnnotation from '../../../../classes/PolygonAnnotationClass'
+import BboxAnnotation from '../../../../classes/BBoxAnnotationClass'
+import ClassSelectionPopover from './ClassSelectionPopover'
 
 const useStyles = makeStyles(() => ({
   stage: {
@@ -27,13 +31,15 @@ const useStyles = makeStyles(() => ({
 
 const Annotator = (props) => {
   const classes = useStyles(props)
-  const { 
+  const {
     stageSize,
     activeMode,
     toolboxConfig, setToolboxConfig,
     image,
     rectangles, setRectangles,
     polygons, setPolygons,
+    annotations, setAnnotations,
+    annotationClasses,
   } = props
 
   const stageRef = React.createRef(null)
@@ -42,13 +48,14 @@ const Annotator = (props) => {
   const rectangleLayerRef = React.createRef(null)
   const brushPolygonLayerRef = React.createRef(null)
 
-  
-  const [currentMousePos, setCurrentMousePos] = React.useState({ x: 0, y: 0})
+
+  const [currentMousePos, setCurrentMousePos] = React.useState({ x: 0, y: 0 })
+  const [contextMenuPosition, setContextMenuPosition] = React.useState({ x: 0, y: 0 })
+  const [isOpenClassSelection, setIsOpenClassSelection] = React.useState(false)
   const [selectedId, selectShape] = React.useState(null)
   const [highlightId, setHighlightId] = React.useState(null)
   const [forceViewportHandling, setForceViewportHandling] = React.useState(false)
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
-  
   const resetAllState = () => {
     selectShape(null)
 
@@ -90,11 +97,11 @@ const Annotator = (props) => {
     setViewportStartPos(null)
   }
 
-  const handleViewportMove = (e) => {    
+  const handleViewportMove = (e) => {
     e.evt.preventDefault();
-    
+
     const stage = stageRef.current
-    
+
     if (viewportStartPos) {
       const pointer = stage.getPointerPosition();
       const stagePos = stage.position()
@@ -114,10 +121,10 @@ const Annotator = (props) => {
 
       stage.position(newPos);
       stage.batchDraw();
-  
+
       setViewportStartPos(pointer)
     }
-  } 
+  }
 
   /**
   * check clicking on empty area
@@ -293,7 +300,72 @@ const Annotator = (props) => {
     e.evt.preventDefault()
 
     handlePropagateStageEventToChildrenLayers("contextmenu", e)
+    if (activeMode === MODES.EDIT && selectedId) {
+      setContextMenuPosition(currentMousePos)
+      setIsOpenClassSelection(true)
+    }
   }
+
+  const handleFinishDraw = (type) => (data) => {
+    let annotation
+    switch (type) {
+      case ANNOTATION_TYPE.MASK:
+        annotation = new PolygonAnnotation(data.id, '', '', data.polys)
+        break
+      case ANNOTATION_TYPE.BBOX:
+        annotation = new BboxAnnotation(data.id, '', '', data)
+        break
+      default:
+        break
+    }
+    setAnnotations([...annotations, annotation])
+    setContextMenuPosition(currentMousePos)
+    setIsOpenClassSelection(true)
+    selectShape(data.id)
+  }
+
+  const handleSelectClass = (labelId) => {
+    let typeOfAnnotate
+    const newAnnotations = annotations.map((annotation) => {
+      if (annotation.id === selectedId) {
+        const newAnnotation = { ...annotation, labelId }
+        typeOfAnnotate = annotation.type
+        return newAnnotation
+      }
+      return annotation
+    })
+    console.log(typeOfAnnotate)
+    const labelColor = annotationClasses.find(value => value.id === labelId).color
+
+    switch (typeOfAnnotate) {
+      case ANNOTATION_TYPE.MASK:
+        const newPolygons = polygons.map((polygon) => {
+          if (polygon.id === selectedId) {
+            console.log("Change color")
+            console.log(polygon)
+            const newPolygon = { ...polygon, fill: labelColor }
+            return newPolygon
+          }
+          return polygon
+        })
+        setPolygons(newPolygons)
+        break;
+      case ANNOTATION_TYPE.BBOX:
+        const newRects = rectangles.map((rect) => {
+          if (rect.id === selectedId) {
+            const newRect = { ...rect, fill: labelColor }
+            return newRect
+          }
+          return rect
+        })
+        setRectangles(newRects)
+        break;
+      default:
+        break;
+    }
+    setAnnotations(newAnnotations)
+  }
+
 
   return (
     <>
@@ -328,12 +400,16 @@ const Annotator = (props) => {
           layerRef={polygonLayerRef}
           polygons={polygons}
           setPolygons={setPolygons}
+          annotations={annotations}
+          setAnnotations={setAnnotations}
           activeMode={activeMode}
           selectedId={selectedId}
           selectShape={selectShape}
           highlightId={highlightId}
           currentMousePos={currentMousePos}
           isDraggingViewport={!!viewportStartPos}
+          setPositionClassSelection={setContextMenuPosition}
+          handleFinishDraw={handleFinishDraw(ANNOTATION_TYPE.MASK)}
           isClickOn={isClickOn}
         />
         <BrushPolygonLayer
@@ -356,8 +432,18 @@ const Annotator = (props) => {
           highlightId={highlightId}
           currentMousePos={currentMousePos}
           isDraggingViewport={!!viewportStartPos}
+          handleFinishDraw={handleFinishDraw(ANNOTATION_TYPE.BBOX)}
         />
       </Stage>
+      <ClassSelectionPopover
+        isOpen={isOpenClassSelection}
+        selectShape={selectShape}
+        annotationClasses={annotationClasses}
+        setOpenState={setIsOpenClassSelection}
+        contextMenuPosition={contextMenuPosition}
+        setContextMenuPosition={setContextMenuPosition}
+        handleSelectClass={handleSelectClass}
+      />
       <KeyboardHandler
         activeMode={activeMode}
         toolboxConfig={toolboxConfig}

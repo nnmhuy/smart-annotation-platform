@@ -265,7 +265,6 @@ const Polygon = (props) => {
       />
       {toDrawPolys.map((mainPoints, polyIndex) => {
         const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
-
         const midPoints = polysMidPoints[polyIndex]
         const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
 

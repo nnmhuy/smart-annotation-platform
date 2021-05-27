@@ -20,6 +20,7 @@ const RectangleLayer = (props) => {
     selectedId, highlightId, selectShape,
     currentMousePos,
     isDraggingViewport,
+    handleFinishDraw,
   } = props
 
   const [drawingRectangle, setDrawingRectangle] = React.useState(null)
@@ -51,6 +52,7 @@ const RectangleLayer = (props) => {
   const finishDrawRectangle = () => {
     setRectangles([...rectangles, drawingRectangle])
     setDrawingRectangle(null)
+    handleFinishDraw(drawingRectangle)
   }
 
   const handleDragDrawRectangle = (e) => {
@@ -102,7 +104,7 @@ const RectangleLayer = (props) => {
               ...rect,
               opacity: (rect.id === highlightId || rect.id === selectedId) ? 0.5 : 0.4,
             }}
-            isSelected={rect.id === selectedId}
+            isSelected={rect.id === selectedId && activeMode === MODES.EDIT}
             onChange={(newAttrs) => {
               const rects = rectangles.slice();
               rects[i] = newAttrs;
