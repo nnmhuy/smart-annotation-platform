@@ -1,6 +1,7 @@
 import React from 'react'
 import clsx from 'clsx';
 import { InvisibleIcon, VisibleIcon } from './SidebarIcon'
+import { theme } from '../../../../theme'
 
 import {
   Collapse,
@@ -22,18 +23,25 @@ const styles = {
   }
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((props) => ({
   showClassWrapper: {
     display: 'flex',
     alignItems: 'center',
     paddingLeft: 20,
-    backgroundColor: 'white'
+    backgroundColor: theme.light.secondaryColor,
+    borderRadius: 5,
+    marginBottom: 5
+  },
+  table: {
+    backgroundColor: theme.light.tertiaryColor,
+    borderRadius: 5,
+    marginBottom: 20
   },
   expand: {
     transform: 'rotate(0deg)',
     marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
+    transition: props.transitions.create('transform', {
+      duration: props.transitions.duration.shortest,
     }),
   },
   expandOpen: {
@@ -44,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 30 },
-  { field: 'type', headerName: 'Type', width: 50 },
+  { field: 'type', headerName: 'Type', width: 100 },
 ]
 
 const ClassList = (props) => {
@@ -90,36 +98,35 @@ const ClassList = (props) => {
           <ExpandMoreIcon />
         </IconButton>
       </div>
-      <Divider/>
       {(rows.length !== 0) && <Collapse in={expanded}>
-        <Table>
+        <Table className={classes.table}>
           <TableHead>
             <TableRow>
-              {columns.map((column) => (
-                <TableCell key={column.field}>
-                  {column.headerName}
-                </TableCell>
-              ))}
-              <TableCell>
+              <TableCell style={{width: 10}}>
                 <div style={styles.icon}>
                   {VisibleIcon}
                 </div>
               </TableCell>
+              {columns.map((column) => (
+                <TableCell style={{width: column.width}} key={column.field}>
+                  {column.headerName}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row) => (
               <TableRow key={row.id}>
+                <TableCell style={{width: 10}}>
+                  <div style={styles.icon} onClick={() => toggleVisibility(row.id)}>
+                    {row.isHidden ? InvisibleIcon : VisibleIcon}
+                  </div>
+                </TableCell>
                 {columns.map((column) => (
                   <TableCell key={column.field}>
                     {row[`${column.field}`]}
                   </TableCell>
                 ))}
-                <TableCell>
-                  <div style={styles.icon} onClick={() => toggleVisibility(row.id)}>
-                    {row.isHidden ? InvisibleIcon : VisibleIcon}
-                  </div>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
