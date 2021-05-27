@@ -96,6 +96,7 @@ const AnnotationPage = (props) => {
         <Sidebar 
           annotationClasses={annotationClasses}
           setAnnotationClasses={setAnnotationClasses}
+          annotations={annotations}
           setImage={setImage}
           stageSize={stageSize}
         />

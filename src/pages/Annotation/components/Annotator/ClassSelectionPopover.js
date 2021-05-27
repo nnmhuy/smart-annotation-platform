@@ -6,11 +6,14 @@ import {TextField} from '@material-ui/core';
 import {Autocomplete} from '@material-ui/lab'
 
 const ClassSelectionPopover = (props) => {
-  const { contextMenuPosition, isOpen, setOpenState, handleSelectClass, annotationClasses = [] } = props
+  const { contextMenuPosition, isOpen, setOpenState, handleSelectClass, selectShape, annotationClasses = [] } = props
   const [selectedValue, setValue] = React.useState('')
   const handleClose = () => {
-    setOpenState(false)
+    console.log("Close")
+    selectShape(null)
     setValue(null)
+    setOpenState(false)
+
   }
 
   if (!isOpen) {
@@ -35,7 +38,7 @@ const ClassSelectionPopover = (props) => {
       <Autocomplete
         options={annotationClasses}
         style={{ width: 300 }}
-        getOptionLabel={(options) => options.label || ""}
+        getOptionLabel={(options) => options.label || ''}
         value={selectedValue}
         onChange={(event, newValue) => {
           if (newValue) {

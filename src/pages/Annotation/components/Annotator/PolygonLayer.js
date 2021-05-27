@@ -86,11 +86,9 @@ const PolygonLayer = (props) => {
 
   const finishDrawPolygon = () => {
     drawingPolygon.polys = formatPolygonsToRightCCW(drawingPolygon.polys)
-    // handleNewAnnotation(drawingPolygon)
     setPolygons([...polygons, drawingPolygon])
-    setDrawingPolygon(null)
     setIsMouseOverPolygonStart(false)
-    selectShape(drawingPolygon.id)
+    setDrawingPolygon(null)
     handleFinishDraw(drawingPolygon)
   }
 

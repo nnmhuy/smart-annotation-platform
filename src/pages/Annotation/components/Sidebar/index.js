@@ -14,20 +14,26 @@ const styles = {
 
 export default class Sidebar extends Component {
   render() {
-    const { 
+    const {
       stageSize,
-      annotationClasses, setAnnotationClasses, setImage 
+      setImage,
+      annotationClasses,
+      annotations,
     } = this.props
     return (
       <div style={styles.sideBarWrapper}>
-        <ImageUploader 
+        <ImageUploader
           stageSize={stageSize}
           setImage={setImage}
         />
-        <ClassList 
-          annotationClasses={annotationClasses}
-          setAnnotationClasses={setAnnotationClasses}
-        />
+        {
+          annotationClasses.map(value => {
+            return <ClassList
+              annotations={annotations.filter(anno => anno.labelId === value.id)}
+              classLabel={value.label}
+            />
+          })
+        }
       </div>
     )
   }

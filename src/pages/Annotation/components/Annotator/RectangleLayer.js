@@ -45,15 +45,14 @@ const RectangleLayer = (props) => {
         id: uidgen.generateSync(),
       })
     } else {
-      selectShape(drawingRectangle.id)
       finishDrawRectangle()
     }
   }
 
   const finishDrawRectangle = () => {
     setRectangles([...rectangles, drawingRectangle])
-    handleFinishDraw(drawingRectangle)
     setDrawingRectangle(null)
+    handleFinishDraw(drawingRectangle)
   }
 
   const handleDragDrawRectangle = (e) => {
@@ -105,7 +104,7 @@ const RectangleLayer = (props) => {
               ...rect,
               opacity: (rect.id === highlightId || rect.id === selectedId) ? 0.5 : 0.4,
             }}
-            isSelected={rect.id === selectedId}
+            isSelected={rect.id === selectedId && activeMode === MODES.EDIT}
             onChange={(newAttrs) => {
               const rects = rectangles.slice();
               rects[i] = newAttrs;
