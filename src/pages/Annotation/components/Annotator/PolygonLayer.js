@@ -2,7 +2,7 @@ import React from 'react'
 import { Layer } from 'react-konva'
 import UIDGenerator from 'uid-generator'
 
-import Polygon from './Polygon'
+import Polygon from './Polygon/Polygon'
 
 import {
   MODES,

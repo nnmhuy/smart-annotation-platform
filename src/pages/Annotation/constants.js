@@ -59,6 +59,8 @@ const MIN_BRUSH_SIZE = 1
 const MIN_ZOOM_SCALE = 0.5
 const MAX_ZOOM_SCALE = 5
 
+const MIN_DIST_TO_START_POINT = 10
+
 export {
   MODES,
   MANUAL_EVENTS,
@@ -72,4 +74,6 @@ export {
 
   MIN_ZOOM_SCALE,
   MAX_ZOOM_SCALE,
+
+  MIN_DIST_TO_START_POINT,
 }

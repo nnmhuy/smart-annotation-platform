@@ -7,7 +7,7 @@ import { cloneDeep } from 'lodash'
 const MIN_DIST_TO_START_POINT = 10
 
 const Polygon = (props) => {
-  const { 
+  const {
     polygon, currentMousePos,
     isDrawing, isCutting, isEditing,
     isSelected, onSelect,
@@ -46,7 +46,7 @@ const Polygon = (props) => {
     event.target.scale({ x: 2, y: 2 });
     setIsMouseOverPolygonStart(true)
   }
-  
+
   const handleMouseOutStartPoint = event => {
     event.target.scale({ x: 1, y: 1 });
     setIsMouseOverPolygonStart(false)
@@ -81,12 +81,12 @@ const Polygon = (props) => {
       })
     } else {
       setPolysMidPoints(polysMidPoints.map((poly, index) => {
-          if (index !== polyIndex) {
-            return poly
-          } else {
-            return [...poly.slice(0, pointIndex), pos, ...poly.slice(pointIndex + 1)]
-          }
-        })
+        if (index !== polyIndex) {
+          return poly
+        } else {
+          return [...poly.slice(0, pointIndex), pos, ...poly.slice(pointIndex + 1)]
+        }
+      })
       )
     }
   }
@@ -216,12 +216,12 @@ const Polygon = (props) => {
 
   let toDrawPolys = polys.map((points, polyIndex) => {
     const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
-  
+
     const addMousePos = [currentMousePos.x, currentMousePos.y]
     let mainPoints = points
-    if (isActivePoly 
-      && isValidProcessingPolygon 
-      && points[0] 
+    if (isActivePoly
+      && isValidProcessingPolygon
+      && points[0]
       && Flatten.point(addMousePos).distanceTo(Flatten.point(points[0]))[0] > MIN_DIST_TO_START_POINT
     ) {
       mainPoints = mainPoints.concat([addMousePos])
@@ -242,7 +242,7 @@ const Polygon = (props) => {
       newFace.reverse()
     }
   })
-  
+
   return (
     <Group
       ref={groupRef}
@@ -312,35 +312,35 @@ const Polygon = (props) => {
                 );
               }
               )}
-              {/* Rendering mid points for editing */}
-              {(!isDraggingPolygon && isEditing) &&
-                midPoints.map((point, pointIndex) => {
-                  const x = point[0] + polygon.x;
-                  const y = point[1] + polygon.y;
-                  return (
-                    <Circle
-                      key={`poly-midpoint-${id}-${polyIndex}-${pointIndex}`}
-                      x={x}
-                      y={y}
-                      radius={5 / scale}
-                      fill="white"
-                      stroke="black"
-                      opacity={0.8}
-                      strokeWidth={2 / scale}
-                      onDragStart={handleDragStartPoint}
-                      onDragMove={(e) => handleDragMovePoint(e, polyIndex, pointIndex, true)}
-                      onDragEnd={(e) => handleDragEndPoint(e, polyIndex, pointIndex, true)}
-                      draggable={isEditing}
-                      hitFunc={isDraggingViewport && function (context) {
-                        // disable hitFunc while dragging viewport
-                      }}
-                    />
-                  );
-                })
-              }
-            </>
-          )
-        }
+            {/* Rendering mid points for editing */}
+            {(!isDraggingPolygon && isEditing) &&
+              midPoints.map((point, pointIndex) => {
+                const x = point[0] + polygon.x;
+                const y = point[1] + polygon.y;
+                return (
+                  <Circle
+                    key={`poly-midpoint-${id}-${polyIndex}-${pointIndex}`}
+                    x={x}
+                    y={y}
+                    radius={5 / scale}
+                    fill="white"
+                    stroke="black"
+                    opacity={0.8}
+                    strokeWidth={2 / scale}
+                    onDragStart={handleDragStartPoint}
+                    onDragMove={(e) => handleDragMovePoint(e, polyIndex, pointIndex, true)}
+                    onDragEnd={(e) => handleDragEndPoint(e, polyIndex, pointIndex, true)}
+                    draggable={isEditing}
+                    hitFunc={isDraggingViewport && function (context) {
+                      // disable hitFunc while dragging viewport
+                    }}
+                  />
+                );
+              })
+            }
+          </>
+        )
+      }
       )}
     </Group>
   )
