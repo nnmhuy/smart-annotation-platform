@@ -6,20 +6,31 @@ import { MODES } from './constants'
 import Toolbox from './components/Toolbox/index'
 import Sidebar from './components/Sidebar/index'
 import Annotator from './components/Annotator'
+import ThumbnailSlider from './components/ThumbnailSlider'
+import {demoAnnotateData, dataList} from '../../mockup'
 
 
 
 const useStyles = makeStyles(() => ({
   root: {
+    display: 'flex',
+    width: '100%',
+    height: '100vh',
+    flexDirection: 'column',
+    overflow: 'hidden'
+  },
+  annotationWrapper: {
     // background: '#f8f8f8'
     display: 'flex',
     flexDirection: 'row',
-    width: '100vw',
-    height: '100vh',
+    width: '100%',
+    height: '100%',
     overflow: 'hidden'
   },
   annotatorContainer: {
     background: '#f8f8f8',
+    display:'flex',
+    flexDirection: 'column',
     width: '80%'
   },
   toolboxContainer: {
@@ -29,11 +40,6 @@ const useStyles = makeStyles(() => ({
     width: '20%',
   }
 }))
-
-const demoAnnotateData = [
-  { id: 1, label: 'Cat', isHidden: true, color: 'red' },
-  { id: 2, label: 'Dog', isHidden: false, color: 'green' }
-] 
 
 const AnnotationPage = (props) => {
   const classes = useStyles()
@@ -49,6 +55,7 @@ const AnnotationPage = (props) => {
   const [polygons, setPolygons] = React.useState([])
   const [annotations, setAnnotations] = React.useState([])
   const [annotationClasses, setAnnotationClasses] = React.useState(demoAnnotateData)
+  const [selectedImageId, setSelectedImageId] = React.useState(null)
 
   const handleNewStageSize = () => {
     const container = document.getElementById('stage-container')
@@ -66,41 +73,56 @@ const AnnotationPage = (props) => {
     }
   }, [])
 
+  const handleSelectImage = (imageId) => {
+    setSelectedImageId(imageId)
+    const data = dataList.find(data => data.id === imageId)
+    // let image = new Image()
+    // image.src = getBase64Image(data.imageURL)
+    // setImage(image)
+  }
+
   return (
     <div className={classes.root}>
-      <div className={classes.toolboxContainer}>
-        <Toolbox
-          activeMode={activeMode}
-          setActiveMode={setActiveMode}
-          toolboxConfig={toolboxConfig}
-          setToolboxConfig={setToolboxConfig}
-        />
+      <div className={classes.annotationWrapper}>
+        <div className={classes.toolboxContainer}>
+          <Toolbox
+            activeMode={activeMode}
+            setActiveMode={setActiveMode}
+            toolboxConfig={toolboxConfig}
+            setToolboxConfig={setToolboxConfig}
+          />
+        </div>
+        <div className={classes.annotatorContainer} id='stage-container'>
+          <Annotator
+            activeMode={activeMode}
+            toolboxConfig={toolboxConfig}
+            setToolboxConfig={setToolboxConfig}
+            image={image}
+            rectangles={rectangles}
+            setRectangles={setRectangles}
+            polygons={polygons}
+            setPolygons={setPolygons}
+            annotations={annotations}
+            setAnnotations={setAnnotations}
+            annotationClasses={annotationClasses}
+            stageSize={stageSize}
+          />
+        </div>
+        <div className={classes.sidebarWrapper}>
+          <Sidebar 
+            annotationClasses={annotationClasses}
+            setAnnotationClasses={setAnnotationClasses}
+            annotations={annotations}
+            setImage={setImage}
+            stageSize={stageSize}
+          />
+        </div>
       </div>
-      <div className={classes.annotatorContainer} id='stage-container'>
-        <Annotator
-          activeMode={activeMode}
-          toolboxConfig={toolboxConfig}
-          setToolboxConfig={setToolboxConfig}
-          image={image}
-          rectangles={rectangles}
-          setRectangles={setRectangles}
-          polygons={polygons}
-          setPolygons={setPolygons}
-          annotations={annotations}
-          setAnnotations={setAnnotations}
-          annotationClasses={annotationClasses}
-          stageSize={stageSize}
-        />
-      </div>
-      <div className={classes.sidebarWrapper}>
-        <Sidebar 
-          annotationClasses={annotationClasses}
-          setAnnotationClasses={setAnnotationClasses}
-          annotations={annotations}
-          setImage={setImage}
-          stageSize={stageSize}
-        />
-      </div>
+      <ThumbnailSlider
+          dataList={dataList}
+          selectedId={selectedImageId}
+          setSelectedId={handleSelectImage}
+      />
     </div>
   );
 }
