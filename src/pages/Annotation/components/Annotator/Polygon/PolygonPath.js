@@ -14,7 +14,6 @@ const PolygonPath = (props) => {
   const { id, polys, ...others } = polygon
 
   const pathRef = React.useRef(null)
-  const [fullPolygonData, setFullPolygonData] = React.useState('')
 
   React.useEffect(() => {
     let fullPolygon = Flatten.polygon()
