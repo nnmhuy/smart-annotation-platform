@@ -335,7 +335,7 @@ const Annotator = (props) => {
       return annotation
     })
     console.log(typeOfAnnotate)
-    const labelColor = annotationClasses.find(value => value.id === labelId).color
+    const labelColor = ((annotationClasses.find(value => value.id === labelId) || {}).color || 'green')
 
     switch (typeOfAnnotate) {
       case ANNOTATION_TYPE.MASK:
