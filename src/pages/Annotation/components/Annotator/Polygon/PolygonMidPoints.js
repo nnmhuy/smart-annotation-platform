@@ -29,7 +29,7 @@ const PolygonMidPoints = (props) => {
 
   useEffect(() => {
     calculateMidPoints()
-  }, [polys])
+  }, [polys]) // eslint-disable-line
 
   const handleStartDraggingMidPoint = (event) => {
     const key = event.target.key;
