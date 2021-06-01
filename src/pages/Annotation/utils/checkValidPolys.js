@@ -1,6 +1,7 @@
 import Flatten from '@flatten-js/core'
 
 const checkValidPolys = (polys) => {
+  return true
   let fullPoly = Flatten.polygon(polys[0])
   let isValidPolys = true
 

@@ -38,6 +38,7 @@ const SideBar = (props) => {
       {
         annotationClasses.map(value => {
           return <ClassList
+            key={value.label}
             annotations={annotations.filter(anno => anno.labelId === value.id)}
             classLabel={value.label}
           />

@@ -13,6 +13,7 @@ const PolygonPath = (props) => {
 
   const { id, polys, ...others } = polygon
 
+  const pathRef = React.useRef(null)
   const [fullPolygonData, setFullPolygonData] = React.useState('')
 
   React.useEffect(() => {
@@ -28,15 +29,28 @@ const PolygonPath = (props) => {
         newFace.reverse()
       }
     })
-    setFullPolygonData(fullPolygon.svg())
+    
+    const polygonSvgData = fullPolygon.svg()
+    const toNodes = html => new DOMParser().parseFromString(html, 'text/html').body.childNodes[0]
+    const svgPathNode = toNodes(polygonSvgData)
+
+    if (svgPathNode) {
+  
+      const path = pathRef.current
+      path.data(svgPathNode.getAttribute("d"))
+      path.setAttrs({
+        fillRule: "evenodd",
+        "fill-rule": "evenodd"
+      })
+    }
   }, [polys])
 
 
 
   return (
     <Path
+      ref={pathRef}
       id={id}
-      data={fullPolygonData}
       onClick={onSelect}
       onTap={onSelect}
       draggable={isEditing}
