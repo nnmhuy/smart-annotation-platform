@@ -56,11 +56,11 @@ const PolygonMainPoints = (props) => {
       }
     })
     if (checkValidPolys(newPolys)) {
+      setLastValidPos({ x: pos[0], y: pos[1] })
       onChange({
         ...polygon,
         polys: newPolys
       })
-      setLastValidPos({x: pos[0], y: pos[1]})
     } else {
       if (lastValidPos) {
         target.absolutePosition(lastValidPos)

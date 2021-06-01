@@ -58,6 +58,7 @@ const PolygonMidPoints = (props) => {
 
     const newPolys = getNewPolysAfterDraggingMidPoint(polys, polyIndex, pointIndex, pos)
     if (checkValidPolys(newPolys)) {
+      setLastValidMidPoint({ x: pos[0], y: pos[1] })
       setPolysMidPoints(polysMidPoints.map((poly, index) => {
         if (index !== polyIndex) {
           return poly
@@ -65,7 +66,6 @@ const PolygonMidPoints = (props) => {
           return [...poly.slice(0, pointIndex), pos, ...poly.slice(pointIndex + 1)]
         }
       }))
-      setLastValidMidPoint({ x: pos[0], y: pos[1] })
     } else {
       if (lastValidMidPoint) {
         event.target.absolutePosition(lastValidMidPoint)
