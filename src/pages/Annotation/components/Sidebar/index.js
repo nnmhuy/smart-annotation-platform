@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React from 'react'
 
-import ImageUploader from './ImageUploader'
+// import ImageUploader from './ImageUploader'
 import ClassList from './ClassList'
 
 import { theme } from '../../../../theme'
@@ -23,8 +23,8 @@ const useStyles = makeStyles((props) => ({
 
 const SideBar = (props) => {
   const {
-    stageSize,
-    setImage,
+    // stageSize,
+    // setImage,
     annotationClasses,
     annotations,
   } = props
