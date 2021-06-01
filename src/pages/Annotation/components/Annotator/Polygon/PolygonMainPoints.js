@@ -40,6 +40,7 @@ const PolygonMainPoints = (props) => {
     }
     const pos = [event.target.attrs.x, event.target.attrs.y];
 
+    // TODO check valid polygon
     onChange({
       ...polygon,
       polys: polys.map((poly, index) => {

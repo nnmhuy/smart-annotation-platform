@@ -1,13 +1,13 @@
 import React from 'react'
-import { Group, Path } from 'react-konva'
+import { Group } from 'react-konva'
 import Flatten from '@flatten-js/core'
-import { cloneDeep } from 'lodash'
 
 import PolygonPath from './PolygonPath'
 import PolygonMidPoints from './PolygonMidPoints'
 import PolygonMainPoints from './PolygonMainPoints'
 
 import { MIN_DIST_TO_START_POINT } from '../../../constants'
+import checkValidPolys from '../../../utils/checkValidPolys'
 
 const Polygon = (props) => {
   const {
@@ -16,97 +16,54 @@ const Polygon = (props) => {
     isSelected, onSelect,
     setIsMouseOverPolygonStart,
     onChange,
-    setCuttingPolygon,
-    isValidProcessingPolygon, setIsValidProcessingPolygon,
+    setIsValidProcessingPolygon,
   } = props
 
   const groupRef = React.useRef(null)
   const [draggingPointKey, setDraggingPointKey] = React.useState(null)
   const [isDraggingPolygon, setIsDraggingPolygon] = React.useState(false)
   
-  const { id, polys, ...others } = polygon
+  const { id, polys } = polygon
   const scale = (groupRef && groupRef.current) ? groupRef.current.getStage().scaleX() : 1
 
   const [toDrawPolys, setToDrawPolys] = React.useState(polys)
 
   React.useEffect(() => {
     // check if adding currentMousePos to the rendering polygon
-    // handle click cut inside polygon checking
-    // handle drawing polygon self-intersection checking
+    //  handle click cut inside polygon checking
+    //  handle drawing polygon self-intersection checking
+    //  check min dist to start point
+    //  check intersecting faces
 
-
-    // handle click cut inside polygon checking
-    if (isCutting) {
-      const cuttingPoly = Flatten.polygon()
-      let cutPolyPoints = cloneDeep(polys[polys.length - 1])
-
+    if (isCutting || isDrawing) {
       const addMousePos = [currentMousePos.x, currentMousePos.y]
-      if (cutPolyPoints[0] && Flatten.point(addMousePos).distanceTo(Flatten.point(cutPolyPoints[0]))[0] > MIN_DIST_TO_START_POINT) {
-        cutPolyPoints.push(addMousePos)
-      }
 
-      cuttingPoly.addFace(cutPolyPoints)
+      let interactingPolys = polys.map((points, polyIndex) => {
+        const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
 
-      let hasIntersection = false
-      polys.forEach((points, polyIndex) => {
-        if (polyIndex === polys.length - 1) {
-          return
+        let mainPoints = points
+        if (isActivePoly
+          && 
+          (!points[0] || Flatten.point(addMousePos).distanceTo(Flatten.point(points[0]))[0] > MIN_DIST_TO_START_POINT)
+        ) {
+          mainPoints = mainPoints.concat([addMousePos])
         }
 
-        const currentPoly = Flatten.polygon()
-        currentPoly.addFace(points)
-
-        const intersectionPoints = cuttingPoly.intersect(currentPoly)
-        hasIntersection = hasIntersection || (intersectionPoints.length > 0)
+        return mainPoints
       })
 
-      setIsValidProcessingPolygon(!hasIntersection && cuttingPoly.isValid())
+      if (checkValidPolys(interactingPolys)) {
+        setToDrawPolys(interactingPolys)
+        setIsValidProcessingPolygon(true)
+      } else {
+        setToDrawPolys(polys)
+        setIsValidProcessingPolygon(false)
+      }
+      
+    } else {
+      setToDrawPolys(polys)
     }
-
-    // handle drawing polygon self-intersection checking
-    if (isDrawing) {
-      const drawingPoly = Flatten.polygon()
-
-      let drawingPolyPoints = cloneDeep(polys[0])
-      const addMousePos = [currentMousePos.x, currentMousePos.y]
-      if (drawingPolyPoints[0] && Flatten.point(addMousePos).distanceTo(Flatten.point(drawingPolyPoints[0]))[0] > MIN_DIST_TO_START_POINT) {
-        drawingPolyPoints.push(addMousePos)
-      }
-
-      drawingPoly.addFace(drawingPolyPoints)
-      setIsValidProcessingPolygon(drawingPoly.isValid())
-    }
-
-
-    let toDrawPolys = polys.map((points, polyIndex) => {
-      const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
-
-      const addMousePos = [currentMousePos.x, currentMousePos.y]
-      let mainPoints = points
-      if (isActivePoly
-        && isValidProcessingPolygon
-        && points[0]
-        && Flatten.point(addMousePos).distanceTo(Flatten.point(points[0]))[0] > MIN_DIST_TO_START_POINT
-      ) {
-        mainPoints = mainPoints.concat([addMousePos])
-      }
-
-      return mainPoints
-    })
-
-    let fullPolygon = Flatten.polygon()
-    toDrawPolys.forEach((points, polyIndex) => {
-      if (points.length < 3) {
-        return
-      }
-      let newFace = fullPolygon.addFace(points)
-      if ((polyIndex === 0 && newFace.orientation() === Flatten.ORIENTATION.CCW) ||
-        (polyIndex !== 0 && newFace.orientation() === Flatten.ORIENTATION.CW)
-      ) {
-        newFace.reverse()
-      }
-    })
-  }, [currentMousePos])
+  }, [polys, currentMousePos, isCutting, isDrawing]) // eslint-disable-line
 
 
   const onDragPolygonStart = () => {
@@ -139,6 +96,7 @@ const Polygon = (props) => {
 
   return (
     <Group
+      id={id}
       ref={groupRef}
     >
       <PolygonPath
@@ -146,9 +104,12 @@ const Polygon = (props) => {
           ...polygon,
           polys: toDrawPolys,
         }}
+        isDraggingViewport={isDraggingViewport}
+        onSelect={onSelect}
         onDragPolygonStart={onDragPolygonStart}
         onDragPolygonMove={onDragPolygonMove}
         onDragPolygonEnd={onDragPolygonEnd}
+        scale={scale}
       />
       {(!isDraggingPolygon && (isDrawing || isSelected)) &&
         <PolygonMainPoints
@@ -158,7 +119,10 @@ const Polygon = (props) => {
           isDraggingViewport={isDraggingViewport}
           setIsMouseOverPolygonStart={setIsMouseOverPolygonStart}
           scale={scale}
-          polygon={polygon}
+          polygon={{
+            ...polygon,
+            polys: toDrawPolys,
+          }}
           onChange={onChange}
         />
       }

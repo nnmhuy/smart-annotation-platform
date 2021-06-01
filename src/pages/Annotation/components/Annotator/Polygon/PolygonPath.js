@@ -3,36 +3,48 @@ import Flatten from '@flatten-js/core'
 import { Path } from 'react-konva'
 
 const PolygonPath = (props) => {
-  const { polygon } = props
+  const { 
+    polygon,
+    scale,
+    isEditing, isDraggingViewport,
+    onSelect,
+    onDragPolygonStart, onDragPolygonMove, onDragPolygonEnd,
+  } = props
 
-  const { id, polys } = polygon
+  const { id, polys, ...others } = polygon
 
-  let fullPolygon = Flatten.polygon()
-  polys.forEach((points, polyIndex) => {
-    if (points.length < 3) {
-      return
-    }
-    let newFace = fullPolygon.addFace(points)
-    if ((polyIndex === 0 && newFace.orientation() === Flatten.ORIENTATION.CCW) ||
-      (polyIndex !== 0 && newFace.orientation() === Flatten.ORIENTATION.CW)
-    ) {
-      newFace.reverse()
-    }
-  })
+  const [fullPolygonData, setFullPolygonData] = React.useState('')
+
+  React.useEffect(() => {
+    let fullPolygon = Flatten.polygon()
+    polys.forEach((points, polyIndex) => {
+      if (points.length <= 1) {
+        return
+      }
+      let newFace = fullPolygon.addFace(points)
+      if ((polyIndex === 0 && newFace.orientation() === Flatten.ORIENTATION.CCW) ||
+        (polyIndex !== 0 && newFace.orientation() === Flatten.ORIENTATION.CW)
+      ) {
+        newFace.reverse()
+      }
+    })
+    setFullPolygonData(fullPolygon.svg())
+  }, [polys])
+
 
 
   return (
     <Path
       id={id}
-      data={fullPolygon.svg()}
+      data={fullPolygonData}
       onClick={onSelect}
       onTap={onSelect}
       draggable={isEditing}
-      onDragStart={onDragStart}
-      onDragMove={onDragMove}
-      onDragEnd={onDragEnd}
+      onDragStart={onDragPolygonStart}
+      onDragMove={onDragPolygonMove}
+      onDragEnd={onDragPolygonEnd}
       strokeWidth={others.strokeWidth / scale}
-      hitFunc={isDraggingViewport && function (context) {
+      hitFunc={isDraggingViewport && function () {
         // disable hitFunc while dragging viewport
       }}
       {...others}

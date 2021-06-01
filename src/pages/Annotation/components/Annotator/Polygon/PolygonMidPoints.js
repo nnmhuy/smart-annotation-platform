@@ -37,6 +37,7 @@ const PolygonMidPoints = (props) => {
     const pos = [event.target.attrs.x, event.target.attrs.y];
 
 
+    // TODO: check valid polygon
     setPolysMidPoints(polysMidPoints.map((poly, index) => {
       if (index !== polyIndex) {
         return poly
@@ -49,6 +50,7 @@ const PolygonMidPoints = (props) => {
   const handleEndDraggingMidPoint = (event, polyIndex, pointIndex) => {
     const pos = [event.target.attrs.x, event.target.attrs.y];
 
+    // TODO: check valid polygon
     onChange({
       ...polygon,
       polys: polys.map((poly, index) => {
