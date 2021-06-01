@@ -75,7 +75,7 @@ const AnnotationPage = (props) => {
 
   const handleSelectImage = (imageId) => {
     setSelectedImageId(imageId)
-    const data = dataList.find(data => data.id === imageId)
+    // const data = dataList.find(data => data.id === imageId)
     // let image = new Image()
     // image.src = getBase64Image(data.imageURL)
     // setImage(image)

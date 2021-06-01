@@ -5,10 +5,6 @@ import clsx from 'clsx'
 
 import { theme } from '../../../../theme'
 
-function isSelected(props) {
-  return props.currentMode === props.mode
-}
-
 const useStyles = makeStyles((props) => ({
   button: {
     width: 20,

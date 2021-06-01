@@ -3,7 +3,7 @@ import React from 'react'
 import { IconButton, makeStyles } from '@material-ui/core'
 
 import ThumbnailImage from './ThumbnailImage'
-import { KeyboardArrowLeft, KeyboardArrowRight, Minimize } from '@material-ui/icons'
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons'
 import { theme } from '../../../../theme'
 
 const useStyles = makeStyles((props) => ({
@@ -78,7 +78,7 @@ const ThumbnailSlider = (props) => {
             return (
               <ThumbnailImage
                 id={data.id}
-                isSelected={data.id == selectedId}
+                isSelected={data.id === selectedId}
                 setSelectedId={setSelectedId}
                 thumbnail={data.thumbnailURL}
               />)
