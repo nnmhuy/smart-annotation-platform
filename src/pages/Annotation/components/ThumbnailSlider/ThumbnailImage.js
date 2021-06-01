@@ -1,5 +1,4 @@
 import { makeStyles } from '@material-ui/core'
-import { Height } from '@material-ui/icons'
 import React from 'react'
 import { theme } from '../../../../theme'
 
@@ -33,7 +32,7 @@ const ThumbnailImage = (props) => {
   const classes = useStyles(props)
   return (
     <div className={classes.imageWrapper}>
-      <img className={classes.image} src={thumbnail} onClick={() => setSelectedId(id)} />
+      <img className={classes.image} src={thumbnail} alt='' onClick={() => setSelectedId(id)} />
     </div>
   )
 }

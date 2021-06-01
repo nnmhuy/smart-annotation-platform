@@ -44,7 +44,7 @@ const CommonLayer = (props) => {
     >
       {image &&
         <Image
-          src={image.resizedImg}
+          src={image.img}
           isDraggingViewport={isDraggingViewport}
         />
       }

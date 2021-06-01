@@ -73,8 +73,8 @@ const Annotator = (props) => {
       setPolygons([])
 
       const stage = stageRef.current
-      const imageWidth = get(image, 'resizedImageSize.width', 0)
-      const imageHeight = get(image, 'resizedImageSize.height', 0)
+      const imageWidth = get(image, 'width', 0)
+      const imageHeight = get(image, 'height', 0)
       stage.position({
         x: (stageSize.width - imageWidth) / 2,
         y: (stageSize.height - imageHeight) / 2,
@@ -334,15 +334,13 @@ const Annotator = (props) => {
       }
       return annotation
     })
-    console.log(typeOfAnnotate)
+
     const labelColor = ((annotationClasses.find(value => value.id === labelId) || {}).color || 'green')
 
     switch (typeOfAnnotate) {
       case ANNOTATION_TYPE.MASK:
         const newPolygons = polygons.map((polygon) => {
           if (polygon.id === selectedId) {
-            console.log("Change color")
-            console.log(polygon)
             const newPolygon = { ...polygon, fill: labelColor }
             return newPolygon
           }

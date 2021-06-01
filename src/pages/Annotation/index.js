@@ -1,15 +1,17 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
-import { MODES } from './constants'
+import { MODES, STAGE_PADDING } from './constants'
 
 import Toolbox from './components/Toolbox/index'
 import Sidebar from './components/Sidebar/index'
 import Annotator from './components/Annotator'
 import ThumbnailSlider from './components/ThumbnailSlider'
+
+import loadImageFromURL from '../../utils/loadImageFromURL'
+import resizeImage from '../../utils/resizeImage'
+
 import {demoAnnotateData, dataList} from '../../mockup'
-
-
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -75,10 +77,16 @@ const AnnotationPage = (props) => {
 
   const handleSelectImage = (imageId) => {
     setSelectedImageId(imageId)
-    // const data = dataList.find(data => data.id === imageId)
-    // let image = new Image()
-    // image.src = getBase64Image(data.imageURL)
-    // setImage(image)
+    const data = dataList.find(data => data.id === imageId)
+
+    loadImageFromURL(data.imageURL)
+    .then((imageData) => resizeImage(imageData, {
+      maxWidth: stageSize.width - STAGE_PADDING,
+      maxHeight: stageSize.height - STAGE_PADDING,
+    }))
+    .then(image => {
+      setImage(image)
+    })
   }
 
   return (
@@ -113,8 +121,6 @@ const AnnotationPage = (props) => {
             annotationClasses={annotationClasses}
             setAnnotationClasses={setAnnotationClasses}
             annotations={annotations}
-            setImage={setImage}
-            stageSize={stageSize}
           />
         </div>
       </div>

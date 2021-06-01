@@ -9,7 +9,6 @@ const ClassSelectionPopover = (props) => {
   const { contextMenuPosition, isOpen, setOpenState, handleSelectClass, selectShape, annotationClasses = [] } = props
   const [selectedValue, setValue] = React.useState('')
   const handleClose = () => {
-    console.log("Close")
     selectShape(null)
     setValue(null)
     setOpenState(false)

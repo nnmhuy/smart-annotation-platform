@@ -61,6 +61,8 @@ const MAX_ZOOM_SCALE = 5
 
 const MIN_DIST_TO_START_POINT = 10
 
+const STAGE_PADDING = 50
+
 export {
   MODES,
   MANUAL_EVENTS,
@@ -76,4 +78,5 @@ export {
   MAX_ZOOM_SCALE,
 
   MIN_DIST_TO_START_POINT,
+  STAGE_PADDING,
 }

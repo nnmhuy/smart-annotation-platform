@@ -96,8 +96,8 @@ const BrushPolygonLayer = (props) => {
     if (drawingBrushPolygon &&
       drawingBrushPolygon.polys.length > 0
     ) {
-      const canvasWidth = get(image, 'resizedImageSize.width', stageSize.width)
-      const canvasHeight = get(image, 'resizedImageSize.height', stageSize.height)
+      const canvasWidth = get(image, 'width', stageSize.width)
+      const canvasHeight = get(image, 'height', stageSize.height)
       const newDrawingBrushPolygon = convertBrushToPolygon(drawingBrushPolygon, {
         canvasWidth,
         canvasHeight,

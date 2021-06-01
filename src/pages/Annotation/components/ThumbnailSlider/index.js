@@ -55,7 +55,7 @@ const ThumbnailSlider = (props) => {
     if (!componentRef.current)
       return
     let newImagePerPage = Math.floor(componentRef.current.offsetWidth / 120)
-    console.log(newImagePerPage)
+
     setImagePerPage(newImagePerPage)
   }, [])
 
@@ -78,6 +78,7 @@ const ThumbnailSlider = (props) => {
             return (
               <ThumbnailImage
                 id={data.id}
+                key={`thumbnail-image-${data.id}`}
                 isSelected={data.id === selectedId}
                 setSelectedId={setSelectedId}
                 thumbnail={data.thumbnailURL}

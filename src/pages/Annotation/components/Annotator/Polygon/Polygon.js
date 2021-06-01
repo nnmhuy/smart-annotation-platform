@@ -73,7 +73,7 @@ const Polygon = (props) => {
   const onDragPolygonMove = event => {
     const dX = event.target.x()
     const dY = event.target.y()
-    console.log(dX, dY)
+
     onChange({
       ...polygon,
       x: dX,

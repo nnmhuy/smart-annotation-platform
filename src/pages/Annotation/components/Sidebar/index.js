@@ -1,11 +1,10 @@
 import React from 'react'
+import { makeStyles } from '@material-ui/core'
 
-// import ImageUploader from './ImageUploader'
 import ClassList from './ClassList'
 
 import { theme } from '../../../../theme'
 
-import { makeStyles } from '@material-ui/core'
 
 const useStyles = makeStyles((props) => ({
   sideBarWrapper: {
@@ -23,18 +22,12 @@ const useStyles = makeStyles((props) => ({
 
 const SideBar = (props) => {
   const {
-    // stageSize,
-    // setImage,
     annotationClasses,
     annotations,
   } = props
   const classes = useStyles()
   return (
     <div className={classes.sideBarWrapper}>
-      {/* <ImageUploader
-          stageSize={stageSize}
-          setImage={setImage}
-        /> */}
       {
         annotationClasses.map(value => {
           return <ClassList
