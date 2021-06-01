@@ -1,5 +1,9 @@
+import { cloneDeep } from 'lodash'
 import React from 'react'
 import { Circle } from 'react-konva'
+
+import checkValidPolys from '../../../utils/checkValidPolys'
+import formatPolygonsToRightCCW from '../../../utils/formatPolygonsToRightCCW'
 
 
 const PolygonMainPoints = (props) => {
@@ -8,11 +12,13 @@ const PolygonMainPoints = (props) => {
     setIsMouseOverPolygonStart,
     scale,
     polygon,
-    draggingKey, setDraggingKey,
+    draggingPointKey, setDraggingPointKey,
     onChange,
   } = props
 
   const { id, polys, x: dX, y: dY } = polygon
+
+  const [lastValidPos, setLastValidPos] = React.useState(null)
 
   const handleMouseOverStartPoint = (event, polyIndex) => {
     if (polys[polyIndex].length < 3) return;
@@ -28,33 +34,47 @@ const PolygonMainPoints = (props) => {
   const handleStartDraggingMainPoint = event => {
     const key = event.target.key;
 
-    if (!draggingKey) {
-      setDraggingKey(key)
+    if (!draggingPointKey) {
+      setDraggingPointKey(key)
     }
   }
 
   const handleMoveDraggingMainPoint = (event, polyIndex, pointIndex) => {
-    const key = event.target.key;
-    if (key !== draggingKey) { // prevent dragging 2 near points
+    // NOTE: heavy recalculation => cause slow update
+    const target = event.target
+    const key = target.key;
+    if (key !== draggingPointKey) { // prevent dragging 2 near points
       return
     }
     const pos = [event.target.attrs.x, event.target.attrs.y];
 
-    // TODO check valid polygon
-    onChange({
-      ...polygon,
-      polys: polys.map((poly, index) => {
-        if (index !== polyIndex) {
-          return poly
-        } else {
-          return [...poly.slice(0, pointIndex), pos, ...poly.slice(pointIndex + 1)]
-        }
-      })
+    const newPolys = cloneDeep(polys).map((poly, index) => {
+      if (index !== polyIndex) {
+        return poly
+      } else {
+        return [...poly.slice(0, pointIndex), pos, ...poly.slice(pointIndex + 1)]
+      }
     })
+    if (checkValidPolys(newPolys)) {
+      onChange({
+        ...polygon,
+        polys: newPolys
+      })
+      setLastValidPos({x: pos[0], y: pos[1]})
+    } else {
+      if (lastValidPos) {
+        target.absolutePosition(lastValidPos)
+      }
+    }
   }
 
-  const handleEndDraggingMainPoint = () => {
-    setDraggingKey(null)
+  const handleEndDraggingMainPoint = (event) => {
+    onChange({
+      ...polygon,
+      polys: formatPolygonsToRightCCW(polygon.polys)
+    })
+    setDraggingPointKey(null)
+    setLastValidPos(null)
   }
 
   const handleDoubleClickDeletePoint = (event, polyIndex, pointIndex) => {

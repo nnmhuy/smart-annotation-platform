@@ -35,7 +35,7 @@ const Polygon = (props) => {
     //  check min dist to start point
     //  check intersecting faces
 
-    if (isCutting || isDrawing) {
+    if (isCutting || isDrawing || isEditing) {
       const addMousePos = [currentMousePos.x, currentMousePos.y]
 
       let interactingPolys = polys.map((points, polyIndex) => {
@@ -63,7 +63,7 @@ const Polygon = (props) => {
     } else {
       setToDrawPolys(polys)
     }
-  }, [polys, currentMousePos, isCutting, isDrawing]) // eslint-disable-line
+  }, [polys, currentMousePos, isCutting, isDrawing, isEditing]) // eslint-disable-line
 
 
   const onDragPolygonStart = () => {
@@ -73,6 +73,7 @@ const Polygon = (props) => {
   const onDragPolygonMove = event => {
     const dX = event.target.x()
     const dY = event.target.y()
+    console.log(dX, dY)
     onChange({
       ...polygon,
       x: dX,
@@ -104,6 +105,7 @@ const Polygon = (props) => {
           ...polygon,
           polys: toDrawPolys,
         }}
+        isEditing={isEditing}
         isDraggingViewport={isDraggingViewport}
         onSelect={onSelect}
         onDragPolygonStart={onDragPolygonStart}
@@ -124,9 +126,11 @@ const Polygon = (props) => {
             polys: toDrawPolys,
           }}
           onChange={onChange}
+          draggingPointKey={draggingPointKey}
+          setDraggingPointKey={setDraggingPointKey}
         />
       }
-      {isEditing && 
+      {(!isDraggingPolygon && isEditing) &&
         <PolygonMidPoints
           isDraggingViewport={isDraggingViewport}
           polygon={polygon}

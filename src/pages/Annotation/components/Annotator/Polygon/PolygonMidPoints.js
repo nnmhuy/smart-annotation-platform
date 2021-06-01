@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Circle } from 'react-konva'
+import { cloneDeep } from 'lodash'
+
+import checkValidPolys from '../../../utils/checkValidPolys'
 
 const PolygonMidPoints = (props) => {
   const { 
@@ -10,10 +13,11 @@ const PolygonMidPoints = (props) => {
     onChange,
   } = props
   const [polysMidPoints, setPolysMidPoints] = useState([])
+  const [lastValidMidPoint, setLastValidMidPoint] = useState(null)
 
   const { id, polys, x: dX, y: dY } = polygon
 
-  useEffect(() => {
+  const calculateMidPoints = () => {
     setPolysMidPoints(polys.map(poly => poly.map((curPoint, index) => {
       const nextPoint = poly[(index + 1) % poly.length]
       return [
@@ -21,12 +25,28 @@ const PolygonMidPoints = (props) => {
         (curPoint[1] + nextPoint[1]) / 2,
       ]
     })))
+  }
+
+  useEffect(() => {
+    calculateMidPoints()
   }, [polys])
 
   const handleStartDraggingMidPoint = (event) => {
     const key = event.target.key;
 
     setDraggingPointKey(key)
+  }
+
+  const getNewPolysAfterDraggingMidPoint = (polys, polyIndex, pointIndex, pos) => {
+    const newPolys = cloneDeep(polys).map((poly, index) => {
+      if (index !== polyIndex) {
+        return poly
+      } else {
+        return [...poly.slice(0, pointIndex + 1), pos, ...poly.slice(pointIndex + 1)]
+      }
+    })
+
+    return newPolys
   }
 
   const handleMoveDraggingMidPoint = (event, polyIndex, pointIndex) => {
@@ -36,33 +56,44 @@ const PolygonMidPoints = (props) => {
     }
     const pos = [event.target.attrs.x, event.target.attrs.y];
 
-
-    // TODO: check valid polygon
-    setPolysMidPoints(polysMidPoints.map((poly, index) => {
-      if (index !== polyIndex) {
-        return poly
-      } else {
-        return [...poly.slice(0, pointIndex), pos, ...poly.slice(pointIndex + 1)]
+    const newPolys = getNewPolysAfterDraggingMidPoint(polys, polyIndex, pointIndex, pos)
+    if (checkValidPolys(newPolys)) {
+      setPolysMidPoints(polysMidPoints.map((poly, index) => {
+        if (index !== polyIndex) {
+          return poly
+        } else {
+          return [...poly.slice(0, pointIndex), pos, ...poly.slice(pointIndex + 1)]
+        }
+      }))
+      setLastValidMidPoint({ x: pos[0], y: pos[1] })
+    } else {
+      if (lastValidMidPoint) {
+        event.target.absolutePosition(lastValidMidPoint)
       }
-    }))
+    }
   }
 
   const handleEndDraggingMidPoint = (event, polyIndex, pointIndex) => {
     const pos = [event.target.attrs.x, event.target.attrs.y];
 
-    // TODO: check valid polygon
-    onChange({
-      ...polygon,
-      polys: polys.map((poly, index) => {
-        if (index !== polyIndex) {
-          return poly
-        } else {
-          return [...poly.slice(0, pointIndex + 1), pos, ...poly.slice(pointIndex + 1)]
-        }
-      })
-    })
+    const newPolys = getNewPolysAfterDraggingMidPoint(polys, polyIndex, pointIndex, pos)
 
+    if (checkValidPolys(newPolys)) {
+      onChange({
+        ...polygon,
+        polys: polys.map((poly, index) => {
+          if (index !== polyIndex) {
+            return poly
+          } else {
+            return [...poly.slice(0, pointIndex + 1), pos, ...poly.slice(pointIndex + 1)]
+          }
+        })
+      })
+    } else {
+      calculateMidPoints()
+    }
     setDraggingPointKey(null)
+    setLastValidMidPoint(null)
   }
 
   return (
