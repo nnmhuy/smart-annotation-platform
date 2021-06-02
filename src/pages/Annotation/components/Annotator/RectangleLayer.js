@@ -14,7 +14,6 @@ const uidgen = new UIDGenerator();
 
 const RectangleLayer = (props) => {
   const {
-    layerRef,
     rectangles, setRectangles,
     activeMode,
     selectedId, highlightId, selectShape,
@@ -29,10 +28,12 @@ const RectangleLayer = (props) => {
     setDrawingRectangle(null)
   }
 
-  React.useEffect(() => {
-    const layer = layerRef.current
-    layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllState)
-  }, [layerRef])
+  const layerRef = React.useCallback(layer => {
+    if (layer !== null) {
+      // this is safe because not dependent on any state variables
+      layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllState)
+    }
+  }, []);
 
   const handleClickDrawRectangle = (e) => {
     if (drawingRectangle === null) {

@@ -15,9 +15,20 @@ import convertBrushToPolygon from '../../utils/convertBrushToPolygon'
 
 const uidgen = new UIDGenerator();
 
+const DEFAULT_DRAWING_BRUSH_POLYGON = {
+  ...DEFAULT_SHAPE_ATTRS,
+  id: uidgen.generateSync(),
+  x: 0,
+  y: 0,
+  strokeWidth: 2,
+  stroke: 'red',
+  lineJoin: 'round',
+  polys: [],
+}
+
 const BrushPolygonLayer = (props) => {
   const { 
-    layerRef,
+    // layerRef,
     polygons, setPolygons,
     toolboxConfig,
     activeMode,
@@ -28,21 +39,12 @@ const BrushPolygonLayer = (props) => {
   const [drawingBrush, setDrawingBrush] = React.useState(null)
 
   const resetAllState = () => {
-    setDrawingBrushPolygon(null)
+    setDrawingBrushPolygon(currentDrawingBrushPolygon => currentDrawingBrushPolygon ? DEFAULT_DRAWING_BRUSH_POLYGON : null)
     setDrawingBrush(null)
   }
 
   const initializeDrawByBrush = () => {
-    setDrawingBrushPolygon({
-      ...DEFAULT_SHAPE_ATTRS,
-      id: uidgen.generateSync(),
-      x: 0,
-      y: 0,
-      strokeWidth: 2,
-      stroke: 'red',
-      lineJoin: 'round',
-      polys: [],
-    })
+    setDrawingBrushPolygon(DEFAULT_DRAWING_BRUSH_POLYGON)
   }
 
   React.useEffect(() => { // change to draw polygon by brush => initialize
@@ -55,12 +57,18 @@ const BrushPolygonLayer = (props) => {
     }
   }, [activeMode])
 
-  React.useEffect(() => {
-    const layer = layerRef.current
-    layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllState)
-    layer.on(MANUAL_EVENTS.INITIALIZE_POLYGON_BY_BRUSH, initializeDrawByBrush)
-    layer.on(MANUAL_EVENTS.FINISH_DRAW_POLYGON_BY_BRUSH, finishDrawPolygonByBrush)
-  }, [layerRef]) // eslint-disable-line
+  const layerRef = React.useCallback(layer => {
+    if (layer !== null) {
+      console.log("attach")
+      // TODO: move out to reducer
+      layer.off(MANUAL_EVENTS.RESET_ALL_STATE)
+      layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllState)
+      layer.off(MANUAL_EVENTS.INITIALIZE_POLYGON_BY_BRUSH)
+      layer.on(MANUAL_EVENTS.INITIALIZE_POLYGON_BY_BRUSH, initializeDrawByBrush)
+      layer.off(MANUAL_EVENTS.FINISH_DRAW_POLYGON_BY_BRUSH)
+      layer.on(MANUAL_EVENTS.FINISH_DRAW_POLYGON_BY_BRUSH, finishDrawPolygonByBrush)
+    }
+  }, [drawingBrushPolygon]);
 
   const handleStartDrawByBrush = (e) => {
     setDrawingBrush({
@@ -93,6 +101,7 @@ const BrushPolygonLayer = (props) => {
    * this can be converted to one choices of methods to convert from brush to polygon mask
    */
   const finishDrawPolygonByBrush = () => {
+    console.log(drawingBrushPolygon.polys)
     if (drawingBrushPolygon &&
       drawingBrushPolygon.polys.length > 0
     ) {

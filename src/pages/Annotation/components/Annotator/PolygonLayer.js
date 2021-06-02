@@ -15,7 +15,6 @@ const uidgen = new UIDGenerator();
 
 const PolygonLayer = (props) => {
   const { 
-    layerRef,
     handleFinishDraw,
     polygons, setPolygons,
     activeMode, highlightId,
@@ -35,10 +34,13 @@ const PolygonLayer = (props) => {
     setIsMouseOverPolygonStart(false)
   }
 
-  React.useEffect(() => {
-    const layer = layerRef.current
-    layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllState)
-  }, [layerRef])
+  const layerRef = React.useCallback(layer => {
+    if (layer !== null) {
+      // this is safe because not dependent on any state variables
+      layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllState)
+    }
+  }, [])
+  
 
   const isClickOnPolygon = (e) => {
     return isClickOn(e, ['Path'])

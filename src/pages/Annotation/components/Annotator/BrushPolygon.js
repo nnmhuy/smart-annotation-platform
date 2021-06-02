@@ -10,12 +10,10 @@ const BrushPolygon = (props) => {
     currentStrokeWidth,
   } = props
 
-  const groupRef = React.useRef(null)
   const { id, polys, ...others } = brushPolygon
 
   return (
     <Group
-      ref={groupRef}
       id={id}
     > 
       {polys.map((poly, polyIndex) => {

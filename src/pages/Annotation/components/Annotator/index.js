@@ -42,12 +42,11 @@ const Annotator = (props) => {
     annotationClasses,
   } = props
 
-  const stageRef = React.createRef(null)
-  const commonLayerRef = React.createRef(null)
-  const polygonLayerRef = React.createRef(null)
-  const rectangleLayerRef = React.createRef(null)
-  const brushPolygonLayerRef = React.createRef(null)
+  const stageRef = React.useCallback(stage => {
+    if (stage !== null) {
 
+    }
+  }, [])
 
   const [currentMousePos, setCurrentMousePos] = React.useState({ x: 0, y: 0 })
   const [contextMenuPosition, setContextMenuPosition] = React.useState({ x: 0, y: 0 })
@@ -388,14 +387,12 @@ const Annotator = (props) => {
         onTap={handleStageClick}
       >
         <CommonLayer
-          layerRef={commonLayerRef}
           image={image}
           activeMode={activeMode}
           isDraggingViewport={!!viewportStartPos}
           isEmptyPosition={isEmptyPosition}
         />
         <PolygonLayer
-          layerRef={polygonLayerRef}
           polygons={polygons}
           setPolygons={setPolygons}
           annotations={annotations}
@@ -411,7 +408,6 @@ const Annotator = (props) => {
           isClickOn={isClickOn}
         />
         <BrushPolygonLayer
-          layerRef={brushPolygonLayerRef}
           polygons={polygons}
           setPolygons={setPolygons}
           toolboxConfig={toolboxConfig}
@@ -421,7 +417,6 @@ const Annotator = (props) => {
           image={image}
         />
         <RectangleLayer
-          layerRef={rectangleLayerRef}
           rectangles={rectangles}
           setRectangles={setRectangles}
           activeMode={activeMode}

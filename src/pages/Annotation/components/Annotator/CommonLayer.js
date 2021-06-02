@@ -11,14 +11,20 @@ import {
 
 const CommonLayer = (props) => {
   const {
-    layerRef,
     activeMode,
     image,
     isDraggingViewport,
     isEmptyPosition,
   } = props
 
+  const layerRef = React.useCallback(layer => {
+    if (layer !== null) {
+      // this is safe because not dependent on any state variables
+    }
+  }, []);
+
   const [contextMenuPosition, setContextMenuPosition] = React.useState(null)
+  
 
   const handleLayerContextMenu = (e) => {
     if (e.manually_triggered) {

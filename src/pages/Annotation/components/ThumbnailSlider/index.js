@@ -49,14 +49,13 @@ const ThumbnailSlider = (props) => {
 
   const [page, setPage] = React.useState(0)
   const [imagePerPage, setImagePerPage] = React.useState(1)
-  const componentRef = React.useRef()
+  
+  const componentRef = React.useCallback(component => {
+    if (component !== null) {
+      let newImagePerPage = Math.floor(componentRef.current.offsetWidth / 120)
 
-  React.useEffect(() => {
-    if (!componentRef.current)
-      return
-    let newImagePerPage = Math.floor(componentRef.current.offsetWidth / 120)
-
-    setImagePerPage(newImagePerPage)
+      setImagePerPage(newImagePerPage)
+    }
   }, [])
 
   const classes = useStyles()
