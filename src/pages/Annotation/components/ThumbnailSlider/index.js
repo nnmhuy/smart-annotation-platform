@@ -52,7 +52,7 @@ const ThumbnailSlider = (props) => {
   
   const componentRef = React.useCallback(component => {
     if (component !== null) {
-      let newImagePerPage = Math.floor(componentRef.current.offsetWidth / 120)
+      let newImagePerPage = Math.floor(component.offsetWidth / 120)
 
       setImagePerPage(newImagePerPage)
     }

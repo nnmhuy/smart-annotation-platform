@@ -29,7 +29,7 @@ const DEFAULT_DRAWING_BRUSH_POLYGON = {
 const BrushPolygonLayer = (props) => {
   const { 
     // layerRef,
-    polygons, setPolygons,
+    setPolygons,
     toolboxConfig,
     activeMode,
     currentMousePos, stageSize, image,
@@ -56,19 +56,6 @@ const BrushPolygonLayer = (props) => {
       setDrawingBrushPolygon(null)
     }
   }, [activeMode])
-
-  const layerRef = React.useCallback(layer => {
-    if (layer !== null) {
-      console.log("attach")
-      // TODO: move out to reducer
-      layer.off(MANUAL_EVENTS.RESET_ALL_STATE)
-      layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllState)
-      layer.off(MANUAL_EVENTS.INITIALIZE_POLYGON_BY_BRUSH)
-      layer.on(MANUAL_EVENTS.INITIALIZE_POLYGON_BY_BRUSH, initializeDrawByBrush)
-      layer.off(MANUAL_EVENTS.FINISH_DRAW_POLYGON_BY_BRUSH)
-      layer.on(MANUAL_EVENTS.FINISH_DRAW_POLYGON_BY_BRUSH, finishDrawPolygonByBrush)
-    }
-  }, [drawingBrushPolygon]);
 
   const handleStartDrawByBrush = (e) => {
     setDrawingBrush({
@@ -100,7 +87,7 @@ const BrushPolygonLayer = (props) => {
   /**
    * this can be converted to one choices of methods to convert from brush to polygon mask
    */
-  const finishDrawPolygonByBrush = () => {
+  const finishDrawPolygonByBrush = React.useCallback(() => {
     console.log(drawingBrushPolygon.polys)
     if (drawingBrushPolygon &&
       drawingBrushPolygon.polys.length > 0
@@ -112,7 +99,7 @@ const BrushPolygonLayer = (props) => {
         canvasHeight,
       })
       if (newDrawingBrushPolygon) {
-        setPolygons([...polygons, {
+        setPolygons(currentPolygons => [...currentPolygons, {
           ...newDrawingBrushPolygon,
           ...DEFAULT_SHAPE_ATTRS,
           polys: formatPolygonsToRightCCW(newDrawingBrushPolygon.polys)
@@ -120,7 +107,7 @@ const BrushPolygonLayer = (props) => {
       }
     }
     initializeDrawByBrush()
-  }
+  }, [drawingBrushPolygon, image, stageSize])
 
   const handleLayerMouseDown = (e) => {
     if (e.manually_triggered) {
@@ -154,6 +141,19 @@ const BrushPolygonLayer = (props) => {
       }
     }
   }
+
+  const layerRef = React.useCallback(layer => {
+    if (layer !== null) {
+      console.log("attach")
+      // TODO: move out to reducer
+      layer.off(MANUAL_EVENTS.RESET_ALL_STATE)
+      layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllState)
+      layer.off(MANUAL_EVENTS.INITIALIZE_POLYGON_BY_BRUSH)
+      layer.on(MANUAL_EVENTS.INITIALIZE_POLYGON_BY_BRUSH, initializeDrawByBrush)
+      layer.off(MANUAL_EVENTS.FINISH_DRAW_POLYGON_BY_BRUSH)
+      layer.on(MANUAL_EVENTS.FINISH_DRAW_POLYGON_BY_BRUSH, finishDrawPolygonByBrush)
+    }
+  }, [finishDrawPolygonByBrush]);
 
   return (
     <Layer

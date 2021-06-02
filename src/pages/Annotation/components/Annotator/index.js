@@ -42,11 +42,7 @@ const Annotator = (props) => {
     annotationClasses,
   } = props
 
-  const stageRef = React.useCallback(stage => {
-    if (stage !== null) {
-
-    }
-  }, [])
+  const stageRef = React.createRef(null)
 
   const [currentMousePos, setCurrentMousePos] = React.useState({ x: 0, y: 0 })
   const [contextMenuPosition, setContextMenuPosition] = React.useState({ x: 0, y: 0 })
