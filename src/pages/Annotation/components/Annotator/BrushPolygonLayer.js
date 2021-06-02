@@ -35,6 +35,7 @@ const BrushPolygonLayer = (props) => {
     currentMousePos, stageSize, image,
   } = props
 
+  // TODO: move out drawingBrushPolygon to reducer
   const [drawingBrushPolygon, setDrawingBrushPolygon] = React.useState(null)
   const [drawingBrush, setDrawingBrush] = React.useState(null)
 
@@ -88,7 +89,6 @@ const BrushPolygonLayer = (props) => {
    * this can be converted to one choices of methods to convert from brush to polygon mask
    */
   const finishDrawPolygonByBrush = React.useCallback(() => {
-    console.log(drawingBrushPolygon.polys)
     if (drawingBrushPolygon &&
       drawingBrushPolygon.polys.length > 0
     ) {
@@ -144,8 +144,6 @@ const BrushPolygonLayer = (props) => {
 
   const layerRef = React.useCallback(layer => {
     if (layer !== null) {
-      console.log("attach")
-      // TODO: move out to reducer
       layer.off(MANUAL_EVENTS.RESET_ALL_STATE)
       layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllState)
       layer.off(MANUAL_EVENTS.INITIALIZE_POLYGON_BY_BRUSH)

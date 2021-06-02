@@ -31,8 +31,8 @@ export const dataList = [
     },
     {
         id: 5,
-        imageURL: 'https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg',
-        thumbnailURL: 'https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg'
+        imageURL: 'https://images.pexels.com/photos/982865/pexels-photo-982865.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+        thumbnailURL: 'https://images.pexels.com/photos/982865/pexels-photo-982865.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500'
     },
     {
         id: 6,
