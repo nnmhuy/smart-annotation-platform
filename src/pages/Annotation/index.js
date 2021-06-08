@@ -10,6 +10,7 @@ import ThumbnailSlider from './components/ThumbnailSlider'
 
 import loadImageFromURL from '../../utils/loadImageFromURL'
 import resizeImage from '../../utils/resizeImage'
+import sendFormData from '../../utils/sendFormData'
 
 import {demoAnnotateData, dataList} from '../../mockup'
 
@@ -86,6 +87,7 @@ const AnnotationPage = (props) => {
     }))
     .then(image => {
       setImage(image)
+      sendFormData(image, '/s2m/predict')
     })
   }
 
