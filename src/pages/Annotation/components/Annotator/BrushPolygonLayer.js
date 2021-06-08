@@ -1,17 +1,21 @@
 import React from 'react'
-import { Layer } from 'react-konva'
+import { Layer, Circle } from 'react-konva'
 import UIDGenerator from 'uid-generator'
 import { get } from 'lodash'
 
 import BrushPolygon from './BrushPolygon'
+import Image from './KonvaImage'
 
 import {
   MODES,
   MANUAL_EVENTS,
   DEFAULT_SHAPE_ATTRS,
+  BRUSH_TYPES,
 } from '../../constants'
-import formatPolygonsToRightCCW from '../../utils/formatPolygonsToRightCCW'
-import convertBrushToPolygon from '../../utils/convertBrushToPolygon'
+// import formatPolygonsToRightCCW from '../../utils/formatPolygonsToRightCCW'
+// import convertBrushToPolygon from '../../utils/convertBrushToPolygon'
+import convertBrushToBase64Image from '../../utils/convertBrushToBase64Image'
+import sendFormData from '../../../../utils/sendFormData'
 
 const uidgen = new UIDGenerator();
 
@@ -26,6 +30,19 @@ const DEFAULT_DRAWING_BRUSH_POLYGON = {
   polys: [],
 }
 
+const getColorByBrushType = (type) => {
+  switch (type) {
+    case BRUSH_TYPES.POSITIVE_SCRIBBLE:
+      return 'green'
+    case BRUSH_TYPES.NEGATIVE_SCRIBBLE:
+      return 'red'
+    case BRUSH_TYPES.ERASER:
+      return 'blue'
+    default:
+      return 'green'
+  }
+}
+
 const BrushPolygonLayer = (props) => {
   const { 
     // layerRef,
@@ -33,15 +50,20 @@ const BrushPolygonLayer = (props) => {
     toolboxConfig,
     activeMode,
     currentMousePos, stageSize, image,
+    isDraggingViewport,
   } = props
 
   // TODO: move out drawingBrushPolygon to reducer
   const [drawingBrushPolygon, setDrawingBrushPolygon] = React.useState(null)
   const [drawingBrush, setDrawingBrush] = React.useState(null)
+  const [mask, setMask] = React.useState(null)
+  const [displayMask, setDisplayMask] = React.useState(null)
 
   const resetAllState = () => {
     setDrawingBrushPolygon(currentDrawingBrushPolygon => currentDrawingBrushPolygon ? DEFAULT_DRAWING_BRUSH_POLYGON : null)
     setDrawingBrush(null)
+    setMask(null)
+    setDisplayMask(null)
   }
 
   const initializeDrawByBrush = () => {
@@ -94,20 +116,51 @@ const BrushPolygonLayer = (props) => {
     ) {
       const canvasWidth = get(image, 'width', stageSize.width)
       const canvasHeight = get(image, 'height', stageSize.height)
-      const newDrawingBrushPolygon = convertBrushToPolygon(drawingBrushPolygon, {
-        canvasWidth,
-        canvasHeight,
+      // const newDrawingBrushPolygon = convertBrushToPolygon(drawingBrushPolygon, {
+      //   canvasWidth,
+      //   canvasHeight,
+      // })
+      // if (newDrawingBrushPolygon) {
+      //   setPolygons(currentPolygons => [...currentPolygons, {
+      //     ...newDrawingBrushPolygon,
+      //     ...DEFAULT_SHAPE_ATTRS,
+      //     polys: formatPolygonsToRightCCW(newDrawingBrushPolygon.polys)
+      //   }])
+      // }
+      const { imgUrl } = image
+      const p_srb = convertBrushToBase64Image(
+        drawingBrushPolygon.polys.filter(poly => poly.type !== BRUSH_TYPES.NEGATIVE_SCRIBBLE), 
+        {
+          canvasWidth,
+          canvasHeight,
+        }
+      )
+      const n_srb = convertBrushToBase64Image(
+        drawingBrushPolygon.polys.filter(poly => poly.type !== BRUSH_TYPES.POSITIVE_SCRIBBLE),
+        {
+          canvasWidth,
+          canvasHeight,
+        }
+      )
+      sendFormData({
+        image: image.img,
+        p_srb,
+        n_srb,
+        mask
+      }, 's2m/predict')
+      .then(newMask => {
+        setDisplayMask("data:image/jpeg;base64," + newMask)
       })
-      if (newDrawingBrushPolygon) {
-        setPolygons(currentPolygons => [...currentPolygons, {
-          ...newDrawingBrushPolygon,
-          ...DEFAULT_SHAPE_ATTRS,
-          polys: formatPolygonsToRightCCW(newDrawingBrushPolygon.polys)
-        }])
-      }
+      .catch(() => {
+        setDisplayMask(null)
+      })
     }
+  }, [drawingBrushPolygon, image, stageSize, mask])
+
+  const commitMask = React.useCallback(() => {
+    setMask(displayMask)
     initializeDrawByBrush()
-  }, [drawingBrushPolygon, image, stageSize])
+  }, [displayMask])
 
   const handleLayerMouseDown = (e) => {
     if (e.manually_triggered) {
@@ -150,8 +203,12 @@ const BrushPolygonLayer = (props) => {
       layer.on(MANUAL_EVENTS.INITIALIZE_POLYGON_BY_BRUSH, initializeDrawByBrush)
       layer.off(MANUAL_EVENTS.FINISH_DRAW_POLYGON_BY_BRUSH)
       layer.on(MANUAL_EVENTS.FINISH_DRAW_POLYGON_BY_BRUSH, finishDrawPolygonByBrush)
+      layer.off(MANUAL_EVENTS.COMMIT_DRAW_BY_BRUSH_MASK)
+      layer.on(MANUAL_EVENTS.COMMIT_DRAW_BY_BRUSH_MASK, finishDrawPolygonByBrush)
     }
-  }, [finishDrawPolygonByBrush]);
+  }, [finishDrawPolygonByBrush, commitMask]);
+
+  const dotColor = getColorByBrushType(toolboxConfig.brushType)
 
   return (
     <Layer
@@ -164,6 +221,13 @@ const BrushPolygonLayer = (props) => {
       onMouseUp={handleLayerMouseUp}
       onTouchEnd={handleLayerMouseUp}
     >
+      {displayMask &&
+        <Image
+          src={displayMask}
+          isDraggingViewport={isDraggingViewport}
+          opacity={0.3}
+        />
+      }
       {drawingBrushPolygon &&
         <BrushPolygon
           key='drawing-brush-polygon'
@@ -171,10 +235,15 @@ const BrushPolygonLayer = (props) => {
             ...drawingBrushPolygon,
             polys: drawingBrush ? [...drawingBrushPolygon.polys, drawingBrush] : drawingBrushPolygon.polys
           }}
-          currentMousePos={currentMousePos}
-          currentStrokeWidth={toolboxConfig.brushSize}
+          getColorByBrushType={getColorByBrushType}
         />
       }
+      <Circle
+        x={currentMousePos.x}
+        y={currentMousePos.y}
+        radius={toolboxConfig.brushSize / 2}
+        fill={dotColor}
+      />
     </Layer>
   )
 }

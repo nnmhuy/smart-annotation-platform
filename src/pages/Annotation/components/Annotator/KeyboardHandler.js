@@ -13,13 +13,22 @@ const KeyboardHandler = (props) => {
     
     setForceViewportHandling, handleViewportEnd,
 
-    initializeDrawByBrush, finishDrawPolygonByBrush,
+    initializeDrawByBrush, finishDrawPolygonByBrush, commitDrawByBrushMask,
 
     deleteById,
   } = props
   return (
     <>
       {/* Handle key enter: finish drawing */}
+      <KeyboardEventHandler
+        handleKeys={['shift+enter']}
+        onKeyEvent={() => {
+          if (activeMode === MODES.DRAW_POLYGON_BY_BRUSH) {
+            commitDrawByBrushMask()
+          }
+        }}
+      />
+      {/* Handle key enter: commit brush mask */}
       <KeyboardEventHandler
         handleKeys={['enter']}
         onKeyEvent={() => {

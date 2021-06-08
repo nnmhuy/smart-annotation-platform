@@ -3,7 +3,7 @@ import { Image } from 'react-konva'
 import useImage from 'use-image'
 
 const KonvaImage = (props) => {
-  const { src, isDraggingViewport } = props
+  const { src, isDraggingViewport, ...others } = props
   const [image] = useImage(src)
   return (
     <Image 
@@ -11,6 +11,7 @@ const KonvaImage = (props) => {
       hitFunc={isDraggingViewport && function (context) {
         // disable hitFunc while dragging viewport
       }}
+      {...others}
     />
   )
 }

@@ -18,6 +18,8 @@ const resizeImage = (imgData, { maxWidth, maxHeight }) => new Promise((resolve, 
     canvas.getContext('2d').drawImage(image, 0, 0, width, height);
     let resizedImage = canvas.toDataURL('image/jpeg');
     resolve({
+      originalWidth: image.width,
+      originalHeight: image.height,
       img: resizedImage,
       width,
       height

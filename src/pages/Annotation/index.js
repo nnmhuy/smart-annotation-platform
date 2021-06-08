@@ -10,7 +10,6 @@ import ThumbnailSlider from './components/ThumbnailSlider'
 
 import loadImageFromURL from '../../utils/loadImageFromURL'
 import resizeImage from '../../utils/resizeImage'
-import sendFormData from '../../utils/sendFormData'
 
 import {demoAnnotateData, dataList} from '../../mockup'
 
@@ -52,7 +51,7 @@ const AnnotationPage = (props) => {
   const [activeMode, setActiveMode] = React.useState(MODES.CURSOR)
   const [toolboxConfig, setToolboxConfig] = React.useState({
     brushType: 'brush',
-    brushSize: 2,
+    brushSize: 10,
   })
   const [rectangles, setRectangles] = React.useState([])
   const [polygons, setPolygons] = React.useState([])
@@ -86,8 +85,10 @@ const AnnotationPage = (props) => {
       maxHeight: stageSize.height - STAGE_PADDING,
     }))
     .then(image => {
-      setImage(image)
-      sendFormData(image, '/s2m/predict')
+      setImage({
+        imgUrl: data.imageURL,
+        ...image
+      })
     })
   }
 

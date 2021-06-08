@@ -411,6 +411,7 @@ const Annotator = (props) => {
           currentMousePos={currentMousePos}
           stageSize={stageSize}
           image={image}
+          isDraggingViewport={!!viewportStartPos}
         />
         <RectangleLayer
           rectangles={rectangles}
@@ -444,6 +445,7 @@ const Annotator = (props) => {
         handleViewportEnd={handleViewportEnd}
         initializeDrawByBrush={() => handlePropagateStageEventToChildrenLayers(MANUAL_EVENTS.INITIALIZE_POLYGON_BY_BRUSH)}
         finishDrawPolygonByBrush={() => handlePropagateStageEventToChildrenLayers(MANUAL_EVENTS.FINISH_DRAW_POLYGON_BY_BRUSH)}
+        commitDrawByBrushMask={() => handlePropagateStageEventToChildrenLayers(MANUAL_EVENTS.COMMIT_DRAW_BY_BRUSH_MASK)}
         deleteById={deleteById}
       />
     </>

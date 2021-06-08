@@ -10,4 +10,5 @@ const ResponseCode = {
 
 export {
   backendURL,
+  ResponseCode,
 }

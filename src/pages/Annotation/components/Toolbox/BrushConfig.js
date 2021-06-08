@@ -1,9 +1,9 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
+
+import ToolSelector from './ToolSelector'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -17,30 +17,20 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
+
 const BrushConfig = (props) => {
   const classes = useStyles()
   const { toolboxConfig, setToolboxConfig, } = props
-  const { brushType, brushSize, } = toolboxConfig
+  const { brushSize, } = toolboxConfig
   return (
     <div className={classes.root}>
       <div className={classes.optionContainer}>
         <Typography variant="button" gutterBottom>
           Brush type
         </Typography>
-        <ButtonGroup color="primary">
-          <Button 
-            variant={brushType === "brush" ? "contained" : "outlined"}
-            onClick={() => setToolboxConfig({...toolboxConfig, brushType: "brush" })}
-          >
-            Brush
-          </Button>
-          <Button 
-            variant={brushType === "eraser" ? "contained" : "outlined"}
-            onClick={() => setToolboxConfig({ ...toolboxConfig, brushType: "eraser" })}
-          >
-            Eraser
-          </Button>
-        </ButtonGroup>
+        <ToolSelector
+          onSelect={(type) => setToolboxConfig({ ...toolboxConfig, brushType: type })}
+        />
       </div>
       <div className={classes.optionContainer}>
         <Typography id="brush-size-slider" variant="button" gutterBottom>

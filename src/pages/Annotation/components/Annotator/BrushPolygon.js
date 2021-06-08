@@ -1,13 +1,13 @@
 import React from 'react'
-import { Group, Line, Circle } from 'react-konva'
+import { Group, Line } from 'react-konva'
 
 import pointArrayToFlattenPointArray from '../../utils/pointArrayToFlattenPointArray'
+import { BRUSH_TYPES } from '../../constants'
 
 const BrushPolygon = (props) => {
   const { 
     brushPolygon,
-    currentMousePos,
-    currentStrokeWidth,
+    getColorByBrushType,
   } = props
 
   const { id, polys, ...others } = brushPolygon
@@ -19,6 +19,8 @@ const BrushPolygon = (props) => {
       {polys.map((poly, polyIndex) => {
         const points = pointArrayToFlattenPointArray(poly.points)
         const { strokeWidth, type } = poly
+        const strokeColor = getColorByBrushType(type)
+
         return (
           <Line
             key={`brush-polygon-${polyIndex}`}
@@ -26,18 +28,12 @@ const BrushPolygon = (props) => {
             id={id}
             {...others}
             strokeWidth={strokeWidth}
-            globalCompositeOperation={type === 'eraser' ? 'destination-out' : undefined}
-            opacity={type === 'eraser' ? 1 : others.opacity}
+            globalCompositeOperation={type === BRUSH_TYPES.ERASER ? 'destination-out' : undefined}
+            opacity={type === BRUSH_TYPES.ERASER ? 1 : others.opacity}
+            stroke={strokeColor}
           />
         )
       })}
-      <Circle
-        x={currentMousePos.x}
-        y={currentMousePos.y}
-        radius={currentStrokeWidth / 2}
-        fill={"red"}
-        opacity={brushPolygon.opacity}
-      />
     </Group>
   )
 }
