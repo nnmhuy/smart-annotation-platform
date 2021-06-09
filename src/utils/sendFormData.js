@@ -14,7 +14,6 @@ const sendFormData = async (objectData, url) => {
         'Content-Type': 'multipart/form-data'
       }
     })
-    console.log(response)
     return response
   } catch (error) {
     throw error

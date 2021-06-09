@@ -24,6 +24,7 @@ const SideBar = (props) => {
   const {
     annotationClasses,
     annotations,
+    runningTime,
   } = props
   const classes = useStyles()
   return (
@@ -37,6 +38,7 @@ const SideBar = (props) => {
           />
         })
       }
+      <div>{runningTime} seconds</div>
     </div>
   )
 }

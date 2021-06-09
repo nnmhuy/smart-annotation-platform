@@ -33,19 +33,22 @@ const useStyles = makeStyles(() => ({
     background: '#f8f8f8',
     display:'flex',
     flexDirection: 'column',
-    width: '80%'
+    width: '70%'
   },
   toolboxContainer: {
     
   },
   sidebarWrapper: {
-    width: '20%',
+    // TODO: tmp
+    // width: '20%',
+    width: '30%',
   }
 }))
 
 const AnnotationPage = (props) => {
   const classes = useStyles()
 
+  const [runningTime, setRunningTime] = React.useState(0)
   const [stageSize, setStageSize] = React.useState({ width: 0, height: 0 })
   const [image, setImage] = React.useState(null)
   const [activeMode, setActiveMode] = React.useState(MODES.CURSOR)
@@ -117,6 +120,7 @@ const AnnotationPage = (props) => {
             setAnnotations={setAnnotations}
             annotationClasses={annotationClasses}
             stageSize={stageSize}
+            setRunningTime={setRunningTime}
           />
         </div>
         <div className={classes.sidebarWrapper}>
@@ -124,6 +128,7 @@ const AnnotationPage = (props) => {
             annotationClasses={annotationClasses}
             setAnnotationClasses={setAnnotationClasses}
             annotations={annotations}
+            runningTime={runningTime}
           />
         </div>
       </div>

@@ -15,6 +15,7 @@ import PolygonLayer from './PolygonLayer'
 import BrushPolygonLayer from './BrushPolygonLayer'
 import RectangleLayer from './RectangleLayer'
 import CommonLayer from './CommonLayer'
+import Loading from '../../../../components/Loading'
 
 import getPointerPosition from '../../utils/getPointerPosition'
 import getStagePosLimit from '../../utils/getStagePosLimit'
@@ -40,6 +41,7 @@ const Annotator = (props) => {
     polygons, setPolygons,
     annotations, setAnnotations,
     annotationClasses,
+    setRunningTime,
   } = props
 
   const stageRef = React.createRef(null)
@@ -51,6 +53,7 @@ const Annotator = (props) => {
   const [highlightId, setHighlightId] = React.useState(null)
   const [forceViewportHandling, setForceViewportHandling] = React.useState(false)
   const [viewportStartPos, setViewportStartPos] = React.useState(null)
+  const [isLoading, setIsLoading] = React.useState(false)
   const resetAllState = () => {
     selectShape(null)
 
@@ -362,6 +365,7 @@ const Annotator = (props) => {
 
   return (
     <>
+      <Loading isLoading={isLoading} />
       <Stage
         ref={stageRef}
         width={stageSize.width}
@@ -412,6 +416,8 @@ const Annotator = (props) => {
           stageSize={stageSize}
           image={image}
           isDraggingViewport={!!viewportStartPos}
+          setIsLoading={setIsLoading}
+          setRunningTime={setRunningTime}
         />
         <RectangleLayer
           rectangles={rectangles}

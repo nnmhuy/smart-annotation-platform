@@ -33,9 +33,14 @@ const convertBrushToBase64Image = (polygons, options) => {
     ctx.stroke();
     ctx.fill();
   })
-  let imgData = tmpCanvas.toDataURL();
+  // let imgData = tmpCanvas.toDataURL();
   
-  return imgData
+  // return imgData
+  return new Promise(function (resolve, reject) {
+    tmpCanvas.toBlob(function (blob) {
+      resolve(blob)
+    })
+  })
 }
 
 export default convertBrushToBase64Image

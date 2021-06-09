@@ -16,6 +16,7 @@ import {
 // import convertBrushToPolygon from '../../utils/convertBrushToPolygon'
 import convertBrushToBase64Image from '../../utils/convertBrushToBase64Image'
 import sendFormData from '../../../../utils/sendFormData'
+import base64ToBlob from '../../../../utils/base64ToBlob'
 
 const uidgen = new UIDGenerator();
 
@@ -46,11 +47,13 @@ const getColorByBrushType = (type) => {
 const BrushPolygonLayer = (props) => {
   const { 
     // layerRef,
-    setPolygons,
+    // setPolygons,
     toolboxConfig,
     activeMode,
     currentMousePos, stageSize, image,
     isDraggingViewport,
+    setIsLoading,
+    setRunningTime,
   } = props
 
   // TODO: move out drawingBrushPolygon to reducer
@@ -110,10 +113,11 @@ const BrushPolygonLayer = (props) => {
   /**
    * this can be converted to one choices of methods to convert from brush to polygon mask
    */
-  const finishDrawPolygonByBrush = React.useCallback(() => {
+  const finishDrawPolygonByBrush = React.useCallback(async () => {
     if (drawingBrushPolygon &&
       drawingBrushPolygon.polys.length > 0
     ) {
+      const t0 = performance.now()
       const canvasWidth = get(image, 'width', stageSize.width)
       const canvasHeight = get(image, 'height', stageSize.height)
       // const newDrawingBrushPolygon = convertBrushToPolygon(drawingBrushPolygon, {
@@ -127,15 +131,16 @@ const BrushPolygonLayer = (props) => {
       //     polys: formatPolygonsToRightCCW(newDrawingBrushPolygon.polys)
       //   }])
       // }
-      const { imgUrl } = image
-      const p_srb = convertBrushToBase64Image(
+      setIsLoading(true)
+      const imgBlob = await base64ToBlob(image.img)
+      const p_srb = await convertBrushToBase64Image(
         drawingBrushPolygon.polys.filter(poly => poly.type !== BRUSH_TYPES.NEGATIVE_SCRIBBLE), 
         {
           canvasWidth,
           canvasHeight,
         }
       )
-      const n_srb = convertBrushToBase64Image(
+      const n_srb = await convertBrushToBase64Image(
         drawingBrushPolygon.polys.filter(poly => poly.type !== BRUSH_TYPES.POSITIVE_SCRIBBLE),
         {
           canvasWidth,
@@ -143,7 +148,7 @@ const BrushPolygonLayer = (props) => {
         }
       )
       sendFormData({
-        image: image.img,
+        image: imgBlob,
         p_srb,
         n_srb,
         mask
@@ -154,6 +159,12 @@ const BrushPolygonLayer = (props) => {
       .catch(() => {
         setDisplayMask(null)
       })
+      .finally(() => {
+        setIsLoading(false)
+        var t1 = performance.now()
+        setRunningTime((t1 - t0) / 1000.0)
+      })
+
     }
   }, [drawingBrushPolygon, image, stageSize, mask])
 
@@ -225,7 +236,7 @@ const BrushPolygonLayer = (props) => {
         <Image
           src={displayMask}
           isDraggingViewport={isDraggingViewport}
-          opacity={0.3}
+          opacity={0.6}
         />
       }
       {drawingBrushPolygon &&
@@ -238,12 +249,14 @@ const BrushPolygonLayer = (props) => {
           getColorByBrushType={getColorByBrushType}
         />
       }
-      <Circle
-        x={currentMousePos.x}
-        y={currentMousePos.y}
-        radius={toolboxConfig.brushSize / 2}
-        fill={dotColor}
-      />
+      {activeMode === MODES.DRAW_POLYGON_BY_BRUSH &&
+        <Circle
+          x={currentMousePos.x}
+          y={currentMousePos.y}
+          radius={toolboxConfig.brushSize / 2}
+          fill={dotColor}
+        />
+      }
     </Layer>
   )
 }

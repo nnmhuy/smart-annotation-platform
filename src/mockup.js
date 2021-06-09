@@ -1,3 +1,13 @@
+import Image_1 from './static/images/mockup/Image_1.jpg'
+import Image_2 from './static/images/mockup/Image_2.jpg'
+import Image_3 from './static/images/mockup/Image_3.jpg'
+import Image_4 from './static/images/mockup/Image_4.jpg'
+import Image_5 from './static/images/mockup/Image_5.jpg'
+import Image_6 from './static/images/mockup/Image_6.jpg'
+import Image_7 from './static/images/mockup/Image_7.jpg'
+import Image_8 from './static/images/mockup/Image_8.jpg'
+import Image_9 from './static/images/mockup/Image_9.jpg'
+
 export const demoAnnotateData = [
     { id: 1, label: 'Cat', isHidden: true, color: 'red' },
     { id: 2, label: 'Dog', isHidden: false, color: 'green' }
@@ -56,57 +66,47 @@ export const dataList = [
     },
     {
         id: 10,
-        imageURL: 'https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg',
-        thumbnailURL: 'https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg'
+        imageURL: Image_1,
+        thumbnailURL: Image_1,
     },
     {
         id: 11,
-        imageURL: 'https://i.guim.co.uk/img/media/fe1e34da640c5c56ed16f76ce6f994fa9343d09d/0_174_3408_2046/master/3408.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=0d3f33fb6aa6e0154b7713a00454c83d',
-        thumbnailURL: 'https://i.guim.co.uk/img/media/fe1e34da640c5c56ed16f76ce6f994fa9343d09d/0_174_3408_2046/master/3408.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=0d3f33fb6aa6e0154b7713a00454c83d'
+        imageURL: Image_2,
+        thumbnailURL: Image_2,
     },
     {
         id: 12,
-        imageURL: 'https://www.sciencemag.org/sites/default/files/styles/inline__450w__no_aspect/public/dogs_1280p_0.jpg?itok=h6VBayx-',
-        thumbnailURL: 'https://www.sciencemag.org/sites/default/files/styles/inline__450w__no_aspect/public/dogs_1280p_0.jpg?itok=h6VBayx-'
+        imageURL: Image_3,
+        thumbnailURL: Image_3,
     },
     {
         id: 13,
-        imageURL: 'https://ggsc.s3.amazonaws.com/images/uploads/The_Science-Backed_Benefits_of_Being_a_Dog_Owner.jpg',
-        thumbnailURL: 'https://ggsc.s3.amazonaws.com/images/uploads/The_Science-Backed_Benefits_of_Being_a_Dog_Owner.jpg'
+        imageURL: Image_4,
+        thumbnailURL: Image_4,
     },
     {
         id: 14,
-        imageURL: 'https://static.toiimg.com/photo/msid-67586673/67586673.jpg?3918697',
-        thumbnailURL: 'https://static.toiimg.com/photo/msid-67586673/67586673.jpg?3918697'
+        imageURL: Image_5,
+        thumbnailURL: Image_5,
     },
     {
         id: 15,
-        imageURL: 'https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg',
-        thumbnailURL: 'https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg'
+        imageURL: Image_6,
+        thumbnailURL: Image_6,
     },
     {
         id: 16,
-        imageURL: 'https://i.guim.co.uk/img/media/fe1e34da640c5c56ed16f76ce6f994fa9343d09d/0_174_3408_2046/master/3408.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=0d3f33fb6aa6e0154b7713a00454c83d',
-        thumbnailURL: 'https://i.guim.co.uk/img/media/fe1e34da640c5c56ed16f76ce6f994fa9343d09d/0_174_3408_2046/master/3408.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=0d3f33fb6aa6e0154b7713a00454c83d'
+        imageURL: Image_7,
+        thumbnailURL: Image_7,
     },
     {
         id: 17,
-        imageURL: 'https://www.sciencemag.org/sites/default/files/styles/inline__450w__no_aspect/public/dogs_1280p_0.jpg?itok=h6VBayx-',
-        thumbnailURL: 'https://www.sciencemag.org/sites/default/files/styles/inline__450w__no_aspect/public/dogs_1280p_0.jpg?itok=h6VBayx-'
+        imageURL: Image_8,
+        thumbnailURL: Image_8,
     },
     {
         id: 18,
-        imageURL: 'https://ggsc.s3.amazonaws.com/images/uploads/The_Science-Backed_Benefits_of_Being_a_Dog_Owner.jpg',
-        thumbnailURL: 'https://ggsc.s3.amazonaws.com/images/uploads/The_Science-Backed_Benefits_of_Being_a_Dog_Owner.jpg'
+        imageURL: Image_9,
+        thumbnailURL: Image_9,
     },
-    {
-        id: 19,
-        imageURL: 'https://static.toiimg.com/photo/msid-67586673/67586673.jpg?3918697',
-        thumbnailURL: 'https://static.toiimg.com/photo/msid-67586673/67586673.jpg?3918697'
-    },
-    {
-        id: 20,
-        imageURL: 'https://images.pexels.com/photos/62689/pexels-photo-62689.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-        thumbnailURL: 'https://images.pexels.com/photos/62689/pexels-photo-62689.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500'
-    }
 ]
