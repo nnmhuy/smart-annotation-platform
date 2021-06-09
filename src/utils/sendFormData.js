@@ -1,6 +1,6 @@
 import RestConnector from '../connectors/RestConnector'
 
-const sendFormData = async (objectData, url) => {
+const sendFormData = async (objectData, url, options) => {
   const formData = new FormData();
   Object.keys(objectData).forEach(key => {
     if (objectData[key]) {
@@ -12,7 +12,8 @@ const sendFormData = async (objectData, url) => {
     const { data: response } = await RestConnector.post(url, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
-      }
+      },
+      ...options,
     })
     return response
   } catch (error) {

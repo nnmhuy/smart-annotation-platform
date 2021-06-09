@@ -17,6 +17,8 @@ import {
 import convertBrushToBase64Image from '../../utils/convertBrushToBase64Image'
 import sendFormData from '../../../../utils/sendFormData'
 import base64ToBlob from '../../../../utils/base64ToBlob'
+import blobToBase64 from '../../../../utils/blobToBase64'
+import bufferArrayToBase64 from '../../../../utils/bufferArrayToBase64'
 
 const uidgen = new UIDGenerator();
 
@@ -147,16 +149,23 @@ const BrushPolygonLayer = (props) => {
           canvasHeight,
         }
       )
-      sendFormData({
-        image: imgBlob,
-        p_srb,
-        n_srb,
-        mask
-      }, 's2m/predict')
-      .then(newMask => {
-        setDisplayMask("data:image/jpeg;base64," + newMask)
+      sendFormData(
+        {
+          image: imgBlob,
+          p_srb,
+          n_srb,
+          mask
+        }, 
+        's2m/predict',
+        {
+          responseType: "arraybuffer"
+        }
+      )
+      .then(async (newMask) => {
+        setDisplayMask(bufferArrayToBase64(newMask, "image/PNG"))
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log(err)
         setDisplayMask(null)
       })
       .finally(() => {
