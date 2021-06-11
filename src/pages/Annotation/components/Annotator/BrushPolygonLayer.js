@@ -30,6 +30,7 @@ const DEFAULT_DRAWING_BRUSH_POLYGON = {
   stroke: 'red',
   lineJoin: 'round',
   polys: [],
+  opacity: 0.7,
 }
 
 const getColorByBrushType = (type) => {
@@ -58,10 +59,18 @@ const BrushPolygonLayer = (props) => {
   } = props
 
   // TODO: move out drawingBrushPolygon to reducer
+  const maskRef = React.useRef(null)
   const [drawingBrushPolygon, setDrawingBrushPolygon] = React.useState(null)
   const [drawingBrush, setDrawingBrush] = React.useState(null)
   const [mask, setMask] = React.useState(null)
   const [displayMask, setDisplayMask] = React.useState(null)
+
+  React.useEffect(() => {
+    if (mask) {
+      // you many need to reapply cache on some props changes like shadow, stroke, etc.
+      maskRef.current.cache();
+    }
+  }, [mask]);
 
   const resetAllState = () => {
     setDrawingBrushPolygon(currentDrawingBrushPolygon => currentDrawingBrushPolygon ? DEFAULT_DRAWING_BRUSH_POLYGON : null)
@@ -239,13 +248,6 @@ const BrushPolygonLayer = (props) => {
       onMouseUp={handleLayerMouseUp}
       onTouchEnd={handleLayerMouseUp}
     >
-      {displayMask &&
-        <Image
-          src={displayMask}
-          isDraggingViewport={isDraggingViewport}
-          opacity={0.6}
-        />
-      }
       {drawingBrushPolygon &&
         <BrushPolygon
           key='drawing-brush-polygon'
@@ -254,6 +256,14 @@ const BrushPolygonLayer = (props) => {
             polys: drawingBrush ? [...drawingBrushPolygon.polys, drawingBrush] : drawingBrushPolygon.polys
           }}
           getColorByBrushType={getColorByBrushType}
+        />
+      }
+      {displayMask &&
+        <Image
+          ref={maskRef}
+          src={displayMask}
+          isDraggingViewport={isDraggingViewport}
+          opacity={0.6}
         />
       }
       {activeMode === MODES.DRAW_POLYGON_BY_BRUSH &&
