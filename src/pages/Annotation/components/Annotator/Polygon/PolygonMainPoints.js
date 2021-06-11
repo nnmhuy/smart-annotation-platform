@@ -108,6 +108,7 @@ const PolygonMainPoints = (props) => {
                   hitStrokeWidth: 6 / scale,
                   onMouseOver: (e) => handleMouseOverStartPoint(e, polyIndex),
                   onMouseOut: handleMouseOutStartPoint,
+                  onTap: (e) => handleMouseOverStartPoint(e, polyIndex),
                   fill: "red",
                   hitFunc: function (context) {
                     context.beginPath();
