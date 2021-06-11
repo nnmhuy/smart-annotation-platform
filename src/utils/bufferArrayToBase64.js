@@ -1,6 +1,6 @@
-function bufferArrayToBase64(arrayBuffer, mimetype = "image/PNG") {
+function bufferArrayToBase64(arrayBuffer, mimetype = "image/jpeg") {
   let u8 = new Uint8Array(arrayBuffer)
-  let b64encoded = btoa([].reduce.call(new Uint8Array(arrayBuffer), function (p, c) { return p + String.fromCharCode(c) }, ''))
+  let b64encoded = btoa([].reduce.call(u8, function (p, c) { return p + String.fromCharCode(c) }, ''))
   return "data:" + mimetype + ";base64," + b64encoded
 }
 

@@ -17,7 +17,6 @@ import {
 import convertBrushToBase64Image from '../../utils/convertBrushToBase64Image'
 import sendFormData from '../../../../utils/sendFormData'
 import base64ToBlob from '../../../../utils/base64ToBlob'
-import blobToBase64 from '../../../../utils/blobToBase64'
 import bufferArrayToBase64 from '../../../../utils/bufferArrayToBase64'
 
 const uidgen = new UIDGenerator();
@@ -162,7 +161,7 @@ const BrushPolygonLayer = (props) => {
         }
       )
       .then(async (newMask) => {
-        setDisplayMask(bufferArrayToBase64(newMask, "image/PNG"))
+        setDisplayMask(bufferArrayToBase64(newMask, "image/jpeg"))
       })
       .catch((err) => {
         console.log(err)
@@ -173,7 +172,6 @@ const BrushPolygonLayer = (props) => {
         var t1 = performance.now()
         setRunningTime((t1 - t0) / 1000.0)
       })
-
     }
   }, [drawingBrushPolygon, image, stageSize, mask])
 
