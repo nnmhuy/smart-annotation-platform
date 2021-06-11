@@ -187,6 +187,9 @@ const Annotator = (props) => {
   }
 
   const handleStageMouseDown = (e) => {
+    const stage = stageRef.current
+    setCurrentMousePos(getPointerPosition(stage))
+
     if (forceViewportHandling) {
       handleViewportStart(e)
       return
@@ -243,6 +246,9 @@ const Annotator = (props) => {
   }
 
   const handleStageMouseUp = (e) => {
+    const stage = stageRef.current
+    setCurrentMousePos(getPointerPosition(stage))
+
     if (forceViewportHandling) {
       handleViewportEnd(e)
       return
@@ -282,8 +288,8 @@ const Annotator = (props) => {
   }
 
   const handleStageClick = (e) => {
-    // only detect left click
-    if (e.evt.which !== 1) {
+    // only detect left click or tap
+    if (!((e.type === "click" && e.evt.which === 1) || (e.type === "tap"))) {
       return
     }
 
@@ -390,7 +396,6 @@ const Annotator = (props) => {
           image={image}
           activeMode={activeMode}
           isDraggingViewport={!!viewportStartPos}
-          isEmptyPosition={isEmptyPosition}
         />
         <PolygonLayer
           polygons={polygons}

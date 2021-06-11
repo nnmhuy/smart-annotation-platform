@@ -51,7 +51,11 @@ const RectangleLayer = (props) => {
   }
 
   const finishDrawRectangle = () => {
-    setRectangles([...rectangles, drawingRectangle])
+    setRectangles([...rectangles, {
+      ...drawingRectangle,
+      width: currentMousePos.x - drawingRectangle.x,
+      height: currentMousePos.y - drawingRectangle.y,
+    }])
     setDrawingRectangle(null)
     handleFinishDraw(drawingRectangle)
   }
