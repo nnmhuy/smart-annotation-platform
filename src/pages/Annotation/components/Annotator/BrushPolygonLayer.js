@@ -222,7 +222,7 @@ const BrushPolygonLayer = (props) => {
       layer.off(MANUAL_EVENTS.FINISH_DRAW_POLYGON_BY_BRUSH)
       layer.on(MANUAL_EVENTS.FINISH_DRAW_POLYGON_BY_BRUSH, finishDrawPolygonByBrush)
       layer.off(MANUAL_EVENTS.COMMIT_DRAW_BY_BRUSH_MASK)
-      layer.on(MANUAL_EVENTS.COMMIT_DRAW_BY_BRUSH_MASK, finishDrawPolygonByBrush)
+      layer.on(MANUAL_EVENTS.COMMIT_DRAW_BY_BRUSH_MASK, commitMask)
     }
   }, [finishDrawPolygonByBrush, commitMask]);
 
@@ -262,6 +262,7 @@ const BrushPolygonLayer = (props) => {
           y={currentMousePos.y}
           radius={toolboxConfig.brushSize / 2}
           fill={dotColor}
+          opacity={0.5}
         />
       }
     </Layer>

@@ -40,23 +40,12 @@ const BrushConfig = (props) => {
           value={brushSize}
           aria-labelledby="brush-size-slider"
           step={2}
-          min={1}
-          max={20}
+          min={10}
+          max={100}
           valueLabelDisplay="auto"
           marks
           onChange={(e, newValue) => setToolboxConfig({ ...toolboxConfig, brushSize: newValue})}
         />
-      </div>
-      <div className={classes.optionContainer}>
-        <Typography variant="button" gutterBottom>
-          Keyboard shortcut:
-        </Typography>
-        <Typography>
-          Enter: finish brush
-        </Typography>
-        <Typography>
-          Esc: cancel brush
-        </Typography>
       </div>
     </div>
   )

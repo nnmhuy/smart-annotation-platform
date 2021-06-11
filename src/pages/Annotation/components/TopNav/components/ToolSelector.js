@@ -10,7 +10,7 @@ import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 
-import { BRUSH_TYPES } from '../../constants'
+import { BRUSH_TYPES } from '../../../constants'
 
 const SplitButton = (props) => {
   const { onSelect } = props
