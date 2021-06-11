@@ -53,7 +53,7 @@ const AnnotationPage = (props) => {
   const [activeMode, setActiveMode] = React.useState(MODES.CURSOR)
   const [toolboxConfig, setToolboxConfig] = React.useState({
     brushType: BRUSH_TYPES.POSITIVE_SCRIBBLE,
-    brushSize: 10,
+    brushSize: 20,
   })
   const [rectangles, setRectangles] = React.useState([])
   const [polygons, setPolygons] = React.useState([])
