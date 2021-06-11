@@ -6,7 +6,7 @@ const getPointerPosition = (stage) => {
     x: (pointer.x - stage.x()) / scale,
     y: (pointer.y - stage.y()) / scale,
   };
-  console.log(mousePointTo)
+
   return mousePointTo
 }
 

@@ -1,8 +1,11 @@
 import React from 'react'
-import { Rect, Transformer } from 'react-konva';
+import { Group, Rect, Transformer } from 'react-konva';
 
 
 const Rectangle = ({ shapeProps, isSelected, onSelect, onChange, isDraggingViewport }) => {
+  const { id } = shapeProps
+
+  const groupRef = React.useRef(null);
   const shapeRef = React.useRef();
   const trRef = React.useRef();
 
@@ -14,12 +17,19 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange, isDraggingViewp
     }
   }, [isSelected]);
 
+  const handleSelect = () => {
+    groupRef.current.moveToTop()
+    onSelect()
+  }
+  
   return (
-    <React.Fragment>
+    <Group
+      id={id}
+      ref={groupRef}
+    >
       <Rect
-        // listening={false}
-        onClick={onSelect}
-        onTap={onSelect}
+        onClick={handleSelect}
+        onTap={handleSelect}
         ref={shapeRef}
         strokeScaleEnabled={false}
         {...shapeProps}
@@ -62,7 +72,6 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange, isDraggingViewp
       />
       {isSelected && (
         <Transformer
-          // listening={false}
           ref={trRef}
           keepRatio={false}
           ignoreStroke={true}
@@ -79,7 +88,7 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange, isDraggingViewp
           }}
         />
       )}
-    </React.Fragment>
+    </Group>
   );
 };
 

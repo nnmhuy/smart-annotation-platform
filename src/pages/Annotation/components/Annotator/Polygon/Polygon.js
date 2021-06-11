@@ -107,7 +107,10 @@ const Polygon = (props) => {
         }}
         isEditing={isEditing}
         isDraggingViewport={isDraggingViewport}
-        onSelect={onSelect}
+        onSelect={() => {
+          groupRef.current.moveToTop()
+          onSelect()
+        }}
         onDragPolygonStart={onDragPolygonStart}
         onDragPolygonMove={onDragPolygonMove}
         onDragPolygonEnd={onDragPolygonEnd}

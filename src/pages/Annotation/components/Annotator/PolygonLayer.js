@@ -23,6 +23,7 @@ const PolygonLayer = (props) => {
     isClickOn,
   } = props
 
+  const [currentLayer, setCurrentLayer] = React.useState(null)
   const [drawingPolygon, setDrawingPolygon] = React.useState(null)
   const [cuttingPolygon, setCuttingPolygon] = React.useState(null)
   const [isValidProcessingPolygon, setIsValidProcessingPolygon] = React.useState(false)
@@ -38,6 +39,7 @@ const PolygonLayer = (props) => {
     if (layer !== null) {
       // this is safe because not dependent on any state variables
       layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllState)
+      setCurrentLayer(layer)
     }
   }, [])
   
@@ -206,6 +208,7 @@ const PolygonLayer = (props) => {
             }}
             onSelect={() => {
               if (activeMode === MODES.EDIT) {
+                currentLayer.moveToTop()
                 selectShape(polygon.id);
               }
             }}
