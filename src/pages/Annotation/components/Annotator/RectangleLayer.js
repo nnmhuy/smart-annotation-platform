@@ -22,6 +22,7 @@ const RectangleLayer = (props) => {
     handleFinishDraw,
   } = props
 
+  const [currentLayer, setCurrentLayer] = React.useState(null)
   const [drawingRectangle, setDrawingRectangle] = React.useState(null)
 
   const resetAllState = () => {
@@ -32,6 +33,7 @@ const RectangleLayer = (props) => {
     if (layer !== null) {
       // this is safe because not dependent on any state variables
       layer.on(MANUAL_EVENTS.RESET_ALL_STATE, resetAllState)
+      setCurrentLayer(layer)
     }
   }, []);
 
@@ -51,7 +53,11 @@ const RectangleLayer = (props) => {
   }
 
   const finishDrawRectangle = () => {
-    setRectangles([...rectangles, drawingRectangle])
+    setRectangles([...rectangles, {
+      ...drawingRectangle,
+      width: currentMousePos.x - drawingRectangle.x,
+      height: currentMousePos.y - drawingRectangle.y,
+    }])
     setDrawingRectangle(null)
     handleFinishDraw(drawingRectangle)
   }
@@ -113,6 +119,7 @@ const RectangleLayer = (props) => {
             }}
             onSelect={() => {
               if (activeMode === MODES.EDIT) {
+                currentLayer.moveToTop()
                 selectShape(rect.id);
               }
             }}

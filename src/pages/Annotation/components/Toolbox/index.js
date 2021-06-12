@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 
 import ToolboxButton from './ToolboxButton'
-import BrushConfig from './BrushConfig'
 import { MODES } from '../../constants'
 
 import { ReactComponent as RectangleIcon } from './ToolboxIcon/rectangle.svg'
@@ -11,8 +10,6 @@ import { ReactComponent as CursorIcon } from './ToolboxIcon/cursor.svg'
 import { ReactComponent as EditIcon } from './ToolboxIcon/edit.svg'
 import { ReactComponent as CutIcon } from './ToolboxIcon/cut.svg'
 import { ReactComponent as DeleteIcon } from './ToolboxIcon/delete.svg'
-
-import { get } from 'lodash'
 
 const toolBoxButtons = [
   {
@@ -39,7 +36,6 @@ const toolBoxButtons = [
     name: 'Brush',
     mode: MODES.DRAW_POLYGON_BY_BRUSH,
     component: <PainBrushIcon />,
-    configComponent: BrushConfig,
   },
   {
     name: 'Cut',
@@ -57,9 +53,7 @@ export default class Toolbox extends Component {
   render() {
     const { 
       activeMode, setActiveMode,
-      toolboxConfig, setToolboxConfig,
     } = this.props
-    const ActiveConfigComponent = get(toolBoxButtons.find(btn => btn.mode === activeMode), 'configComponent', null)
     return (
       <>
         <div>
@@ -78,12 +72,6 @@ export default class Toolbox extends Component {
             })
           }
         </div>
-        {ActiveConfigComponent && 
-          <ActiveConfigComponent 
-            toolboxConfig={toolboxConfig}
-            setToolboxConfig={setToolboxConfig}
-          />
-        }
       </>
     )
   }

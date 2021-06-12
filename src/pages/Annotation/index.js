@@ -1,8 +1,9 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
-import { MODES, STAGE_PADDING } from './constants'
+import { MODES, STAGE_PADDING, BRUSH_TYPES } from './constants'
 
+import TopNav from './components/TopNav/index'
 import Toolbox from './components/Toolbox/index'
 import Sidebar from './components/Sidebar/index'
 import Annotator from './components/Annotator'
@@ -33,15 +34,13 @@ const useStyles = makeStyles(() => ({
     background: '#f8f8f8',
     display:'flex',
     flexDirection: 'column',
-    width: '70%'
+    width: '80%'
   },
   toolboxContainer: {
     
   },
   sidebarWrapper: {
-    // TODO: tmp
-    // width: '20%',
-    width: '30%',
+    width: '20%',
   }
 }))
 
@@ -53,8 +52,8 @@ const AnnotationPage = (props) => {
   const [image, setImage] = React.useState(null)
   const [activeMode, setActiveMode] = React.useState(MODES.CURSOR)
   const [toolboxConfig, setToolboxConfig] = React.useState({
-    brushType: 'brush',
-    brushSize: 10,
+    brushType: BRUSH_TYPES.POSITIVE_SCRIBBLE,
+    brushSize: 20,
   })
   const [rectangles, setRectangles] = React.useState([])
   const [polygons, setPolygons] = React.useState([])
@@ -97,13 +96,16 @@ const AnnotationPage = (props) => {
 
   return (
     <div className={classes.root}>
+      <TopNav
+        activeMode={activeMode}
+        toolboxConfig={toolboxConfig}
+        setToolboxConfig={setToolboxConfig}
+      />
       <div className={classes.annotationWrapper}>
         <div className={classes.toolboxContainer}>
           <Toolbox
             activeMode={activeMode}
             setActiveMode={setActiveMode}
-            toolboxConfig={toolboxConfig}
-            setToolboxConfig={setToolboxConfig}
           />
         </div>
         <div className={classes.annotatorContainer} id='stage-container'>
