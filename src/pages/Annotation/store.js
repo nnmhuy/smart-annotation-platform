@@ -4,7 +4,7 @@ import { MODES } from './constants'
 
 const useAnnotationStore = create(set => ({
   stageRef: null,
-  activeMode: MODES.DRAW_BBOX,
+  activeMode: MODES.DRAW_BBOX.name,
 
   setStageRef: (newStageRef) => set({ stageRef: newStageRef}),
   setActiveMode: (newActiveMode) => set({ activeMode: newActiveMode }),

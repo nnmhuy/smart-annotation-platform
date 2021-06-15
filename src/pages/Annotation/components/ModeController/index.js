@@ -13,8 +13,7 @@ const mapModeToComponent = {
 const ModeController = (props) => {
   const { useStore } = props
   const activeMode = useStore(state => state.activeMode)
-
-  const ActiveModeComponent = get(mapModeToComponent, activeMode.name, null)
+  const ActiveModeComponent = get(mapModeToComponent, activeMode, null)
   return (
     <ActiveModeComponent {...props}/>
   )
