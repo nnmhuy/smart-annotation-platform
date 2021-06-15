@@ -8,7 +8,15 @@ const ResponseCode = {
   ERROR_FORBIDDEN: 'error_forbidden',
 }
 
+const ANNOTATION_TYPE = {
+  POLYGON: 'POLYGON',
+  BBOX: 'BBOX',
+  MASK: 'MASK',
+}
+
 export {
   backendURL,
   ResponseCode,
+
+  ANNOTATION_TYPE,
 }

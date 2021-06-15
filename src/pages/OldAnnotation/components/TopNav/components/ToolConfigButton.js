@@ -28,7 +28,7 @@ export default function ToolboxButton(props) {
 
   const classes = useStyles(props)
   return (
-    <Tooltip title={name} placement="down">
+    <Tooltip title={name} placement="bottom">
       <div className={clsx(classes.button, isActive && classes.activeIcon)} onClick={handleClick}>
         <SvgIcon className={classes.icon}>
           {component}

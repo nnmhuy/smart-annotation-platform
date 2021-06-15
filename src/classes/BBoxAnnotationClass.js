@@ -1,16 +1,16 @@
-import { ANNOTATION_TYPE } from "../pages/Annotation/constants";
+import { ANNOTATION_TYPE } from "../pages/OldAnnotation/constants";
 import Annotation from "./AnnotationClass";
 
-export default class BboxAnnotation extends Annotation {
-    constructor(annotationId, labelId, imageId, bbox) {
-        super(annotationId, labelId, imageId)
-        this.type = ANNOTATION_TYPE.BBOX
-        this.bbox = bbox
+export default class BBoxAnnotation extends Annotation {
+  constructor(annotationId, labelId, imageId, bBox) {
+    super(annotationId, labelId, imageId)
+    this.type = ANNOTATION_TYPE.BBOX
+    this.bBox = bBox
+  }
+  set updateData(data) {
+    this.bBox = {
+      ...this.bBox,
+      ...data
     }
-    updateLabel = (labelId) => {
-        this.labelId = labelId
-    }
-    updateBbox = (bbox) => {
-        this.bbox = bbox
-    }
+  }
 }
