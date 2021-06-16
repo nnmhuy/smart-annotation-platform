@@ -1,26 +1,49 @@
 import React from 'react'
 import { Group, Rect, Transformer } from 'react-konva';
 
+import { EVENT_TYPES } from '../../../constants'
+
+const emittingSubjects = [
+  EVENT_TYPES.SELECT_ANNOTATION,
+  EVENT_TYPES.EDIT_ANNOTATION,
+]
 
 const Rectangle = (props) => {
-  const { id, bBox, isSelected, onSelect, onChange, isDraggingViewport } = props
+  const { useStore, eventCenter, id, bBox, } = props
+  const editingAnnotationId = useStore(state => state.editingAnnotationId)
 
   const groupRef = React.useRef(null);
-  const shapeRef = React.useRef();
+  const rectRef = React.useRef();
   const trRef = React.useRef();
 
-  // React.useEffect(() => {
-  //   if (isSelected) {
-  //     // we need to attach transformer manually
-  //     trRef.current.nodes([shapeRef.current]);
-  //     trRef.current.getLayer().batchDraw();
-  //   }
-  // }, [isSelected]);
+  const isSelected = (id === editingAnnotationId)
 
-  // const handleSelect = () => {
-  //   groupRef.current.moveToTop()
-  //   onSelect()
-  // }
+  React.useEffect(() => {
+    if (isSelected) {
+      // we need to attach transformer manually
+      trRef.current.nodes([rectRef.current]);
+      trRef.current.getLayer().batchDraw();
+    }
+  }, [isSelected]);
+
+  const handleSelect = (e) => {
+    groupRef.current.moveToTop()
+    eventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({
+      e,
+      id
+    })
+  }
+
+  React.useEffect(() => {
+    const { getSubject } = eventCenter
+    let initializingObservingSubjects = {}
+    emittingSubjects.forEach(subject => {
+      initializingObservingSubjects[subject] = getSubject(subject)
+    })
+
+    return () => {
+    }
+  }, [])
 
   return (
     <Group
@@ -28,49 +51,43 @@ const Rectangle = (props) => {
       ref={groupRef}
     >
       <Rect
-        // onClick={handleSelect}
-        // onTap={handleSelect}
-        ref={shapeRef}
+        onClick={handleSelect}
+        onTap={handleSelect}
+        ref={rectRef}
         strokeScaleEnabled={false}
         {...bBox}
-        // draggable={isSelected}
-        // onDragEnd={(e) => {
-        //   if (onChange) {
-        //     onChange({
-        //       ...shapeProps,
-        //       x: e.target.x(),
-        //       y: e.target.y(),
-        //     });
-        //   }
-        // }}
-        // onTransformEnd={(e) => {
-        //   // transformer is changing scale of the node
-        //   // and NOT its width or height
-        //   // but in the store we have only width and height
-        //   // to match the data better we will reset scale on transform end
-        //   const node = shapeRef.current;
-        //   const scaleX = node.scaleX();
-        //   const scaleY = node.scaleY();
+        draggable={isSelected}
+        onDragEnd={(e) => {
+          eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
+            x: e.target.x(),
+            y: e.target.y(),
+          })
+        }}
+        onTransformEnd={(e) => {
+          // transformer is changing scale of the node
+          // and NOT its width or height
+          // but in the store we have only width and height
+          // to match the data better we will reset scale on transform end
+          const node = rectRef.current;
+          const scaleX = node.scaleX();
+          const scaleY = node.scaleY();
 
-        //   // we will reset it back
-        //   node.scaleX(1);
-        //   node.scaleY(1);
-        //   if (onChange) {
-        //     onChange({
-        //       ...shapeProps,
-        //       x: node.x(),
-        //       y: node.y(),
-        //       // set minimal value
-        //       width: Math.max(5, node.width() * scaleX),
-        //       height: Math.max(node.height() * scaleY),
-        //     });
-        //   }
-        // }}
+          // we will reset it back
+          node.scaleX(1);
+          node.scaleY(1);
+          eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
+            x: node.x(),
+            y: node.y(),
+            // set minimal value
+            width: Math.max(5, node.width() * scaleX),
+            height: Math.max(node.height() * scaleY),
+          })
+        }}
         // hitFunc={isDraggingViewport && function (context) {
         //   // disable hitFunc while dragging viewport
         // }}
       />
-      {/* {isSelected && (
+      {isSelected && (
         <Transformer
           ref={trRef}
           keepRatio={false}
@@ -83,11 +100,11 @@ const Rectangle = (props) => {
             }
             return newBox;
           }}
-          hitFunc={isDraggingViewport && function (context) {
-            // disable hitFunc while dragging viewport
-          }}
+          // hitFunc={isDraggingViewport && function (context) {
+          //   // disable hitFunc while dragging viewport
+          // }}
         />
-      )} */}
+      )}
     </Group>
   );
 };

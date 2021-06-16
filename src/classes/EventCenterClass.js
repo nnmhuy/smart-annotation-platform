@@ -17,6 +17,11 @@ class EventCenter {
     }
     return this.subjects[subjectName]
   }
+
+  emitEvent = (action) => (data) => {
+    const subject = this.getSubject(action)
+    subject.next(data)
+  }
 }
 
 export default EventCenter

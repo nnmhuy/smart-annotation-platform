@@ -1,6 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Stage, Layer, Rect } from 'react-konva'
+import { Stage, Layer } from 'react-konva'
+import { filter } from 'lodash'
 
 import BBoxRender from './BBoxRender/index'
 
@@ -78,8 +79,8 @@ const RenderComponent = (props) => {
   }
 
   const annotations = useStore(state => state.annotations)
-  const drawingShape = useStore(state => state.drawingShape)
-  
+  const drawingAnnotation = useStore(state => state.drawingAnnotation)
+
   return (
     <div className={classes.stageContainer} ref={stageContainerRef}>
       <Stage
@@ -104,7 +105,9 @@ const RenderComponent = (props) => {
       >
         <Layer>
           <BBoxRender
-            bBoxes={[...annotations, drawingShape].filter(annotation => (annotation instanceof BBoxAnnotation))}
+            useStore={useStore}
+            eventCenter={eventCenter}
+            bBoxes={filter([drawingAnnotation, ...annotations], annotation => (annotation instanceof BBoxAnnotation))}
           />
         </Layer>
       </Stage>

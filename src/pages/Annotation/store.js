@@ -1,4 +1,5 @@
 import create from 'zustand'
+import { cloneDeep } from 'lodash'
 
 import { MODES } from './constants'
 
@@ -16,18 +17,27 @@ const useAnnotationStore = create(set => ({
   highlightId: null,
 
   currentMousePosition: { x: 0, y: 0},
-  drawingShape: null,
+  drawingAnnotation: null,
 
   setCurrentMousePosition: (newMousePosition) => set({ currentMousePosition: newMousePosition }),
-  setDrawingShape: (newDrawingShape) => set({ drawingShape: newDrawingShape }),
-  handleSetDrawingShape: (func) => set(state => func(state)),
-  handleFinishDrawingShape: (func) => set(state => func(state))
-  // handleFinishDrawingShape: (obj) => set(state => ({ 
-  //     annotations: [...state.annotations, obj],
-  //     drawingShape: null
-  //   }))
-  // ,
+  setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
+  handleSetDrawingAnnotation: (func) => set(state => func(state)),
+  handleFinishDrawingAnnotation: (func) => set(state => func(state)),
+  
 
+  editingAnnotationId: null,
+  setEditingAnnotationId: (newEditingAnnotationId) => set({ editingAnnotationId: newEditingAnnotationId}),
+  setEditingAnnotation: (newEditingAnnotationData) => set(state => ({
+    annotations: state.annotations.map(annotation => {
+      if (annotation.id !== state.editingAnnotationId) {
+        return annotation
+      } else {
+        let newAnnotation = cloneDeep(annotation)
+        newAnnotation.updateData = newEditingAnnotationData
+        return newAnnotation
+      }
+    })
+  })),
 }))
 
 export default useAnnotationStore
