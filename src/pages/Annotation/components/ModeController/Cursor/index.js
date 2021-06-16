@@ -1,13 +1,6 @@
 import React from 'react'
-import UIDGenerator from 'uid-generator'
-import { cloneDeep } from 'lodash'
-
-import BBoxAnnotationClass from '../../../../../classes/BBoxAnnotationClass'
 
 import { EVENT_TYPES } from '../../../constants';
-import getPointerPosition from '../../../utils/getPointerPosition'
-
-const uidgen = new UIDGenerator();
 
 const Cursor = (props) => {
   const { useStore, eventCenter } = props
