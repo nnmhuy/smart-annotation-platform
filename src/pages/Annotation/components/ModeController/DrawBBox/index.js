@@ -11,28 +11,35 @@ const uidgen = new UIDGenerator();
 
 const DrawBBox = (props) => {
   const { useStore, eventCenter } = props
-  const handleSetDrawingAnnotation = useStore(state => state.handleSetDrawingAnnotation)
+  const getAnnotations = useStore(state => state.getAnnotations)
+  const setAnnotations = useStore(state => state.setAnnotations)
+  const getDrawingAnnotation = useStore(state => state.getDrawingAnnotation)
+  const setDrawingAnnotation = useStore(state => state.setDrawingAnnotation)
   const setCurrentMousePosition = useStore(state => state.setCurrentMousePosition)
+  const getCurrentMousePosition = useStore(state => state.getCurrentMousePosition)
 
-  const handleClickDrawRectangleOnStore = (state) => {
-    const { drawingAnnotation, currentMousePosition } = state
+  const handleClickDrawRectangle = (state) => {
+    const currentMousePosition = getCurrentMousePosition()
+    const drawingAnnotation = getDrawingAnnotation()
+  
     if (drawingAnnotation === null) {
-        return ({
-          drawingAnnotation: new BBoxAnnotationClass(uidgen.generateSync(), '', '' , {
+        setDrawingAnnotation(new BBoxAnnotationClass(uidgen.generateSync(), '', '' , {
             ...DEFAULT_ANNOTATION_ATTRS,
             x: currentMousePosition.x,
             y: currentMousePosition.y,
             width: 0,
             height: 0,
           }
-        )})
+        ))
     } else {
-      return finishDrawRectangleOnStore(state)
+      finishDrawRectangle(state)
     }
   }
 
-  const finishDrawRectangleOnStore = (state) => {
-    const { drawingAnnotation, currentMousePosition, annotations } = state
+  const finishDrawRectangle = () => {
+    const annotations = getAnnotations()
+    const currentMousePosition = getCurrentMousePosition()
+    const drawingAnnotation = getDrawingAnnotation()
 
     let finishedRectangle = cloneDeep(drawingAnnotation)
 
@@ -46,40 +53,35 @@ const DrawBBox = (props) => {
       height: Math.abs(bBoxHeight)
     }
 
-    return {
-      drawingAnnotation: null,
-      annotations: [...annotations, finishedRectangle]
-    }
+    setDrawingAnnotation(null)
+    setAnnotations([...annotations, finishedRectangle])
   }
 
 
-  const handleDragDrawRectangleOnStore = (state) => {
-    const { currentMousePosition, drawingAnnotation } = state
+  const handleDragDrawRectangle = () => {
+    const currentMousePosition = getCurrentMousePosition()
+    const drawingAnnotation = getDrawingAnnotation()
+
     if (drawingAnnotation !== null) {
       let newDrawingAnnotation = cloneDeep(drawingAnnotation)
       newDrawingAnnotation.updateData = {
         width: currentMousePosition.x - drawingAnnotation.bBox.x,
         height: currentMousePosition.y - drawingAnnotation.bBox.y,
       }
-      return (
-        { 
-          drawingAnnotation: newDrawingAnnotation
-        }
-      )
+      setDrawingAnnotation(newDrawingAnnotation)
     }
-    return {}
   }
 
   const handleMouseClick = (e) => {
     const stage = e.target.getStage()
     setCurrentMousePosition(getPointerPosition(stage))
-    handleSetDrawingAnnotation(handleClickDrawRectangleOnStore)
+    handleClickDrawRectangle()
   }
 
   const handleMouseMove = (e) => {
     const stage = e.target.getStage()
     setCurrentMousePosition(getPointerPosition(stage))
-    handleSetDrawingAnnotation(handleDragDrawRectangleOnStore)
+    handleDragDrawRectangle()
   }
 
   React.useEffect(() => {

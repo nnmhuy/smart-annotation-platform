@@ -32,11 +32,12 @@ const useAnnotationStore = create((set, get) => ({
   currentMousePosition: { x: 0, y: 0},
   drawingAnnotation: null,
 
+  getAnnotations: () => get().annotations,
+  setAnnotations: (newAnnotations) => set({ annotations: newAnnotations }),
+  getCurrentMousePosition: () => get().currentMousePosition,
   setCurrentMousePosition: (newMousePosition) => set({ currentMousePosition: newMousePosition }),
+  getDrawingAnnotation: () => get().drawingAnnotation,
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
-  handleSetDrawingAnnotation: (func) => set(state => func(state)),
-  handleFinishDrawingAnnotation: (func) => set(state => func(state)),
-  
 
   editingAnnotationId: null,
   setEditingAnnotationId: (newEditingAnnotationId) => set({ editingAnnotationId: newEditingAnnotationId}),
