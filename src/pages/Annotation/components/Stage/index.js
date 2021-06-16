@@ -35,7 +35,7 @@ const emittingSubjects = [
 
 const RenderComponent = (props) => {
   const classes = useStyles()
-  const { useStore } = props
+  const { useStore, eventCenter } = props
   
   const stageContainerRef = React.useRef(null)
   const stageRef = React.useRef(null)
@@ -61,8 +61,6 @@ const RenderComponent = (props) => {
     }
   }, [stageContainerRef])
 
-  const { eventCenter } = props
-
 
   // const [listeningSubjects, setListeningSubjects] = React.useState({}) // subjects listen by this component
   React.useEffect(() => {
@@ -72,11 +70,6 @@ const RenderComponent = (props) => {
       initializingObservingSubjects[subject] = eventCenter.getSubject(subject)
     })
   }, [])
-
-  const emitEvent = (action) => (data) => {
-    const subject = eventCenter.getSubject(action)
-    subject.next(data)
-  }
 
   const annotations = useStore(state => state.annotations)
   const drawingAnnotation = useStore(state => state.drawingAnnotation)
@@ -89,18 +82,18 @@ const RenderComponent = (props) => {
         height={stageSize.height}
         // className={classes.stage}
 
-        // onMouseOut={handleStageMouseOut}
-        // onMouseEnter={handleStageMouseEnter}
+        onMouseOut={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_OUT)}
+        onMouseEnter={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_ENTER)}
         // onWheel={handleZoom}
         // onContextMenu={handleStageContextMenu}
 
-        // onMouseDown={handleStageMouseDown}
+        onMouseDown={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_DOWN)}
         // onTouchStart={handleStageMouseDown}
-        onMouseMove={emitEvent(EVENT_TYPES.STAGE_MOUSE_MOVE)}
+        onMouseMove={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_MOVE)}
         // onTouchMove={emitEvent(EVENT_TYPES.STAGE_MOUSE_MOVE)}
-        // onMouseUp={handleStageMouseUp}
+        onMouseUp={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_UP)}
         // onTouchEnd={handleStageMouseUp}
-        onClick={emitEvent(EVENT_TYPES.STAGE_MOUSE_CLICK)}
+        onClick={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_CLICK)}
         // onTap={handleStageClick}
       >
         <Layer>

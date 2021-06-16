@@ -1,12 +1,14 @@
 import React from 'react'
 import { get } from 'lodash'
 
+import Cursor from './Cursor/index'
 import Edit from './Edit/index'
 import DrawBBox from './DrawBBox/index'
 
 import { MODES } from '../../constants'
 
 const mapModeToComponent = {
+  [MODES.CURSOR.name]: Cursor,
   [MODES.EDIT.name]: Edit,
   [MODES.DRAW_BBOX.name]: DrawBBox,
 }

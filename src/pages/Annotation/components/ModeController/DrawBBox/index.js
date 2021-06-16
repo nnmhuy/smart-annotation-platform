@@ -11,8 +11,8 @@ const uidgen = new UIDGenerator();
 
 const DrawBBox = (props) => {
   const { useStore, eventCenter } = props
-  const handleSetDrawingAnnotation = useStore(stage => stage.handleSetDrawingAnnotation)
-  const setCurrentMousePosition = useStore(stage => stage.setCurrentMousePosition)
+  const handleSetDrawingAnnotation = useStore(state => state.handleSetDrawingAnnotation)
+  const setCurrentMousePosition = useStore(state => state.setCurrentMousePosition)
 
   const handleClickDrawRectangleOnStore = (state) => {
     const { drawingAnnotation, currentMousePosition } = state

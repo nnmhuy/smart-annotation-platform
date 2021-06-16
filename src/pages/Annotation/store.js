@@ -6,9 +6,19 @@ import { MODES } from './constants'
 const useAnnotationStore = create(set => ({
   stageRef: null,
   activeMode: MODES.DRAW_BBOX.name,
+  isMovingViewport: false,
 
   setStageRef: (newStageRef) => set({ stageRef: newStageRef}),
   setActiveMode: (newActiveMode) => set({ activeMode: newActiveMode }),
+  setIsMovingViewport: (newStatus) => set({ isMovingViewport: newStatus }),
+  handleSetViewport: (newPos) => set(state => {
+    if (!state.isMovingViewport) {
+      return
+    }
+
+    state.stageRef.position(newPos);
+    state.stageRef.batchDraw();
+  }),
 
 
   annotations: [],
