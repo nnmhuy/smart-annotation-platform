@@ -89,7 +89,8 @@ const DrawBBox = (props) => {
                                       .subscribe({next: (e) => handleMouseClick(e)}),
       [EVENT_TYPES.STAGE_MOUSE_MOVE]: getSubject(EVENT_TYPES.STAGE_MOUSE_MOVE)
                                       .subscribe({ next: (e) => handleMouseMove(e) }),
-                                
+      [EVENT_TYPES.STAGE_TAP]: getSubject(EVENT_TYPES.STAGE_TAP)
+        .subscribe({ next: (e) => handleMouseClick(e) }),                           
     }
 
     return () => {

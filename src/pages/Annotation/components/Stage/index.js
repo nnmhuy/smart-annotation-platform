@@ -84,17 +84,17 @@ const RenderComponent = (props) => {
 
         onMouseOut={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_OUT)}
         onMouseEnter={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_ENTER)}
-        // onWheel={handleZoom}
-        // onContextMenu={handleStageContextMenu}
+        // onWheel={eventCenter.emitEvent(EVENT_TYPES.WHEEL)}
+        onContextMenu={eventCenter.emitEvent(EVENT_TYPES.STAGE_CONTEXT_MENU)}
 
         onMouseDown={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_DOWN)}
-        // onTouchStart={handleStageMouseDown}
+        onTouchStart={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_START)}
         onMouseMove={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_MOVE)}
-        // onTouchMove={emitEvent(EVENT_TYPES.STAGE_MOUSE_MOVE)}
+        onTouchMove={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_MOVE)}
         onMouseUp={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_UP)}
-        // onTouchEnd={handleStageMouseUp}
+        onTouchEnd={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_END)}
         onClick={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_CLICK)}
-        // onTap={handleStageClick}
+        onTap={eventCenter.emitEvent(EVENT_TYPES.STAGE_TAP)}
       >
         <Layer>
           <BBoxRender

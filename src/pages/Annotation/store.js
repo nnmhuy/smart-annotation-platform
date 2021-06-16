@@ -3,7 +3,7 @@ import { cloneDeep } from 'lodash'
 
 import { MODES } from './constants'
 
-const useAnnotationStore = create(set => ({
+const useAnnotationStore = create((set, get) => ({
   stageRef: null,
   activeMode: MODES.DRAW_BBOX.name,
   isMovingViewport: false,
@@ -11,14 +11,17 @@ const useAnnotationStore = create(set => ({
   setStageRef: (newStageRef) => set({ stageRef: newStageRef}),
   setActiveMode: (newActiveMode) => set({ activeMode: newActiveMode }),
   setIsMovingViewport: (newStatus) => set({ isMovingViewport: newStatus }),
-  handleSetViewport: (newPos) => set(state => {
-    if (!state.isMovingViewport) {
+  handleSetViewport: (newPos) => {
+    let stage = get().stageRef
+    let isMovingViewport = get().isMovingViewport
+  
+    if (!isMovingViewport) {
       return
     }
     // TODO: limit viewport
-    state.stageRef.position(newPos);
-    state.stageRef.batchDraw();
-  }),
+    stage.position(newPos);
+    stage.batchDraw();
+  },
 
 
   annotations: [],
