@@ -18,33 +18,27 @@ const Cursor = (props) => {
   const handleMouseDown = (e) => {
     e.evt.preventDefault();
     setIsMovingViewport(true)
+    window.addEventListener("mousemove", handleMouseMove)
+    window.addEventListener("mouseup", handleMouseUp)
   }
 
+  /**
+   * Handle moving viewport base on mouse position relative to window
+   */
   const handleMouseMove = (e) => {
-    e.evt.preventDefault();
-    
     const stagePosition = stage.position()
     let newPosition = {
-      x: stagePosition.x + e.evt.movementX,
-      y: stagePosition.y + e.evt.movementY,
+      x: stagePosition.x + e.movementX,
+      y: stagePosition.y + e.movementY,
     }
     
     handleSetViewport(newPosition)
   }
 
   const handleMouseUp = (e) => {
-    e.evt.preventDefault();
     setIsMovingViewport(false)
-  }
-
-  /**
-   * Trigger when mouse move inside the stage
-   * handle viewport end here instead of when mouse out for smooth dragging
-   * konva listen to mouse on elements without hitFunc as move out
-  */
-  const handleMouseEnter = (e) => {
-    e.evt.preventDefault();
-    setIsMovingViewport(false)
+    window.removeEventListener("mousemove", handleMouseMove)
+    window.removeEventListener("mouseup", handleMouseUp)
   }
 
   React.useEffect(() => {
@@ -52,12 +46,6 @@ const Cursor = (props) => {
     let subscriptions = {
       [EVENT_TYPES.STAGE_MOUSE_DOWN]: getSubject(EVENT_TYPES.STAGE_MOUSE_DOWN)
         .subscribe({ next: (e) => handleMouseDown(e) }),
-      [EVENT_TYPES.STAGE_MOUSE_MOVE]: getSubject(EVENT_TYPES.STAGE_MOUSE_MOVE)
-        .subscribe({ next: (e) => handleMouseMove(e) }),
-      [EVENT_TYPES.STAGE_MOUSE_UP]: getSubject(EVENT_TYPES.STAGE_MOUSE_UP)
-        .subscribe({ next: (e) => handleMouseUp(e) }),
-      [EVENT_TYPES.STAGE_MOUSE_UP]: getSubject(EVENT_TYPES.STAGE_MOUSE_ENTER)
-        .subscribe({ next: (e) => handleMouseEnter(e) }),
     }
 
     return () => {

@@ -15,7 +15,7 @@ const useAnnotationStore = create(set => ({
     if (!state.isMovingViewport) {
       return
     }
-
+    // TODO: limit viewport
     state.stageRef.position(newPos);
     state.stageRef.batchDraw();
   }),
