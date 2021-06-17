@@ -1,7 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
-import { filter } from 'lodash'
+import { filter, cloneDeep, get, find } from 'lodash'
 
 import BBoxRender from './BBoxRender/index'
 
@@ -73,6 +73,17 @@ const RenderComponent = (props) => {
 
   const annotations = useStore(state => state.annotations)
   const drawingAnnotation = useStore(state => state.drawingAnnotation)
+  const labels = useStore(state => state.labels)
+
+  const renderingAnnotations = [drawingAnnotation, ...annotations].map((ann) => {
+    if (ann === null) {
+      return null
+    } 
+    let renderAnn = cloneDeep(ann)
+    const label = find(labels, { id: renderAnn.labelId })
+    renderAnn.updateData = get(label, 'annotationProperties', {})
+    return renderAnn
+  })
 
   return (
     <div className={classes.stageContainer} ref={stageContainerRef}>
@@ -100,7 +111,7 @@ const RenderComponent = (props) => {
           <BBoxRender
             useStore={useStore}
             eventCenter={eventCenter}
-            bBoxes={filter([drawingAnnotation, ...annotations], annotation => (annotation instanceof BBoxAnnotation))}
+            bBoxes={filter(renderingAnnotations, annotation => (annotation instanceof BBoxAnnotation))}
           />
         </Layer>
       </Stage>
