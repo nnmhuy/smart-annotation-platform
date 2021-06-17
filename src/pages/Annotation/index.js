@@ -4,6 +4,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import Toolbox from './components/Toolbox/index'
 import ModeController from './components/ModeController/index'
 import RenderComponent from './components/Stage/index'
+import Sidebar from './components/Sidebar/index'
+import LabelSelection from './components/LabelSelection/index'
 
 import EventCenter from '../../classes/EventCenterClass'
 import useAnnotationStore from './store'
@@ -27,6 +29,7 @@ const useStyles = makeStyles(() => ({
 
   },
   sidebarWrapper: {
+    width: '20%',
   }
 }))
 
@@ -45,28 +48,35 @@ const Annotation = (props) => {
     //   subscription.unsubscribe()
     // }
   }, [])
-  
+
   return (
     <div className={classes.root}>
-        <div className={classes.toolboxContainer}>
-          <Toolbox
-            useStore={useAnnotationStore}
-            eventCenter={annotationEventCenter}
-          />
-        </div>
-        <div className={classes.annotatorContainer}>
-          <ModeController
-            useStore={useAnnotationStore}
-            eventCenter={annotationEventCenter}
-          />
-          <RenderComponent
-            useStore={useAnnotationStore}
-            eventCenter={annotationEventCenter}
-          />
-        </div>
-        <div className={classes.sidebarWrapper}>
-
-        </div>
+      <div className={classes.toolboxContainer}>
+        <Toolbox
+          useStore={useAnnotationStore}
+          eventCenter={annotationEventCenter}
+        />
+      </div>
+      <div className={classes.annotatorContainer}>
+        <ModeController
+          useStore={useAnnotationStore}
+          eventCenter={annotationEventCenter}
+        />
+        <RenderComponent
+          useStore={useAnnotationStore}
+          eventCenter={annotationEventCenter}
+        />
+        <LabelSelection
+          useStore={useAnnotationStore}
+          eventCenter={annotationEventCenter}
+        />
+      </div>
+      <div className={classes.sidebarWrapper}>
+        <Sidebar
+          useStore={useAnnotationStore}
+          eventCenter={annotationEventCenter}
+        />
+      </div>
     </div>
   )
 }

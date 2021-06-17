@@ -4,7 +4,7 @@ export default class Annotation {
     this.labelId = labelId
     this.imageId = imageId
   }
-  updateLabel = (labelId) => {
+  set updateLabel(labelId) {
     this.labelId = labelId
   }
   updateData = () => {

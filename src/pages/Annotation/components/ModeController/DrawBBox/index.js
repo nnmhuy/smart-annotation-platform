@@ -15,7 +15,7 @@ const DrawBBox = (props) => {
   const setAnnotations = useStore(state => state.setAnnotations)
   const getDrawingAnnotation = useStore(state => state.getDrawingAnnotation)
   const setDrawingAnnotation = useStore(state => state.setDrawingAnnotation)
-  const setCurrentMousePosition = useStore(state => state.setCurrentMousePosition)
+  const updateCurrentMousePosition = useStore(state => state.updateCurrentMousePosition)
   const getCurrentMousePosition = useStore(state => state.getCurrentMousePosition)
 
   const handleClickDrawRectangle = (state) => {
@@ -55,6 +55,7 @@ const DrawBBox = (props) => {
 
     setDrawingAnnotation(null)
     setAnnotations([...annotations, finishedRectangle])
+    eventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedRectangle.id)
   }
 
 
@@ -73,14 +74,12 @@ const DrawBBox = (props) => {
   }
 
   const handleMouseClick = (e) => {
-    const stage = e.target.getStage()
-    setCurrentMousePosition(getPointerPosition(stage))
+    updateCurrentMousePosition()
     handleClickDrawRectangle()
   }
 
   const handleMouseMove = (e) => {
-    const stage = e.target.getStage()
-    setCurrentMousePosition(getPointerPosition(stage))
+    updateCurrentMousePosition()
     handleDragDrawRectangle()
   }
 
@@ -92,7 +91,7 @@ const DrawBBox = (props) => {
       [EVENT_TYPES.STAGE_MOUSE_MOVE]: getSubject(EVENT_TYPES.STAGE_MOUSE_MOVE)
                                       .subscribe({ next: (e) => handleMouseMove(e) }),
       [EVENT_TYPES.STAGE_TAP]: getSubject(EVENT_TYPES.STAGE_TAP)
-        .subscribe({ next: (e) => handleMouseClick(e) }),                           
+        .subscribe({ next: (e) => handleMouseClick(e) }),
     }
 
     return () => {
