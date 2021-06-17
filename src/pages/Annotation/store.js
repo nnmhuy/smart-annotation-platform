@@ -1,5 +1,5 @@
 import create from 'zustand'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, find, get } from 'lodash'
 
 import { MODES } from './constants'
 import getPointerPosition from './utils/getPointerPosition'
@@ -12,7 +12,12 @@ const useAnnotationStore = create((set, get) => ({
   isMovingViewport: false,
 
   setStageRef: (newStageRef) => set({ stageRef: newStageRef}),
-  setActiveMode: (newActiveMode) => set({ activeMode: newActiveMode }),
+  setActiveMode: (newActiveMode) => set(state => {
+    const stageCursor = get(find(MODES, { name: state.activeMode }), 'cursor', 'default')
+    state.stageRef.container().style.cursor = stageCursor
+
+    return { activeMode: newActiveMode }
+  }),
   setIsMovingViewport: (newStatus) => set({ isMovingViewport: newStatus }),
   handleSetViewport: (newPos) => {
     let stage = get().stageRef

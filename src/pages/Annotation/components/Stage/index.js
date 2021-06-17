@@ -6,13 +6,16 @@ import { filter, cloneDeep, get, find } from 'lodash'
 import BBoxRender from './BBoxRender/index'
 
 import BBoxAnnotation from '../../../../classes/BBoxAnnotationClass'
-import { EVENT_TYPES } from '../../constants'
+import { EVENT_TYPES, MODES } from '../../constants'
 
 const useStyles = makeStyles(() => ({
   stageContainer: {
     width: '100%',
     height: '100%',
-  }
+  },
+  stage: {
+    cursor: ({activeMode}) => get(find(MODES, { name: activeMode }), 'cursor', 'default')
+  },
 }))
 
 
@@ -34,8 +37,9 @@ const emittingSubjects = [
 ]
 
 const RenderComponent = (props) => {
-  const classes = useStyles()
   const { useStore, eventCenter } = props
+  const activeMode = useStore(state => state.activeMode)
+  const classes = useStyles({ activeMode })
   
   const stageContainerRef = React.useRef(null)
   const stageRef = React.useRef(null)
@@ -91,7 +95,7 @@ const RenderComponent = (props) => {
         ref={stageRef}
         width={stageSize.width}
         height={stageSize.height}
-        // className={classes.stage}
+        className={classes.stage}
 
         onMouseOut={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_OUT)}
         onMouseEnter={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_ENTER)}
