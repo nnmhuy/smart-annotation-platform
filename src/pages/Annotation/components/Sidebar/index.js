@@ -1,7 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core'
 
-import LabelList from './LabelList'
+import LabelList from './components/LabelList'
 
 import { theme } from '../../../../theme'
 
@@ -24,6 +24,11 @@ const SideBar = (props) => {
   const classes = useStyles()
   return (
     <div className={classes.sideBarWrapper}>
+      <LabelList
+        key={`label-0-unknown`}
+        annotations={annotations.filter(anno => anno.labelId === '')}
+        classLabel={'Unknown'}
+      />
       {
         labels.map(value => {
           return <LabelList

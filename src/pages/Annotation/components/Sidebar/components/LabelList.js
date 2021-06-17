@@ -1,7 +1,7 @@
 import React from 'react'
 import clsx from 'clsx';
 import { InvisibleIcon, VisibleIcon } from './SidebarIcon'
-import { theme } from '../../../../theme'
+import { theme } from '../../../../../theme'
 
 import {
   Collapse,

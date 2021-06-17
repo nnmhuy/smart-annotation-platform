@@ -34,6 +34,13 @@ const Rectangle = (props) => {
     })
   }
 
+  const handleContextMenu = (e) => {
+    eventCenter.emitEvent(EVENT_TYPES.CONTEXT_MENU_ANNOTATION)({
+      e,
+      id
+    })
+  }
+
   React.useEffect(() => {
     const { getSubject } = eventCenter
     let initializingObservingSubjects = {}
@@ -53,6 +60,7 @@ const Rectangle = (props) => {
       <Rect
         onClick={handleSelect}
         onTap={handleSelect}
+        onContextMenu={handleContextMenu}
         ref={rectRef}
         strokeScaleEnabled={false}
         {...bBox}

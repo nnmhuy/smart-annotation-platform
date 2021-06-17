@@ -44,6 +44,7 @@ const useAnnotationStore = create((set, get) => ({
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
 
   editingAnnotationId: null,
+  getEditingAnnotationId: () => get().editingAnnotationId,
   setEditingAnnotationId: (newEditingAnnotationId) => set({ editingAnnotationId: newEditingAnnotationId }),
   setEditingAnnotation: (newEditingAnnotationData) => set(state => ({
     annotations: state.annotations.map(annotation => {

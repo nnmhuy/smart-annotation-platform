@@ -29,7 +29,7 @@ const Edit = (props) => {
     const { getSubject } = eventCenter
     let subscriptions = {
       [EVENT_TYPES.SELECT_ANNOTATION]: getSubject(EVENT_TYPES.SELECT_ANNOTATION)
-        .subscribe({ next: (id) => handleSelectAnnotation(id) }),
+        .subscribe({ next: (e) => handleSelectAnnotation(e) }),
       [EVENT_TYPES.STAGE_MOUSE_CLICK]: getSubject(EVENT_TYPES.STAGE_MOUSE_CLICK)
         .subscribe({ next: (e) => handleStageClick(e) }),
     }
