@@ -2,12 +2,15 @@ import React from 'react'
 import { find } from 'lodash'
 
 import EditBBox from './EditHandler/EditBBox';
+import EditPolygon from './EditHandler/EditPolygon';
 
 import { EVENT_TYPES } from '../../../constants';
 import BBoxAnnotation from '../../../../../classes/BBoxAnnotationClass';
+import PolygonAnnotation from '../../../../../classes/PolygonAnnotationClass';
 
 const mapAnnotationClassToEditHandler = [
-  { annotationClass: BBoxAnnotation, handler: EditBBox, }
+  { annotationClass: BBoxAnnotation, handler: EditBBox, },
+  { annotationClass: PolygonAnnotation, handler: EditPolygon, },
 ]
 
 const Edit = (props) => {

@@ -39,7 +39,10 @@ const useStyles = makeStyles((props) => ({
 }))
 
 const ThumbnailSlider = (props) => {
-  const { useStore, eventCenter } = props
+  const { 
+    useStore, 
+    // eventCenter 
+  } = props
   const imageId = useStore(state => state.imageId)
 
   const setImageId = useStore(state => state.setImageId)

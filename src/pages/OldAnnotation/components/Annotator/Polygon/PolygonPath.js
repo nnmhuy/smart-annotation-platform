@@ -14,7 +14,7 @@ const PolygonPath = (props) => {
   const { id, polys, ...others } = polygon
 
   const pathRef = React.useRef(null)
-  console.log(polys)
+
   React.useEffect(() => {
     let fullPolygon = Flatten.polygon()
     polys.forEach((points, polyIndex) => {
