@@ -7,18 +7,16 @@ const BBoxRender = (props) => {
   const { useStore, eventCenter, bBoxes } = props
 
   return (
-    <Group>
-      {bBoxes.map(bBox => {
-        return (
-          <Rectangle 
-            useStore={useStore}
-            eventCenter={eventCenter}
-            key={`bBox-${bBox.id}`}
-            {...bBox}
-          />
-        )
-      })}
-    </Group>
+    bBoxes.map(bBox => {
+      return (
+        <Rectangle 
+          useStore={useStore}
+          eventCenter={eventCenter}
+          key={`bBox-${bBox.id}`}
+          {...bBox}
+        />
+      )
+    })
   )
 }
 

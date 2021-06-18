@@ -11,7 +11,7 @@ import { mockupLabels, mockupImageList } from './mockup'
 const useAnnotationStore = create((set, get) => ({
   stageRef: null,
   stageSize: { width: 0, height: 0 },
-  activeMode: MODES.DRAW_BBOX.name,
+  activeMode: MODES.DRAW_POLYGON.name,
   isMovingViewport: false,
 
   setStageRef: (newStageRef) => set({ stageRef: newStageRef}),
@@ -73,6 +73,7 @@ const useAnnotationStore = create((set, get) => ({
 
   getAnnotations: () => get().annotations,
   setAnnotations: (newAnnotations) => set({ annotations: newAnnotations }),
+  appendAnnotation: (newAnnotation) => set(state => ({ annotations: [...state.annotations, newAnnotation] })),
   updateCurrentMousePosition: () => set(state => ({ currentMousePosition: getPointerPosition(state.stageRef) })),
   getCurrentMousePosition: () => get().currentMousePosition,
   setCurrentMousePosition: (newMousePosition) => set({ currentMousePosition: newMousePosition }),

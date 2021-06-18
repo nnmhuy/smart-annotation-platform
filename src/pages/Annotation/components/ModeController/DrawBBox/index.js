@@ -5,41 +5,37 @@ import { cloneDeep } from 'lodash'
 import BBoxAnnotationClass from '../../../../../classes/BBoxAnnotationClass'
 
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
-import getPointerPosition from '../../../utils/getPointerPosition'
 
 const uidgen = new UIDGenerator();
 
 const DrawBBox = (props) => {
   const { useStore, eventCenter } = props
   const getImageId = useStore(state => state.getImageId)
-  const getAnnotations = useStore(state => state.getAnnotations)
-  const setAnnotations = useStore(state => state.setAnnotations)
+  const appendAnnotation = useStore(state => state.appendAnnotation)
   const getDrawingAnnotation = useStore(state => state.getDrawingAnnotation)
   const setDrawingAnnotation = useStore(state => state.setDrawingAnnotation)
   const updateCurrentMousePosition = useStore(state => state.updateCurrentMousePosition)
   const getCurrentMousePosition = useStore(state => state.getCurrentMousePosition)
 
-  const handleClickDrawRectangle = (state) => {
+  const handleClickDrawRectangle = () => {
     const imageId = getImageId()
     const currentMousePosition = getCurrentMousePosition()
     const drawingAnnotation = getDrawingAnnotation()
-  
+
     if (drawingAnnotation === null) {
-        setDrawingAnnotation(new BBoxAnnotationClass(uidgen.generateSync(), '', imageId , {
-            ...DEFAULT_ANNOTATION_ATTRS,
-            x: currentMousePosition.x,
-            y: currentMousePosition.y,
-            width: 0,
-            height: 0,
-          }
-        ))
+      setDrawingAnnotation(new BBoxAnnotationClass(uidgen.generateSync(), '', imageId, {
+        ...DEFAULT_ANNOTATION_ATTRS,
+        x: currentMousePosition.x,
+        y: currentMousePosition.y,
+        width: 0,
+        height: 0,
+      }))
     } else {
-      finishDrawRectangle(state)
+      finishDrawRectangle()
     }
   }
 
   const finishDrawRectangle = () => {
-    const annotations = getAnnotations()
     const currentMousePosition = getCurrentMousePosition()
     const drawingAnnotation = getDrawingAnnotation()
 
@@ -56,7 +52,7 @@ const DrawBBox = (props) => {
     }
 
     setDrawingAnnotation(null)
-    setAnnotations([...annotations, finishedRectangle])
+    appendAnnotation(finishedRectangle)
     eventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedRectangle.id)
   }
 
@@ -89,9 +85,9 @@ const DrawBBox = (props) => {
     const { getSubject } = eventCenter
     let subscriptions = {
       [EVENT_TYPES.STAGE_MOUSE_CLICK]: getSubject(EVENT_TYPES.STAGE_MOUSE_CLICK)
-                                      .subscribe({next: (e) => handleMouseClick(e)}),
+        .subscribe({ next: (e) => handleMouseClick(e) }),
       [EVENT_TYPES.STAGE_MOUSE_MOVE]: getSubject(EVENT_TYPES.STAGE_MOUSE_MOVE)
-                                      .subscribe({ next: (e) => handleMouseMove(e) }),
+        .subscribe({ next: (e) => handleMouseMove(e) }),
       [EVENT_TYPES.STAGE_TAP]: getSubject(EVENT_TYPES.STAGE_TAP)
         .subscribe({ next: (e) => handleMouseClick(e) }),
     }

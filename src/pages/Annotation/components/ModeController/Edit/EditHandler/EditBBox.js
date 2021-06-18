@@ -1,5 +1,4 @@
 import React from 'react'
-import { cloneDeep } from 'lodash'
 
 import { EVENT_TYPES } from '../../../../constants'
 
