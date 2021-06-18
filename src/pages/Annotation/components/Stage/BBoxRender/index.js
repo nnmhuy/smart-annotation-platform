@@ -1,5 +1,4 @@
 import React from 'react'
-import { Group } from 'react-konva'
 
 import Rectangle from './Rectangle'
 

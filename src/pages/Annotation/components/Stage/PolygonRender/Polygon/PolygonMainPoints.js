@@ -1,20 +1,58 @@
 import React from 'react'
 import { Circle } from 'react-konva'
 
+import { EVENT_TYPES } from '../../../../constants'
+
 
 const PolygonMainPoints = (props) => {
   const {
+    useStore,
+    eventCenter,
     id,
     polygon,
+    isDrawing,
     scale,
   } = props
 
   const { polys, x: dX, y: dY } = polygon
 
+  const handleMouseOverStartPoint = (event, polyIndex) => {
+    if (polys[polyIndex].length < 3) return;
+    event.target.scale({ x: 2, y: 2 });
+    event.target.zIndex(5)
+
+    eventCenter.emitEvent(EVENT_TYPES.MOUSE_OVER_POLYGON_START)(true)
+  }
+
+  const handleMouseOutStartPoint = event => {
+    event.target.scale({ x: 1, y: 1 });
+
+    eventCenter.emitEvent(EVENT_TYPES.MOUSE_OVER_POLYGON_START)(false)
+  }
+
   return (polys.map((mainPoints, polyIndex) => {
+    const isActivePoly = (isDrawing && polyIndex === 0)
+
     return (mainPoints.map((point, pointIndex) => {
       const x = point[0] + dX;
       const y = point[1] + dY;
+      const startPointAttr =
+        (pointIndex === 0 && isActivePoly)
+          ? {
+            hitStrokeWidth: 6 / scale,
+            onMouseOver: (e) => handleMouseOverStartPoint(e, polyIndex),
+            onMouseOut: handleMouseOutStartPoint,
+            onTap: (e) => handleMouseOverStartPoint(e, polyIndex),
+            fill: "red",
+            hitFunc: function (context) {
+              context.beginPath();
+              context.arc(0, 0, 6 / scale, 0, Math.PI * 2, true);
+              context.closePath();
+              context.fillStrokeShape(this);
+            },
+            zIndex: 10000,
+          }
+          : null;
       return (
         <Circle
           key={`poly-main_points-${id}-${polyIndex}-${pointIndex}`}
@@ -24,9 +62,9 @@ const PolygonMainPoints = (props) => {
           fill="white"
           stroke="black"
           strokeWidth={2 / scale}
-        // hitFunc={(isCutting || isDraggingViewport) && function () {
-        //   // disable hitFunc while cutting or dragging viewport
-        // }}
+          hitFunc={function () {
+          }}
+          {...startPointAttr}
         />
       );
     }))

@@ -18,21 +18,31 @@ const Polygon = (props) => {
 
   const scale = stage ? stage.scaleX() : 1
 
+  const drawingAnnotation = useStore(state => state.drawingAnnotation)
+  const isDrawing = (drawingAnnotation && drawingAnnotation.id === id)
+
   return (
     <Group
       id={id}
       ref={groupRef}
     >
       <PolygonPath
+        useStore={useStore}
+        eventCenter={eventCenter}
         id={polygon.id}
         polygon={polygon.polygon}
         scale={scale}
       />
-      <PolygonMainPoints
-        id={polygon.id}
-        polygon={polygon.polygon}
-        scale={scale}
-      />
+      {isDrawing && 
+        <PolygonMainPoints
+          isDrawing={isDrawing}
+          useStore={useStore}
+          eventCenter={eventCenter}
+          id={polygon.id}
+          polygon={polygon.polygon}
+          scale={scale}
+        />
+      }
     </Group>
   )
 }

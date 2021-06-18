@@ -53,7 +53,6 @@ const DrawPolygon = (props) => {
       setDrawingPoly([[currentMousePosition.x, currentMousePosition.y]])
     } else {
       if (isMouseOverPolygonStart) {
-        // TODO: add logic to check enough points
         finishDrawPolygon()
       } else {
         const newDrawingAnnotation = cloneDeep(drawingPolygon)
@@ -79,6 +78,7 @@ const DrawPolygon = (props) => {
     setDrawingPoly(null)
     appendAnnotation(finishedPolygon)
     setIsMouseOverPolygonStart(false)
+    eventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedPolygon.id)
   }
 
 
@@ -119,6 +119,10 @@ const DrawPolygon = (props) => {
     }
   }
 
+  const handleMouseOverPolygonStart = (value) => {
+    setIsMouseOverPolygonStart(value)
+  }
+
   const handleMouseClick = () => {
     updateCurrentMousePosition()
     handleClickDrawPolygon()
@@ -145,6 +149,8 @@ const DrawPolygon = (props) => {
         .subscribe({ next: (e) => handleMouseMove(e) }),
       [EVENT_TYPES.STAGE_CONTEXT_MENU]: getSubject(EVENT_TYPES.STAGE_CONTEXT_MENU)
         .subscribe({ next: (e) => handleContextMenu(e) }),
+      [EVENT_TYPES.MOUSE_OVER_POLYGON_START]: getSubject(EVENT_TYPES.MOUSE_OVER_POLYGON_START)
+        .subscribe({ next: (e) => handleMouseOverPolygonStart(e) }),
     }
 
     return () => {
