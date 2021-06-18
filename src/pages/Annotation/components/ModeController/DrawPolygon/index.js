@@ -5,7 +5,6 @@ import { cloneDeep } from 'lodash'
 
 import PolygonAnnotationClass from '../../../../../classes/PolygonAnnotationClass'
 
-import formatPolygonsToRightCCW from '../../../utils/formatPolygonsToRightCCW'
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
 
 const uidgen = new UIDGenerator();
@@ -73,7 +72,7 @@ const DrawPolygon = (props) => {
 
     const finishedPolygon = cloneDeep(drawingPolygon)
     finishedPolygon.updateData = {
-      polys: formatPolygonsToRightCCW([drawingPoly])
+      polys: [drawingPoly]
     }
 
     setDrawingAnnotation(null)

@@ -2,8 +2,8 @@ import React from 'react'
 import { Group } from 'react-konva'
 
 import PolygonPath from './PolygonPath'
+import PolygonMainPoints from './PolygonMainPoints'
 // import PolygonMidPoints from './PolygonMidPoints'
-// import PolygonMainPoints from './PolygonMainPoints'
 
 const Polygon = (props) => {
   const {
@@ -24,6 +24,11 @@ const Polygon = (props) => {
       ref={groupRef}
     >
       <PolygonPath
+        id={polygon.id}
+        polygon={polygon.polygon}
+        scale={scale}
+      />
+      <PolygonMainPoints
         id={polygon.id}
         polygon={polygon.polygon}
         scale={scale}
