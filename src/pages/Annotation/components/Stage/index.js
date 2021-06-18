@@ -81,6 +81,14 @@ const RenderComponent = (props) => {
     })
   }, [])
 
+  const handleStageClick = (e) => {
+    // only detect left click or tap
+    if (!((e.type === "click" && e.evt.which === 1) || (e.type === "tap"))) {
+      return
+    }
+    eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_CLICK)(e)
+  }
+
   const imageId = useStore(state => state.imageId)
   const annotations = useStore(state => state.annotations)
   const drawingAnnotation = useStore(state => state.drawingAnnotation)
@@ -115,7 +123,7 @@ const RenderComponent = (props) => {
         onTouchMove={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_MOVE)}
         onMouseUp={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_UP)}
         onTouchEnd={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_END)}
-        onClick={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_CLICK)}
+        onClick={handleStageClick} // limit to left click only
         onTap={eventCenter.emitEvent(EVENT_TYPES.STAGE_TAP)}
       >
         <Layer>

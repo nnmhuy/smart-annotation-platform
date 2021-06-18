@@ -3,18 +3,18 @@ import Flatten from '@flatten-js/core'
 import { Path } from 'react-konva'
 
 const PolygonPath = (props) => {
-  const { 
+  const {
+    id,
     polygon,
     scale,
-    isEditing, isDraggingViewport,
-    onSelect,
-    onDragPolygonStart, onDragPolygonMove, onDragPolygonEnd,
   } = props
 
-  const { id, polys, ...others } = polygon
+  // const { id, polys, ...others } = polygon
+  const polys = polygon.polys
+  const { ...others } = polygon
 
   const pathRef = React.useRef(null)
-  console.log(polys)
+
   React.useEffect(() => {
     let fullPolygon = Flatten.polygon()
     polys.forEach((points, polyIndex) => {
@@ -49,16 +49,10 @@ const PolygonPath = (props) => {
     <Path
       ref={pathRef}
       id={id}
-      onClick={onSelect}
-      onTap={onSelect}
-      draggable={isEditing}
-      onDragStart={onDragPolygonStart}
-      onDragMove={onDragPolygonMove}
-      onDragEnd={onDragPolygonEnd}
       strokeWidth={others.strokeWidth / scale}
-      hitFunc={isDraggingViewport && function () {
-        // disable hitFunc while dragging viewport
-      }}
+      // hitFunc={isDraggingViewport && function () {
+      //   // disable hitFunc while dragging viewport
+      // }}
       {...others}
     />
   )

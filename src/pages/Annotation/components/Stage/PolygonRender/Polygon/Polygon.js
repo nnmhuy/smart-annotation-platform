@@ -17,8 +17,6 @@ const Polygon = (props) => {
   const groupRef = React.useRef(null)
 
   const scale = stage ? stage.scaleX() : 1
-  console.log(polygon)
-  console.log(scale)
 
   return (
     <Group
@@ -26,10 +24,8 @@ const Polygon = (props) => {
       ref={groupRef}
     >
       <PolygonPath
-        polygon={{
-          ...polygon,
-          ...polygon.polygon
-        }}
+        id={polygon.id}
+        polygon={polygon.polygon}
         scale={scale}
       />
     </Group>
