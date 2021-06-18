@@ -3,7 +3,7 @@ import { Group } from 'react-konva'
 
 import PolygonPath from './PolygonPath'
 import PolygonMainPoints from './PolygonMainPoints'
-// import PolygonMidPoints from './PolygonMidPoints'
+import PolygonMidPoints from './PolygonMidPoints'
 
 import { EVENT_TYPES } from '../../../../constants'
 import { cloneDeep } from 'lodash'
@@ -12,9 +12,11 @@ const Polygon = (props) => {
   const {
     polygon, useStore, eventCenter,
   } = props
-  
+
   const { id } = polygon
   const [isDraggingPolygon, setIsDraggingPolygon] = React.useState(false)
+  const [draggingPointKey, setDraggingPointKey] = React.useState(null)
+  const [draggingMidPoint, setDraggingMidPoint] = React.useState(null)
 
   const stage = useStore(state => state.stageRef)
   const drawingAnnotation = useStore(state => state.drawingAnnotation)
@@ -60,6 +62,57 @@ const Polygon = (props) => {
     setIsDraggingPolygon(false)
   }
 
+  const getNewPolysAfterDraggingMidPoint = (polys, { polyIndex, pointIndex, position }) => {
+    const newPolys = cloneDeep(polys).map((poly, index) => {
+      if (index !== polyIndex) {
+        return poly
+      } else {
+        return [...poly.slice(0, pointIndex + 1), position, ...poly.slice(pointIndex + 1)]
+      }
+    })
+
+    return newPolys
+  }
+
+  const handleStartDraggingMidPoint = (event) => {
+    const key = event.target.key;
+
+    if (!draggingPointKey) {
+      setDraggingPointKey(key)
+    }
+  }
+
+  const handleMoveDraggingMidPoint = (event, polyIndex, pointIndex) => {
+    const key = event.target.key;
+    if (key !== draggingPointKey) { // prevent dragging 2 near points
+      return
+    }
+
+    setDraggingMidPoint({
+      position: [event.target.attrs.x, event.target.attrs.y],
+      polyIndex,
+      pointIndex,
+    })
+  }
+
+  const handleEndDraggingMidPoint = (event, polyIndex, pointIndex) => {
+    const position = [event.target.attrs.x, event.target.attrs.y];
+
+    const newPolys = getNewPolysAfterDraggingMidPoint(polygon.polygon.polys, {
+      polyIndex,
+      pointIndex,
+      position
+    })
+
+    eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
+      polys: newPolys,
+    })
+
+    setDraggingPointKey(null)
+    setDraggingMidPoint(null)
+  }
+
+
   const handleContextMenu = (e) => {
     eventCenter.emitEvent(EVENT_TYPES.CONTEXT_MENU_ANNOTATION)({
       e,
@@ -76,7 +129,12 @@ const Polygon = (props) => {
         useStore={useStore}
         eventCenter={eventCenter}
         id={polygon.id}
-        polygon={polygon.polygon}
+        polygon={{
+          ...polygon.polygon,
+          polys: draggingMidPoint ?
+            getNewPolysAfterDraggingMidPoint(polygon.polygon.polys, draggingMidPoint)
+            : polygon.polygon.polys
+        }}
         scale={scale}
         handleSelectPolygon={handleSelectPolygon}
         handleContextMenu={handleContextMenu}
@@ -86,12 +144,26 @@ const Polygon = (props) => {
       />
       {(!isDraggingPolygon && (isDrawing || isSelected)) &&
         <PolygonMainPoints
-          isDrawing={isDrawing}
           useStore={useStore}
           eventCenter={eventCenter}
+          isDrawing={isDrawing}
+          isSelected={isSelected}
           id={polygon.id}
           polygon={polygon.polygon}
           scale={scale}
+        />
+      }
+      {(!isDraggingPolygon && isSelected) &&
+        <PolygonMidPoints
+          useStore={useStore}
+          eventCenter={eventCenter}
+          isSelected={isSelected}
+          id={polygon.id}
+          polygon={polygon.polygon}
+          scale={scale}
+          handleStartDraggingMidPoint={handleStartDraggingMidPoint}
+          handleMoveDraggingMidPoint={handleMoveDraggingMidPoint}
+          handleEndDraggingMidPoint={handleEndDraggingMidPoint}
         />
       }
     </Group>
