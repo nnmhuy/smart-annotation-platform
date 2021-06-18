@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import { filter, cloneDeep, get, find } from 'lodash'
 
+import ImageRender from './ImageRender/index'
 import BBoxRender from './BBoxRender/index'
 
 import BBoxAnnotation from '../../../../classes/BBoxAnnotationClass'
@@ -14,6 +15,7 @@ const useStyles = makeStyles(() => ({
     height: '100%',
   },
   stage: {
+    background: '#f8f8f8',
     cursor: ({activeMode}) => get(find(MODES, { name: activeMode }), 'cursor', 'default')
   },
 }))
@@ -48,7 +50,9 @@ const RenderComponent = (props) => {
     setStageRef(stageRef.current)
   }, [stageRef])
 
-  const [stageSize, setStageSize] = React.useState({ width: 0, height: 0 })
+
+  const stageSize = useStore(state => state.stageSize)
+  const setStageSize = useStore(state => state.setStageSize)
   const handleNewStageSize = () => {
     const container = stageContainerRef.current
     setStageSize({
@@ -75,11 +79,12 @@ const RenderComponent = (props) => {
     })
   }, [])
 
+  const imageId = useStore(state => state.imageId)
   const annotations = useStore(state => state.annotations)
   const drawingAnnotation = useStore(state => state.drawingAnnotation)
   const labels = useStore(state => state.labels)
 
-  const renderingAnnotations = [drawingAnnotation, ...annotations].map((ann) => {
+  const renderingAnnotations = filter([drawingAnnotation, ...annotations], { imageId }).map((ann) => {
     if (ann === null) {
       return null
     } 
@@ -112,6 +117,10 @@ const RenderComponent = (props) => {
         onTap={eventCenter.emitEvent(EVENT_TYPES.STAGE_TAP)}
       >
         <Layer>
+          <ImageRender
+            useStore={useStore}
+            eventCenter={eventCenter}
+          />
           <BBoxRender
             useStore={useStore}
             eventCenter={eventCenter}

@@ -5,6 +5,7 @@ import Toolbox from './components/Toolbox/index'
 import ModeController from './components/ModeController/index'
 import RenderComponent from './components/Stage/index'
 import Sidebar from './components/Sidebar/index'
+import ThumbnailSlider from './components/ThumbnailSlider'
 import LabelSelection from './components/LabelSelection/index'
 
 import EventCenter from '../../classes/EventCenterClass'
@@ -14,9 +15,16 @@ import useAnnotationStore from './store'
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
-    width: '100%',
+    width: '100vw',
     height: '100vh',
+    flexDirection: 'column',
+    overflow: 'hidden'
+  },
+  annotationWrapper: {
+    display: 'flex',
     flexDirection: 'row',
+    width: '100vw',
+    height: '100vh',
     overflow: 'hidden'
   },
   annotatorContainer: {
@@ -38,45 +46,40 @@ const annotationEventCenter = new EventCenter()
 const Annotation = (props) => {
   const classes = useStyles()
 
-  React.useEffect(() => {
-    // const testSubject = annotationEventCenter.getSubject(EVENT_TYPES.STAGE_MOUSE_MOVE)
-    // const subscription = testSubject.subscribe({
-    //   next: (data) => console.log(`MOVE: ${JSON.stringify(data)}`)
-    // });
-
-    // return () => {
-    //   subscription.unsubscribe()
-    // }
-  }, [])
-
   return (
     <div className={classes.root}>
-      <div className={classes.toolboxContainer}>
-        <Toolbox
-          useStore={useAnnotationStore}
-          eventCenter={annotationEventCenter}
-        />
+      <div className={classes.annotationWrapper}>
+        <div className={classes.toolboxContainer}>
+          <Toolbox
+            useStore={useAnnotationStore}
+            eventCenter={annotationEventCenter}
+          />
+        </div>
+        <div className={classes.annotatorContainer}>
+          <ModeController
+            useStore={useAnnotationStore}
+            eventCenter={annotationEventCenter}
+          />
+          <RenderComponent
+            useStore={useAnnotationStore}
+            eventCenter={annotationEventCenter}
+          />
+          <LabelSelection
+            useStore={useAnnotationStore}
+            eventCenter={annotationEventCenter}
+          />
+        </div>
+        <div className={classes.sidebarWrapper}>
+          <Sidebar
+            useStore={useAnnotationStore}
+            eventCenter={annotationEventCenter}
+          />
+        </div>
       </div>
-      <div className={classes.annotatorContainer}>
-        <ModeController
-          useStore={useAnnotationStore}
-          eventCenter={annotationEventCenter}
-        />
-        <RenderComponent
-          useStore={useAnnotationStore}
-          eventCenter={annotationEventCenter}
-        />
-        <LabelSelection
-          useStore={useAnnotationStore}
-          eventCenter={annotationEventCenter}
-        />
-      </div>
-      <div className={classes.sidebarWrapper}>
-        <Sidebar
-          useStore={useAnnotationStore}
-          eventCenter={annotationEventCenter}
-        />
-      </div>
+      <ThumbnailSlider
+        useStore={useAnnotationStore}
+        eventCenter={annotationEventCenter}
+      />
     </div>
   )
 }

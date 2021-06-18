@@ -58,10 +58,14 @@ const DEFAULT_ANNOTATION_ATTRS = {
   strokeWidth: 2,
 }
 
+const STAGE_PADDING = 50
+
 
 export {
   MODES,
   EVENT_TYPES,
+  
+  STAGE_PADDING,
 
   DEFAULT_ANNOTATION_ATTRS,
 }

@@ -11,6 +11,7 @@ const uidgen = new UIDGenerator();
 
 const DrawBBox = (props) => {
   const { useStore, eventCenter } = props
+  const getImageId = useStore(state => state.getImageId)
   const getAnnotations = useStore(state => state.getAnnotations)
   const setAnnotations = useStore(state => state.setAnnotations)
   const getDrawingAnnotation = useStore(state => state.getDrawingAnnotation)
@@ -19,11 +20,12 @@ const DrawBBox = (props) => {
   const getCurrentMousePosition = useStore(state => state.getCurrentMousePosition)
 
   const handleClickDrawRectangle = (state) => {
+    const imageId = getImageId()
     const currentMousePosition = getCurrentMousePosition()
     const drawingAnnotation = getDrawingAnnotation()
   
     if (drawingAnnotation === null) {
-        setDrawingAnnotation(new BBoxAnnotationClass(uidgen.generateSync(), '', '' , {
+        setDrawingAnnotation(new BBoxAnnotationClass(uidgen.generateSync(), '', imageId , {
             ...DEFAULT_ANNOTATION_ATTRS,
             x: currentMousePosition.x,
             y: currentMousePosition.y,

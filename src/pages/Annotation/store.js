@@ -1,17 +1,21 @@
 import create from 'zustand'
-import { cloneDeep, find, get } from 'lodash'
+import { cloneDeep, find } from 'lodash'
 
-import { MODES } from './constants'
+import { MODES, STAGE_PADDING } from './constants'
 import getPointerPosition from './utils/getPointerPosition'
+import loadImageFromURL from '../../utils/loadImageFromURL'
+import resizeImage from '../../utils/resizeImage'
 
-import { mockupLabels } from './mockup'
+import { mockupLabels, mockupImageList } from './mockup'
 
 const useAnnotationStore = create((set, get) => ({
   stageRef: null,
+  stageSize: { width: 0, height: 0 },
   activeMode: MODES.DRAW_BBOX.name,
   isMovingViewport: false,
 
   setStageRef: (newStageRef) => set({ stageRef: newStageRef}),
+  setStageSize: (newStageSize) => set({ stageSize: newStageSize }),
   setActiveMode: (newActiveMode) => set(state => {
     const stageCursor = get(find(MODES, { name: state.activeMode }), 'cursor', 'default')
     state.stageRef.container().style.cursor = stageCursor
@@ -33,9 +37,36 @@ const useAnnotationStore = create((set, get) => ({
 
 
   annotations: [],
+  imageId: null,
   image: null,
+  imageList: mockupImageList,
   selectedId: null,
   highlightId: null,
+
+  setImageId: async (newImageId) => {
+    const imageList = get().imageList
+    const stage = get().stageRef
+    const stageSize = get().stageSize
+
+    const data = imageList.find(data => data.id === newImageId)
+    const newImage = await loadImageFromURL(data.imageURL)
+      .then((imageData) => resizeImage(imageData, {
+        maxWidth: stageSize.width - STAGE_PADDING,
+        maxHeight: stageSize.height - STAGE_PADDING,
+      }))
+
+    stage.position({
+      x: (stageSize.width - newImage.width) / 2,
+      y: (stageSize.height - newImage.height) / 2,
+    });
+    stage.scale({ x: 1, y: 1 })
+
+    set({
+      imageId: newImageId,
+      image: newImage,
+    })
+  },
+  getImageId: () => get().imageId,
 
   currentMousePosition: { x: 0, y: 0},
   drawingAnnotation: null,
