@@ -6,9 +6,11 @@ import { filter, cloneDeep, get, find } from 'lodash'
 import ImageRender from './ImageRender/index'
 import BBoxRender from './BBoxRender/index'
 import PolygonRender from './PolygonRender/index'
+import ScribbleToMaskRender from './ScribbleToMaskRender/index'
 
 import BBoxAnnotation from '../../../../classes/BBoxAnnotationClass'
 import PolygonAnnotation from '../../../../classes/PolygonAnnotationClass'
+import ScribbleToMaskAnnotation from '../../../../classes/ScribbleToMaskAnnotationClass'
 import { EVENT_TYPES, MODES } from '../../constants'
 
 const useStyles = makeStyles(() => ({
@@ -83,7 +85,6 @@ const RenderComponent = (props) => {
 
   const handleStageClick = (e) => {
     // only detect left click or tap
-    console.log(e)
     if (!((e.type === "click" && e.evt.which === 1) || (e.type === "tap"))) {
       return
     }
@@ -141,6 +142,11 @@ const RenderComponent = (props) => {
             useStore={useStore}
             eventCenter={eventCenter}
             polygons={filter(renderingAnnotations, annotation => (annotation instanceof PolygonAnnotation))}
+          />
+          <ScribbleToMaskRender
+            useStore={useStore}
+            eventCenter={eventCenter}
+            scribbleAnnotations={filter(renderingAnnotations, annotation => (annotation instanceof ScribbleToMaskAnnotation))}
           />
         </Layer>
       </Stage>

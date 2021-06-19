@@ -1,7 +1,7 @@
 import create from 'zustand'
 import { cloneDeep, find } from 'lodash'
 
-import { MODES, STAGE_PADDING } from './constants'
+import { MODES, STAGE_PADDING, DEFAULT_TOOL_CONFIG } from './constants'
 import getPointerPosition from './utils/getPointerPosition'
 import loadImageFromURL from '../../utils/loadImageFromURL'
 import resizeImage from '../../utils/resizeImage'
@@ -11,7 +11,7 @@ import { mockupLabels, mockupImageList } from './mockup'
 const useAnnotationStore = create((set, get) => ({
   stageRef: null,
   stageSize: { width: 0, height: 0 },
-  activeMode: MODES.DRAW_POLYGON.name,
+  activeMode: MODES.SCRIBBLE_TO_MASK.name,
   isMovingViewport: false,
 
   setStageRef: (newStageRef) => set({ stageRef: newStageRef}),
@@ -108,6 +108,9 @@ const useAnnotationStore = create((set, get) => ({
     })
   })),
 
+  toolConfig: DEFAULT_TOOL_CONFIG,
+  setToolConfig: (newToolConfig) => set(state => ({ toolConfig: { ...state.toolConfig, [state.activeMode]: newToolConfig } })),
+  getToolConfig: () => get().toolConfig[get().activeMode] || {},
 }))
 
 export default useAnnotationStore

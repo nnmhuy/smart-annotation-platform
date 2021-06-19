@@ -33,8 +33,8 @@ const toolBoxButtons = [
     component: <PolygonIcon />,
   },
   {
-    name: 'Brush',
-    mode: MODES.DRAW_POLYGON_BY_BRUSH.name,
+    name: 'Scribble',
+    mode: MODES.SCRIBBLE_TO_MASK.name,
     component: <PainBrushIcon />,
   },
   {

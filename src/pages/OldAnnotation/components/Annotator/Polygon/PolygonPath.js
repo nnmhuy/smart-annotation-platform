@@ -36,7 +36,6 @@ const PolygonPath = (props) => {
     if (svgPathNode) {
       const path = pathRef.current
       path.data(svgPathNode.getAttribute("d"))
-      console.log(svgPathNode.getAttribute("d"))
 
       path.setAttrs({
         fillRule: "evenodd",

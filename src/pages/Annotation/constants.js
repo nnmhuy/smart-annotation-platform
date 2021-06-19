@@ -15,8 +15,8 @@ const MODES = {
     name: 'DRAW_POLYGON',
     cursor: 'crosshair',
   },
-  DRAW_POLYGON_BY_BRUSH: {
-    name: 'DRAW_POLYGON_BY_BRUSH',
+  SCRIBBLE_TO_MASK: {
+    name: 'SCRIBBLE_TO_MASK',
     cursor: 'crosshair',
   },
   CUT: {
@@ -62,12 +62,32 @@ const DEFAULT_ANNOTATION_ATTRS = {
 
 const STAGE_PADDING = 50
 
+const SCRIBBLE_TO_MASK_CONSTANTS = {
+  MAX_SCRIBBLE_SIZE: 100,
+  MIN_SCRIBBLE_SIZE: 10,
+  SCRIBBLE_TYPES: {
+    POSITIVE: "POSITIVE",
+    NEGATIVE: "NEGATIVE",
+    ERASER: "ERASER"
+  },
+}
+
+const DEFAULT_TOOL_CONFIG = {
+  [MODES.SCRIBBLE_TO_MASK.name]: {
+    scribbleSize: 20,
+    scribbleType: SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.POSITIVE,
+    threshold: 0.5,
+  }
+}
 
 export {
   MODES,
   EVENT_TYPES,
+  DEFAULT_TOOL_CONFIG,
   
   STAGE_PADDING,
 
   DEFAULT_ANNOTATION_ATTRS,
+
+  SCRIBBLE_TO_MASK_CONSTANTS,
 }

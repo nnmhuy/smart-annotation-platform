@@ -6,6 +6,7 @@ import ModeController from './components/ModeController/index'
 import RenderComponent from './components/Stage/index'
 import Sidebar from './components/Sidebar/index'
 import ThumbnailSlider from './components/ThumbnailSlider'
+import TopNav from './components/TopNav/index'
 import LabelSelection from './components/LabelSelection/index'
 
 import EventCenter from '../../classes/EventCenterClass'
@@ -48,6 +49,10 @@ const Annotation = (props) => {
 
   return (
     <div className={classes.root}>
+      <TopNav
+        useStore={useAnnotationStore}
+        eventCenter={annotationEventCenter}
+      />
       <div className={classes.annotationWrapper}>
         <div className={classes.toolboxContainer}>
           <Toolbox

@@ -5,6 +5,7 @@ import Popover from '@material-ui/core/Popover'
 import {TextField} from '@material-ui/core';
 import {Autocomplete} from '@material-ui/lab'
 
+// TODO: handle visibility
 const ClassSelectionPopover = (props) => {
   const { contextMenuPosition, labels, handleSelectLabel, handleClose} = props
   const [selectedValue, setValue] = React.useState('')
