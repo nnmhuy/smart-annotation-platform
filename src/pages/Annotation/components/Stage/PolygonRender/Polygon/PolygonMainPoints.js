@@ -6,12 +6,19 @@ import { EVENT_TYPES } from '../../../../constants'
 
 const PolygonMainPoints = (props) => {
   const {
-    useStore,
     eventCenter,
     id,
     polygon,
     isDrawing,
+    isSelected,
+    isCutting,
+    isMovingViewport,
     scale,
+    handleStartDraggingMainPoint,
+    handleMoveDraggingMainPoint,
+    handleEndDraggingMainPoint,
+    handleClickMainPoint,
+    handleDoubleClickDeletePoint,
   } = props
 
   const { polys, x: dX, y: dY } = polygon
@@ -62,9 +69,18 @@ const PolygonMainPoints = (props) => {
           fill="white"
           stroke="black"
           strokeWidth={2 / scale}
-          hitFunc={function () {
+          hitFunc={(isCutting || isMovingViewport) && function () {
+            // disable hitFunc while cutting or dragging viewport
           }}
           {...startPointAttr}
+          draggable={isSelected}
+          onDragStart={handleStartDraggingMainPoint}
+          onDragMove={(e) => handleMoveDraggingMainPoint(e, polyIndex, pointIndex)}
+          onDragEnd={handleEndDraggingMainPoint}
+          onClick={isSelected ? handleClickMainPoint : null}
+          onTap={isSelected ? handleClickMainPoint : null}
+          onDblClick={isSelected ? (e) => handleDoubleClickDeletePoint(e, polyIndex, pointIndex) : null}
+          onDblTap={isSelected ? (e) => handleDoubleClickDeletePoint(e, polyIndex, pointIndex) : null}
         />
       );
     }))

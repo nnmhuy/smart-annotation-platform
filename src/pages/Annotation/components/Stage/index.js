@@ -83,6 +83,7 @@ const RenderComponent = (props) => {
 
   const handleStageClick = (e) => {
     // only detect left click or tap
+    console.log(e)
     if (!((e.type === "click" && e.evt.which === 1) || (e.type === "tap"))) {
       return
     }

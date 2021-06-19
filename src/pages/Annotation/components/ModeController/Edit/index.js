@@ -24,7 +24,7 @@ const Edit = (props) => {
     setEditingAnnotationId(annotationId)
   }
 
-  const handleStageClick = () => {
+  const handleStageClick = (e) => {
     setEditingAnnotationId(null)
   }
 

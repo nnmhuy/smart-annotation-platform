@@ -4,10 +4,10 @@ import { Circle } from 'react-konva'
 const PolygonMidPoints = (props) => {
   const {
     id,
-    isDraggingViewport,
     polygon,
     scale,
-
+    
+    isMovingViewport,
     handleStartDraggingMidPoint,
     handleMoveDraggingMidPoint,
     handleEndDraggingMidPoint,
@@ -46,9 +46,9 @@ const PolygonMidPoints = (props) => {
             onDragMove={(e) => handleMoveDraggingMidPoint(e, polyIndex, pointIndex)}
             onDragEnd={(e) => handleEndDraggingMidPoint(e, polyIndex, pointIndex)}
             draggable
-          // hitFunc={isDraggingViewport && function () {
-          //   // disable hitFunc while dragging viewport
-          // }}
+            hitFunc={isMovingViewport && function () {
+              // disable hitFunc while dragging viewport
+            }}
           />
         );
       })

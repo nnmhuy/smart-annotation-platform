@@ -10,7 +10,7 @@ const PolygonPath = (props) => {
     scale,
 
     isSelected,
-
+    isMovingViewport,
     handleSelectPolygon,
     handleContextMenu,
     onDragPolygonStart,
@@ -31,9 +31,9 @@ const PolygonPath = (props) => {
       id={id}
       strokeWidth={others.strokeWidth / scale}
       data={pathData}
-      // hitFunc={isDraggingViewport && function () {
-      //   // disable hitFunc while dragging viewport
-      // }}
+      hitFunc={isMovingViewport && function () {
+        // disable hitFunc while dragging viewport
+      }}
       {...others}
       draggable={isSelected}
       onClick={handleSelectPolygon}
