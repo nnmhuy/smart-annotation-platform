@@ -20,7 +20,10 @@ const useAnnotationStore = create((set, get) => ({
     const stageCursor = get(find(MODES, { name: state.activeMode }), 'cursor', 'default')
     state.stageRef.container().style.cursor = stageCursor
 
-    return { activeMode: newActiveMode }
+    return { 
+      activeMode: newActiveMode,
+      drawingAnnotation: null,
+    }
   }),
   setIsMovingViewport: (newStatus) => set({ isMovingViewport: newStatus }),
   handleSetViewport: (newPos) => {

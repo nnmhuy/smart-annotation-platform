@@ -69,8 +69,8 @@ const PolygonMainPoints = (props) => {
           fill="white"
           stroke="black"
           strokeWidth={2 / scale}
-          hitFunc={(isCutting || isMovingViewport) && function () {
-            // disable hitFunc while cutting or dragging viewport
+          hitFunc={(isDrawing || isCutting || isMovingViewport) && function () {
+            // disable hitFunc while drawing or cutting or dragging viewport
           }}
           {...startPointAttr}
           draggable={isSelected}
