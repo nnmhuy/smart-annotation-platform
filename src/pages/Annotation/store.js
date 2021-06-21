@@ -67,6 +67,7 @@ const useAnnotationStore = create((set, get) => ({
     set({
       imageId: newImageId,
       image: newImage,
+      drawingAnnotation: null,
     })
   },
   getImageId: () => get().imageId,
