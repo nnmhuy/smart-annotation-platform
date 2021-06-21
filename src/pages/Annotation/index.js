@@ -8,6 +8,7 @@ import Sidebar from './components/Sidebar/index'
 import ThumbnailSlider from './components/ThumbnailSlider'
 import TopNav from './components/TopNav/index'
 import LabelSelection from './components/LabelSelection/index'
+import Prediction from './components/Prediction/index'
 
 import EventCenter from '../../classes/EventCenterClass'
 import useAnnotationStore from './store'
@@ -70,6 +71,10 @@ const Annotation = (props) => {
             eventCenter={annotationEventCenter}
           />
           <LabelSelection
+            useStore={useAnnotationStore}
+            eventCenter={annotationEventCenter}
+          />
+          <Prediction
             useStore={useAnnotationStore}
             eventCenter={annotationEventCenter}
           />

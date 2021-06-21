@@ -5,7 +5,7 @@ import Scribble from './Scribble'
 import Mask from './Mask'
 
 const MaskAnnotation = (props) => {
-  const { id, maskData, useStore, eventCenter } = props
+  const { id, maskData, useStore } = props
 
   const scribbles = maskData.scribbles
   // TODO: resize/change color of mask

@@ -7,6 +7,7 @@ import ImageRender from './ImageRender/index'
 import BBoxRender from './BBoxRender/index'
 import PolygonRender from './PolygonRender/index'
 import ScribbleToMaskRender from './ScribbleToMaskRender/index'
+import ToolRender from './ToolRender/index'
 
 import BBoxAnnotation from '../../../../classes/BBoxAnnotationClass'
 import PolygonAnnotation from '../../../../classes/PolygonAnnotationClass'
@@ -147,6 +148,10 @@ const RenderComponent = (props) => {
             useStore={useStore}
             eventCenter={eventCenter}
             scribbleAnnotations={filter(renderingAnnotations, annotation => (annotation instanceof ScribbleToMaskAnnotation))}
+          />
+          <ToolRender
+            useStore={useStore}
+            eventCenter={eventCenter}
           />
         </Layer>
       </Stage>
