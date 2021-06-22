@@ -18,6 +18,7 @@ const useScribbleToMaskStore = create((set, get) => ({
 const ScribbleToMask = (props) => {
   const { useStore, eventCenter } = props
   const getImageId = useStore(state => state.getImageId)
+  const getImage = useStore(state => state.getImage)
   const appendAnnotation = useStore(state => state.appendAnnotation)
   const getDrawingAnnotation = useStore(state => state.getDrawingAnnotation)
   const setDrawingAnnotation = useStore(state => state.setDrawingAnnotation)
@@ -89,6 +90,40 @@ const ScribbleToMask = (props) => {
     handleFinishDrawByBrush()
   }
 
+  const handleMouseEnter = () => {
+    setIsDrawingScribble(false)
+  }
+
+  const handleTriggerPredict = () => {
+    const image = getImage()
+    const drawingAnnotation = getDrawingAnnotation()
+
+    if (!image || !drawingAnnotation) {
+      alert("Image not found")
+      return
+    }
+    eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.MI_VOS_S2M)({
+      image, 
+      annotation: drawingAnnotation
+    })
+  }
+
+  const handleFinishPredict = (data) => {
+    const drawingAnnotation = getDrawingAnnotation()
+
+    const { originalBase64, base64, blob } = data
+
+    const newDrawingAnnotation = cloneDeep(drawingAnnotation)
+    newDrawingAnnotation.updateData = {
+      mask: {
+        base64,
+        originalBase64,
+        blob,
+      }
+    }
+    setDrawingAnnotation(newDrawingAnnotation)
+  }
+
   React.useEffect(() => {
     const { getSubject } = eventCenter
     let subscriptions = {
@@ -98,6 +133,12 @@ const ScribbleToMask = (props) => {
         .subscribe({ next: (e) => handleMouseMove(e) }),
       [EVENT_TYPES.STAGE_MOUSE_UP]: getSubject(EVENT_TYPES.STAGE_MOUSE_UP)
         .subscribe({ next: (e) => handleMouseUp(e) }),
+      [EVENT_TYPES.STAGE_MOUSE_ENTER]: getSubject(EVENT_TYPES.STAGE_MOUSE_ENTER)
+        .subscribe({ next: (e) => handleMouseEnter(e) }),
+      [EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT)
+        .subscribe({ next: (e) => handleTriggerPredict(e) }),
+      [EVENT_TYPES.SCRIBBLE_TO_MASK.FINISH_PREDICT]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.FINISH_PREDICT)
+        .subscribe({ next: (e) => handleFinishPredict(e) }),
     }
 
     return () => {

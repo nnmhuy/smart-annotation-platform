@@ -5,15 +5,17 @@ import OutlinedInput from '@material-ui/core/OutlinedInput';
 
 import ToolSelector from '../ToolSelector'
 import ToolConfigPopUpButton from '../ToolConfigPopUpButton'
+import ToolConfigButton from '../ToolConfigButton'
 import Slider from '../../../../../../../components/Slider'
 
 import { ReactComponent as PositiveScribbleIcon } from '../../../../../../../static/images/icons/ConfigIcon/positive_scribble.svg'
 import { ReactComponent as NegativeScribbleIcon } from '../../../../../../../static/images/icons/ConfigIcon/negative_scribble.svg'
 import { ReactComponent as EraserIcon } from '../../../../../../../static/images/icons/ConfigIcon/eraser.svg'
 import { ReactComponent as SizeSliderIcon } from '../../../../../../../static/images/icons/ConfigIcon/size_slider.svg'
+import { ReactComponent as S2MIcon } from '../../../../../../../static/images/icons/ConfigIcon/s2m.svg'
 
 
-import { SCRIBBLE_TO_MASK_CONSTANTS } from '../../../../../constants'
+import { SCRIBBLE_TO_MASK_CONSTANTS, EVENT_TYPES } from '../../../../../constants'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -71,7 +73,7 @@ const scribbleToMaskTools = [
 
 const ScribbleToMaskConfig = (props) => {
   const classes = useStyles()
-  const { toolConfig, setToolConfig, } = props
+  const { eventCenter, toolConfig, setToolConfig, } = props
   const { scribbleSize, } = toolConfig
 
   return (
@@ -110,6 +112,14 @@ const ScribbleToMaskConfig = (props) => {
             </div>
           </div>
         </ToolConfigPopUpButton>
+      </div>
+      <Divider orientation="vertical" className={classes.divider} />
+      <div className={classes.optionContainer}>
+        <ToolConfigButton
+          name={'MiVOS - S2M'}
+          handleClick={() => eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT)()}
+          component={<S2MIcon/>}
+        />
       </div>
     </div>
   )

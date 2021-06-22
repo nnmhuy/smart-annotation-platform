@@ -71,6 +71,7 @@ const useAnnotationStore = create((set, get) => ({
     })
   },
   getImageId: () => get().imageId,
+  getImage: () => get().image,
 
   currentMousePosition: { x: 0, y: 0},
   drawingAnnotation: null,

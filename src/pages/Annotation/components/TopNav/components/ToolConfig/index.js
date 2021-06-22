@@ -1,6 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { get } from 'lodash' 
+import { get } from 'lodash'
 
 import ScribbleToMaskConfig from './ConfigComponent/ScribbleToMaskConfig'
 
@@ -34,6 +34,7 @@ const ToolConfig = (props) => {
         <ActiveConfigComponent
           toolConfig={toolConfig}
           setToolConfig={setToolConfig}
+          eventCenter={eventCenter}
         />
       }
     </div>
