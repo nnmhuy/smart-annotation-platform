@@ -13,6 +13,8 @@ import { ReactComponent as NegativeScribbleIcon } from '../../../../../../../sta
 import { ReactComponent as EraserIcon } from '../../../../../../../static/images/icons/ConfigIcon/eraser.svg'
 import { ReactComponent as SizeSliderIcon } from '../../../../../../../static/images/icons/ConfigIcon/size_slider.svg'
 import { ReactComponent as S2MIcon } from '../../../../../../../static/images/icons/ConfigIcon/s2m.svg'
+import { ReactComponent as SaveIcon } from '../../../../../../../static/images/icons/ConfigIcon/save.svg'
+import { ReactComponent as ThresholdIcon } from '../../../../../../../static/images/icons/ConfigIcon/threshold.svg'
 
 
 import { SCRIBBLE_TO_MASK_CONSTANTS, EVENT_TYPES } from '../../../../../constants'
@@ -30,12 +32,13 @@ const useStyles = makeStyles(() => ({
   optionContainer: {
     marginLeft: 10,
     marginRight: 10,
+    display: 'flex',
   },
   sliderContainer: {
     width: 150,
     marginLeft: 20,
   },
-  scribbleSizeInput: {
+  sliderInput: {
     width: 70,
     '& .MuiOutlinedInput-input': {
       padding: 10,
@@ -74,7 +77,7 @@ const scribbleToMaskTools = [
 const ScribbleToMaskConfig = (props) => {
   const classes = useStyles()
   const { eventCenter, toolConfig, setToolConfig, } = props
-  const { scribbleSize, } = toolConfig
+  const { scribbleSize, threshold } = toolConfig
 
   return (
     <div className={classes.root}>
@@ -96,7 +99,7 @@ const ScribbleToMaskConfig = (props) => {
               id="outlined-adornment-weight"
               value={scribbleSize}
               onChange={(e) => setToolConfig({ ...toolConfig, scribbleSize: Math.max(Math.min(Number(e.target.value), SCRIBBLE_TO_MASK_CONSTANTS.MAX_SCRIBBLE_SIZE), SCRIBBLE_TO_MASK_CONSTANTS.MIN_SCRIBBLE_SIZE) })}
-              className={classes.scribbleSizeInput}
+              className={classes.sliderInput}
               type="number"
             />
             <div className={classes.sliderContainer}>
@@ -115,10 +118,43 @@ const ScribbleToMaskConfig = (props) => {
       </div>
       <Divider orientation="vertical" className={classes.divider} />
       <div className={classes.optionContainer}>
+        <ToolConfigPopUpButton
+          name={'Score threshold'}
+          component={<ThresholdIcon />}
+        >
+          <div className={classes.popUpContainer}>
+            <OutlinedInput
+              id="outlined-adornment-weight"
+              value={threshold}
+              onChange={(e) => setToolConfig({ ...toolConfig, threshold: Math.max(Math.min(Number(e.target.value), 100), 0) })}
+              className={classes.sliderInput}
+              type="number"
+            />
+            <div className={classes.sliderContainer}>
+              <Slider
+                value={threshold}
+                aria-labelledby="threshold-slider"
+                step={1}
+                min={0}
+                max={100}
+                valueLabelDisplay="auto"
+                onChange={(e, newValue) => {
+                  setToolConfig({ ...toolConfig, threshold: newValue })
+                  eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.UPDATE_THRESHOLD)()
+                }}
+              />
+            </div>
+          </div>
+        </ToolConfigPopUpButton>
         <ToolConfigButton
           name={'MiVOS - S2M'}
           handleClick={() => eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT)()}
           component={<S2MIcon/>}
+        />
+        <ToolConfigButton
+          name={'Save'}
+          handleClick={() => eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.SAVE)()}
+          component={<SaveIcon/>}
         />
       </div>
     </div>

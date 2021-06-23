@@ -1,11 +1,11 @@
 import React from 'react'
 import create from 'zustand'
 import UIDGenerator from 'uid-generator'
-import { get, cloneDeep, isEqual } from 'lodash'
+import { cloneDeep } from 'lodash'
 
 import ScribbleToMaskAnnotationClass from '../../../../../classes/ScribbleToMaskAnnotationClass'
 
-import { MODES, EVENT_TYPES } from '../../../constants';
+import { EVENT_TYPES } from '../../../constants';
 
 const uidgen = new UIDGenerator();
 
@@ -27,7 +27,8 @@ const ScribbleToMask = (props) => {
   const getToolConfig = useStore(state => state.getToolConfig)
   const getIsDrawingScribble = useScribbleToMaskStore(state => state.getIsDrawingScribble)
   const setIsDrawingScribble = useScribbleToMaskStore(state => state.setIsDrawingScribble)
-
+  const setIsPredicting = useStore(state => state.setIsPredicting)
+  
   const handleStartDrawByBrush = () => {
     const imageId = getImageId()
     const drawingAnnotation = getDrawingAnnotation()
@@ -41,7 +42,9 @@ const ScribbleToMask = (props) => {
           type: toolConfig.scribbleType,
           strokeWidth: toolConfig.scribbleSize,
         }],
-        mask: {}
+        mask: {
+          threshold: toolConfig.threshold,
+        }
       }))
     } else {
       const newDrawingAnnotation = cloneDeep(drawingAnnotation)
@@ -102,6 +105,8 @@ const ScribbleToMask = (props) => {
       alert("Image not found")
       return
     }
+
+    setIsPredicting(true)
     eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.MI_VOS_S2M)({
       image, 
       annotation: drawingAnnotation
@@ -110,6 +115,7 @@ const ScribbleToMask = (props) => {
 
   const handleFinishPredict = (data) => {
     const drawingAnnotation = getDrawingAnnotation()
+    const toolConfig = getToolConfig()
 
     const { originalBase64, base64, blob } = data
 
@@ -119,10 +125,34 @@ const ScribbleToMask = (props) => {
         base64,
         originalBase64,
         blob,
+        threshold: toolConfig.threshold
       }
     }
     setDrawingAnnotation(newDrawingAnnotation)
+    setIsPredicting(false)
   }
+
+  const handleUpdateThreshold = () => {
+    const drawingAnnotation = getDrawingAnnotation()
+    const toolConfig = getToolConfig()
+
+    if (drawingAnnotation) {
+      const newDrawingAnnotation = cloneDeep(drawingAnnotation)
+      newDrawingAnnotation.maskData.mask.threshold = toolConfig.threshold
+      setDrawingAnnotation(newDrawingAnnotation)
+    }
+  }
+
+  const handleSave = () => {
+    const drawingAnnotation = getDrawingAnnotation()
+    if (drawingAnnotation) {
+      // TODO: remove scribbles, 
+      // TODO: binarize by threshold
+      appendAnnotation(drawingAnnotation)
+      setDrawingAnnotation(null)
+    }
+  }
+  
 
   React.useEffect(() => {
     const { getSubject } = eventCenter
@@ -139,6 +169,10 @@ const ScribbleToMask = (props) => {
         .subscribe({ next: (e) => handleTriggerPredict(e) }),
       [EVENT_TYPES.SCRIBBLE_TO_MASK.FINISH_PREDICT]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.FINISH_PREDICT)
         .subscribe({ next: (e) => handleFinishPredict(e) }),
+      [EVENT_TYPES.SCRIBBLE_TO_MASK.SAVE]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.SAVE)
+        .subscribe({ next: (e) => handleSave(e) }),
+      [EVENT_TYPES.SCRIBBLE_TO_MASK.UPDATE_THRESHOLD]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.UPDATE_THRESHOLD)
+        .subscribe({ next: (e) => handleUpdateThreshold(e) }),
     }
 
     return () => {

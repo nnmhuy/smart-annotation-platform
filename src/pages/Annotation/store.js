@@ -23,6 +23,7 @@ const useAnnotationStore = create((set, get) => ({
     return { 
       activeMode: newActiveMode,
       drawingAnnotation: null,
+      editingAnnotationId: null,
     }
   }),
   setIsMovingViewport: (newStatus) => set({ isMovingViewport: newStatus }),
@@ -68,6 +69,7 @@ const useAnnotationStore = create((set, get) => ({
       imageId: newImageId,
       image: newImage,
       drawingAnnotation: null,
+      editingAnnotationId: null,
     })
   },
   getImageId: () => get().imageId,
@@ -75,6 +77,7 @@ const useAnnotationStore = create((set, get) => ({
 
   currentMousePosition: { x: 0, y: 0},
   drawingAnnotation: null,
+  isPredicting: false,
 
   getAnnotations: () => get().annotations,
   setAnnotations: (newAnnotations) => set({ annotations: newAnnotations }),
@@ -84,6 +87,7 @@ const useAnnotationStore = create((set, get) => ({
   setCurrentMousePosition: (newMousePosition) => set({ currentMousePosition: newMousePosition }),
   getDrawingAnnotation: () => get().drawingAnnotation,
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
+  setIsPredicting: (status) => set({ isPredicting: status}),
 
   editingAnnotationId: null,
   getEditingAnnotationId: () => get().editingAnnotationId,

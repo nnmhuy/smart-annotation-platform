@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import { filter, cloneDeep, get, find } from 'lodash'
 
+import Loading from '../../../../components/Loading'
 import ImageRender from './ImageRender/index'
 import BBoxRender from './BBoxRender/index'
 import PolygonRender from './PolygonRender/index'
@@ -92,6 +93,7 @@ const RenderComponent = (props) => {
     eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_CLICK)(e)
   }
 
+  const isPredicting = useStore(state => state.isPredicting)
   const imageId = useStore(state => state.imageId)
   const annotations = useStore(state => state.annotations)
   const drawingAnnotation = useStore(state => state.drawingAnnotation)
@@ -155,6 +157,7 @@ const RenderComponent = (props) => {
           />
         </Layer>
       </Stage>
+      <Loading isLoading={isPredicting} />
     </div>
   )
 }

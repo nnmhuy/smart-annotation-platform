@@ -54,6 +54,8 @@ const EVENT_TYPES = {
 
   SCRIBBLE_TO_MASK: {
     PREDICT: 'PREDICT',
+    SAVE: 'SAVE',
+    UPDATE_THRESHOLD: 'UPDATE_THRESHOLD',
     MI_VOS_S2M: 'MI_VOS_S2M'
   }
 }
@@ -88,7 +90,7 @@ const DEFAULT_TOOL_CONFIG = {
   [MODES.SCRIBBLE_TO_MASK.name]: {
     scribbleSize: 20,
     scribbleType: SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.POSITIVE,
-    threshold: 0.5,
+    threshold: 50,
   }
 }
 
