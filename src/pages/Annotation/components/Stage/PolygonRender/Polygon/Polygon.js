@@ -189,6 +189,7 @@ const Polygon = (props) => {
             : polygon.polygon.polys
         }}
         scale={scale}
+        isSelected={isSelected}
         isMovingViewport={isMovingViewport}
         handleSelectPolygon={handleSelectPolygon}
         handleContextMenu={handleContextMenu}

@@ -1,4 +1,3 @@
-import { merge } from 'lodash'
 import Annotation from "./AnnotationClass";
 
 export default class ScribbleToMaskAnnotationClass extends Annotation {

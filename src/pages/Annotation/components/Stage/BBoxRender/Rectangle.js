@@ -10,6 +10,7 @@ const emittingSubjects = [
 
 const Rectangle = (props) => {
   const { useStore, eventCenter, id, bBox, } = props
+  const isMovingViewport = useStore(state => state.isMovingViewport)
   const editingAnnotationId = useStore(state => state.editingAnnotationId)
 
   const groupRef = React.useRef(null);
@@ -64,6 +65,7 @@ const Rectangle = (props) => {
         ref={rectRef}
         strokeScaleEnabled={false}
         {...bBox}
+        opacity={isSelected ? bBox.opacity + 0.2 : bBox.opacity}
         draggable={isSelected}
         onDragEnd={(e) => {
           eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
@@ -91,9 +93,9 @@ const Rectangle = (props) => {
             height: Math.max(node.height() * scaleY),
           })
         }}
-        // hitFunc={isDraggingViewport && function (context) {
-        //   // disable hitFunc while dragging viewport
-        // }}
+        hitFunc={isMovingViewport && function (context) {
+          // disable hitFunc while dragging viewport
+        }}
       />
       {isSelected && (
         <Transformer
@@ -108,9 +110,9 @@ const Rectangle = (props) => {
             }
             return newBox;
           }}
-          // hitFunc={isDraggingViewport && function (context) {
-          //   // disable hitFunc while dragging viewport
-          // }}
+          hitFunc={isMovingViewport && function (context) {
+            // disable hitFunc while dragging viewport
+          }}
         />
       )}
     </Group>

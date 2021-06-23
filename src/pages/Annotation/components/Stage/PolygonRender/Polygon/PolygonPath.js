@@ -35,6 +35,7 @@ const PolygonPath = (props) => {
         // disable hitFunc while dragging viewport
       }}
       {...others}
+      opacity={isSelected ? others.opacity + 0.2 : others.opacity}
       draggable={isSelected}
       onClick={handleSelectPolygon}
       onTap={handleSelectPolygon}

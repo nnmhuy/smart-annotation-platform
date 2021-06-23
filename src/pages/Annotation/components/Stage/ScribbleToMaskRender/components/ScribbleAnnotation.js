@@ -6,6 +6,7 @@ import Scribble from './Scribble'
 import Mask from './Mask'
 
 import thresholdMask from '../../../../utils/thresholdMask'
+import hexColorToRGB from '../../../../../../utils/hexColorToRGB'
 
 const MaskAnnotation = (props) => {
   const { id, maskData, useStore } = props
@@ -14,19 +15,23 @@ const MaskAnnotation = (props) => {
 
   const image = useStore(state => state.image)
   const scribbles = maskData.scribbles
-  // TODO: threshold + change color of mask
+
   const mask = maskData.mask
   let maskImage = get(mask, 'base64', null)
   let threshold = get(mask, 'threshold', 0)
+  let color = get(maskData, 'fill', '')
 
   React.useEffect(() => {
     async function getThresholdImage() {
       if (maskImage) {
         const thresholdedMask = await thresholdMask(maskImage, threshold, {
+          color: hexColorToRGB(color),
           canvasWidth: image.width,
           canvasHeight: image.height
         })
         setDisplayMask(thresholdedMask)
+      } else {
+        setDisplayMask(null)
       }
     }
     getThresholdImage();

@@ -12,8 +12,8 @@ import Image_9 from '../../static/images/mockup/Image_9.jpg'
 import Image_10 from '../../static/images/mockup/Image_10.jpg'
 
 const mockupLabels = [
-  new LabelClass(1, 'Cat', { isHidden: true }, { fill: 'red' }),
-  new LabelClass(2, 'Dog', { isHidden: false}, { fill: 'blue' }),
+  new LabelClass(1, 'Cat', { isHidden: true }, { fill: '#FF0000' }),
+  new LabelClass(2, 'Dog', { isHidden: false}, { fill: '#0000FF' }),
 ]
 
 const mockupImageList = [

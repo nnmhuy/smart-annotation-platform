@@ -1,10 +1,12 @@
 import React from 'react'
 import create from 'zustand'
 import UIDGenerator from 'uid-generator'
-import { cloneDeep } from 'lodash'
+import { get, cloneDeep } from 'lodash'
 
 import ScribbleToMaskAnnotationClass from '../../../../../classes/ScribbleToMaskAnnotationClass'
 
+import thresholdMask from '../../../utils/thresholdMask'
+import base64ToBlob from '../../../../../utils/base64ToBlob'
 import { EVENT_TYPES } from '../../../constants';
 
 const uidgen = new UIDGenerator();
@@ -143,13 +145,40 @@ const ScribbleToMask = (props) => {
     }
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    const image = getImage()
     const drawingAnnotation = getDrawingAnnotation()
+
     if (drawingAnnotation) {
-      // TODO: remove scribbles, 
-      // TODO: binarize by threshold
-      appendAnnotation(drawingAnnotation)
+      const finishedAnnotation = cloneDeep(drawingAnnotation)
+
+      const mask = finishedAnnotation.maskData.mask
+      let originalBase64 = get(mask, 'originalBase64', null)
+      let base64 = get(mask, 'base64', null)
+      let threshold = get(mask, 'threshold', 0)
+
+      const thresholdOriginalBase64 = await thresholdMask(originalBase64, threshold, {
+        canvasWidth: image.originalWidth,
+        canvasHeight: image.originalHeight,
+      })
+      const thresholdBase64 = await thresholdMask(base64, threshold, {
+        canvasWidth: image.width,
+        canvasHeight: image.height,
+      })
+      const thresholdBlob = await base64ToBlob(thresholdOriginalBase64)
+
+      finishedAnnotation.updateData = {
+        scribbles: [],
+        mask: {
+          originalBase64: thresholdOriginalBase64,
+          base64: thresholdBase64,
+          blob: thresholdBlob
+        }
+      }
+    
+      appendAnnotation(finishedAnnotation)
       setDrawingAnnotation(null)
+      eventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedAnnotation.id)
     }
   }
   

@@ -7,7 +7,7 @@ const Mask = (props) => {
   return (
     <KonvaImage
       src={mask}
-      opacity={0.5}
+      opacity={0.4}
       isMovingViewport={isMovingViewport}
     />
   )
