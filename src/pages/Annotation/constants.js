@@ -19,7 +19,7 @@ const MODES = {
     name: 'SCRIBBLE_TO_MASK',
     cursor: 'crosshair',
   },
-  CUT: {
+  CUT_POLYGON: {
     name: 'CUT_POLYGON',
     cursor: 'nw-resize'
   },

@@ -39,7 +39,7 @@ const toolBoxButtons = [
   },
   {
     name: 'Cut',
-    mode: MODES.CUT.name,
+    mode: MODES.CUT_POLYGON.name,
     component: <CutIcon />
   },
   {

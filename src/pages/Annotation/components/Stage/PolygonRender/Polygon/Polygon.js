@@ -29,6 +29,7 @@ const Polygon = (props) => {
 
   const isDrawing = (drawingAnnotation && drawingAnnotation.id === id)
   const isSelected = (id === editingAnnotationId)
+  const isCutting = polygon.polygon.isCutting
 
   const handleSelectPolygon = (e) => {
     eventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({ e, id })
@@ -147,7 +148,7 @@ const Polygon = (props) => {
 
   const handleClickMainPoint = (event) => {
     // prevent trigger stage click which stops double click
-    event.cancelBubble = true
+    // event.cancelBubble = true
   }
 
   const handleDoubleClickDeletePoint = (event, polyIndex, pointIndex) => {
@@ -190,6 +191,7 @@ const Polygon = (props) => {
         }}
         scale={scale}
         isSelected={isSelected}
+        isCutting={isCutting}
         isMovingViewport={isMovingViewport}
         handleSelectPolygon={handleSelectPolygon}
         handleContextMenu={handleContextMenu}
@@ -203,6 +205,7 @@ const Polygon = (props) => {
           eventCenter={eventCenter}
           isDrawing={isDrawing}
           isSelected={isSelected}
+          isCutting={isCutting}
           isMovingViewport={isMovingViewport}
           id={polygon.id}
           polygon={polygon.polygon}
@@ -214,7 +217,7 @@ const Polygon = (props) => {
           handleDoubleClickDeletePoint={handleDoubleClickDeletePoint}
         />
       }
-      {(!isDraggingPolygon && isSelected) &&
+      {(!isDraggingPolygon && isSelected && !isCutting) &&
         <PolygonMidPoints
           useStore={useStore}
           eventCenter={eventCenter}

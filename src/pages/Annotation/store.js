@@ -1,5 +1,5 @@
 import create from 'zustand'
-import { cloneDeep, find, remove } from 'lodash'
+import { cloneDeep, find } from 'lodash'
 
 import { MODES, STAGE_PADDING, DEFAULT_TOOL_CONFIG } from './constants'
 import getPointerPosition from './utils/getPointerPosition'
@@ -11,7 +11,7 @@ import { mockupLabels, mockupImageList } from './mockup'
 const useAnnotationStore = create((set, get) => ({
   stageRef: null,
   stageSize: { width: 0, height: 0 },
-  activeMode: MODES.SCRIBBLE_TO_MASK.name,
+  activeMode: MODES.DRAW_POLYGON.name,
   isMovingViewport: false,
 
   setStageRef: (newStageRef) => set({ stageRef: newStageRef}),
@@ -91,6 +91,7 @@ const useAnnotationStore = create((set, get) => ({
 
   editingAnnotationId: null,
   getEditingAnnotationId: () => get().editingAnnotationId,
+  getEditingAnnotation: () => find(get().annotations, { id: get().editingAnnotationId }),
   setEditingAnnotationId: (newEditingAnnotationId) => set({ editingAnnotationId: newEditingAnnotationId }),
   setEditingAnnotation: (newEditingAnnotationData) => set(state => ({
     annotations: state.annotations.map(annotation => {

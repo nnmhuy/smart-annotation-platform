@@ -111,7 +111,7 @@ const DrawPolygon = (props) => {
       } else {
         const newPolygon = cloneDeep(drawingPolygon)
         newPolygon.updateData = {
-          polys: [[...drawingPoly, [currentMousePosition.x, currentMousePosition.y]]]
+          polys: [[...newDrawingPoly, [currentMousePosition.x, currentMousePosition.y]]]
         }
         setDrawingPoly(newDrawingPoly)
         setDrawingAnnotation(newPolygon)

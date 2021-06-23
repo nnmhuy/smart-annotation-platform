@@ -10,6 +10,7 @@ const PolygonPath = (props) => {
     scale,
 
     isSelected,
+    isCutting,
     isMovingViewport,
     handleSelectPolygon,
     handleContextMenu,
@@ -31,8 +32,8 @@ const PolygonPath = (props) => {
       id={id}
       strokeWidth={others.strokeWidth / scale}
       data={pathData}
-      hitFunc={isMovingViewport && function () {
-        // disable hitFunc while dragging viewport
+      hitFunc={(isMovingViewport || isCutting) && function () {
+        // disable hitFunc while dragging viewport or cutting
       }}
       {...others}
       opacity={isSelected ? others.opacity + 0.2 : others.opacity}

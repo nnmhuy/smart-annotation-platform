@@ -26,7 +26,7 @@ const PolygonMainPoints = (props) => {
   const handleMouseOverStartPoint = (event, polyIndex) => {
     if (polys[polyIndex].length < 3) return;
     event.target.scale({ x: 2, y: 2 });
-    event.target.zIndex(5)
+    event.target.zIndex(1000)
 
     eventCenter.emitEvent(EVENT_TYPES.MOUSE_OVER_POLYGON_START)(true)
   }
@@ -38,7 +38,7 @@ const PolygonMainPoints = (props) => {
   }
 
   return (polys.map((mainPoints, polyIndex) => {
-    const isActivePoly = (isDrawing && polyIndex === 0)
+    const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
 
     return (mainPoints.map((point, pointIndex) => {
       const x = point[0] + dX;
@@ -57,7 +57,6 @@ const PolygonMainPoints = (props) => {
               context.closePath();
               context.fillStrokeShape(this);
             },
-            zIndex: 10000,
           }
           : null;
       return (
