@@ -1,5 +1,5 @@
 import create from 'zustand'
-import { cloneDeep, find } from 'lodash'
+import { cloneDeep, find, remove } from 'lodash'
 
 import { MODES, STAGE_PADDING, DEFAULT_TOOL_CONFIG } from './constants'
 import getPointerPosition from './utils/getPointerPosition'

@@ -58,10 +58,15 @@ const MiVOSScribbleToMask = (props) => {
         return null
       })
 
+    if (!predictedMask) {
+      eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT_ERROR)()
+      return;
+    }
+
     const resizedMask = await resizeImage(predictedMask, { maxWidth: imageWidth, maxHeight: imageHeight })
     const blobMask = await base64ToBlob(predictedMask)
 
-    eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.FINISH_PREDICT)({
+    eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT_FINISH)({
       originalBase64: predictedMask,
       base64: resizedMask.img,
       blob: blobMask,

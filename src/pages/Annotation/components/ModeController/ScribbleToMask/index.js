@@ -134,6 +134,11 @@ const ScribbleToMask = (props) => {
     setIsPredicting(false)
   }
 
+  const handlePredictError = () => {
+    alert("Prediction error")
+    setIsPredicting(false)
+  }
+
   const handleUpdateThreshold = () => {
     const drawingAnnotation = getDrawingAnnotation()
     const toolConfig = getToolConfig()
@@ -196,7 +201,9 @@ const ScribbleToMask = (props) => {
         .subscribe({ next: (e) => handleMouseEnter(e) }),
       [EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT)
         .subscribe({ next: (e) => handleTriggerPredict(e) }),
-      [EVENT_TYPES.SCRIBBLE_TO_MASK.FINISH_PREDICT]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.FINISH_PREDICT)
+      [EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT_ERROR]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT_ERROR)
+        .subscribe({ next: (e) => handlePredictError(e) }),
+      [EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT_FINISH]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT_FINISH)
         .subscribe({ next: (e) => handleFinishPredict(e) }),
       [EVENT_TYPES.SCRIBBLE_TO_MASK.SAVE]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.SAVE)
         .subscribe({ next: (e) => handleSave(e) }),
