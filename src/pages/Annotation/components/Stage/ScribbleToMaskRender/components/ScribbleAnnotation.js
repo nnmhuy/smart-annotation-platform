@@ -5,15 +5,21 @@ import { get } from 'lodash'
 import Scribble from './Scribble'
 import Mask from './Mask'
 
+import { EVENT_TYPES } from '../../../../constants'
 import thresholdMask from '../../../../utils/thresholdMask'
 import hexColorToRGB from '../../../../../../utils/hexColorToRGB'
 
 const MaskAnnotation = (props) => {
-  const { id, maskData, useStore } = props
+  const { id, maskData, useStore, eventCenter } = props
 
   const [displayMask, setDisplayMask] = React.useState(null)
 
   const image = useStore(state => state.image)
+  const editingAnnotationId = useStore(state => state.editingAnnotationId)
+  const isMovingViewport = useStore(state => state.isMovingViewport)
+
+  const isSelected = (id === editingAnnotationId)
+  
   const scribbles = maskData.scribbles
 
   const mask = maskData.mask
@@ -35,9 +41,19 @@ const MaskAnnotation = (props) => {
       }
     }
     getThresholdImage();
-  }, [maskImage, image.width, image.height, threshold])
-  
-  const isMovingViewport = useStore(state => state.isMovingViewport)
+  }, [maskImage, image.width, image.height, threshold, color])
+
+
+  const handleSelectMask = (e) => {
+    eventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({ e, id })
+  }
+
+  const handleContextMenu = (e) => {
+    eventCenter.emitEvent(EVENT_TYPES.CONTEXT_MENU_ANNOTATION)({
+      e,
+      id
+    })
+  }
 
   return (
     <Group
@@ -45,8 +61,11 @@ const MaskAnnotation = (props) => {
     >
       {scribbles.map((scribble, index) => <Scribble key={`scribble-${id}-${index}`} scribble={scribble}/>)}
       <Mask
+        isSelected={isSelected}
         mask={displayMask}
         isMovingViewport={isMovingViewport}
+        handleSelectMask={handleSelectMask}
+        handleContextMenu={handleContextMenu}
       />
     </Group>
   )

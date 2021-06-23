@@ -11,9 +11,6 @@ const thresholdMask = (base64, threshold, options) => new Promise((resolve, reje
     tmpCanvas.setAttribute("height", canvasHeight)
     let ctx = tmpCanvas.getContext('2d')
 
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
     var image = new Image();
     image.onload = function () {
       ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
@@ -33,6 +30,8 @@ const thresholdMask = (base64, threshold, options) => new Promise((resolve, reje
               img.data[row * img.cols * img.channels() + col * img.channels()] = color.r;
               img.data[row * img.cols * img.channels() + col * img.channels() + 1] = color.g;
               img.data[row * img.cols * img.channels() + col * img.channels() + 2] = color.b;
+            } else {
+              img.data[row * img.cols * img.channels() + col * img.channels() + 3] = 0;
             }
           }
         }
