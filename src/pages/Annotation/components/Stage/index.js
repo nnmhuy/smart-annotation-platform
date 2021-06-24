@@ -1,6 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
+// import Konva from 'konva'
 import { filter, cloneDeep, get, find } from 'lodash'
 
 import Loading from '../../../../components/Loading'
@@ -43,6 +44,8 @@ const emittingSubjects = [
 
   EVENT_TYPES.STAGE_CONTEXT_MENU,
 ]
+
+// Konva.hitOnDragEnabled = true;
 
 const RenderComponent = (props) => {
   const { useStore, eventCenter } = props
@@ -115,11 +118,12 @@ const RenderComponent = (props) => {
         ref={stageRef}
         width={stageSize.width}
         height={stageSize.height}
+        draggable
         className={classes.stage}
 
         onMouseOut={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_OUT)}
         onMouseEnter={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_ENTER)}
-        // onWheel={eventCenter.emitEvent(EVENT_TYPES.WHEEL)}
+        onWheel={eventCenter.emitEvent(EVENT_TYPES.STAGE_WHEEL)}
         onContextMenu={eventCenter.emitEvent(EVENT_TYPES.STAGE_CONTEXT_MENU)}
 
         onMouseDown={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_DOWN)}

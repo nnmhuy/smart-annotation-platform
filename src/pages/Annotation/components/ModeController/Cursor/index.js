@@ -1,21 +1,18 @@
 import React from 'react'
 import create from 'zustand'
 
-import { EVENT_TYPES } from '../../../constants';
-import { getMovement } from '../../../utils/touchUtils'
+import {
+  EVENT_TYPES,
+  MIN_ZOOM_SCALE, MAX_ZOOM_SCALE, } from '../../../constants';
 
 const useCursorStore = create((set, get) => ({
   lastCenter: null,
+  lastDist: 0,
 
   setLastCenter: (newCenter) => set({ lastCenter: newCenter }),
-  getTouchMovement: (center) => {
-    const lastCenter = get().lastCenter
-    if (lastCenter) {
-      return getMovement(lastCenter, center)
-    } else {
-      return { x: 0, y: 0 }
-    }
-  }
+  getLastCenter: () => get().lastCenter,
+  setLastDist: (newDist) => set({ dist: newDist }),
+  getLastDist: () => get().lastDist,
 }))
 
 const Cursor = (props) => {
@@ -25,7 +22,9 @@ const Cursor = (props) => {
   const handleSetViewport = useStore(state => state.handleSetViewport)
 
   const setLastCenter = useCursorStore(state => state.setLastCenter)
-  const getTouchMovement = useCursorStore(state => state.getTouchMovement)
+  const getLastCenter = useCursorStore(state => state.getLastCenter)
+  const setLastDist = useCursorStore(state => state.setLastDist)
+  const getLastDist = useCursorStore(state => state.getLastDist)
 
   const handleMouseDown = (e) => {
     e.evt.preventDefault();
@@ -53,42 +52,120 @@ const Cursor = (props) => {
     window.removeEventListener("mouseup", handleMouseUp)
   }
 
-  const handleTouchStart = (e) => {
-    const touch = e.evt.touches[0]
-    const center = {
-      x: touch.clientX,
-      y: touch.clientY
-    }
-    setLastCenter(center)
-    setIsMovingViewport(true)
-    window.addEventListener("touchmove", handleTouchMove)
-    window.addEventListener("touchend", handleTouchEnd)
+  function getDistance(p1, p2) {
+    return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
   }
 
+  function getCenter(p1, p2) {
+    return {
+      x: (p1.x + p2.x) / 2,
+      y: (p1.y + p2.y) / 2,
+    };
+  }
 
   const handleTouchMove = (e) => {
-    const touch = e.touches[0]
-    const center = {
-      x: touch.clientX,
-      y: touch.clientY
+    window.addEventListener("touchend", handleTouchEnd)
+
+    e.evt.preventDefault();
+    var touch1 = e.evt.touches[0];
+    var touch2 = e.evt.touches[1];
+
+    let lastCenter = getLastCenter()
+    let lastDist = getLastDist() 
+
+    if (touch1 && touch2) {
+      // if the stage was under Konva's drag&drop
+      // we need to stop it, and implement our own pan logic with two pointers
+      if (stage.isDragging()) {
+        stage.stopDrag();
+      }
+
+      var p1 = {
+        x: touch1.clientX,
+        y: touch1.clientY,
+      };
+      var p2 = {
+        x: touch2.clientX,
+        y: touch2.clientY,
+      };
+
+      if (!lastCenter) {
+        setLastCenter(getCenter(p1, p2))
+        return;
+      }
+      var newCenter = getCenter(p1, p2);
+
+      var dist = getDistance(p1, p2);
+
+      if (!lastDist) {
+        lastDist = dist;
+        setLastDist(dist)
+      }
+
+      // local coordinates of center point
+      var pointTo = {
+        x: (newCenter.x - stage.x()) / stage.scaleX(),
+        y: (newCenter.y - stage.y()) / stage.scaleX(),
+      };
+
+      var scale = stage.scaleX() * (dist / lastDist);
+
+      stage.scaleX(scale);
+      stage.scaleY(scale);
+
+      // calculate new position of the stage
+      var dx = newCenter.x - lastCenter.x;
+      var dy = newCenter.y - lastCenter.y;
+
+      var newPos = {
+        x: newCenter.x - pointTo.x * scale + dx,
+        y: newCenter.y - pointTo.y * scale + dy,
+      };
+
+      stage.position(newPos);
+
+      setLastDist(dist)
+      setLastCenter(newCenter)
     }
-
-    const stagePosition = stage.position()
-    const movement = getTouchMovement(center)
-
-    let newPosition = {
-      x: stagePosition.x + movement.x,
-      y: stagePosition.y + movement.y,
-    }
-
-    setLastCenter(center)
-    handleSetViewport(newPosition)
   }
 
   const handleTouchEnd = () => {
     setLastCenter(null)
-    window.removeEventListener("touchmove", handleTouchMove)
+    setLastDist(0)
+
     window.removeEventListener("touchend", handleTouchEnd)
+  }
+
+
+
+  const handleZoom = (e) => {
+    e.evt.preventDefault();
+
+    const scaleBy = 1.05;
+    const oldScale = stage.scaleX();
+
+    const pointer = stage.getPointerPosition();
+
+    const mousePointTo = {
+      x: (pointer.x - stage.x()) / oldScale,
+      y: (pointer.y - stage.y()) / oldScale,
+    };
+
+    const newScale =
+      e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+
+    // limit zoom scale
+    if (newScale >= MIN_ZOOM_SCALE && newScale <= MAX_ZOOM_SCALE) {
+      stage.scale({ x: newScale, y: newScale });
+
+      const newPos = {
+        x: pointer.x - mousePointTo.x * newScale,
+        y: pointer.y - mousePointTo.y * newScale,
+      };
+      // handleSetViewport(newPos)
+      stage.position(newPos);
+      stage.batchDraw();
+    }
   }
 
   React.useEffect(() => {
@@ -96,10 +173,10 @@ const Cursor = (props) => {
     let subscriptions = {
       [EVENT_TYPES.STAGE_MOUSE_DOWN]: getSubject(EVENT_TYPES.STAGE_MOUSE_DOWN)
         .subscribe({ next: (e) => handleMouseDown(e) }),
-      [EVENT_TYPES.STAGE_TOUCH_START]: getSubject(EVENT_TYPES.STAGE_TOUCH_START)
-        .subscribe({ next: (e) => handleTouchStart(e) }),
-      // [EVENT_TYPES.STAGE_TOUCH_MOVE]: getSubject(EVENT_TYPES.STAGE_TOUCH_MOVE)
-      //   .subscribe({ next: (e) => handleTouchMove(e) }),
+      [EVENT_TYPES.STAGE_TOUCH_MOVE]: getSubject(EVENT_TYPES.STAGE_TOUCH_MOVE)
+        .subscribe({ next: (e) => handleTouchMove(e) }),
+      [EVENT_TYPES.STAGE_WHEEL]: getSubject(EVENT_TYPES.STAGE_WHEEL)
+        .subscribe({ next: (e) => handleZoom(e) }),
     }
 
     return () => {
