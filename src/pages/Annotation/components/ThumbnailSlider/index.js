@@ -1,9 +1,8 @@
 import React from 'react'
-
 import { IconButton, makeStyles } from '@material-ui/core'
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons'
 
 import ThumbnailImage from './ThumbnailImage'
-import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons'
 import { theme } from '../../../../theme'
 
 const useStyles = makeStyles((props) => ({
@@ -40,11 +39,14 @@ const useStyles = makeStyles((props) => ({
 }))
 
 const ThumbnailSlider = (props) => {
-  const {
-    selectedId,
-    setSelectedId,
-    dataList,
+  const { 
+    useStore, 
+    // eventCenter 
   } = props
+  const imageId = useStore(state => state.imageId)
+
+  const setImageId = useStore(state => state.setImageId)
+  const imageList = useStore(state => state.imageList)
   // Page use 0-index
 
   const [page, setPage] = React.useState(0)
@@ -61,25 +63,26 @@ const ThumbnailSlider = (props) => {
   const classes = useStyles()
   const handleChangePage = (val) => {
     // Max page = total page - 1 (0-index)
-    const maxPage = Math.floor((dataList.length - 1) / imagePerPage)
+    const maxPage = Math.floor((imageList.length - 1) / imagePerPage)
     let newPage = page + val
     // Clamp page value into 0 - maxPage
     newPage = (Math.max(Math.min(maxPage, newPage), 0))
     setPage(newPage)
   }
+
   return (
     <div className={classes.sliderWrapper}>
       <IconButton onClick={() => handleChangePage(-1)} className={classes.button}>
         <KeyboardArrowLeft />
       </IconButton>
         <div className={classes.thumbnailWrapper} ref={componentRef}>
-          {dataList.map((data, index) => {
+        {imageList.map((data, index) => {
             return (
               <ThumbnailImage
                 id={data.id}
                 key={`thumbnail-image-${data.id}`}
-                isSelected={data.id === selectedId}
-                setSelectedId={setSelectedId}
+                isSelected={data.id === imageId}
+                setSelectedId={() => setImageId(data.id)}
                 thumbnail={data.thumbnailURL}
               />)
           })}

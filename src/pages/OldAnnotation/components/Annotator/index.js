@@ -21,7 +21,7 @@ import getPointerPosition from '../../utils/getPointerPosition'
 import getStagePosLimit from '../../utils/getStagePosLimit'
 import handleStageZoom from '../../utils/handleStageZoom'
 import PolygonAnnotation from '../../../../classes/PolygonAnnotationClass'
-import BboxAnnotation from '../../../../classes/BBoxAnnotationClass'
+import BBoxAnnotation from '../../../../classes/BBoxAnnotationClass'
 import ClassSelectionPopover from './ClassSelectionPopover'
 
 const useStyles = makeStyles(() => ({
@@ -33,7 +33,9 @@ const useStyles = makeStyles(() => ({
 const Annotator = (props) => {
   const classes = useStyles(props)
   const {
+    stageRef,
     stageSize,
+    handlePropagateStageEventToChildrenLayers,
     activeMode,
     toolboxConfig, setToolboxConfig,
     image,
@@ -44,7 +46,6 @@ const Annotator = (props) => {
     setRunningTime,
   } = props
 
-  const stageRef = React.createRef(null)
 
   const [currentMousePos, setCurrentMousePos] = React.useState({ x: 0, y: 0 })
   const [contextMenuPosition, setContextMenuPosition] = React.useState({ x: 0, y: 0 })
@@ -178,14 +179,6 @@ const Annotator = (props) => {
     }
   }
 
-  const handlePropagateStageEventToChildrenLayers = (evt, e = {}) => {
-    const stage = stageRef.current
-
-    const childrenLayers = stage.getLayers()
-    e.manually_triggered = true
-    childrenLayers.forEach(layer => layer.fire(evt, e))
-  }
-
   const handleStageMouseDown = (e) => {
     const stage = stageRef.current
     setCurrentMousePos(getPointerPosition(stage))
@@ -313,11 +306,11 @@ const Annotator = (props) => {
   const handleFinishDraw = (type) => (data) => {
     let annotation
     switch (type) {
-      case ANNOTATION_TYPE.MASK:
+      case ANNOTATION_TYPE.POLYGON:
         annotation = new PolygonAnnotation(data.id, '', '', data.polys)
         break
       case ANNOTATION_TYPE.BBOX:
-        annotation = new BboxAnnotation(data.id, '', '', data)
+        annotation = new BBoxAnnotation(data.id, '', '', data)
         break
       default:
         break
@@ -327,6 +320,7 @@ const Annotator = (props) => {
     setIsOpenClassSelection(true)
     selectShape(data.id)
   }
+
 
   const handleSelectClass = (labelId) => {
     let typeOfAnnotate
@@ -342,7 +336,7 @@ const Annotator = (props) => {
     const labelColor = ((annotationClasses.find(value => value.id === labelId) || {}).color || 'green')
 
     switch (typeOfAnnotate) {
-      case ANNOTATION_TYPE.MASK:
+      case ANNOTATION_TYPE.POLYGON:
         const newPolygons = polygons.map((polygon) => {
           if (polygon.id === selectedId) {
             const newPolygon = { ...polygon, fill: labelColor }
@@ -409,7 +403,7 @@ const Annotator = (props) => {
           currentMousePos={currentMousePos}
           isDraggingViewport={!!viewportStartPos}
           setPositionClassSelection={setContextMenuPosition}
-          handleFinishDraw={handleFinishDraw(ANNOTATION_TYPE.MASK)}
+          handleFinishDraw={handleFinishDraw(ANNOTATION_TYPE.POLYGON)}
           isClickOn={isClickOn}
         />
         <BrushPolygonLayer
@@ -423,6 +417,7 @@ const Annotator = (props) => {
           isDraggingViewport={!!viewportStartPos}
           setIsLoading={setIsLoading}
           setRunningTime={setRunningTime}
+          handleFinishDraw={handleFinishDraw(ANNOTATION_TYPE.MASK)}
         />
         <RectangleLayer
           rectangles={rectangles}

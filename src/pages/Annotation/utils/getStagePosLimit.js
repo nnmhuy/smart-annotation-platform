@@ -4,8 +4,8 @@ const getStagePosLimit = (stage, stageSize, image) => {
   const stagePos = stage.position()
 
   const scale = stage.scaleX();
-  const imageWidth = get(image, 'resizedImageSize.width', 0)
-  const imageHeight = get(image, 'resizedImageSize.height', 0)
+  const imageWidth = get(image, 'width', 0)
+  const imageHeight = get(image, 'height', 0)
 
   // limit viewport movement base on scale
   // allow at most half of each dimension out of viewport
@@ -26,7 +26,7 @@ const getStagePosLimit = (stage, stageSize, image) => {
       posLimit.xMax = Math.max(0 + acceptedOutWidth, stagePos.x)
     }
     if (imageHeight * scale <= stageSize.height) {
-      let acceptedOutHeight = (imageHeight / 2)
+      let acceptedOutHeight = (imageHeight * scale / 2)
       posLimit.yMin = Math.min(0 - acceptedOutHeight, stagePos.y)
       posLimit.yMax = Math.max(stageSize.height - (imageHeight * scale) + acceptedOutHeight, stagePos.y)
     } else {

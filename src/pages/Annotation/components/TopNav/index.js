@@ -1,7 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
-import ToolConfig from './components/ToolConfig'
+import ToolConfig from './components/ToolConfig/index'
 
 import { theme } from '../../../../theme'
 
@@ -19,16 +19,15 @@ const useStyles = makeStyles(() => ({
 // TODO: keyboard instruction
 const TopNav = (props) => {
   const {
-    activeMode,
-    toolboxConfig, setToolboxConfig,
+    useStore,
+    eventCenter,
   } = props
   const classes = useStyles()
   return (
     <div className={classes.topNavWrapper}>
       <ToolConfig
-        activeMode={activeMode}
-        toolboxConfig={toolboxConfig}
-        setToolboxConfig={setToolboxConfig}
+        useStore={useStore}
+        eventCenter={eventCenter}
       />
     </div>
   )

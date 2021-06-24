@@ -24,9 +24,9 @@ const useStyles = makeStyles((props) => ({
 }))
 
 export default function ToolboxButton(props) {
+  const classes = useStyles(props)
   const { name, component, handleClick, isActive } = props
 
-  const classes = useStyles(props)
   return (
     <Tooltip title={name} placement="right">
       <div className={clsx(classes.button, isActive && classes.activeIcon)} onClick={handleClick}>
