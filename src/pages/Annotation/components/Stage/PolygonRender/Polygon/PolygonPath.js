@@ -11,7 +11,6 @@ const PolygonPath = (props) => {
 
     isSelected,
     isCutting,
-    isMovingViewport,
     handleSelectPolygon,
     handleContextMenu,
     onDragPolygonStart,
@@ -32,7 +31,7 @@ const PolygonPath = (props) => {
       id={id}
       strokeWidth={others.strokeWidth / scale}
       data={pathData}
-      hitFunc={(isMovingViewport || isCutting) && function () {
+      hitFunc={(isCutting) && function () {
         // disable hitFunc while dragging viewport or cutting
       }}
       {...others}

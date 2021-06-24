@@ -2,6 +2,8 @@ import React from 'react'
 import create from 'zustand'
 import { cloneDeep } from 'lodash'
 
+import Cursor from '../Cursor/index'
+
 import { EVENT_TYPES } from '../../../constants';
 
 const useCutPolygonStore = create((set, get) => ({
@@ -165,7 +167,8 @@ const CutPolygon = (props) => {
   }, [])
 
   return (
-    null
+    // null
+    <Cursor {...props}/>
   )
 }
 

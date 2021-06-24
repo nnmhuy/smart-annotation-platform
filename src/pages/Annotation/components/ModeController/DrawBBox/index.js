@@ -2,6 +2,7 @@ import React from 'react'
 import UIDGenerator from 'uid-generator'
 import { cloneDeep } from 'lodash'
 
+import Cursor from '../Cursor/index'
 import BBoxAnnotationClass from '../../../../../classes/BBoxAnnotationClass'
 
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
@@ -98,7 +99,7 @@ const DrawBBox = (props) => {
   }, [])
 
   return (
-    null
+    <Cursor {...props}/>
   )
 }
 

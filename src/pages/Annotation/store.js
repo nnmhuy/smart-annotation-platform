@@ -12,7 +12,6 @@ const useAnnotationStore = create((set, get) => ({
   stageRef: null,
   stageSize: { width: 0, height: 0 },
   activeMode: MODES.DRAW_POLYGON.name,
-  isMovingViewport: false,
 
   setStageRef: (newStageRef) => set({ stageRef: newStageRef}),
   setStageSize: (newStageSize) => set({ stageSize: newStageSize }),
@@ -26,18 +25,6 @@ const useAnnotationStore = create((set, get) => ({
       editingAnnotationId: null,
     }
   }),
-  setIsMovingViewport: (newStatus) => set({ isMovingViewport: newStatus }),
-  handleSetViewport: (newPos) => {
-    let stage = get().stageRef
-    let isMovingViewport = get().isMovingViewport
-  
-    if (!isMovingViewport) {
-      return
-    }
-    // TODO: limit viewport
-    stage.position(newPos);
-    stage.batchDraw();
-  },
 
 
   annotations: [],

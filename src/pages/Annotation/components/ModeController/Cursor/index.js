@@ -18,39 +18,11 @@ const useCursorStore = create((set, get) => ({
 const Cursor = (props) => {
   const { useStore, eventCenter } = props
   const stage = useStore(state => state.stageRef)
-  const setIsMovingViewport = useStore(state => state.setIsMovingViewport)
-  const handleSetViewport = useStore(state => state.handleSetViewport)
 
   const setLastCenter = useCursorStore(state => state.setLastCenter)
   const getLastCenter = useCursorStore(state => state.getLastCenter)
   const setLastDist = useCursorStore(state => state.setLastDist)
   const getLastDist = useCursorStore(state => state.getLastDist)
-
-  const handleMouseDown = (e) => {
-    e.evt.preventDefault();
-    setIsMovingViewport(true)
-    window.addEventListener("mousemove", handleMouseMove)
-    window.addEventListener("mouseup", handleMouseUp)
-  }
-
-  /**
-   * Handle moving viewport base on mouse position relative to window
-   */
-  const handleMouseMove = (e) => {
-    const stagePosition = stage.position()
-    let newPosition = {
-      x: stagePosition.x + e.movementX,
-      y: stagePosition.y + e.movementY,
-    }
-    
-    handleSetViewport(newPosition)
-  }
-
-  const handleMouseUp = (e) => {
-    setIsMovingViewport(false)
-    window.removeEventListener("mousemove", handleMouseMove)
-    window.removeEventListener("mouseup", handleMouseUp)
-  }
 
   function getDistance(p1, p2) {
     return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
@@ -162,7 +134,7 @@ const Cursor = (props) => {
         x: pointer.x - mousePointTo.x * newScale,
         y: pointer.y - mousePointTo.y * newScale,
       };
-      // handleSetViewport(newPos)
+
       stage.position(newPos);
       stage.batchDraw();
     }
@@ -171,8 +143,6 @@ const Cursor = (props) => {
   React.useEffect(() => {
     const { getSubject } = eventCenter
     let subscriptions = {
-      [EVENT_TYPES.STAGE_MOUSE_DOWN]: getSubject(EVENT_TYPES.STAGE_MOUSE_DOWN)
-        .subscribe({ next: (e) => handleMouseDown(e) }),
       [EVENT_TYPES.STAGE_TOUCH_MOVE]: getSubject(EVENT_TYPES.STAGE_TOUCH_MOVE)
         .subscribe({ next: (e) => handleTouchMove(e) }),
       [EVENT_TYPES.STAGE_WHEEL]: getSubject(EVENT_TYPES.STAGE_WHEEL)

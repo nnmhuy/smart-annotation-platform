@@ -3,6 +3,7 @@ import { find } from 'lodash'
 
 import EditBBox from './EditHandler/EditBBox';
 import EditPolygon from './EditHandler/EditPolygon';
+import Cursor from '../Cursor/index'
 
 import { EVENT_TYPES } from '../../../constants';
 import BBoxAnnotation from '../../../../../classes/BBoxAnnotationClass';
@@ -48,10 +49,13 @@ const Edit = (props) => {
   const ActiveEditHandler = activeEditHandlerElement ? activeEditHandlerElement.handler : null
 
   return (ActiveEditHandler ? 
-    <ActiveEditHandler
-      useStore={useStore}
-      eventCenter={eventCenter}
-    />
+    [
+      <ActiveEditHandler
+        useStore={useStore}
+        eventCenter={eventCenter}
+      />,
+      <Cursor {...props}/>
+    ]
     : null
   )
 }

@@ -16,7 +16,6 @@ const MaskAnnotation = (props) => {
 
   const image = useStore(state => state.image)
   const editingAnnotationId = useStore(state => state.editingAnnotationId)
-  const isMovingViewport = useStore(state => state.isMovingViewport)
 
   const isSelected = (id === editingAnnotationId)
   
@@ -63,7 +62,6 @@ const MaskAnnotation = (props) => {
       <Mask
         isSelected={isSelected}
         mask={displayMask}
-        isMovingViewport={isMovingViewport}
         handleSelectMask={handleSelectMask}
         handleContextMenu={handleContextMenu}
       />

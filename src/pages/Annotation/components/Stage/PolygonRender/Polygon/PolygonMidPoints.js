@@ -7,7 +7,6 @@ const PolygonMidPoints = (props) => {
     polygon,
     scale,
     
-    isMovingViewport,
     handleStartDraggingMidPoint,
     handleMoveDraggingMidPoint,
     handleEndDraggingMidPoint,
@@ -46,9 +45,6 @@ const PolygonMidPoints = (props) => {
             onDragMove={(e) => handleMoveDraggingMidPoint(e, polyIndex, pointIndex)}
             onDragEnd={(e) => handleEndDraggingMidPoint(e, polyIndex, pointIndex)}
             draggable
-            hitFunc={isMovingViewport && function () {
-              // disable hitFunc while dragging viewport
-            }}
           />
         );
       })

@@ -1,6 +1,8 @@
 import React from 'react'
 import { cloneDeep, filter } from 'lodash';
 
+import Cursor from '../Cursor/index'
+
 import { EVENT_TYPES } from '../../../constants';
 
 const Delete = (props) => {
@@ -30,7 +32,9 @@ const Delete = (props) => {
   }, [])
 
 
-  return null
+  return (
+    <Cursor {...props}/>
+  )
 }
 
 export default Delete

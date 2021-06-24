@@ -96,6 +96,16 @@ const RenderComponent = (props) => {
     eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_CLICK)(e)
   }
 
+  const dragBoundFunc = (pos) => {
+    // TODO: limit viewport drag here
+    // important pos - is absolute position of the node
+    // you should return absolute position too
+    return {
+      x: pos.x,
+      y: pos.y
+    };
+  }
+
   const isPredicting = useStore(state => state.isPredicting)
   const imageId = useStore(state => state.imageId)
   const annotations = useStore(state => state.annotations)
@@ -134,6 +144,7 @@ const RenderComponent = (props) => {
         onTouchEnd={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_END)}
         onClick={handleStageClick} // limit to left click only
         onTap={eventCenter.emitEvent(EVENT_TYPES.STAGE_TAP)}
+        dragBoundFunc={dragBoundFunc}
       >
         <Layer>
           <ImageRender

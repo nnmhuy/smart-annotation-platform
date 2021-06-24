@@ -10,7 +10,6 @@ const emittingSubjects = [
 
 const Rectangle = (props) => {
   const { useStore, eventCenter, id, bBox, } = props
-  const isMovingViewport = useStore(state => state.isMovingViewport)
   const editingAnnotationId = useStore(state => state.editingAnnotationId)
 
   const groupRef = React.useRef(null);
@@ -93,9 +92,6 @@ const Rectangle = (props) => {
             height: Math.max(node.height() * scaleY),
           })
         }}
-        hitFunc={isMovingViewport && function (context) {
-          // disable hitFunc while dragging viewport
-        }}
       />
       {isSelected && (
         <Transformer
@@ -109,9 +105,6 @@ const Rectangle = (props) => {
               return oldBox;
             }
             return newBox;
-          }}
-          hitFunc={isMovingViewport && function (context) {
-            // disable hitFunc while dragging viewport
           }}
         />
       )}

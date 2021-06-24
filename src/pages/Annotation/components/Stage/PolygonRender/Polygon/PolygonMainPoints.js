@@ -12,7 +12,6 @@ const PolygonMainPoints = (props) => {
     isDrawing,
     isSelected,
     isCutting,
-    isMovingViewport,
     scale,
     handleStartDraggingMainPoint,
     handleMoveDraggingMainPoint,
@@ -68,7 +67,7 @@ const PolygonMainPoints = (props) => {
           fill="white"
           stroke="black"
           strokeWidth={2 / scale}
-          hitFunc={(isDrawing || isCutting || isMovingViewport) && function () {
+          hitFunc={(isDrawing || isCutting) && function () {
             // disable hitFunc while drawing or cutting or dragging viewport
           }}
           {...startPointAttr}

@@ -21,7 +21,6 @@ const Polygon = (props) => {
   const stage = useStore(state => state.stageRef)
   const drawingAnnotation = useStore(state => state.drawingAnnotation)
   const editingAnnotationId = useStore(state => state.editingAnnotationId)
-  const isMovingViewport = useStore(state => state.isMovingViewport)
 
   const groupRef = React.useRef(null)
   const scale = stage ? stage.scaleX() : 1
@@ -192,7 +191,6 @@ const Polygon = (props) => {
         scale={scale}
         isSelected={isSelected}
         isCutting={isCutting}
-        isMovingViewport={isMovingViewport}
         handleSelectPolygon={handleSelectPolygon}
         handleContextMenu={handleContextMenu}
         onDragPolygonStart={onDragPolygonStart}
@@ -206,7 +204,6 @@ const Polygon = (props) => {
           isDrawing={isDrawing}
           isSelected={isSelected}
           isCutting={isCutting}
-          isMovingViewport={isMovingViewport}
           id={polygon.id}
           polygon={polygon.polygon}
           scale={scale}
@@ -225,7 +222,6 @@ const Polygon = (props) => {
           polygon={polygon.polygon}
           scale={scale}
           isSelected={isSelected}
-          isMovingViewport={isMovingViewport}
           handleStartDraggingMidPoint={handleStartDraggingMidPoint}
           handleMoveDraggingMidPoint={handleMoveDraggingMidPoint}
           handleEndDraggingMidPoint={handleEndDraggingMidPoint}

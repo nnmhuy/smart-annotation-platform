@@ -5,6 +5,7 @@ import { cloneDeep } from 'lodash'
 
 import PolygonAnnotationClass from '../../../../../classes/PolygonAnnotationClass'
 
+import Cursor from '../Cursor/index'
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
 
 const uidgen = new UIDGenerator();
@@ -159,7 +160,7 @@ const DrawPolygon = (props) => {
   }, [])
 
   return (
-    null
+    <Cursor {...props}/>
   )
 }
 
