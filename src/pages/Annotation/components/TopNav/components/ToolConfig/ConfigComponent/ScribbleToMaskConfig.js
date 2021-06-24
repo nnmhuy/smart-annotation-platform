@@ -14,6 +14,7 @@ import { ReactComponent as EraserIcon } from '../../../../../../../static/images
 import { ReactComponent as SizeSliderIcon } from '../../../../../../../static/images/icons/ConfigIcon/size_slider.svg'
 import { ReactComponent as S2MIcon } from '../../../../../../../static/images/icons/ConfigIcon/s2m.svg'
 import { ReactComponent as SaveIcon } from '../../../../../../../static/images/icons/ConfigIcon/save.svg'
+import { ReactComponent as ClearIcon } from '../../../../../../../static/images/icons/ConfigIcon/clear.svg'
 import { ReactComponent as ThresholdIcon } from '../../../../../../../static/images/icons/ConfigIcon/threshold.svg'
 
 
@@ -86,6 +87,11 @@ const ScribbleToMaskConfig = (props) => {
           activeTool={toolConfig.scribbleType}
           toolList={scribbleToMaskTools}
           onSelect={(tool) => setToolConfig({ ...toolConfig, scribbleType: tool })}
+        />
+        <ToolConfigButton
+          name={'Clear all'}
+          handleClick={() => eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.CLEAR_ALL)()}
+          component={<ClearIcon />}
         />
       </div>
       <Divider orientation="vertical" className={classes.divider}/>

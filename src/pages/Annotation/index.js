@@ -9,6 +9,7 @@ import ThumbnailSlider from './components/ThumbnailSlider'
 import TopNav from './components/TopNav/index'
 import LabelSelection from './components/LabelSelection/index'
 import Prediction from './components/Prediction/index'
+import KeyboardHandler from './components/KeyboardHandler/index'
 
 import EventCenter from '../../classes/EventCenterClass'
 import useAnnotationStore from './store'
@@ -75,6 +76,10 @@ const Annotation = (props) => {
             eventCenter={annotationEventCenter}
           />
           <Prediction
+            useStore={useAnnotationStore}
+            eventCenter={annotationEventCenter}
+          />
+          <KeyboardHandler
             useStore={useAnnotationStore}
             eventCenter={annotationEventCenter}
           />

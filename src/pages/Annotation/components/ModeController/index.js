@@ -21,7 +21,6 @@ const mapModeToComponent = {
   [MODES.DELETE.name]: Delete,
 }
 
-// TODO: handle zoom gestures
 const ModeController = (props) => {
   const { useStore } = props
   const activeMode = useStore(state => state.activeMode)

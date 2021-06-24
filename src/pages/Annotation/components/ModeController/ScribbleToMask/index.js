@@ -81,6 +81,15 @@ const ScribbleToMask = (props) => {
     setIsDrawingScribble(false)
   }
 
+  const handleDragStart = (e) => {
+    console.log("dragstart")
+    const stage = e.target.getStage()
+    e.evt.preventDefault()
+    if (stage.isDragging()) {
+      stage.stopDrag();
+    }
+  }
+
   const handleMouseDown = () => {
     updateCurrentMousePosition()
     handleStartDrawByBrush()
@@ -186,11 +195,16 @@ const ScribbleToMask = (props) => {
       eventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedAnnotation.id)
     }
   }
-  
 
+  const handleClearAll = () => {
+    setDrawingAnnotation(null)
+  }
+  
   React.useEffect(() => {
     const { getSubject } = eventCenter
     let subscriptions = {
+      [EVENT_TYPES.STAGE_DRAG_START]: getSubject(EVENT_TYPES.STAGE_DRAG_START)
+        .subscribe({ next: (e) => handleDragStart(e) }),
       [EVENT_TYPES.STAGE_MOUSE_DOWN]: getSubject(EVENT_TYPES.STAGE_MOUSE_DOWN)
         .subscribe({ next: (e) => handleMouseDown(e) }),
       [EVENT_TYPES.STAGE_MOUSE_MOVE]: getSubject(EVENT_TYPES.STAGE_MOUSE_MOVE)
@@ -207,6 +221,8 @@ const ScribbleToMask = (props) => {
         .subscribe({ next: (e) => handleFinishPredict(e) }),
       [EVENT_TYPES.SCRIBBLE_TO_MASK.SAVE]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.SAVE)
         .subscribe({ next: (e) => handleSave(e) }),
+      [EVENT_TYPES.SCRIBBLE_TO_MASK.CLEAR_ALL]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.CLEAR_ALL)
+        .subscribe({ next: (e) => handleClearAll(e) }),
       [EVENT_TYPES.SCRIBBLE_TO_MASK.UPDATE_THRESHOLD]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.UPDATE_THRESHOLD)
         .subscribe({ next: (e) => handleUpdateThreshold(e) }),
     }

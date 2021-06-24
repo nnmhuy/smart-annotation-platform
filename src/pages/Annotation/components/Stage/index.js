@@ -133,8 +133,13 @@ const RenderComponent = (props) => {
         ref={stageRef}
         width={stageSize.width}
         height={stageSize.height}
-        draggable
         className={classes.stage}
+
+        draggable
+        dragBoundFunc={dragBoundFunc}
+        onDragStart={eventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_START)}
+        onDragMove={eventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_MOVE)}
+        onDragEnd={eventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_END)}
 
         onMouseOut={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_OUT)}
         onMouseEnter={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_ENTER)}
@@ -149,7 +154,6 @@ const RenderComponent = (props) => {
         onTouchEnd={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_END)}
         onClick={handleStageClick} // limit to left click only
         onTap={eventCenter.emitEvent(EVENT_TYPES.STAGE_TAP)}
-        dragBoundFunc={dragBoundFunc}
       >
         <Layer>
           <ImageRender

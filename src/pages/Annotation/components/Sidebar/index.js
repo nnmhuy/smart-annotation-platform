@@ -1,5 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core'
+import { filter } from 'lodash'
 
 import LabelList from './components/LabelList'
 
@@ -18,23 +19,25 @@ const useStyles = makeStyles((props) => ({
 const SideBar = (props) => {
   const { useStore, eventCenter } = props
 
+  const imageId = useStore(state => state.imageId)
   const annotations = useStore(state => state.annotations)
   const labels = useStore(state => state.labels)
 
   const classes = useStyles()
   return (
     <div className={classes.sideBarWrapper}>
-      <LabelList
+      {/* <LabelList
         key={`label-0-unknown`}
-        annotations={annotations.filter(anno => anno.labelId === '')}
+        annotations={filter(annotations, { imageId, labelId: ''})}
         classLabel={'Unknown'}
-      />
+      /> */}
       {
         labels.map(value => {
           return <LabelList
+            useStore={useStore}
             key={`label-${value.id}-${value.label}`}
-            annotations={annotations.filter(anno => anno.labelId === value.id)}
-            classLabel={value.label}
+            annotations={filter(annotations, { imageId, labelId: value.id })}
+            classLabel={value}
           />
         })
       }

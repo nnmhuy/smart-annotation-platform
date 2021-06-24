@@ -3,10 +3,17 @@ export default class Annotation {
     this.id = annotationId
     this.labelId = labelId
     this.imageId = imageId
+    this.properties = {
+      isHidden: false
+    }
   }
   set updateLabel(labelId) {
     this.labelId = labelId
   }
-  updateData = () => {
+  set updateProperties(newProperties) {
+    this.properties = {
+      ...this.properties,
+      ...newProperties,
+    }
   }
 }

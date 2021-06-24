@@ -91,6 +91,17 @@ const useAnnotationStore = create((set, get) => ({
       }
     })
   })),
+  setAnnotationProperties: (id, newProperties) => set(state => ({
+    annotations: state.annotations.map(annotation => {
+      if (annotation.id !== id) {
+        return annotation
+      } else {
+        let newAnnotation = cloneDeep(annotation)
+        newAnnotation.updateProperties = newProperties
+        return newAnnotation
+      }
+    })
+  })),
 
   labels: mockupLabels,
   setEditingAnnotationLabelId: (newLabelId) => set(state => ({

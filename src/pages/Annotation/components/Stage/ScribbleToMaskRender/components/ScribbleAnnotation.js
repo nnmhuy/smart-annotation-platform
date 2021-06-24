@@ -28,7 +28,7 @@ const MaskAnnotation = (props) => {
 
   React.useEffect(() => {
     async function getThresholdImage() {
-      if (maskImage) {
+      if (image && maskImage) {
         const thresholdedMask = await thresholdMask(maskImage, threshold, {
           color: hexColorToRGB(color),
           canvasWidth: image.width,
@@ -40,7 +40,7 @@ const MaskAnnotation = (props) => {
       }
     }
     getThresholdImage();
-  }, [maskImage, image.width, image.height, threshold, color])
+  }, [maskImage, image, threshold, color])
 
 
   const handleSelectMask = (e) => {

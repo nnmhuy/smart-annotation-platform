@@ -13,7 +13,7 @@ import {
   IconButton
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
-import {ExpandMore as ExpandMoreIcon} from '@material-ui/icons';
+import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 
 const styles = {
   icon: {
@@ -50,32 +50,31 @@ const useStyles = makeStyles((props) => ({
 
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 30 },
+  { field: 'shortenId', headerName: 'ID', width: 30 },
   { field: 'type', headerName: 'Type', width: 100 },
 ]
 
 const LabelList = (props) => {
-  const { annotations, classLabel } = props
-  const [expanded, setExpanded] = React.useState(true)
-  const [annotationDisplay, setAnnotationDisplay] = React.useState([])
   const classes = useStyles();
-  const toggleVisibility = (id) => {
-    const newAnnotationDisplay = annotations.map((c) => {
-      return {
-        isHidden: c.id === id ? !c.isHidden : c.isHidden
-      }
-    })
-    setAnnotationDisplay(newAnnotationDisplay)
+  const { useStore, classLabel, annotations } = props
+  const [expanded, setExpanded] = React.useState(true)
+
+  const { label, properties } = classLabel
+  const setAnnotationProperties = useStore(state => state.setAnnotationProperties)
+
+  const toggleVisibility = (id, isHidden) => {
+    setAnnotationProperties(id, { isHidden })
   }
 
-
-  const rows = annotations.map((annotation, index) => {
+  const rows = annotations.map((annotation) => {
     return {
-      id: annotation.id.slice(0, 5),
+      id: annotation.id,
+      shortenId: annotation.id.slice(0, 5),
       type: annotation.type,
-      isHidden: annotationDisplay[index]
+      isHidden: annotation.properties.isHidden
     }
   })
+
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -84,7 +83,7 @@ const LabelList = (props) => {
     <>
       <div className={classes.showClassWrapper}>
         <label>
-          {classLabel}
+          {label}
         </label>
         <IconButton
           className={clsx(classes.expand, {
@@ -93,21 +92,21 @@ const LabelList = (props) => {
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="show more"
-          >
+        >
           <ExpandMoreIcon />
         </IconButton>
       </div>
-      {(rows.length !== 0) && <Collapse in={expanded}>
+      <Collapse in={expanded}>
         <Table className={classes.table}>
           <TableHead>
             <TableRow>
-              <TableCell style={{width: 10}}>
+              <TableCell style={{ width: 10 }}>
                 <div style={styles.icon}>
-                  {VisibleIcon}
+                  {properties.isHidden ? InvisibleIcon : VisibleIcon}
                 </div>
               </TableCell>
               {columns.map((column) => (
-                <TableCell style={{width: column.width}} key={column.field}>
+                <TableCell style={{ width: column.width }} key={column.field}>
                   {column.headerName}
                 </TableCell>
               ))}
@@ -116,8 +115,8 @@ const LabelList = (props) => {
           <TableBody>
             {rows.map((row) => (
               <TableRow key={row.id}>
-                <TableCell style={{width: 10}}>
-                  <div style={styles.icon} onClick={() => toggleVisibility(row.id)}>
+                <TableCell style={{ width: 10 }}>
+                  <div style={styles.icon} onClick={() => toggleVisibility(row.id, !row.isHidden)}>
                     {row.isHidden ? InvisibleIcon : VisibleIcon}
                   </div>
                 </TableCell>
@@ -130,7 +129,7 @@ const LabelList = (props) => {
             ))}
           </TableBody>
         </Table>
-      </Collapse>}
+      </Collapse>
     </>
   )
 }
