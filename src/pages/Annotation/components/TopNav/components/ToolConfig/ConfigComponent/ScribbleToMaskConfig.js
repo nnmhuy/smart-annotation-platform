@@ -90,7 +90,7 @@ const ScribbleToMaskConfig = (props) => {
         />
         <ToolConfigButton
           name={'Clear all'}
-          handleClick={() => eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.CLEAR_ALL)()}
+          handleClick={eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.CLEAR_ALL)}
           component={<ClearIcon />}
         />
       </div>
@@ -154,12 +154,12 @@ const ScribbleToMaskConfig = (props) => {
         </ToolConfigPopUpButton>
         <ToolConfigButton
           name={'MiVOS - S2M'}
-          handleClick={() => eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT)()}
+          handleClick={eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT)}
           component={<S2MIcon/>}
         />
         <ToolConfigButton
           name={'Save'}
-          handleClick={() => eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.SAVE)()}
+          handleClick={eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.SAVE)}
           component={<SaveIcon/>}
         />
       </div>

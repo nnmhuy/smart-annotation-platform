@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { get } from 'lodash'
 
 import ScribbleToMaskConfig from './ConfigComponent/ScribbleToMaskConfig'
+import EditConfig from './ConfigComponent/EditConfig'
 
 import { MODES } from '../../../../constants'
 
@@ -14,12 +15,12 @@ const useStyles = makeStyles(() => ({
 }))
 
 const toolBoxConfigs = {
-  [MODES.SCRIBBLE_TO_MASK.name]: ScribbleToMaskConfig
+  [MODES.SCRIBBLE_TO_MASK.name]: ScribbleToMaskConfig,
+  [MODES.EDIT.name]: EditConfig
 }
 
 const ToolConfig = (props) => {
   const classes = useStyles()
-  // const { activeMode, toolboxConfig, setToolboxConfig, } = props
   const { useStore, eventCenter } = props
 
   const activeMode = useStore(state => state.activeMode)

@@ -1,5 +1,5 @@
 import React from 'react'
-import { find } from 'lodash'
+import { cloneDeep, filter, find } from 'lodash'
 
 import EditBBox from './EditHandler/EditBBox';
 import EditPolygon from './EditHandler/EditPolygon';
@@ -17,12 +17,24 @@ const mapAnnotationClassToEditHandler = [
 const Edit = (props) => {
   const { useStore, eventCenter } = props
   const annotations = useStore(state => state.annotations)
+  const getAnnotations = useStore(state => state.getAnnotations)
+  const setAnnotations = useStore(state => state.setAnnotations)
   const editingAnnotationId = useStore(stage => stage.editingAnnotationId)
+  const getEditingAnnotationId = useStore(stage => stage.getEditingAnnotationId)
   const setEditingAnnotationId = useStore(stage => stage.setEditingAnnotationId)
 
   const handleSelectAnnotation = ({e, id: annotationId }) => {
     e.cancelBubble = true
     setEditingAnnotationId(annotationId)
+  }
+
+  const handleDeleteAnnotation = () => {
+    const annotationId = getEditingAnnotationId()
+    const annotations = getAnnotations()
+    const newAnnotations = cloneDeep(filter(annotations, (ann) => ann.id !== annotationId))
+
+    setEditingAnnotationId(null)
+    setAnnotations(newAnnotations)
   }
 
   const handleStageClick = (e) => {
@@ -36,6 +48,8 @@ const Edit = (props) => {
         .subscribe({ next: (e) => handleSelectAnnotation(e) }),
       [EVENT_TYPES.STAGE_MOUSE_CLICK]: getSubject(EVENT_TYPES.STAGE_MOUSE_CLICK)
         .subscribe({ next: (e) => handleStageClick(e) }),
+      [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.EDIT.DELETE_ANNOTATION)
+        .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
     }
 
     return () => {
