@@ -26,11 +26,6 @@ const SideBar = (props) => {
   const classes = useStyles()
   return (
     <div className={classes.sideBarWrapper}>
-      {/* <LabelList
-        key={`label-0-unknown`}
-        annotations={filter(annotations, { imageId, labelId: ''})}
-        classLabel={'Unknown'}
-      /> */}
       {
         labels.map(value => {
           return <LabelList

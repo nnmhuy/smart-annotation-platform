@@ -59,8 +59,13 @@ const LabelList = (props) => {
   const { useStore, classLabel, annotations } = props
   const [expanded, setExpanded] = React.useState(true)
 
-  const { label, properties } = classLabel
+  const { id, label, properties } = classLabel
   const setAnnotationProperties = useStore(state => state.setAnnotationProperties)
+  const setLabelProperties = useStore(state => state.setLabelProperties)
+
+  const toggleClassVisibility = (isHidden) => {
+    setLabelProperties(id, { isHidden })
+  }
 
   const toggleVisibility = (id, isHidden) => {
     setAnnotationProperties(id, { isHidden })
@@ -101,7 +106,7 @@ const LabelList = (props) => {
           <TableHead>
             <TableRow>
               <TableCell style={{ width: 10 }}>
-                <div style={styles.icon}>
+                <div style={styles.icon} onClick={() => toggleClassVisibility(!properties.isHidden)}>
                   {properties.isHidden ? InvisibleIcon : VisibleIcon}
                 </div>
               </TableCell>

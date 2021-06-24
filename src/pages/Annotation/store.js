@@ -115,6 +115,17 @@ const useAnnotationStore = create((set, get) => ({
       }
     })
   })),
+  setLabelProperties: (id, newProperties) => set(state => ({
+    labels: state.labels.map(label => {
+      if (label.id !== id) {
+        return label
+      } else {
+        let newLabel = cloneDeep(label)
+        newLabel.updateProperties = newProperties
+        return newLabel
+      }
+    })
+  })),
 
   toolConfig: DEFAULT_TOOL_CONFIG,
   setToolConfig: (newToolConfig) => set(state => ({ toolConfig: { ...state.toolConfig, [state.activeMode]: newToolConfig } })),
