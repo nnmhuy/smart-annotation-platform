@@ -10,9 +10,11 @@ import { theme } from '../../../../theme'
 const useStyles = makeStyles((props) => ({
   sideBarWrapper: {
     // width: '100%',
+    boxSizing: 'border-box',
     height: '100%',
     backgroundColor: theme.light.primaryColor,
     padding: 20,
+    overflowY: 'scroll',
   },
 }))
 
