@@ -1,7 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
-// import Konva from 'konva'
 import { filter, cloneDeep, get, find } from 'lodash'
 
 import Loading from '../../../../components/Loading'
@@ -15,6 +14,7 @@ import BBoxAnnotation from '../../../../classes/BBoxAnnotationClass'
 import PolygonAnnotation from '../../../../classes/PolygonAnnotationClass'
 import ScribbleToMaskAnnotation from '../../../../classes/ScribbleToMaskAnnotationClass'
 import { EVENT_TYPES, MODES } from '../../constants'
+import getStagePosLimit from '../../utils/getStagePosLimit'
 
 const useStyles = makeStyles(() => ({
   stageContainer: {
@@ -44,8 +44,6 @@ const emittingSubjects = [
 
   EVENT_TYPES.STAGE_CONTEXT_MENU,
 ]
-
-// Konva.hitOnDragEnabled = true;
 
 const RenderComponent = (props) => {
   const { useStore, eventCenter } = props
@@ -88,6 +86,8 @@ const RenderComponent = (props) => {
     })
   }, [])
 
+  const image = useStore(state => state.image)
+
   const handleStageClick = (e) => {
     // only detect left click or tap
     if (!((e.type === "click" && e.evt.which === 1) || (e.type === "tap"))) {
@@ -100,9 +100,14 @@ const RenderComponent = (props) => {
     // TODO: limit viewport drag here
     // important pos - is absolute position of the node
     // you should return absolute position too
+    const stage = stageRef.current
+
+
+    let posLimit = getStagePosLimit(stage, stageSize, image)
+
     return {
-      x: pos.x,
-      y: pos.y
+      x: Math.min(Math.max(pos.x, posLimit.xMin), posLimit.xMax),
+      y: Math.min(Math.max(pos.y, posLimit.yMin), posLimit.yMax)
     };
   }
 
