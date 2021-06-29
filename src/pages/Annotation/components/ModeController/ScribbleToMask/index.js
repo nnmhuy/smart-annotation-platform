@@ -45,8 +45,10 @@ const ScribbleToMask = (props) => {
           strokeWidth: toolConfig.scribbleSize,
         }],
         mask: {
-          threshold: toolConfig.threshold,
+          // threshold: toolConfig.threshold,
         }
+      }, {
+        threshold: toolConfig.threshold,
       }))
     } else {
       const newDrawingAnnotation = cloneDeep(drawingAnnotation)
@@ -136,8 +138,10 @@ const ScribbleToMask = (props) => {
         base64,
         originalBase64,
         blob,
-        threshold: toolConfig.threshold
       }
+    }
+    newDrawingAnnotation.updateProperties = {
+      threshold: toolConfig.threshold
     }
     setDrawingAnnotation(newDrawingAnnotation)
     setIsPredicting(false)
@@ -154,7 +158,7 @@ const ScribbleToMask = (props) => {
 
     if (drawingAnnotation) {
       const newDrawingAnnotation = cloneDeep(drawingAnnotation)
-      newDrawingAnnotation.maskData.mask.threshold = toolConfig.threshold
+      newDrawingAnnotation.properties.threshold = toolConfig.threshold
       setDrawingAnnotation(newDrawingAnnotation)
     }
   }
@@ -169,7 +173,7 @@ const ScribbleToMask = (props) => {
       const mask = finishedAnnotation.maskData.mask
       let originalBase64 = get(mask, 'originalBase64', null)
       let base64 = get(mask, 'base64', null)
-      let threshold = get(mask, 'threshold', 0)
+      let threshold = get(finishedAnnotation, 'properties.threshold', 0)
 
       const thresholdOriginalBase64 = await thresholdMask(originalBase64, threshold, {
         canvasWidth: image.originalWidth,

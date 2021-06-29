@@ -188,6 +188,7 @@ const Polygon = (props) => {
             getNewPolysAfterDraggingMidPoint(polygon.polygon.polys, draggingMidPoint)
             : polygon.polygon.polys
         }}
+        properties={polygon.properties}
         scale={scale}
         isSelected={isSelected}
         isCutting={isCutting}

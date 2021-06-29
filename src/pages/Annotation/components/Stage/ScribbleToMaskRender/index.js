@@ -11,6 +11,7 @@ const BrushToMaskRender = (props) => {
       useStore={useStore}
       eventCenter={eventCenter}
       id={annotation.id}
+      properties={annotation.properties}
       maskData={annotation.maskData}
     />
   ))

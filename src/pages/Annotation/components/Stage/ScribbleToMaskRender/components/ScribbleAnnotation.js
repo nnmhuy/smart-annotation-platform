@@ -10,7 +10,7 @@ import thresholdMask from '../../../../utils/thresholdMask'
 import hexColorToRGB from '../../../../../../utils/hexColorToRGB'
 
 const MaskAnnotation = (props) => {
-  const { id, maskData, useStore, eventCenter } = props
+  const { id, properties, maskData, useStore, eventCenter } = props
 
   const [displayMask, setDisplayMask] = React.useState(null)
 
@@ -23,9 +23,11 @@ const MaskAnnotation = (props) => {
 
   const mask = maskData.mask
   let maskImage = get(mask, 'base64', null)
-  let threshold = get(mask, 'threshold', 0)
-  let color = get(maskData, 'fill', '')
+  let threshold = get(properties, 'threshold', 0)
+  let color = get(properties, 'fill', '')
 
+  console.log(color)
+  console.log(threshold)
   React.useEffect(() => {
     async function getThresholdImage() {
       if (image && maskImage) {

@@ -46,11 +46,10 @@ const DrawPolygon = (props) => {
 
     if (drawingPoly === null) {
       setDrawingAnnotation(new PolygonAnnotationClass(uidgen.generateSync(), '', imageId, {
-        ...DEFAULT_ANNOTATION_ATTRS,
         x: 0,
         y: 0,
         polys: [[[currentMousePosition.x, currentMousePosition.y]]]
-      }))
+      }, DEFAULT_ANNOTATION_ATTRS))
       setDrawingPoly([[currentMousePosition.x, currentMousePosition.y]])
     } else {
       if (isMouseOverPolygonStart) {
@@ -160,7 +159,7 @@ const DrawPolygon = (props) => {
   }, [])
 
   return (
-    <Cursor {...props}/>
+    <Cursor {...props} />
   )
 }
 

@@ -3,8 +3,8 @@ import Annotation from "./AnnotationClass";
 import { ANNOTATION_TYPE } from '../constants/constants'
 
 export default class ScribbleToMaskAnnotationClass extends Annotation {
-  constructor(annotationId, labelId, imageId, maskData) {
-    super(annotationId, labelId, imageId)
+  constructor(annotationId, labelId, imageId, maskData, properties = {}) {
+    super(annotationId, labelId, imageId, properties)
     this.type = ANNOTATION_TYPE.MASK
     this.maskData = maskData
   }
