@@ -9,7 +9,7 @@ import thresholdMask from '../../../utils/thresholdMask'
 import base64ToBlob from '../../../../../utils/base64ToBlob'
 import { EVENT_TYPES } from '../../../constants';
 
-const uidgen = new UIDGenerator();
+const uidgen = new UIDGenerator(96, UIDGenerator.BASE16);
 
 const useScribbleToMaskStore = create((set, get) => ({
   isDrawingScribble: false,

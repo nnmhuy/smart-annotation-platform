@@ -1,7 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
-import { filter, cloneDeep, get, find, mergeWith } from 'lodash'
+import { filter, cloneDeep, get, find } from 'lodash'
 
 import Loading from '../../../../components/Loading'
 import ImageRender from './ImageRender/index'
@@ -123,9 +123,10 @@ const RenderComponent = (props) => {
     } 
     let renderAnn = cloneDeep(ann)
     const label = find(labels, { id: renderAnn.labelId })
-    renderAnn.updateData = get(label, 'annotationProperties', {})
+    const labelAnnotationProperties = get(label, 'annotationProperties', {})
     renderAnn.updateProperties = {
-      isHidden: label.properties.isHidden || renderAnn.properties.isHidden
+      ...labelAnnotationProperties,
+      isHidden: label.properties.isHidden || renderAnn.properties.isHidden,
     }
     return renderAnn
   })

@@ -9,7 +9,7 @@ const emittingSubjects = [
 ]
 
 const Rectangle = (props) => {
-  const { useStore, eventCenter, id, bBox, } = props
+  const { useStore, eventCenter, id, bBox, properties, } = props
   const editingAnnotationId = useStore(state => state.editingAnnotationId)
 
   const groupRef = React.useRef(null);
@@ -64,7 +64,8 @@ const Rectangle = (props) => {
         ref={rectRef}
         strokeScaleEnabled={false}
         {...bBox}
-        opacity={isSelected ? bBox.opacity + 0.2 : bBox.opacity}
+        {...properties}
+        opacity={isSelected ? properties.opacity + 0.2 : properties.opacity}
         draggable={isSelected}
         onDragEnd={(e) => {
           eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({

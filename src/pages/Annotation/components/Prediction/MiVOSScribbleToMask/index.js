@@ -12,7 +12,7 @@ const { SCRIBBLE_TYPES } = SCRIBBLE_TO_MASK_CONSTANTS
 
 
 const MiVOSScribbleToMask = (props) => {
-  const { useStore, eventCenter } = props
+  const { eventCenter } = props
 
   const handleScribbleToMask = async ({ image, annotation }) => {
     const imageWidth = get(image, 'width', 0)

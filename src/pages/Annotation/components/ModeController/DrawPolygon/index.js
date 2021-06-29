@@ -8,7 +8,7 @@ import PolygonAnnotationClass from '../../../../../classes/PolygonAnnotationClas
 import Cursor from '../Cursor/index'
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
 
-const uidgen = new UIDGenerator();
+const uidgen = new UIDGenerator(96, UIDGenerator.BASE16);
 
 const useDrawPolygonStore = create((set, get) => ({
   isMouseOverPolygonStart: false,

@@ -7,7 +7,7 @@ import BBoxAnnotationClass from '../../../../../classes/BBoxAnnotationClass'
 
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
 
-const uidgen = new UIDGenerator();
+const uidgen = new UIDGenerator(96, UIDGenerator.BASE16);
 
 const DrawBBox = (props) => {
   const { useStore, eventCenter } = props
@@ -25,12 +25,11 @@ const DrawBBox = (props) => {
 
     if (drawingAnnotation === null) {
       setDrawingAnnotation(new BBoxAnnotationClass(uidgen.generateSync(), '', imageId, {
-        ...DEFAULT_ANNOTATION_ATTRS,
         x: currentMousePosition.x,
         y: currentMousePosition.y,
         width: 0,
         height: 0,
-      }))
+      }, DEFAULT_ANNOTATION_ATTRS))
     } else {
       finishDrawRectangle()
     }
