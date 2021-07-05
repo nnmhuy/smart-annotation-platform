@@ -84,7 +84,6 @@ const ScribbleToMask = (props) => {
   }
 
   const handleDragStart = (e) => {
-    console.log("dragstart")
     const stage = e.target.getStage()
     e.evt.preventDefault()
     if (stage.isDragging()) {

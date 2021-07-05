@@ -126,7 +126,7 @@ const RenderComponent = (props) => {
     const labelAnnotationProperties = get(label, 'annotationProperties', {})
     renderAnn.updateProperties = {
       ...labelAnnotationProperties,
-      isHidden: label.properties.isHidden || renderAnn.properties.isHidden,
+      isHidden: get(label, 'properties.isHidden', false) || get(renderAnn, 'properties.isHidden', false)
     }
     return renderAnn
   })

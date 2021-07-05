@@ -1,5 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import { useParams } from 'react-router'
 
 import Toolbox from './components/Toolbox/index'
 import ModeController from './components/ModeController/index'
@@ -48,6 +49,15 @@ const annotationEventCenter = new EventCenter()
 
 const Annotation = (props) => {
   const classes = useStyles()
+  const { projectId, datasetId } = useParams()
+
+  const getDatasetData = useAnnotationStore(state => state.getDatasetData)
+
+  React.useEffect(() => {
+    if (projectId && datasetId) {
+      getDatasetData(projectId, datasetId)
+    }
+  }, [datasetId])
 
   return (
     <div className={classes.root}>

@@ -17,8 +17,7 @@ const mapAnnotationClassToEditHandler = [
 const Edit = (props) => {
   const { useStore, eventCenter } = props
   const annotations = useStore(state => state.annotations)
-  const getAnnotations = useStore(state => state.getAnnotations)
-  const setAnnotations = useStore(state => state.setAnnotations)
+  const deleteAnnotation = useStore(state => state.deleteAnnotation)
   const editingAnnotationId = useStore(stage => stage.editingAnnotationId)
   const getEditingAnnotationId = useStore(stage => stage.getEditingAnnotationId)
   const setEditingAnnotationId = useStore(stage => stage.setEditingAnnotationId)
@@ -30,11 +29,8 @@ const Edit = (props) => {
 
   const handleDeleteAnnotation = () => {
     const annotationId = getEditingAnnotationId()
-    const annotations = getAnnotations()
-    const newAnnotations = cloneDeep(filter(annotations, (ann) => ann.id !== annotationId))
 
-    setEditingAnnotationId(null)
-    setAnnotations(newAnnotations)
+    deleteAnnotation(annotationId)
   }
 
   const handleStageClick = (e) => {
@@ -65,10 +61,11 @@ const Edit = (props) => {
   return (ActiveEditHandler ? 
     [
       <ActiveEditHandler
+        key='edit-handler'
         useStore={useStore}
         eventCenter={eventCenter}
       />,
-      <Cursor {...props}/>
+      <Cursor key='cursor-handler' {...props}/>
     ]
     : null
   )
