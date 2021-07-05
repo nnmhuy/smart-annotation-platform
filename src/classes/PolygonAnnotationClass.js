@@ -1,5 +1,7 @@
-import { ANNOTATION_TYPE } from "../constants/constants";
 import Annotation from "./AnnotationClass";
+
+import RestConnector from '../connectors/RestConnector'
+import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from "../constants/constants";
 
 export default class PolygonAnnotation extends Annotation {
   constructor(annotationId, labelId, imageId, polygon, properties = {}) {
@@ -12,5 +14,15 @@ export default class PolygonAnnotation extends Annotation {
       ...this.polygon,
       ...newPolygon,
     }
+  }
+  async applyUpdateAnnotation() {
+    return await RestConnector.post('annotations', {
+      id: this.id,
+      annotation_type: ENUM_ANNOTATION_TYPE.POLYGON,
+      label_id: this.labelId,
+      image_id: this.imageId,
+      properties: this.properties,
+      data: this.polygon,
+    })
   }
 }

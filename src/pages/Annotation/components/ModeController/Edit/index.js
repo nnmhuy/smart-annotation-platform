@@ -58,17 +58,14 @@ const Edit = (props) => {
   const activeEditHandlerElement = find(mapAnnotationClassToEditHandler, ({ annotationClass }) => (editingAnnotation instanceof annotationClass))
   const ActiveEditHandler = activeEditHandlerElement ? activeEditHandlerElement.handler : null
 
-  return (ActiveEditHandler ? 
-    [
-      <ActiveEditHandler
-        key='edit-handler'
-        useStore={useStore}
-        eventCenter={eventCenter}
-      />,
-      <Cursor key='cursor-handler' {...props}/>
-    ]
-    : null
-  )
+  return ([
+    ActiveEditHandler  && <ActiveEditHandler
+      key='edit-handler'
+      useStore={useStore}
+      eventCenter={eventCenter}
+    />,
+    <Cursor key='cursor-handler' {...props}/>
+  ])
 }
 
 export default Edit

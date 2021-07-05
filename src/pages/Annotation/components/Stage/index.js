@@ -112,6 +112,7 @@ const RenderComponent = (props) => {
   }
 
   const isPredicting = useStore(state => state.isPredicting)
+  const isLoading = useStore(state => state.isLoading)
   const imageId = useStore(state => state.imageId)
   const annotations = useStore(state => state.annotations)
   const drawingAnnotation = useStore(state => state.drawingAnnotation)
@@ -133,7 +134,6 @@ const RenderComponent = (props) => {
 
   // filter out hidden annotations
   renderingAnnotations = filter(renderingAnnotations, (ann) => !ann.properties.isHidden)
-
 
   return (
     <div className={classes.stageContainer} ref={stageContainerRef}>
@@ -189,7 +189,7 @@ const RenderComponent = (props) => {
           />
         </Layer>
       </Stage>
-      <Loading isLoading={isPredicting} />
+      <Loading isLoading={{ ...isLoading, isPredicting}} />
     </div>
   )
 }

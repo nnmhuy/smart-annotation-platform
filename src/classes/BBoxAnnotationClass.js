@@ -1,6 +1,7 @@
 import Annotation from "./AnnotationClass";
 
-import { ANNOTATION_TYPE } from '../constants/constants'
+import RestConnector from '../connectors/RestConnector'
+import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from '../constants/constants'
 
 export default class BBoxAnnotation extends Annotation {
   constructor(annotationId, labelId = '', imageId = '', bBox, properties = {}) {
@@ -27,5 +28,15 @@ export default class BBoxAnnotation extends Annotation {
       },
       data.properties
     )
+  }
+  async applyUpdateAnnotation() {
+    return await RestConnector.post('annotations', {
+      id: this.id,
+      annotation_type: ENUM_ANNOTATION_TYPE.BBOX,
+      label_id: this.labelId,
+      image_id: this.imageId,
+      properties: this.properties,
+      data: this.bBox,
+    })
   }
 }

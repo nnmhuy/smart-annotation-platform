@@ -1,3 +1,5 @@
+import RestConnector from '../connectors/RestConnector'
+
 export default class Annotation {
   constructor(annotationId, labelId, imageId, properties) {
     this.id = annotationId
@@ -16,5 +18,11 @@ export default class Annotation {
       ...this.properties,
       ...newProperties,
     }
+  }
+  async applyUpdateAnnotation() {
+    // abstract function to be implemented in child classes
+  }
+  async applyDeleteAnnotation() {    
+    RestConnector.delete(`annotations?id=${this.id}`)
   }
 }

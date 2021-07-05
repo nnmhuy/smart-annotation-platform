@@ -15,10 +15,10 @@ import { mockupLabels, mockupImageList } from './mockup'
 
 const useAnnotationStore = create((set, get) => ({
   datasetId: null,
-  isLoadingDatasetData: false,
+  isLoading: {},
   stageRef: null,
   stageSize: { width: 0, height: 0 },
-  activeMode: MODES.DRAW_POLYGON.name,
+  activeMode: MODES.CURSOR.name,
 
   setStageRef: (newStageRef) => set({ stageRef: newStageRef }),
   setStageSize: (newStageSize) => set({ stageSize: newStageSize }),
@@ -76,13 +76,19 @@ const useAnnotationStore = create((set, get) => ({
   setIsPredicting: (status) => set({ isPredicting: status }),
   getAnnotations: () => get().annotations,
   setAnnotations: (newAnnotations) => set({ annotations: newAnnotations }),
-  appendAnnotation: (newAnnotation) => set(state => ({ annotations: [...state.annotations, newAnnotation] })),
+  appendAnnotation: (newAnnotation) => {
+    newAnnotation.applyUpdateAnnotation()
+    set(state => ({ annotations: [...state.annotations, newAnnotation] }))
+  },
   updateCurrentMousePosition: () => set(state => ({ currentMousePosition: getPointerPosition(state.stageRef) })),
   getCurrentMousePosition: () => get().currentMousePosition,
   setCurrentMousePosition: (newMousePosition) => set({ currentMousePosition: newMousePosition }),
   getDrawingAnnotation: () => get().drawingAnnotation,
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
   deleteAnnotation: (deleteAnnotationId) => {
+    const annotation = find(get().annotations, { id: deleteAnnotationId })
+    annotation.applyDeleteAnnotation()
+
     set(state => ({
       annotations: filter(state.annotations, ann => ann.id !== deleteAnnotationId)
     }))
@@ -115,7 +121,7 @@ const useAnnotationStore = create((set, get) => ({
     })
   })),
 
-  labels: mockupLabels,
+  labels: [],
   setEditingAnnotationLabelId: (newLabelId) => set(state => ({
     annotations: state.annotations.map(annotation => {
       if (annotation.id !== state.editingAnnotationId) {
@@ -145,7 +151,7 @@ const useAnnotationStore = create((set, get) => ({
 
 
   getDatasetData: async (projectId, datasetId) => {
-    set({ isLoadingDatasetData: true })
+    set(state => ({ isLoading: { ...state.isLoading, isLoadingDatasetData: true }}))
     // load images
     const imageResponse = await RestConnector.get(`images?dataset_id=${datasetId}`)
     const imagesObj = imageResponse.data.map(image => ImageClass.constructorFromServerData(image))
@@ -161,12 +167,15 @@ const useAnnotationStore = create((set, get) => ({
       return BBoxAnnotationClass.constructorFromServerData(ann)
     })
 
-    set({
-      isLoadingDatasetData: false,
+    set(state => ({
+      isLoading: {
+        ...state.isLoading,
+        isLoadingDatasetData: false
+      },
       // imageList: imagesObj,
       labels: labelsObj,
       annotations: annotationsObj,
-    })
+    }))
   }
 }))
 
