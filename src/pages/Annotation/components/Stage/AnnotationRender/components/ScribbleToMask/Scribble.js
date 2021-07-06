@@ -1,8 +1,8 @@
 import React from 'react'
 import { Line } from 'react-konva'
 
-import pointArrayToFlattenPointArray from '../../../../utils/pointArrayToFlattenPointArray'
-import { SCRIBBLE_TO_MASK_CONSTANTS, COLOR_BY_SCRIBBLE_TYPE } from '../../../../constants'
+import pointArrayToFlattenPointArray from '../../../../../utils/pointArrayToFlattenPointArray'
+import { SCRIBBLE_TO_MASK_CONSTANTS, COLOR_BY_SCRIBBLE_TYPE } from '../../../../../constants'
 
 
 // TODO: may use this to enhance transparent experience https://konvajs.org/docs/sandbox/Transparent_Group.html

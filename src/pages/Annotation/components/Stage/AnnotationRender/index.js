@@ -7,7 +7,7 @@ import ScribbleToMaskAnnotation from '../../../../../classes/ScribbleToMaskAnnot
 
 import BBox from './components/BBox/BBox'
 import Polygon from './components/Polygon/Polygon'
-import ScribbleToMask from './components/ScribbleToMask/Mask'
+import ScribbleToMask from './components/ScribbleToMask/ScribbleAnnotation'
 
 
 const mapAnnotationClassToRender = [

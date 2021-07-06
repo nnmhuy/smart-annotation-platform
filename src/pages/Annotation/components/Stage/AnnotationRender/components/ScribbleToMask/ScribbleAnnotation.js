@@ -5,9 +5,9 @@ import { get } from 'lodash'
 import Scribble from './Scribble'
 import Mask from './Mask'
 
-import { EVENT_TYPES } from '../../../../constants'
-import thresholdMask from '../../../../utils/thresholdMask'
-import hexColorToRGB from '../../../../../../utils/hexColorToRGB'
+import { EVENT_TYPES } from '../../../../../constants'
+import thresholdMask from '../../../../../utils/thresholdMask'
+import hexColorToRGB from '../../../../../../../utils/hexColorToRGB'
 
 const MaskAnnotation = (props) => {
   const { annotation , useStore, eventCenter } = props

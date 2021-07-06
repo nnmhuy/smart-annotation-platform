@@ -5,9 +5,11 @@ import { get, cloneDeep } from 'lodash'
 
 import ScribbleToMaskAnnotationClass from '../../../../../classes/ScribbleToMaskAnnotationClass'
 
+import Cursor from '../Cursor/index'
 import thresholdMask from '../../../utils/thresholdMask'
 import base64ToBlob from '../../../../../utils/base64ToBlob'
 import { EVENT_TYPES } from '../../../constants';
+import hexColorToRGB from '../../../../../utils/hexColorToRGB'
 
 const uidgen = new UIDGenerator(96, UIDGenerator.BASE16);
 
@@ -175,10 +177,12 @@ const ScribbleToMask = (props) => {
       let threshold = get(finishedAnnotation, 'properties.threshold', 0)
 
       const thresholdOriginalBase64 = await thresholdMask(originalBase64, threshold, {
+        color: hexColorToRGB('#FFFFFF'),
         canvasWidth: image.originalWidth,
         canvasHeight: image.originalHeight,
       })
       const thresholdBase64 = await thresholdMask(base64, threshold, {
+        color: hexColorToRGB('#FFFFFF'),
         canvasWidth: image.width,
         canvasHeight: image.height,
       })
@@ -236,7 +240,7 @@ const ScribbleToMask = (props) => {
   }, [])
 
   return (
-    null
+    <Cursor {...props } />
   )
 }
 
