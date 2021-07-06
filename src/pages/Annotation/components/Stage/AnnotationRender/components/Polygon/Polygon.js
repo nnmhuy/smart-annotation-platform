@@ -13,7 +13,7 @@ const Polygon = (props) => {
     annotation, useStore, eventCenter,
   } = props
 
-  const { id } = annotation
+  const { id, polygon, properties } = annotation
   const [isDraggingPolygon, setIsDraggingPolygon] = React.useState(false)
   const [draggingPointKey, setDraggingPointKey] = React.useState(null)
   const [draggingMidPoint, setDraggingMidPoint] = React.useState(null)
@@ -28,7 +28,7 @@ const Polygon = (props) => {
 
   const isDrawing = (drawingAnnotation && drawingAnnotation.id === id)
   const isSelected = (id === editingAnnotationId)
-  const isCutting = annotation.polygon.isCutting
+  const isCutting = polygon.isCutting
 
   const handleSelectPolygon = (e) => {
     eventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({ e, id })
@@ -52,7 +52,7 @@ const Polygon = (props) => {
     const dX = event.target.x()
     const dY = event.target.y()
 
-    const polys = cloneDeep(annotation.polygon.polys)
+    const polys = cloneDeep(polygon.polys)
 
     eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
       polys: polys.map(poly => poly.map(p => [p[0] + dX, p[1] + dY])),
@@ -79,7 +79,7 @@ const Polygon = (props) => {
     }
     const pos = [event.target.attrs.x, event.target.attrs.y];
 
-    const newPolys = cloneDeep(annotation.polygon.polys).map((poly, index) => {
+    const newPolys = cloneDeep(polygon.polys).map((poly, index) => {
       if (index !== polyIndex) {
         return poly
       } else {
@@ -132,7 +132,7 @@ const Polygon = (props) => {
   const handleEndDraggingMidPoint = (event, polyIndex, pointIndex) => {
     const position = [event.target.attrs.x, event.target.attrs.y];
 
-    const newPolys = getNewPolysAfterDraggingMidPoint(annotation.polygon.polys, {
+    const newPolys = getNewPolysAfterDraggingMidPoint(polygon.polys, {
       polyIndex,
       pointIndex,
       position
@@ -153,7 +153,7 @@ const Polygon = (props) => {
 
   const handleDoubleClickDeletePoint = (event, polyIndex, pointIndex) => {
     event.cancelBubble = true
-    let newPolys = cloneDeep(annotation.polygon.polys).map((poly, index) => {
+    let newPolys = cloneDeep(polygon.polys).map((poly, index) => {
       if (index !== polyIndex) {
         return poly
       } else {
@@ -182,14 +182,14 @@ const Polygon = (props) => {
       <PolygonPath
         useStore={useStore}
         eventCenter={eventCenter}
-        id={annotation.id}
+        id={id}
         polygon={{
-          ...annotation.polygon,
+          ...polygon,
           polys: draggingMidPoint ?
-            getNewPolysAfterDraggingMidPoint(annotation.polygon.polys, draggingMidPoint)
-            : annotation.polygon.polys
+            getNewPolysAfterDraggingMidPoint(polygon.polys, draggingMidPoint)
+            : polygon.polys
         }}
-        properties={annotation.properties}
+        properties={properties}
         scale={scale}
         isSelected={isSelected}
         isCutting={isCutting}
@@ -206,8 +206,8 @@ const Polygon = (props) => {
           isDrawing={isDrawing}
           isSelected={isSelected}
           isCutting={isCutting}
-          id={annotation.id}
-          polygon={annotation.polygon}
+          id={id}
+          polygon={polygon}
           scale={scale}
           handleStartDraggingMainPoint={handleStartDraggingMainPoint}
           handleMoveDraggingMainPoint={handleMoveDraggingMainPoint}
@@ -220,8 +220,8 @@ const Polygon = (props) => {
         <PolygonMidPoints
           useStore={useStore}
           eventCenter={eventCenter}
-          id={annotation.id}
-          polygon={annotation.polygon}
+          id={id}
+          polygon={polygon}
           scale={scale}
           isSelected={isSelected}
           handleStartDraggingMidPoint={handleStartDraggingMidPoint}

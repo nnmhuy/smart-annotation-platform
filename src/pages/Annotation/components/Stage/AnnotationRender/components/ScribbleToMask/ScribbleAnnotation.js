@@ -28,8 +28,6 @@ const MaskAnnotation = (props) => {
   let threshold = get(properties, 'threshold', 0)
   let color = get(properties, 'fill', '')
 
-  console.log(color)
-  console.log(threshold)
   React.useEffect(() => {
     async function getThresholdImage() {
       if (image && maskImage) {

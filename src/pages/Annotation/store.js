@@ -1,5 +1,5 @@
 import create from 'zustand'
-import { cloneDeep, find, filter } from 'lodash'
+import { cloneDeep, find, filter, remove } from 'lodash'
 
 import RestConnector from '../../connectors/RestConnector'
 import { MODES, STAGE_PADDING, DEFAULT_TOOL_CONFIG } from './constants'
@@ -97,10 +97,28 @@ const useAnnotationStore = create((set, get) => ({
   editingAnnotationId: null,
   getEditingAnnotationId: () => get().editingAnnotationId,
   getEditingAnnotation: () => find(get().annotations, { id: get().editingAnnotationId }),
-  setEditingAnnotationId: (newEditingAnnotationId) => set({ editingAnnotationId: newEditingAnnotationId }),
-  setEditingAnnotation: (newEditingAnnotationData, commitAnnotation) => set(state => ({
-    annotations: state.annotations.map(annotation => {
-      if (annotation.id !== state.editingAnnotationId) {
+  setEditingAnnotationId: (newEditingAnnotationId) => {
+    // Put the editing annotation to front of rendering layer
+    let annotations = get().annotations
+    let editingAnnotation = find(annotations, { id: newEditingAnnotationId })
+    if (newEditingAnnotationId) {
+      remove(annotations, { id: newEditingAnnotationId })
+      annotations = [...annotations, editingAnnotation]
+
+      set({
+        editingAnnotationId: newEditingAnnotationId,
+        annotations
+      })
+    } else {
+
+      set({ editingAnnotationId: newEditingAnnotationId, })
+    }
+  },
+  setEditingAnnotation: (newEditingAnnotationData, commitAnnotation) => {
+    const editingAnnotationId = get().editingAnnotationId
+
+    const annotations = get().annotations.map(annotation => {
+      if (annotation.id !== editingAnnotationId) {
         return annotation
       } else {
         let newAnnotation = cloneDeep(annotation)
@@ -111,9 +129,14 @@ const useAnnotationStore = create((set, get) => ({
         return newAnnotation
       }
     })
-  })),
-  setAnnotationProperties: (id, newProperties) => set(state => ({
-    annotations: state.annotations.map(annotation => {
+
+    set({ annotations })
+  },
+  setAnnotationProperties: (id, newProperties) => {
+    const annotations = get().annotations.map(annotation => {
+      if (!annotation) {
+        debugger
+      }
       if (annotation.id !== id) {
         return annotation
       } else {
@@ -122,7 +145,9 @@ const useAnnotationStore = create((set, get) => ({
         return newAnnotation
       }
     })
-  })),
+   
+    set({ annotations: annotations })
+  },
 
   labels: [],
   setEditingAnnotationLabelId: (newLabelId) => set(state => ({
@@ -155,7 +180,7 @@ const useAnnotationStore = create((set, get) => ({
 
 
   getDatasetData: async (projectId, datasetId) => {
-    set(state => ({ isLoading: { ...state.isLoading, isLoadingDatasetData: true }}))
+    set(state => ({ isLoading: { ...state.isLoading, isLoadingDatasetData: true } }))
     // TODO: request in parallel
 
     // load images
