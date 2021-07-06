@@ -9,6 +9,8 @@ const PolygonPath = (props) => {
     polygon,
     properties,
     scale,
+    imageWidth,
+    imageHeight,
 
     isSelected,
     isCutting,
@@ -24,7 +26,7 @@ const PolygonPath = (props) => {
 
   const pathRef = React.useRef(null)
 
-  const pathData = polysToSvgPathData(polys)
+  const pathData = polysToSvgPathData(polys, imageWidth, imageHeight)
   return (
     <Path
       ref={pathRef}

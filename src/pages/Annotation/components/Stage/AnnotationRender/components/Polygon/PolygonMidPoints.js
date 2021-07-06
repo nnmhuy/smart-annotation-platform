@@ -6,6 +6,8 @@ const PolygonMidPoints = (props) => {
     id,
     polygon,
     scale,
+    imageWidth,
+    imageHeight,
     
     handleStartDraggingMidPoint,
     handleMoveDraggingMidPoint,
@@ -29,8 +31,8 @@ const PolygonMidPoints = (props) => {
   return (polysMidPoints.map((midPoints, polyIndex) => {
     return (
       midPoints.map((point, pointIndex) => {
-        const x = point[0] + dX;
-        const y = point[1] + dY;
+        const x = (point[0] + dX) * imageWidth;
+        const y = (point[1] + dY) * imageHeight;
         return (
           <Circle
             key={`poly-midpoint-${id}-${polyIndex}-${pointIndex}`}

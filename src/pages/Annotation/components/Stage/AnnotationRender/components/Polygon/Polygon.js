@@ -1,12 +1,12 @@
 import React from 'react'
 import { Group } from 'react-konva'
+import { get, cloneDeep } from 'lodash'
 
 import PolygonPath from './PolygonPath'
 import PolygonMainPoints from './PolygonMainPoints'
 import PolygonMidPoints from './PolygonMidPoints'
 
 import { EVENT_TYPES } from '../../../../../constants'
-import { cloneDeep } from 'lodash'
 
 const Polygon = (props) => {
   const {
@@ -21,6 +21,9 @@ const Polygon = (props) => {
   const stage = useStore(state => state.stageRef)
   const drawingAnnotation = useStore(state => state.drawingAnnotation)
   const editingAnnotationId = useStore(state => state.editingAnnotationId)
+  const image = useStore(state => state.image)
+  const imageWidth = get(image, 'width', 1)
+  const imageHeight = get(image, 'height', 1)
 
   const groupRef = React.useRef(null)
   const scale = stage ? stage.scaleX() : 1
@@ -39,8 +42,8 @@ const Polygon = (props) => {
   }
 
   const onDragPolygonMove = event => {
-    const dX = event.target.x()
-    const dY = event.target.y()
+    const dX = event.target.x() / imageWidth
+    const dY = event.target.y() / imageHeight
 
     eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
       x: dX,
@@ -49,8 +52,8 @@ const Polygon = (props) => {
   }
 
   const onDragPolygonEnd = (event) => {
-    const dX = event.target.x()
-    const dY = event.target.y()
+    const dX = event.target.x() / imageWidth
+    const dY = event.target.y() / imageHeight
 
     const polys = cloneDeep(polygon.polys)
 
@@ -77,7 +80,7 @@ const Polygon = (props) => {
     if (key !== draggingPointKey) { // prevent dragging 2 near points
       return
     }
-    const pos = [event.target.attrs.x, event.target.attrs.y];
+    const pos = [event.target.attrs.x / imageWidth, event.target.attrs.y / imageHeight];
 
     const newPolys = cloneDeep(polygon.polys).map((poly, index) => {
       if (index !== polyIndex) {
@@ -123,14 +126,14 @@ const Polygon = (props) => {
     }
 
     setDraggingMidPoint({
-      position: [event.target.attrs.x, event.target.attrs.y],
+      position: [event.target.attrs.x / imageWidth, event.target.attrs.y / imageHeight],
       polyIndex,
       pointIndex,
     })
   }
 
   const handleEndDraggingMidPoint = (event, polyIndex, pointIndex) => {
-    const position = [event.target.attrs.x, event.target.attrs.y];
+    const position = [event.target.attrs.x / imageWidth, event.target.attrs.y / imageHeight];
 
     const newPolys = getNewPolysAfterDraggingMidPoint(polygon.polys, {
       polyIndex,
@@ -191,6 +194,8 @@ const Polygon = (props) => {
         }}
         properties={properties}
         scale={scale}
+        imageWidth={imageWidth}
+        imageHeight={imageHeight}
         isSelected={isSelected}
         isCutting={isCutting}
         handleSelectPolygon={handleSelectPolygon}
@@ -209,6 +214,8 @@ const Polygon = (props) => {
           id={id}
           polygon={polygon}
           scale={scale}
+          imageWidth={imageWidth}
+          imageHeight={imageHeight}
           handleStartDraggingMainPoint={handleStartDraggingMainPoint}
           handleMoveDraggingMainPoint={handleMoveDraggingMainPoint}
           handleEndDraggingMainPoint={handleEndDraggingMainPoint}
@@ -223,6 +230,8 @@ const Polygon = (props) => {
           id={id}
           polygon={polygon}
           scale={scale}
+          imageWidth={imageWidth}
+          imageHeight={imageHeight}
           isSelected={isSelected}
           handleStartDraggingMidPoint={handleStartDraggingMidPoint}
           handleMoveDraggingMidPoint={handleMoveDraggingMidPoint}

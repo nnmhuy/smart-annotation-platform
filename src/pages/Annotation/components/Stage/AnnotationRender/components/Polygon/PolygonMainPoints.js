@@ -9,6 +9,8 @@ const PolygonMainPoints = (props) => {
     eventCenter,
     id,
     polygon,
+    imageWidth,
+    imageHeight,
     isDrawing,
     isSelected,
     isCutting,
@@ -40,8 +42,8 @@ const PolygonMainPoints = (props) => {
     const isActivePoly = (isDrawing && polyIndex === 0) || (isCutting && polyIndex === polys.length - 1)
 
     return (mainPoints.map((point, pointIndex) => {
-      const x = point[0] + dX;
-      const y = point[1] + dY;
+      const x = (point[0] + dX) * imageWidth;
+      const y = (point[1] + dY) * imageHeight;
       const startPointAttr =
         (pointIndex === 0 && isActivePoly)
           ? {
