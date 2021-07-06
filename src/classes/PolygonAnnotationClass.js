@@ -9,6 +9,9 @@ export default class PolygonAnnotation extends Annotation {
     this.type = ANNOTATION_TYPE.POLYGON
     this.polygon = polygon
   }
+  /**
+   * polys: array of polygon
+   */
   set updateData(newPolygon) {
     this.polygon = {
       ...this.polygon,

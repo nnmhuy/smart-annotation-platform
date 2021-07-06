@@ -13,6 +13,7 @@ const DrawBBox = (props) => {
   const { useStore, eventCenter } = props
 
   const getImageId = useStore(state => state.getImageId)
+  const getImage = useStore(state => state.image)
   const image = useStore(state => state.image)
   const appendAnnotation = useStore(state => state.appendAnnotation)
   const getDrawingAnnotation = useStore(state => state.getDrawingAnnotation)
@@ -20,11 +21,11 @@ const DrawBBox = (props) => {
   const updateCurrentMousePosition = useStore(state => state.updateCurrentMousePosition)
   const getCurrentMousePosition = useStore(state => state.getCurrentMousePosition)
 
-  const imageWidth = get(image, 'width', 1)
-  const imageHeight = get(image, 'height', 1)
-
   const handleClickDrawRectangle = () => {
     const imageId = getImageId()
+    const image = getImage()
+    const imageWidth = get(image, 'width', 1)
+    const imageHeight = get(image, 'height', 1)
     const currentMousePosition = getCurrentMousePosition()
     const drawingAnnotation = getDrawingAnnotation()
 
@@ -41,6 +42,9 @@ const DrawBBox = (props) => {
   }
 
   const finishDrawRectangle = () => {
+    const image = getImage()
+    const imageWidth = get(image, 'width', 1)
+    const imageHeight = get(image, 'height', 1)
     const currentMousePosition = getCurrentMousePosition()
     const drawingAnnotation = getDrawingAnnotation()
 
@@ -63,6 +67,9 @@ const DrawBBox = (props) => {
 
 
   const handleDragDrawRectangle = () => {
+    const image = getImage()
+    const imageWidth = get(image, 'width', 1)
+    const imageHeight = get(image, 'height', 1)
     const currentMousePosition = getCurrentMousePosition()
     const drawingAnnotation = getDrawingAnnotation()
 

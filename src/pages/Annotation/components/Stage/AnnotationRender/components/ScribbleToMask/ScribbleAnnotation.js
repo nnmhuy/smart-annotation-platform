@@ -16,22 +16,21 @@ const MaskAnnotation = (props) => {
 
   const [displayMask, setDisplayMask] = React.useState(null)
 
-  const image = useStore(state => state.image)
   const editingAnnotationId = useStore(state => state.editingAnnotationId)
+  const image = useStore(state => state.image)
 
   const isSelected = (id === editingAnnotationId)
   
   const scribbles = maskData.scribbles
 
   const mask = maskData.mask
-  let maskImage = get(mask, 'base64', null)
   let threshold = get(properties, 'threshold', 0)
   let color = get(properties, 'fill', '')
 
   React.useEffect(() => {
     async function getThresholdImage() {
-      if (image && maskImage) {
-        const thresholdedMask = await thresholdMask(maskImage, threshold, {
+      if (image && mask) {
+        const thresholdedMask = await thresholdMask(mask, threshold, {
           color: hexColorToRGB(color),
           canvasWidth: image.width,
           canvasHeight: image.height
@@ -42,7 +41,7 @@ const MaskAnnotation = (props) => {
       }
     }
     getThresholdImage();
-  }, [maskImage, image, threshold, color])
+  }, [mask, image, threshold, color])
 
 
   const handleSelectMask = (e) => {
@@ -60,12 +59,20 @@ const MaskAnnotation = (props) => {
     <Group
       id={id}
     >
-      {scribbles.map((scribble, index) => <Scribble key={`scribble-${id}-${index}`} scribble={scribble}/>)}
+      {scribbles.map((scribble, index) => 
+        <Scribble 
+          key={`scribble-${id}-${index}`} scribble={scribble}
+          imageWidth={image.width}
+          imageHeight={image.height}
+        />
+        )}
       <Mask
         isSelected={isSelected}
         mask={displayMask}
         handleSelectMask={handleSelectMask}
         handleContextMenu={handleContextMenu}
+        imageWidth={image.width}
+        imageHeight={image.height}
       />
     </Group>
   )

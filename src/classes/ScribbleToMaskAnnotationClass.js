@@ -11,7 +11,9 @@ export default class ScribbleToMaskAnnotationClass extends Annotation {
     this.maskData = maskData
   }
 
-
+  /**
+   * mask: base64 of mask
+   */
   set updateData(newData) {
     this.maskData = {
       ...this.maskData,
@@ -28,7 +30,7 @@ export default class ScribbleToMaskAnnotationClass extends Annotation {
         scribbles: [],
         mask: {
           // TODO: load mask image from cloud, convert to base64
-          originalBase64: get(data, 'mask', '')
+          base64: get(data, 'mask', '')
         }
       },
       data.properties

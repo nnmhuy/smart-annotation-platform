@@ -9,6 +9,10 @@ export default class BBoxAnnotation extends Annotation {
     this.type = ANNOTATION_TYPE.BBOX
     this.bBox = bBox
   }
+  /**
+   * x, y
+   * width, height
+   */
   set updateData(data) {
     this.bBox = {
       ...this.bBox,

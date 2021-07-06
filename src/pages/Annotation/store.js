@@ -47,11 +47,16 @@ const useAnnotationStore = create((set, get) => ({
     const stageSize = get().stageSize
 
     const data = imageList.find(data => data.id === newImageId)
+    let imageBlob = null
     const newImage = await loadImageFromURL(data.imageURL)
-      .then((imageData) => resizeImage(imageData, {
-        maxWidth: stageSize.width - STAGE_PADDING,
-        maxHeight: stageSize.height - STAGE_PADDING,
-      }))
+      .then(({ blob, base64 }) => {
+        imageBlob = blob
+        return resizeImage(base64, {
+          maxWidth: stageSize.width - STAGE_PADDING,
+          maxHeight: stageSize.height - STAGE_PADDING,
+        })
+      })
+
 
     stage.position({
       x: (stageSize.width - newImage.width) / 2,
@@ -61,7 +66,10 @@ const useAnnotationStore = create((set, get) => ({
 
     set({
       imageId: newImageId,
-      image: newImage,
+      image: {
+        blob: imageBlob,
+        ...newImage,
+      },
       drawingAnnotation: null,
       editingAnnotationId: null,
     })
@@ -145,7 +153,7 @@ const useAnnotationStore = create((set, get) => ({
         return newAnnotation
       }
     })
-   
+
     set({ annotations: annotations })
   },
 

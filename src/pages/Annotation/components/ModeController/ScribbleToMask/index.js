@@ -7,7 +7,6 @@ import ScribbleToMaskAnnotationClass from '../../../../../classes/ScribbleToMask
 
 import Cursor from '../Cursor/index'
 import thresholdMask from '../../../utils/thresholdMask'
-import base64ToBlob from '../../../../../utils/base64ToBlob'
 import { EVENT_TYPES } from '../../../constants';
 import hexColorToRGB from '../../../../../utils/hexColorToRGB'
 
@@ -35,6 +34,9 @@ const ScribbleToMask = (props) => {
   
   const handleStartDrawByBrush = () => {
     const imageId = getImageId()
+    const image = getImage()
+    const imageWidth = get(image, 'width', 1)
+    const imageHeight = get(image, 'height', 1)
     const drawingAnnotation = getDrawingAnnotation()
     const currentMousePosition = getCurrentMousePosition()
     const toolConfig = getToolConfig()
@@ -42,7 +44,7 @@ const ScribbleToMask = (props) => {
     if (drawingAnnotation === null) {
       setDrawingAnnotation(new ScribbleToMaskAnnotationClass(uidgen.generateSync(), '', imageId, {
         scribbles: [{
-          points: [[currentMousePosition.x, currentMousePosition.y]],
+          points: [[currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]],
           type: toolConfig.scribbleType,
           strokeWidth: toolConfig.scribbleSize,
         }],
@@ -55,7 +57,7 @@ const ScribbleToMask = (props) => {
     } else {
       const newDrawingAnnotation = cloneDeep(drawingAnnotation)
       newDrawingAnnotation.maskData.scribbles.push({
-        points: [[currentMousePosition.x, currentMousePosition.y]],
+        points: [[currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]],
         type: toolConfig.scribbleType,
         strokeWidth: toolConfig.scribbleSize,
       })
@@ -65,6 +67,9 @@ const ScribbleToMask = (props) => {
   }
 
   const handleDrawByBrush = () => {
+    const image = getImage()
+    const imageWidth = get(image, 'width', 1)
+    const imageHeight = get(image, 'height', 1)
     const drawingAnnotation = getDrawingAnnotation()
     const currentMousePosition = getCurrentMousePosition()
     const isDrawingScribble = getIsDrawingScribble()
@@ -73,7 +78,7 @@ const ScribbleToMask = (props) => {
       const newDrawingAnnotation = cloneDeep(drawingAnnotation)
       let scribbles = newDrawingAnnotation.maskData.scribbles
       let drawingScribble = scribbles.pop()
-      drawingScribble.points.push([currentMousePosition.x, currentMousePosition.y])
+      drawingScribble.points.push([currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight])
       newDrawingAnnotation.updateData = {
         scribbles: [...scribbles, drawingScribble]
       }
@@ -131,15 +136,11 @@ const ScribbleToMask = (props) => {
     const drawingAnnotation = getDrawingAnnotation()
     const toolConfig = getToolConfig()
 
-    const { originalBase64, base64, blob } = data
+    const { base64 } = data
 
     const newDrawingAnnotation = cloneDeep(drawingAnnotation)
     newDrawingAnnotation.updateData = {
-      mask: {
-        base64,
-        originalBase64,
-        blob,
-      }
+      mask: base64
     }
     newDrawingAnnotation.updateProperties = {
       threshold: toolConfig.threshold
@@ -172,29 +173,17 @@ const ScribbleToMask = (props) => {
       const finishedAnnotation = cloneDeep(drawingAnnotation)
 
       const mask = finishedAnnotation.maskData.mask
-      let originalBase64 = get(mask, 'originalBase64', null)
-      let base64 = get(mask, 'base64', null)
       let threshold = get(finishedAnnotation, 'properties.threshold', 0)
 
-      const thresholdOriginalBase64 = await thresholdMask(originalBase64, threshold, {
+      const thresholdedMask = await thresholdMask(mask, threshold, {
         color: hexColorToRGB('#FFFFFF'),
         canvasWidth: image.originalWidth,
         canvasHeight: image.originalHeight,
       })
-      const thresholdBase64 = await thresholdMask(base64, threshold, {
-        color: hexColorToRGB('#FFFFFF'),
-        canvasWidth: image.width,
-        canvasHeight: image.height,
-      })
-      const thresholdBlob = await base64ToBlob(thresholdOriginalBase64)
 
       finishedAnnotation.updateData = {
         scribbles: [],
-        mask: {
-          originalBase64: thresholdOriginalBase64,
-          base64: thresholdBase64,
-          blob: thresholdBlob
-        }
+        mask: thresholdedMask
       }
     
       appendAnnotation(finishedAnnotation)
