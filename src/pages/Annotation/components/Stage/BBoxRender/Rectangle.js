@@ -68,7 +68,7 @@ const Rectangle = (props) => {
         opacity={isSelected ? properties.opacity + 0.2 : properties.opacity}
         draggable={isSelected}
         onDragEnd={(e) => {
-          eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
+          eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
             x: e.target.x(),
             y: e.target.y(),
           })
@@ -85,7 +85,7 @@ const Rectangle = (props) => {
           // we will reset it back
           node.scaleX(1);
           node.scaleY(1);
-          eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
+          eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
             x: node.x(),
             y: node.y(),
             // set minimal value

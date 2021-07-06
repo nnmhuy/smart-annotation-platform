@@ -118,6 +118,7 @@ const RenderComponent = (props) => {
   const drawingAnnotation = useStore(state => state.drawingAnnotation)
   const labels = useStore(state => state.labels)
 
+
   let renderingAnnotations = filter([...annotations, drawingAnnotation], { imageId }).map((ann) => {
     if (ann === null) {
       return null

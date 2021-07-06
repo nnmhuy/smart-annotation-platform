@@ -10,12 +10,31 @@ export default class ScribbleToMaskAnnotationClass extends Annotation {
     this.type = ANNOTATION_TYPE.MASK
     this.maskData = maskData
   }
+
+
   set updateData(newData) {
     this.maskData = {
       ...this.maskData,
       ...newData,
     }
   }
+
+  static constructorFromServerData(data) {
+    return new ScribbleToMaskAnnotationClass(
+      data.id,
+      data.label,
+      data.image,
+      {
+        scribbles: [],
+        mask: {
+          // TODO: load mask image from cloud, convert to base64
+          originalBase64: get(data, 'mask', '')
+        }
+      },
+      data.properties
+    )
+  }
+
   async applyUpdateAnnotation() {
     return await RestConnector.post('annotations', {
       id: this.id,
@@ -24,7 +43,7 @@ export default class ScribbleToMaskAnnotationClass extends Annotation {
       image_id: this.imageId,
       properties: this.properties,
       data: {
-        // TODO: upload mask and get URL back first
+        // TODO: upload mask (from base64 or blob field) and get URL back first
         mask: get(this.maskData, 'mask.originalBase64', null)
       },
     })

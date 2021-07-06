@@ -22,7 +22,7 @@ export default class LabelClass {
       data.id,
       data.label,
       data.properties,
-      data.annotationProperties
+      data.annotation_properties
     )
   }
 }

@@ -54,7 +54,7 @@ const Polygon = (props) => {
 
     const polys = cloneDeep(polygon.polygon.polys)
 
-    eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
+    eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
       polys: polys.map(poly => poly.map(p => [p[0] + dX, p[1] + dY])),
       x: 0,
       y: 0
@@ -92,6 +92,7 @@ const Polygon = (props) => {
   }
 
   const handleEndDraggingMainPoint = (event) => {
+    eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({})
     setDraggingPointKey(null)
   }
 
@@ -137,7 +138,7 @@ const Polygon = (props) => {
       position
     })
 
-    eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
+    eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
       polys: newPolys,
     })
 
@@ -160,7 +161,7 @@ const Polygon = (props) => {
       }
     }).filter(poly => poly.length >= 3)
 
-    eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
+    eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
       polys: newPolys,
     })
   }

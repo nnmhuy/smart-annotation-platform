@@ -18,8 +18,8 @@ export default class BBoxAnnotation extends Annotation {
   static constructorFromServerData(data) {
     return new BBoxAnnotation(
       data.id,
-      data.label_id,
-      data.image_id,
+      data.label,
+      data.image,
       {
         x: data.x,
         y: data.y,

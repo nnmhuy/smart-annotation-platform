@@ -15,6 +15,20 @@ export default class PolygonAnnotation extends Annotation {
       ...newPolygon,
     }
   }
+  static constructorFromServerData(data) {
+    return new PolygonAnnotation(
+      data.id,
+      data.label,
+      data.image,
+      {
+        x: 0,
+        y: 0,
+        polys: data.polys
+      },
+      data.properties
+    )
+  }
+
   async applyUpdateAnnotation() {
     return await RestConnector.post('annotations', {
       id: this.id,
@@ -22,7 +36,9 @@ export default class PolygonAnnotation extends Annotation {
       label_id: this.labelId,
       image_id: this.imageId,
       properties: this.properties,
-      data: this.polygon,
+      data: {
+        polys: this.polygon.polys,
+      }
     })
   }
 }

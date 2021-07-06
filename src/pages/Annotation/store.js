@@ -10,6 +10,8 @@ import resizeImage from '../../utils/resizeImage'
 import LabelClass from '../../classes/LabelClass'
 import ImageClass from '../../classes/ImageClass'
 import BBoxAnnotationClass from '../../classes/BBoxAnnotationClass'
+import PolygonAnnotationClass from '../../classes/PolygonAnnotationClass'
+import ScribbleToMaskAnnotationClass from '../../classes/ScribbleToMaskAnnotationClass'
 
 import { mockupLabels, mockupImageList } from './mockup'
 
@@ -37,7 +39,8 @@ const useAnnotationStore = create((set, get) => ({
   annotations: [],
   imageId: null,
   image: null,
-  imageList: mockupImageList,
+  // imageList: mockupImageList,
+  imageList: [],
   selectedId: null,
   highlightId: null,
 
@@ -98,13 +101,16 @@ const useAnnotationStore = create((set, get) => ({
   getEditingAnnotationId: () => get().editingAnnotationId,
   getEditingAnnotation: () => find(get().annotations, { id: get().editingAnnotationId }),
   setEditingAnnotationId: (newEditingAnnotationId) => set({ editingAnnotationId: newEditingAnnotationId }),
-  setEditingAnnotation: (newEditingAnnotationData) => set(state => ({
+  setEditingAnnotation: (newEditingAnnotationData, commitAnnotation) => set(state => ({
     annotations: state.annotations.map(annotation => {
       if (annotation.id !== state.editingAnnotationId) {
         return annotation
       } else {
         let newAnnotation = cloneDeep(annotation)
         newAnnotation.updateData = newEditingAnnotationData
+        if (commitAnnotation) {
+          newAnnotation.applyUpdateAnnotation()
+        }
         return newAnnotation
       }
     })
@@ -121,6 +127,7 @@ const useAnnotationStore = create((set, get) => ({
     })
   })),
 
+  // labels: mockupLabels,
   labels: [],
   setEditingAnnotationLabelId: (newLabelId) => set(state => ({
     annotations: state.annotations.map(annotation => {
@@ -129,6 +136,7 @@ const useAnnotationStore = create((set, get) => ({
       } else {
         let newAnnotation = cloneDeep(annotation)
         newAnnotation.updateLabel = newLabelId
+        newAnnotation.applyUpdateAnnotation()
         return newAnnotation
       }
     })
@@ -152,6 +160,8 @@ const useAnnotationStore = create((set, get) => ({
 
   getDatasetData: async (projectId, datasetId) => {
     set(state => ({ isLoading: { ...state.isLoading, isLoadingDatasetData: true }}))
+    // TODO: request in parallel
+
     // load images
     const imageResponse = await RestConnector.get(`images?dataset_id=${datasetId}`)
     const imagesObj = imageResponse.data.map(image => ImageClass.constructorFromServerData(image))
@@ -164,7 +174,16 @@ const useAnnotationStore = create((set, get) => ({
     const annotationResponse = await RestConnector.get(`annotations?dataset_id=${datasetId}`)
 
     const annotationsObj = annotationResponse.data.map(ann => {
-      return BBoxAnnotationClass.constructorFromServerData(ann)
+      switch (ann._cls) {
+        case "Annotation.BBoxAnnotation":
+          return BBoxAnnotationClass.constructorFromServerData(ann)
+        case "Annotation.PolygonAnnotation":
+          return PolygonAnnotationClass.constructorFromServerData(ann)
+        case "Annotation.MaskAnnotation":
+          return ScribbleToMaskAnnotationClass.constructorFromServerData(ann)
+        default:
+          return {}
+      }
     })
 
     set(state => ({
@@ -172,7 +191,7 @@ const useAnnotationStore = create((set, get) => ({
         ...state.isLoading,
         isLoadingDatasetData: false
       },
-      // imageList: imagesObj,
+      imageList: imagesObj,
       labels: labelsObj,
       annotations: annotationsObj,
     }))
