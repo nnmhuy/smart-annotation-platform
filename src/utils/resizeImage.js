@@ -5,12 +5,15 @@ const resizeImage = (imgData, { maxWidth, maxHeight }) => new Promise((resolve, 
     let canvas = document.createElement('canvas'),
       width = image.width,
       height = image.height;
+    let scale = 1
 
     if ((width / height) > (maxWidth / maxHeight)) {
-      height *= maxWidth / width;
+      scale = maxWidth / width
+      height *= scale
       width = maxWidth;
     } else {
-      width *= maxHeight / height;
+      scale = maxHeight / height
+      width *= scale;
       height = maxHeight;
     }
     canvas.width = width;
@@ -23,7 +26,8 @@ const resizeImage = (imgData, { maxWidth, maxHeight }) => new Promise((resolve, 
       originalHeight: image.height,
       img: resizedImage,
       width,
-      height
+      height,
+      scale
     })
   }
   image.onerror = reject

@@ -1,6 +1,6 @@
 import React from 'react'
 import UIDGenerator from 'uid-generator'
-import { cloneDeep } from 'lodash'
+import { get, cloneDeep } from 'lodash'
 
 import Cursor from '../Cursor/index'
 import BBoxAnnotationClass from '../../../../../classes/BBoxAnnotationClass'
@@ -11,12 +11,17 @@ const uidgen = new UIDGenerator(96, UIDGenerator.BASE16);
 
 const DrawBBox = (props) => {
   const { useStore, eventCenter } = props
+
   const getImageId = useStore(state => state.getImageId)
+  const image = useStore(state => state.image)
   const appendAnnotation = useStore(state => state.appendAnnotation)
   const getDrawingAnnotation = useStore(state => state.getDrawingAnnotation)
   const setDrawingAnnotation = useStore(state => state.setDrawingAnnotation)
   const updateCurrentMousePosition = useStore(state => state.updateCurrentMousePosition)
   const getCurrentMousePosition = useStore(state => state.getCurrentMousePosition)
+
+  const imageWidth = get(image, 'width', 1)
+  const imageHeight = get(image, 'height', 1)
 
   const handleClickDrawRectangle = () => {
     const imageId = getImageId()
@@ -25,8 +30,8 @@ const DrawBBox = (props) => {
 
     if (drawingAnnotation === null) {
       setDrawingAnnotation(new BBoxAnnotationClass(uidgen.generateSync(), '', imageId, {
-        x: currentMousePosition.x,
-        y: currentMousePosition.y,
+        x: currentMousePosition.x / imageWidth,
+        y: currentMousePosition.y / imageHeight,
         width: 0,
         height: 0,
       }, DEFAULT_ANNOTATION_ATTRS))
@@ -41,13 +46,13 @@ const DrawBBox = (props) => {
 
     let finishedRectangle = cloneDeep(drawingAnnotation)
 
-    const bBoxWidth = currentMousePosition.x - drawingAnnotation.bBox.x
-    const bBoxHeight = currentMousePosition.y - drawingAnnotation.bBox.y
+    const bBoxWidth = currentMousePosition.x / imageWidth - drawingAnnotation.bBox.x
+    const bBoxHeight = currentMousePosition.y / imageHeight - drawingAnnotation.bBox.y
 
     finishedRectangle.updateData = {
-      x: finishedRectangle.bBox.x + Math.min(0, bBoxWidth),
-      y: finishedRectangle.bBox.y + Math.min(0, bBoxHeight),
+      x: (finishedRectangle.bBox.x + Math.min(0, bBoxWidth)),
       width: Math.abs(bBoxWidth),
+      y: (finishedRectangle.bBox.y + Math.min(0, bBoxHeight)),
       height: Math.abs(bBoxHeight)
     }
 
@@ -64,8 +69,8 @@ const DrawBBox = (props) => {
     if (drawingAnnotation !== null) {
       let newDrawingAnnotation = cloneDeep(drawingAnnotation)
       newDrawingAnnotation.updateData = {
-        width: currentMousePosition.x - drawingAnnotation.bBox.x,
-        height: currentMousePosition.y - drawingAnnotation.bBox.y,
+        width: currentMousePosition.x / imageWidth - drawingAnnotation.bBox.x,
+        height: currentMousePosition.y / imageHeight - drawingAnnotation.bBox.y,
       }
       setDrawingAnnotation(newDrawingAnnotation)
     }
