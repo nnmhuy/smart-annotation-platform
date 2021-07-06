@@ -5,15 +5,15 @@ import PolygonPath from './PolygonPath'
 import PolygonMainPoints from './PolygonMainPoints'
 import PolygonMidPoints from './PolygonMidPoints'
 
-import { EVENT_TYPES } from '../../../../constants'
+import { EVENT_TYPES } from '../../../../../constants'
 import { cloneDeep } from 'lodash'
 
 const Polygon = (props) => {
   const {
-    polygon, useStore, eventCenter,
+    annotation, useStore, eventCenter,
   } = props
 
-  const { id } = polygon
+  const { id } = annotation
   const [isDraggingPolygon, setIsDraggingPolygon] = React.useState(false)
   const [draggingPointKey, setDraggingPointKey] = React.useState(null)
   const [draggingMidPoint, setDraggingMidPoint] = React.useState(null)
@@ -28,7 +28,7 @@ const Polygon = (props) => {
 
   const isDrawing = (drawingAnnotation && drawingAnnotation.id === id)
   const isSelected = (id === editingAnnotationId)
-  const isCutting = polygon.polygon.isCutting
+  const isCutting = annotation.polygon.isCutting
 
   const handleSelectPolygon = (e) => {
     eventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({ e, id })
@@ -52,7 +52,7 @@ const Polygon = (props) => {
     const dX = event.target.x()
     const dY = event.target.y()
 
-    const polys = cloneDeep(polygon.polygon.polys)
+    const polys = cloneDeep(annotation.polygon.polys)
 
     eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
       polys: polys.map(poly => poly.map(p => [p[0] + dX, p[1] + dY])),
@@ -79,7 +79,7 @@ const Polygon = (props) => {
     }
     const pos = [event.target.attrs.x, event.target.attrs.y];
 
-    const newPolys = cloneDeep(polygon.polygon.polys).map((poly, index) => {
+    const newPolys = cloneDeep(annotation.polygon.polys).map((poly, index) => {
       if (index !== polyIndex) {
         return poly
       } else {
@@ -132,7 +132,7 @@ const Polygon = (props) => {
   const handleEndDraggingMidPoint = (event, polyIndex, pointIndex) => {
     const position = [event.target.attrs.x, event.target.attrs.y];
 
-    const newPolys = getNewPolysAfterDraggingMidPoint(polygon.polygon.polys, {
+    const newPolys = getNewPolysAfterDraggingMidPoint(annotation.polygon.polys, {
       polyIndex,
       pointIndex,
       position
@@ -153,7 +153,7 @@ const Polygon = (props) => {
 
   const handleDoubleClickDeletePoint = (event, polyIndex, pointIndex) => {
     event.cancelBubble = true
-    let newPolys = cloneDeep(polygon.polygon.polys).map((poly, index) => {
+    let newPolys = cloneDeep(annotation.polygon.polys).map((poly, index) => {
       if (index !== polyIndex) {
         return poly
       } else {
@@ -182,14 +182,14 @@ const Polygon = (props) => {
       <PolygonPath
         useStore={useStore}
         eventCenter={eventCenter}
-        id={polygon.id}
+        id={annotation.id}
         polygon={{
-          ...polygon.polygon,
+          ...annotation.polygon,
           polys: draggingMidPoint ?
-            getNewPolysAfterDraggingMidPoint(polygon.polygon.polys, draggingMidPoint)
-            : polygon.polygon.polys
+            getNewPolysAfterDraggingMidPoint(annotation.polygon.polys, draggingMidPoint)
+            : annotation.polygon.polys
         }}
-        properties={polygon.properties}
+        properties={annotation.properties}
         scale={scale}
         isSelected={isSelected}
         isCutting={isCutting}
@@ -206,8 +206,8 @@ const Polygon = (props) => {
           isDrawing={isDrawing}
           isSelected={isSelected}
           isCutting={isCutting}
-          id={polygon.id}
-          polygon={polygon.polygon}
+          id={annotation.id}
+          polygon={annotation.polygon}
           scale={scale}
           handleStartDraggingMainPoint={handleStartDraggingMainPoint}
           handleMoveDraggingMainPoint={handleMoveDraggingMainPoint}
@@ -220,8 +220,8 @@ const Polygon = (props) => {
         <PolygonMidPoints
           useStore={useStore}
           eventCenter={eventCenter}
-          id={polygon.id}
-          polygon={polygon.polygon}
+          id={annotation.id}
+          polygon={annotation.polygon}
           scale={scale}
           isSelected={isSelected}
           handleStartDraggingMidPoint={handleStartDraggingMidPoint}

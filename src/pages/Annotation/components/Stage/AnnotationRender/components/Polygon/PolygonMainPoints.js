@@ -1,7 +1,7 @@
 import React from 'react'
 import { Circle } from 'react-konva'
 
-import { EVENT_TYPES } from '../../../../constants'
+import { EVENT_TYPES } from '../../../../../constants'
 
 
 const PolygonMainPoints = (props) => {

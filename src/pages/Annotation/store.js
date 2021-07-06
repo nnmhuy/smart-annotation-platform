@@ -13,8 +13,6 @@ import BBoxAnnotationClass from '../../classes/BBoxAnnotationClass'
 import PolygonAnnotationClass from '../../classes/PolygonAnnotationClass'
 import ScribbleToMaskAnnotationClass from '../../classes/ScribbleToMaskAnnotationClass'
 
-import { mockupLabels, mockupImageList } from './mockup'
-
 const useAnnotationStore = create((set, get) => ({
   datasetId: null,
   isLoading: {},
@@ -39,7 +37,6 @@ const useAnnotationStore = create((set, get) => ({
   annotations: [],
   imageId: null,
   image: null,
-  // imageList: mockupImageList,
   imageList: [],
   selectedId: null,
   highlightId: null,
@@ -127,7 +124,6 @@ const useAnnotationStore = create((set, get) => ({
     })
   })),
 
-  // labels: mockupLabels,
   labels: [],
   setEditingAnnotationLabelId: (newLabelId) => set(state => ({
     annotations: state.annotations.map(annotation => {

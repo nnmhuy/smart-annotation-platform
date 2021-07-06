@@ -1,7 +1,7 @@
 import React from 'react'
 import { Group, Rect, Transformer } from 'react-konva';
 
-import { EVENT_TYPES } from '../../../constants'
+import { EVENT_TYPES } from '../../../../../constants'
 
 const emittingSubjects = [
   EVENT_TYPES.SELECT_ANNOTATION,
@@ -9,8 +9,10 @@ const emittingSubjects = [
 ]
 
 const Rectangle = (props) => {
-  const { useStore, eventCenter, id, bBox, properties, } = props
+  const { useStore, eventCenter, annotation, } = props
   const editingAnnotationId = useStore(state => state.editingAnnotationId)
+
+  const { id, bBox, properties } = annotation
 
   const groupRef = React.useRef(null);
   const rectRef = React.useRef();

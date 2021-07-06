@@ -1,7 +1,7 @@
 import React from 'react'
 import { Path } from 'react-konva'
 
-import polysToSvgPathData from '../../../../utils/polysToSvgPathData'
+import polysToSvgPathData from '../../../../../utils/polysToSvgPathData'
 
 const PolygonPath = (props) => {
   const {

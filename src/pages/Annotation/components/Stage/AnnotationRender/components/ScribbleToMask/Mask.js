@@ -1,6 +1,6 @@
 import React from 'react'
 
-import KonvaImage from '../../../../../../components/KonvaImage'
+import KonvaImage from '../../../../../../../components/KonvaImage'
 
 const Mask = (props) => {
   const { 

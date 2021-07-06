@@ -10,7 +10,9 @@ import thresholdMask from '../../../../utils/thresholdMask'
 import hexColorToRGB from '../../../../../../utils/hexColorToRGB'
 
 const MaskAnnotation = (props) => {
-  const { id, properties, maskData, useStore, eventCenter } = props
+  const { annotation , useStore, eventCenter } = props
+
+  const { id, properties, maskData } = annotation
 
   const [displayMask, setDisplayMask] = React.useState(null)
 

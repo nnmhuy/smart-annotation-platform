@@ -1,5 +1,5 @@
 import React from 'react'
-import { cloneDeep, filter, find } from 'lodash'
+import { find } from 'lodash'
 
 import EditBBox from './EditHandler/EditBBox';
 import EditPolygon from './EditHandler/EditPolygon';

@@ -1,5 +1,4 @@
 import React from 'react'
-import { cloneDeep, filter } from 'lodash';
 
 import Cursor from '../Cursor/index'
 
