@@ -1,5 +1,6 @@
 import React from 'react'
-import { find } from 'lodash'
+import { filter, cloneDeep, get, find } from 'lodash'
+
 
 import BBoxAnnotation from '../../../../../classes/BBoxAnnotationClass'
 import PolygonAnnotation from '../../../../../classes/PolygonAnnotationClass'
@@ -27,10 +28,32 @@ const mapAnnotationClassToRender = [
 
 
 const AnnotationRender = (props) => {
-  const { useStore, eventCenter, annotations } = props
+  const { useStore, eventCenter } = props
+
+  const annotations = useStore(state => state.annotations)
+  const drawingAnnotation = useStore(state => state.drawingAnnotation)
+  const labels = useStore(state => state.labels)
+
+
+  let renderingAnnotations = [...annotations, drawingAnnotation].map((ann) => {
+    if (ann === null) {
+      return null
+    }
+    let renderAnn = cloneDeep(ann)
+    const label = find(labels, { id: renderAnn.labelId })
+    const labelAnnotationProperties = get(label, 'annotationProperties', {})
+    renderAnn.updateProperties = {
+      ...labelAnnotationProperties,
+      isHidden: get(label, 'properties.isHidden', false) || get(renderAnn, 'properties.isHidden', false)
+    }
+    return renderAnn
+  })
+
+  // filter out hidden annotations and null drawingAnnotation
+  renderingAnnotations = filter(renderingAnnotations, (ann) => ann && !ann.properties.isHidden)
 
   return (
-    annotations.map(ann => {
+    renderingAnnotations.map(ann => {
       const renderer = find(mapAnnotationClassToRender, (value => ann instanceof value.cls))
       if (renderer) {
         const RenderComponent = renderer.render

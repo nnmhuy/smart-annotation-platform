@@ -21,7 +21,6 @@ const useStyles = makeStyles((props) => ({
 const SideBar = (props) => {
   const { useStore, eventCenter } = props
 
-  const imageId = useStore(state => state.imageId)
   const annotations = useStore(state => state.annotations)
   const labels = useStore(state => state.labels)
 
@@ -33,7 +32,7 @@ const SideBar = (props) => {
           return <LabelList
             useStore={useStore}
             key={`label-${value.id}-${value.label}`}
-            annotations={filter(annotations, { imageId, labelId: value.id })}
+            annotations={filter(annotations, { labelId: value.id })}
             classLabel={value}
           />
         })

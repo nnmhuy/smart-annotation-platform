@@ -1,7 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
-import { filter, cloneDeep, get, find } from 'lodash'
+import { get, find } from 'lodash'
 
 import Loading from '../../../../components/Loading'
 import ImageRender from './ImageRender/index'
@@ -106,30 +106,7 @@ const RenderComponent = (props) => {
     };
   }
 
-  const isPredicting = useStore(state => state.isPredicting)
   const isLoading = useStore(state => state.isLoading)
-  const imageId = useStore(state => state.imageId)
-  const annotations = useStore(state => state.annotations)
-  const drawingAnnotation = useStore(state => state.drawingAnnotation)
-  const labels = useStore(state => state.labels)
-
-
-  let renderingAnnotations = filter([...annotations, drawingAnnotation], { imageId }).map((ann) => {
-    if (ann === null) {
-      return null
-    } 
-    let renderAnn = cloneDeep(ann)
-    const label = find(labels, { id: renderAnn.labelId })
-    const labelAnnotationProperties = get(label, 'annotationProperties', {})
-    renderAnn.updateProperties = {
-      ...labelAnnotationProperties,
-      isHidden: get(label, 'properties.isHidden', false) || get(renderAnn, 'properties.isHidden', false)
-    }
-    return renderAnn
-  })
-
-  // filter out hidden annotations
-  renderingAnnotations = filter(renderingAnnotations, (ann) => !ann.properties.isHidden)
 
   return (
     <div className={classes.stageContainer} ref={stageContainerRef}>
@@ -164,10 +141,11 @@ const RenderComponent = (props) => {
             useStore={useStore}
             eventCenter={eventCenter}
           />
+        </Layer>
+        <Layer>
           <AnnotationRender
             useStore={useStore}
             eventCenter={eventCenter}
-            annotations={renderingAnnotations}
           />
           <ToolRender
             useStore={useStore}
@@ -175,7 +153,7 @@ const RenderComponent = (props) => {
           />
         </Layer>
       </Stage>
-      <Loading isLoading={{ ...isLoading, isPredicting}} />
+      <Loading isLoading={isLoading} />
     </div>
   )
 }

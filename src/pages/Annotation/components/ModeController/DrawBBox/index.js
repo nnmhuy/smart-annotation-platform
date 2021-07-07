@@ -14,7 +14,6 @@ const DrawBBox = (props) => {
 
   const getImageId = useStore(state => state.getImageId)
   const getImage = useStore(state => state.image)
-  const image = useStore(state => state.image)
   const appendAnnotation = useStore(state => state.appendAnnotation)
   const getDrawingAnnotation = useStore(state => state.getDrawingAnnotation)
   const setDrawingAnnotation = useStore(state => state.setDrawingAnnotation)

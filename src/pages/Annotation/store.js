@@ -32,6 +32,7 @@ const useAnnotationStore = create((set, get) => ({
       editingAnnotationId: null,
     }
   }),
+  setIsLoading: (name, value) => set(state => ({ isLoading: { ...state.isLoading, [name]: value }})),
 
 
   annotations: [],
@@ -45,6 +46,14 @@ const useAnnotationStore = create((set, get) => ({
     const imageList = get().imageList
     const stage = get().stageRef
     const stageSize = get().stageSize
+    const isLoading = get().isLoading
+
+    set({
+      isLoading: {
+        ...isLoading,
+        isLoadingImageData: true
+      }
+    })
 
     const data = imageList.find(data => data.id === newImageId)
     let imageBlob = null
@@ -64,12 +73,33 @@ const useAnnotationStore = create((set, get) => ({
     });
     stage.scale({ x: 1, y: 1 })
 
+    // load annotations
+    const annotationResponse = await RestConnector.get(`annotations?image_id=${newImageId}`)
+
+    const annotationsObj = await Promise.all(annotationResponse.data.map(async ann => {
+      switch (ann._cls) {
+        case "Annotation.BBoxAnnotation":
+          return BBoxAnnotationClass.constructorFromServerData(ann)
+        case "Annotation.PolygonAnnotation":
+          return PolygonAnnotationClass.constructorFromServerData(ann)
+        case "Annotation.MaskAnnotation":
+          return await ScribbleToMaskAnnotationClass.constructorFromServerData(ann)
+        default:
+          return {}
+      }
+    }))
+
     set({
+      isLoading: {
+        ...isLoading,
+        isLoadingImageData: false,
+      },
       imageId: newImageId,
       image: {
         blob: imageBlob,
         ...newImage,
       },
+      annotations: annotationsObj,
       drawingAnnotation: null,
       editingAnnotationId: null,
     })
@@ -79,9 +109,7 @@ const useAnnotationStore = create((set, get) => ({
 
   currentMousePosition: { x: 0, y: 0 },
   drawingAnnotation: null,
-  isPredicting: false,
 
-  setIsPredicting: (status) => set({ isPredicting: status }),
   getAnnotations: () => get().annotations,
   setAnnotations: (newAnnotations) => set({ annotations: newAnnotations }),
   appendAnnotation: (newAnnotation) => {
@@ -199,22 +227,6 @@ const useAnnotationStore = create((set, get) => ({
     const annotationLabelResponse = await RestConnector.get(`annotation_labels?project_id=${projectId}`)
     const labelsObj = annotationLabelResponse.data.map(label => LabelClass.constructorFromServerData(label))
 
-    // load annotations
-    const annotationResponse = await RestConnector.get(`annotations?dataset_id=${datasetId}`)
-
-    const annotationsObj = await Promise.all(annotationResponse.data.map(async ann => {
-      switch (ann._cls) {
-        case "Annotation.BBoxAnnotation":
-          return BBoxAnnotationClass.constructorFromServerData(ann)
-        case "Annotation.PolygonAnnotation":
-          return PolygonAnnotationClass.constructorFromServerData(ann)
-        case "Annotation.MaskAnnotation":
-          return await ScribbleToMaskAnnotationClass.constructorFromServerData(ann)
-        default:
-          return {}
-      }
-    }))
-
     set(state => ({
       isLoading: {
         ...state.isLoading,
@@ -222,7 +234,6 @@ const useAnnotationStore = create((set, get) => ({
       },
       imageList: imagesObj,
       labels: labelsObj,
-      annotations: annotationsObj,
     }))
   }
 }))

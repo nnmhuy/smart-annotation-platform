@@ -35,7 +35,7 @@ const ScribbleToMask = (props) => {
   const updateCurrentMousePosition = useStore(state => state.updateCurrentMousePosition)
   const getCurrentMousePosition = useStore(state => state.getCurrentMousePosition)
   const getToolConfig = useStore(state => state.getToolConfig)
-  const setIsPredicting = useStore(state => state.setIsPredicting)
+  const setIsLoading = useStore(state => state.setIsLoading)
 
   const getIsDrawingScribble = useScribbleToMaskStore(state => state.getIsDrawingScribble)
   const setIsDrawingScribble = useScribbleToMaskStore(state => state.setIsDrawingScribble)
@@ -103,11 +103,11 @@ const ScribbleToMask = (props) => {
     }
   }
 
-  const handleFinishDrawByBrush = () => {
+  const handleFinishDrawByBrush = async () => {
     const drawingAnnotation = getDrawingAnnotation()
 
     let miVOSBuilder = getMiVOSBuilder()
-    miVOSBuilder.setScribbles(drawingAnnotation.maskData.scribbles)
+    await miVOSBuilder.setScribbles(drawingAnnotation.maskData.scribbles)
     setMiVOSBuilder(miVOSBuilder)
 
     setIsDrawingScribble(false)
@@ -149,7 +149,7 @@ const ScribbleToMask = (props) => {
       return
     }
 
-    setIsPredicting(true)
+    setIsLoading("predictingScribbleToMask", true)
     const data = miVOSBuilder.getMiVOSScribbleToMaskInput()
     eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.MI_VOS_S2M)(data)
   }
@@ -176,15 +176,15 @@ const ScribbleToMask = (props) => {
       threshold: toolConfig.threshold
     }
 
-    miVOSBuilder.setMask(base64)
+    await miVOSBuilder.setMask(base64)
     setDrawingAnnotation(newDrawingAnnotation)
     setMiVOSBuilder(miVOSBuilder)
-    setIsPredicting(false)
+    setIsLoading("predictingScribbleToMask", false)
   }
 
   const handlePredictError = () => {
     alert("Prediction error")
-    setIsPredicting(false)
+    setIsLoading("predictingScribbleToMask", false)
   }
 
   const handleUpdateThreshold = () => {
