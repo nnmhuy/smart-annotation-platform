@@ -4,11 +4,13 @@ import UIDGenerator from 'uid-generator'
 import { get, cloneDeep } from 'lodash'
 
 import ScribbleToMaskAnnotationClass from '../../../../../classes/ScribbleToMaskAnnotationClass'
+import MiVOSScribbleToMaskBuilder from './MiVOSScribbleToMaskBuilder/index'
 
 import Cursor from '../Cursor/index'
 import thresholdMask from '../../../utils/thresholdMask'
 import { EVENT_TYPES } from '../../../constants';
 import hexColorToRGB from '../../../../../utils/hexColorToRGB'
+import resizeImage from '../../../../../utils/resizeImage'
 
 const uidgen = new UIDGenerator(96, UIDGenerator.BASE16);
 
@@ -16,11 +18,16 @@ const useScribbleToMaskStore = create((set, get) => ({
   isDrawingScribble: false,
   getIsDrawingScribble: () => get().isDrawingScribble,
   setIsDrawingScribble: (value) => set({ isDrawingScribble: value }),
+
+  miVOSBuilder: new MiVOSScribbleToMaskBuilder(),
+  getMiVOSBuilder: () => get().miVOSBuilder,
+  setMiVOSBuilder: (newBuilder) => set({ miVOSBuilder: newBuilder })
 }))
 
 const ScribbleToMask = (props) => {
   const { useStore, eventCenter } = props
   const getImageId = useStore(state => state.getImageId)
+  const image = useStore(state => state.image)
   const getImage = useStore(state => state.getImage)
   const appendAnnotation = useStore(state => state.appendAnnotation)
   const getDrawingAnnotation = useStore(state => state.getDrawingAnnotation)
@@ -28,10 +35,20 @@ const ScribbleToMask = (props) => {
   const updateCurrentMousePosition = useStore(state => state.updateCurrentMousePosition)
   const getCurrentMousePosition = useStore(state => state.getCurrentMousePosition)
   const getToolConfig = useStore(state => state.getToolConfig)
+  const setIsPredicting = useStore(state => state.setIsPredicting)
+
   const getIsDrawingScribble = useScribbleToMaskStore(state => state.getIsDrawingScribble)
   const setIsDrawingScribble = useScribbleToMaskStore(state => state.setIsDrawingScribble)
-  const setIsPredicting = useStore(state => state.setIsPredicting)
-  
+  const getMiVOSBuilder = useScribbleToMaskStore(state => state.getMiVOSBuilder)
+  const setMiVOSBuilder = useScribbleToMaskStore(state => state.setMiVOSBuilder)
+
+
+  React.useEffect(() => {
+    let miVOSBuilder = getMiVOSBuilder()
+    miVOSBuilder.setImage(image)
+    setMiVOSBuilder(miVOSBuilder)
+  }, [image])
+
   const handleStartDrawByBrush = () => {
     const imageId = getImageId()
     const image = getImage()
@@ -41,6 +58,7 @@ const ScribbleToMask = (props) => {
     const currentMousePosition = getCurrentMousePosition()
     const toolConfig = getToolConfig()
 
+
     if (drawingAnnotation === null) {
       setDrawingAnnotation(new ScribbleToMaskAnnotationClass(uidgen.generateSync(), '', imageId, {
         scribbles: [{
@@ -48,9 +66,7 @@ const ScribbleToMask = (props) => {
           type: toolConfig.scribbleType,
           strokeWidth: toolConfig.scribbleSize,
         }],
-        mask: {
-          // threshold: toolConfig.threshold,
-        }
+        mask: null
       }, {
         threshold: toolConfig.threshold,
       }))
@@ -63,6 +79,7 @@ const ScribbleToMask = (props) => {
       })
       setDrawingAnnotation(newDrawingAnnotation)
     }
+
     setIsDrawingScribble(true)
   }
 
@@ -87,6 +104,12 @@ const ScribbleToMask = (props) => {
   }
 
   const handleFinishDrawByBrush = () => {
+    const drawingAnnotation = getDrawingAnnotation()
+
+    let miVOSBuilder = getMiVOSBuilder()
+    miVOSBuilder.setScribbles(drawingAnnotation.maskData.scribbles)
+    setMiVOSBuilder(miVOSBuilder)
+
     setIsDrawingScribble(false)
   }
 
@@ -119,6 +142,7 @@ const ScribbleToMask = (props) => {
   const handleTriggerPredict = () => {
     const image = getImage()
     const drawingAnnotation = getDrawingAnnotation()
+    let miVOSBuilder = getMiVOSBuilder()
 
     if (!image || !drawingAnnotation) {
       alert("Image not found")
@@ -126,26 +150,35 @@ const ScribbleToMask = (props) => {
     }
 
     setIsPredicting(true)
-    eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.MI_VOS_S2M)({
-      image, 
-      annotation: drawingAnnotation
-    })
+    const data = miVOSBuilder.getMiVOSScribbleToMaskInput()
+    eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.MI_VOS_S2M)(data)
   }
 
-  const handleFinishPredict = (data) => {
+  const handleFinishPredict = async (data) => {
     const drawingAnnotation = getDrawingAnnotation()
+    let miVOSBuilder = getMiVOSBuilder()
     const toolConfig = getToolConfig()
 
     const { base64 } = data
+    const originalBase64 = await resizeImage(base64,
+      {
+        maxWidth: image.originalWidth,
+        maxHeight: image.originalHeight
+      },
+      true
+    ).then(({img}) => img)
 
     const newDrawingAnnotation = cloneDeep(drawingAnnotation)
     newDrawingAnnotation.updateData = {
-      mask: base64
+      mask: originalBase64
     }
     newDrawingAnnotation.updateProperties = {
       threshold: toolConfig.threshold
     }
+
+    miVOSBuilder.setMask(base64)
     setDrawingAnnotation(newDrawingAnnotation)
+    setMiVOSBuilder(miVOSBuilder)
     setIsPredicting(false)
   }
 
@@ -185,7 +218,7 @@ const ScribbleToMask = (props) => {
         scribbles: [],
         mask: thresholdedMask
       }
-    
+
       appendAnnotation(finishedAnnotation)
       setDrawingAnnotation(null)
       eventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedAnnotation.id)
@@ -195,7 +228,7 @@ const ScribbleToMask = (props) => {
   const handleClearAll = () => {
     setDrawingAnnotation(null)
   }
-  
+
   React.useEffect(() => {
     const { getSubject } = eventCenter
     let subscriptions = {
@@ -229,7 +262,7 @@ const ScribbleToMask = (props) => {
   }, [])
 
   return (
-    <Cursor {...props } />
+    <Cursor {...props} />
   )
 }
 

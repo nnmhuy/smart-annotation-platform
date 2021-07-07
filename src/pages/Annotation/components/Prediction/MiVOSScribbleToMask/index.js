@@ -1,43 +1,21 @@
 import React from 'react'
-import { get } from 'lodash'
 
-import { EVENT_TYPES, SCRIBBLE_TO_MASK_CONSTANTS } from '../../../constants'
-import base64ToBlob from '../../../../../utils/base64ToBlob'
+import { EVENT_TYPES } from '../../../constants'
 import sendFormData from '../../../../../utils/sendFormData'
 import bufferArrayToBase64 from '../../../../../utils/bufferArrayToBase64'
-import convertScribbleToBlob from './convertScribbleToBlob'
-
-const { SCRIBBLE_TYPES } = SCRIBBLE_TO_MASK_CONSTANTS
 
 
 const MiVOSScribbleToMask = (props) => {
   const { eventCenter } = props
 
-  const handleScribbleToMask = async ({ image, annotation }) => {
-    const canvasWidth = get(image, 'originalWidth', 0)
-    const canvasHeight = get(image, 'originalHeight', 0)
-
-    const imgBlob = image.blob
-    const scribbles = annotation.maskData.scribbles
-
-    const p_srb = await convertScribbleToBlob(scribbles, SCRIBBLE_TYPES.POSITIVE, {
-      canvasWidth,
-      canvasHeight,
-    })
-    const n_srb = await convertScribbleToBlob(scribbles, SCRIBBLE_TYPES.NEGATIVE, {
-      canvasWidth,
-      canvasHeight,
-    })
-
-    const mask = await base64ToBlob(annotation.maskData.mask.originalBase64)
-
+  /**
+   * 
+   * @param {object} data - image, p_srb, n_srb, mask (optional)
+   * @returns 
+   */
+  const handleScribbleToMask = async (data) => {
     const predictedMask = await sendFormData(
-      {
-        image: imgBlob,
-        p_srb,
-        n_srb,
-        mask
-      },
+      data,
       's2m/predict',
       {
         responseType: "arraybuffer"
