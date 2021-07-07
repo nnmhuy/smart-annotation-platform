@@ -24,7 +24,7 @@ function App() {
       <div className="App">
         <Router>
           <Switch>
-            <Route path="/project=:projectId&dataset=:datasetId" exact component={AnnotationPage}/>
+            <Route path="/annotations:project=:projectId&dataset=:datasetId" exact component={AnnotationPage}/>
           </Switch>
         </Router>
       </div>

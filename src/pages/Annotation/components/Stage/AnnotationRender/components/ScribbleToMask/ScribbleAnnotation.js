@@ -1,6 +1,6 @@
 import React from 'react'
 import { Group } from 'react-konva'
-import { get } from 'lodash'
+import { get, debounce } from 'lodash'
 
 import Scribble from './Scribble'
 import Mask from './Mask'
@@ -40,7 +40,9 @@ const MaskAnnotation = (props) => {
         setDisplayMask(null)
       }
     }
-    getThresholdImage();
+
+    const debounced = debounce(getThresholdImage, 100)
+    debounced()
   }, [mask, image, threshold, color])
 
 

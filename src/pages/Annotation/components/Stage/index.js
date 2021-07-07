@@ -1,7 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
-import { get, find } from 'lodash'
+import { get, find, debounce } from 'lodash'
 
 import Loading from '../../../../components/Loading'
 import ImageRender from './ImageRender/index'
@@ -55,13 +55,13 @@ const RenderComponent = (props) => {
 
   const stageSize = useStore(state => state.stageSize)
   const setStageSize = useStore(state => state.setStageSize)
-  const handleNewStageSize = () => {
+  const handleNewStageSize = debounce(() => {
     const container = stageContainerRef.current
     setStageSize({
       width: container.clientWidth,
       height: container.clientHeight,
     })
-  }
+  }, 500)
 
   React.useEffect(() => {
     handleNewStageSize()
