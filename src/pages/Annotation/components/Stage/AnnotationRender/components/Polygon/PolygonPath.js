@@ -35,8 +35,8 @@ const PolygonPath = (props) => {
       hitFunc={(isCutting) && function () {
         // disable hitFunc while dragging viewport or cutting
       }}
-      x={polygon.x}
-      y={polygon.y}
+      x={polygon.x * imageWidth}
+      y={polygon.y * imageHeight}
       {...properties}
       strokeWidth={properties.strokeWidth / scale}
       opacity={isSelected ? properties.opacity + 0.2 : properties.opacity}
