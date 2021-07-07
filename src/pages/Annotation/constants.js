@@ -105,7 +105,7 @@ const DEFAULT_TOOL_CONFIG = {
   [MODES.SCRIBBLE_TO_MASK.name]: {
     scribbleSize: 20,
     scribbleType: SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.POSITIVE,
-    threshold: 50,
+    threshold: 20,
   }
 }
 

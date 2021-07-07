@@ -202,18 +202,18 @@ const useAnnotationStore = create((set, get) => ({
     // load annotations
     const annotationResponse = await RestConnector.get(`annotations?dataset_id=${datasetId}`)
 
-    const annotationsObj = annotationResponse.data.map(ann => {
+    const annotationsObj = await Promise.all(annotationResponse.data.map(async ann => {
       switch (ann._cls) {
         case "Annotation.BBoxAnnotation":
           return BBoxAnnotationClass.constructorFromServerData(ann)
         case "Annotation.PolygonAnnotation":
           return PolygonAnnotationClass.constructorFromServerData(ann)
         case "Annotation.MaskAnnotation":
-          return ScribbleToMaskAnnotationClass.constructorFromServerData(ann)
+          return await ScribbleToMaskAnnotationClass.constructorFromServerData(ann)
         default:
           return {}
       }
-    })
+    }))
 
     set(state => ({
       isLoading: {
