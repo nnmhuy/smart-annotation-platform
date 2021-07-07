@@ -33,10 +33,11 @@ const styles = (theme => ({
 
 const Loading = (props) => {
   const { isLoading, classes, Loader = FadeLoader } = props
-  if (isLoading) {
+
+  if (isLoading === true || Object.keys(isLoading).reduce((prevValue, value) => (prevValue || isLoading[value]) ,false)) {
     return (
       <Paper tabIndex={-1} className={classes.loading}>
-        <Modal className={classes.modal} open={isLoading || true}>
+        <Modal className={classes.modal} open>
           <DialogContent className={classes.content}>
             <Loader/>
           </DialogContent>

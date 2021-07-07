@@ -1,6 +1,6 @@
 import React from 'react'
 
-import KonvaImage from '../../../../../../components/KonvaImage'
+import KonvaImage from '../../../../../../../components/KonvaImage'
 
 const Mask = (props) => {
   const { 
@@ -8,6 +8,8 @@ const Mask = (props) => {
     mask,
     handleSelectMask,
     handleContextMenu,
+    imageWidth,
+    imageHeight,
   } = props
 
   return (
@@ -19,6 +21,8 @@ const Mask = (props) => {
       onClick={handleSelectMask}
       onTap={handleSelectMask}
       onContextMenu={handleContextMenu}
+      width={imageWidth}
+      height={imageHeight}
     />
   )
 }

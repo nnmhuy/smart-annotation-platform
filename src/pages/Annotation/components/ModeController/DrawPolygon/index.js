@@ -1,14 +1,14 @@
 import React from 'react'
 import create from 'zustand'
 import UIDGenerator from 'uid-generator'
-import { cloneDeep } from 'lodash'
+import { get, cloneDeep } from 'lodash'
 
 import PolygonAnnotationClass from '../../../../../classes/PolygonAnnotationClass'
 
 import Cursor from '../Cursor/index'
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
 
-const uidgen = new UIDGenerator();
+const uidgen = new UIDGenerator(96, UIDGenerator.BASE16);
 
 const useDrawPolygonStore = create((set, get) => ({
   isMouseOverPolygonStart: false,
@@ -24,11 +24,13 @@ const useDrawPolygonStore = create((set, get) => ({
 const DrawPolygon = (props) => {
   const { useStore, eventCenter } = props
   const getImageId = useStore(state => state.getImageId)
+  const getImage = useStore(state => state.image)
   const appendAnnotation = useStore(state => state.appendAnnotation)
   const getDrawingAnnotation = useStore(state => state.getDrawingAnnotation)
   const setDrawingAnnotation = useStore(state => state.setDrawingAnnotation)
   const updateCurrentMousePosition = useStore(state => state.updateCurrentMousePosition)
   const getCurrentMousePosition = useStore(state => state.getCurrentMousePosition)
+
 
   const getIsMouseOverPolygonStart = useDrawPolygonStore(state => state.getIsMouseOverPolygonStart)
   const setIsMouseOverPolygonStart = useDrawPolygonStore(state => state.setIsMouseOverPolygonStart)
@@ -38,6 +40,9 @@ const DrawPolygon = (props) => {
 
   const handleClickDrawPolygon = () => {
     const imageId = getImageId()
+    const image = getImage()
+    const imageWidth = get(image, 'width', 1)
+    const imageHeight = get(image, 'height', 1)
     const currentMousePosition = getCurrentMousePosition()
     const drawingPolygon = getDrawingAnnotation()
 
@@ -46,22 +51,21 @@ const DrawPolygon = (props) => {
 
     if (drawingPoly === null) {
       setDrawingAnnotation(new PolygonAnnotationClass(uidgen.generateSync(), '', imageId, {
-        ...DEFAULT_ANNOTATION_ATTRS,
         x: 0,
         y: 0,
-        polys: [[[currentMousePosition.x, currentMousePosition.y]]]
-      }))
-      setDrawingPoly([[currentMousePosition.x, currentMousePosition.y]])
+        polys: [[[currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]]]
+      }, DEFAULT_ANNOTATION_ATTRS))
+      setDrawingPoly([[currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]])
     } else {
       if (isMouseOverPolygonStart) {
         finishDrawPolygon()
       } else {
         const newDrawingAnnotation = cloneDeep(drawingPolygon)
         newDrawingAnnotation.updateData = {
-          polys: [[...drawingPoly, [currentMousePosition.x, currentMousePosition.y]]]
+          polys: [[...drawingPoly, [currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]]]
         }
         setDrawingAnnotation(newDrawingAnnotation)
-        appendDrawingPoly([currentMousePosition.x, currentMousePosition.y])
+        appendDrawingPoly([currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight])
       }
     }
   }
@@ -84,6 +88,9 @@ const DrawPolygon = (props) => {
 
 
   const handleDragDrawPolygon = () => {
+    const image = getImage()
+    const imageWidth = get(image, 'width', 1)
+    const imageHeight = get(image, 'height', 1)
     const drawingPoly = cloneDeep(getDrawingPoly())
     const drawingPolygon = getDrawingAnnotation()
     const currentMousePosition = getCurrentMousePosition()
@@ -91,7 +98,7 @@ const DrawPolygon = (props) => {
     if (drawingPoly !== null) {
       let newDrawingPolygon = cloneDeep(drawingPolygon)
       newDrawingPolygon.updateData = {
-        polys: [[...drawingPoly, [currentMousePosition.x, currentMousePosition.y]]]
+        polys: [[...drawingPoly, [currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]]]
       }
       setDrawingAnnotation(newDrawingPolygon)
     }
@@ -99,6 +106,9 @@ const DrawPolygon = (props) => {
 
 
   const handleRightClickDrawPolygon = () => {
+    const image = getImage()
+    const imageWidth = get(image, 'width', 1)
+    const imageHeight = get(image, 'height', 1)
     const drawingPoly = getDrawingPoly()
     const drawingPolygon = getDrawingAnnotation()
     const currentMousePosition = getCurrentMousePosition()
@@ -112,7 +122,7 @@ const DrawPolygon = (props) => {
       } else {
         const newPolygon = cloneDeep(drawingPolygon)
         newPolygon.updateData = {
-          polys: [[...newDrawingPoly, [currentMousePosition.x, currentMousePosition.y]]]
+          polys: [[...newDrawingPoly, [currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]]]
         }
         setDrawingPoly(newDrawingPoly)
         setDrawingAnnotation(newPolygon)
@@ -160,7 +170,7 @@ const DrawPolygon = (props) => {
   }, [])
 
   return (
-    <Cursor {...props}/>
+    <Cursor {...props} />
   )
 }
 

@@ -1,5 +1,4 @@
 import React from 'react'
-import { cloneDeep, filter } from 'lodash';
 
 import Cursor from '../Cursor/index'
 
@@ -7,16 +6,12 @@ import { EVENT_TYPES } from '../../../constants';
 
 const Delete = (props) => {
   const { useStore, eventCenter } = props
-  const getAnnotations = useStore(stage => stage.getAnnotations)
-  const setAnnotations = useStore(stage => stage.setAnnotations)
+  const deleteAnnotation = useStore(state => state.deleteAnnotation)
 
   const handleDeleteAnnotation = ({ e, id: annotationId }) => {
     e.cancelBubble = true
 
-    const annotations = getAnnotations()
-    const newAnnotations = cloneDeep(filter(annotations, (ann) => ann.id !== annotationId))
-
-    setAnnotations(newAnnotations)
+    deleteAnnotation(annotationId)
   }
 
   React.useEffect(() => {

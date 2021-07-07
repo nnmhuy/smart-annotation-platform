@@ -1,18 +1,13 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
-import { filter, cloneDeep, get, find, mergeWith } from 'lodash'
+import { get, find } from 'lodash'
 
 import Loading from '../../../../components/Loading'
 import ImageRender from './ImageRender/index'
-import BBoxRender from './BBoxRender/index'
-import PolygonRender from './PolygonRender/index'
-import ScribbleToMaskRender from './ScribbleToMaskRender/index'
+import AnnotationRender from './AnnotationRender/index'
 import ToolRender from './ToolRender/index'
 
-import BBoxAnnotation from '../../../../classes/BBoxAnnotationClass'
-import PolygonAnnotation from '../../../../classes/PolygonAnnotationClass'
-import ScribbleToMaskAnnotation from '../../../../classes/ScribbleToMaskAnnotationClass'
 import { EVENT_TYPES, MODES } from '../../constants'
 import getStagePosLimit from '../../utils/getStagePosLimit'
 
@@ -111,28 +106,7 @@ const RenderComponent = (props) => {
     };
   }
 
-  const isPredicting = useStore(state => state.isPredicting)
-  const imageId = useStore(state => state.imageId)
-  const annotations = useStore(state => state.annotations)
-  const drawingAnnotation = useStore(state => state.drawingAnnotation)
-  const labels = useStore(state => state.labels)
-
-  let renderingAnnotations = filter([...annotations, drawingAnnotation], { imageId }).map((ann) => {
-    if (ann === null) {
-      return null
-    } 
-    let renderAnn = cloneDeep(ann)
-    const label = find(labels, { id: renderAnn.labelId })
-    renderAnn.updateData = get(label, 'annotationProperties', {})
-    renderAnn.updateProperties = {
-      isHidden: label.properties.isHidden || renderAnn.properties.isHidden
-    }
-    return renderAnn
-  })
-
-  // filter out hidden annotations
-  renderingAnnotations = filter(renderingAnnotations, (ann) => !ann.properties.isHidden)
-
+  const isLoading = useStore(state => state.isLoading)
 
   return (
     <div className={classes.stageContainer} ref={stageContainerRef}>
@@ -167,20 +141,11 @@ const RenderComponent = (props) => {
             useStore={useStore}
             eventCenter={eventCenter}
           />
-          <BBoxRender
+        </Layer>
+        <Layer>
+          <AnnotationRender
             useStore={useStore}
             eventCenter={eventCenter}
-            bBoxes={filter(renderingAnnotations, annotation => (annotation instanceof BBoxAnnotation))}
-          />
-          <PolygonRender
-            useStore={useStore}
-            eventCenter={eventCenter}
-            polygons={filter(renderingAnnotations, annotation => (annotation instanceof PolygonAnnotation))}
-          />
-          <ScribbleToMaskRender
-            useStore={useStore}
-            eventCenter={eventCenter}
-            scribbleAnnotations={filter(renderingAnnotations, annotation => (annotation instanceof ScribbleToMaskAnnotation))}
           />
           <ToolRender
             useStore={useStore}
@@ -188,7 +153,7 @@ const RenderComponent = (props) => {
           />
         </Layer>
       </Stage>
-      <Loading isLoading={isPredicting} />
+      <Loading isLoading={isLoading} />
     </div>
   )
 }

@@ -5,7 +5,7 @@ import { EVENT_TYPES } from '../../../constants'
 
 
 const ScribbleToMaskKeyboardHandler = (props) => {
-  const { useStore, eventCenter } = props
+  const { eventCenter } = props
 
   return (
     <>

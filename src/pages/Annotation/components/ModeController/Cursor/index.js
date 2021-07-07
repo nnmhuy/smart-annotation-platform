@@ -113,7 +113,7 @@ const Cursor = (props) => {
   const handleZoom = (e) => {
     e.evt.preventDefault();
 
-    const scaleBy = 1.05;
+    const scaleBy = 1.1;
     const oldScale = stage.scaleX();
 
     const pointer = stage.getPointerPosition();

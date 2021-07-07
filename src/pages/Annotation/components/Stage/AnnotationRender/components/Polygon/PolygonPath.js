@@ -1,13 +1,16 @@
 import React from 'react'
 import { Path } from 'react-konva'
 
-import polysToSvgPathData from '../../../../utils/polysToSvgPathData'
+import polysToSvgPathData from '../../../../../utils/polysToSvgPathData'
 
 const PolygonPath = (props) => {
   const {
     id,
     polygon,
+    properties,
     scale,
+    imageWidth,
+    imageHeight,
 
     isSelected,
     isCutting,
@@ -20,22 +23,23 @@ const PolygonPath = (props) => {
 
 
   const polys = polygon.polys
-  const { ...others } = polygon
 
   const pathRef = React.useRef(null)
 
-  const pathData = polysToSvgPathData(polys)
+  const pathData = polysToSvgPathData(polys, imageWidth, imageHeight)
   return (
     <Path
       ref={pathRef}
       id={id}
-      strokeWidth={others.strokeWidth / scale}
       data={pathData}
       hitFunc={(isCutting) && function () {
         // disable hitFunc while dragging viewport or cutting
       }}
-      {...others}
-      opacity={isSelected ? others.opacity + 0.2 : others.opacity}
+      x={polygon.x}
+      y={polygon.y}
+      {...properties}
+      strokeWidth={properties.strokeWidth / scale}
+      opacity={isSelected ? properties.opacity + 0.2 : properties.opacity}
       draggable={isSelected}
       onClick={handleSelectPolygon}
       onTap={handleSelectPolygon}

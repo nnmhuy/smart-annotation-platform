@@ -8,10 +8,17 @@ const ResponseCode = {
   ERROR_FORBIDDEN: 'error_forbidden',
 }
 
+
 const ANNOTATION_TYPE = {
-  POLYGON: 'POLYGON',
   BBOX: 'BBOX',
+  POLYGON: 'POLYGON',
   MASK: 'MASK',
+}
+
+const ENUM_ANNOTATION_TYPE = {
+  BBOX: 1,
+  POLYGON: 2,
+  MASK: 3,
 }
 
 export {
@@ -19,4 +26,5 @@ export {
   ResponseCode,
 
   ANNOTATION_TYPE,
+  ENUM_ANNOTATION_TYPE,
 }

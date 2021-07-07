@@ -167,7 +167,6 @@ const CutPolygon = (props) => {
   }, [])
 
   return (
-    // null
     <Cursor {...props}/>
   )
 }

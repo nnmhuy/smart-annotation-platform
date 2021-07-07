@@ -1,6 +1,6 @@
 // Step 1: Draw all polygons to canvas
 const convertScribbleToBlob = (scribbles, scribbleType, options) => {
-  const { canvasWidth, canvasHeight, scaleX, scaleY } = options
+  const { canvasWidth, canvasHeight } = options
 
   let tmpCanvas = document.createElement("canvas")
   tmpCanvas.setAttribute("id", "tmpCanvas")
@@ -24,9 +24,9 @@ const convertScribbleToBlob = (scribbles, scribbleType, options) => {
     }
     ctx.lineWidth = strokeWidth
     ctx.beginPath();
-    ctx.moveTo(points[0][0] * scaleX, points[0][1] * scaleY);
+    ctx.moveTo(points[0][0] * canvasWidth, points[0][1] * canvasHeight);
     points.forEach(point => {
-      ctx.lineTo(point[0] * scaleX, point[1] * scaleY)
+      ctx.lineTo(point[0] * canvasWidth, point[1] * canvasHeight)
     });
     ctx.stroke();
     ctx.fill();

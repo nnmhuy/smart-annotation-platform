@@ -1,7 +1,8 @@
 import React from 'react'
 import { Group, Rect, Transformer } from 'react-konva';
+import { get } from 'lodash'
 
-import { EVENT_TYPES } from '../../../constants'
+import { EVENT_TYPES } from '../../../../../constants'
 
 const emittingSubjects = [
   EVENT_TYPES.SELECT_ANNOTATION,
@@ -9,8 +10,13 @@ const emittingSubjects = [
 ]
 
 const Rectangle = (props) => {
-  const { useStore, eventCenter, id, bBox, } = props
+  const { useStore, eventCenter, annotation, } = props
   const editingAnnotationId = useStore(state => state.editingAnnotationId)
+  const image = useStore(state => state.image)
+  const imageWidth = get(image, 'width', 1)
+  const imageHeight = get(image, 'height', 1)
+
+  const { id, bBox, properties } = annotation
 
   const groupRef = React.useRef(null);
   const rectRef = React.useRef();
@@ -52,6 +58,13 @@ const Rectangle = (props) => {
     }
   }, [])
 
+  const scaledBBox = {
+    x: bBox.x * imageWidth,
+    width: bBox.width * imageWidth,
+    y: bBox.y * imageHeight,
+    height: bBox.height * imageHeight,
+  }
+
   return (
     <Group
       id={id}
@@ -63,13 +76,14 @@ const Rectangle = (props) => {
         onContextMenu={handleContextMenu}
         ref={rectRef}
         strokeScaleEnabled={false}
-        {...bBox}
-        opacity={isSelected ? bBox.opacity + 0.2 : bBox.opacity}
+        {...scaledBBox}
+        {...properties}
+        opacity={isSelected ? properties.opacity + 0.2 : properties.opacity}
         draggable={isSelected}
         onDragEnd={(e) => {
-          eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
-            x: e.target.x(),
-            y: e.target.y(),
+          eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
+            x: e.target.x() / imageWidth,
+            y: e.target.y() / imageHeight,
           })
         }}
         onTransformEnd={(e) => {
@@ -84,12 +98,12 @@ const Rectangle = (props) => {
           // we will reset it back
           node.scaleX(1);
           node.scaleY(1);
-          eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
-            x: node.x(),
-            y: node.y(),
+          eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
+            x: node.x() / imageWidth,
+            y: node.y() / imageHeight,
             // set minimal value
-            width: Math.max(5, node.width() * scaleX),
-            height: Math.max(node.height() * scaleY),
+            width: Math.max(5, node.width() * scaleX) / imageWidth,
+            height: Math.max(5, node.height() * scaleY) / imageHeight,
           })
         }}
       />
