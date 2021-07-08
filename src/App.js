@@ -11,12 +11,14 @@ import './App.css';
 const appTheme = createMuiTheme({
   palette: {
     primary: {
+      light: '#eef2f7',
       main: '#2876D4',
+      dark: '#49535f',
       contrastText: '#ffffff'
     },
     secondary: {
-      main: '#ffddb5',
-      light: '#faf1e6'
+      main: '#ffc074',
+      light: '#ffddb5',
     },
   },
 });

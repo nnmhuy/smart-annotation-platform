@@ -6,6 +6,7 @@ const useProjectListStore = create((set, get) => ({
   isLoading: {},
   projects: [],
 
+  setIsLoading: (name, value) => set(state => ({ isLoading: { ...state.isLoading, [name]: value }})),
   queryProjects: async (query='') => {
     const projectsResponse = await RestConnector.get(`projects?q=${query}`)
     const projectsObj = projectsResponse.data
