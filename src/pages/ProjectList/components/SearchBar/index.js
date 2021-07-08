@@ -1,6 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
+import { throttle } from 'lodash'
 
 import SearchField from './components/SearchField'
 
@@ -20,8 +21,10 @@ const SearchBar = (props) => {
   const classes = useStyles()
   const { useStore } = props
 
+  const queryProjects = throttle(useStore(state => state.queryProjects), 500)
+
   const handleChangeSearchValue = (e) => {
-    console.log(e.target.value)
+    // queryProjects(e.target.value)
   }
 
   return (

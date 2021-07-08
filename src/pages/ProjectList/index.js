@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider'
 
 import SearchBar from './components/SearchBar/index'
+import List from './components/List/index'
 
 import useProjectListStore from './store'
 
@@ -10,18 +11,21 @@ const useStyles = makeStyles(() => ({
   root: {
     padding: 50,
   },
-  divider: {
-    marginTop: 20,
-  }
 }))
 
 const ProjectList = () => {
   const classes = useStyles()
 
+  const queryProjects = useProjectListStore(state => state.queryProjects)
+
+  React.useEffect(() => {
+    queryProjects()
+  })
+
   return (
     <div className={classes.root}>
       <SearchBar useStore={useProjectListStore}/>
-      <Divider className={classes.divider}/>
+      <List useStore={useProjectListStore}/>
     </div>
   )
 }

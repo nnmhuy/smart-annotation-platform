@@ -2,6 +2,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 
 import ProjectListPage from './pages/ProjectList/index'
+import ProjectInfoPage from './pages/ProjectInfoPage/index'
 import ProjectCreatePage from './pages/ProjectCreate/index'
 import AnnotationPage from './pages/Annotation/index'
 
@@ -27,6 +28,7 @@ function App() {
         <Router>
           <Switch>
             <Route path="/projects" exact component={ProjectListPage} />
+            <Route path="/projects:project=:projectId" exact component={ProjectInfoPage} />
             <Route path="/projects:create" exact component={ProjectCreatePage} />
             <Route path="/annotations:project=:projectId&dataset=:datasetId" exact component={AnnotationPage}/>
           </Switch>
