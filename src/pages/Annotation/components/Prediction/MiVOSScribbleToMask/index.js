@@ -16,7 +16,7 @@ const MiVOSScribbleToMask = (props) => {
   const handleScribbleToMask = async (data) => {
     const predictedMask = await sendFormData(
       data,
-      's2m/predict',
+      '/s2m/predict',
       {
         responseType: "arraybuffer"
       }

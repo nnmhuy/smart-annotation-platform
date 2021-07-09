@@ -44,8 +44,8 @@ export default class ScribbleToMaskAnnotationClass extends Annotation {
     const maskURL = await sendFormData({
       id: this.id,
       mask: maskBlob
-    }, 'annotations/upload-annotation-mask')
-    return await RestConnector.post('annotations', {
+    }, '/annotations/upload-annotation-mask')
+    return await RestConnector.post('/annotations', {
       id: this.id,
       annotation_type: ENUM_ANNOTATION_TYPE.MASK,
       label_id: this.labelId,

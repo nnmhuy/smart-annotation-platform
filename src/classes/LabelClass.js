@@ -21,7 +21,7 @@ export default class LabelClass {
   }
 
   async applyUpdateLabel() {
-    return await RestConnector.put('annotation_labels', {
+    return await RestConnector.put('/annotation_labels', {
       id: this.id,
       label: this.label,
       properties: this.properties,

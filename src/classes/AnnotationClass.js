@@ -23,6 +23,6 @@ export default class Annotation {
     // abstract function to be implemented in child classes
   }
   async applyDeleteAnnotation() {    
-    RestConnector.delete(`annotations?id=${this.id}`)
+    RestConnector.delete(`/annotations?id=${this.id}`)
   }
 }

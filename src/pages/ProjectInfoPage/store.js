@@ -15,7 +15,7 @@ const useProjectInfoStore = create((set, get) => ({
     const setIsLoadingField = get().setIsLoadingField
     setIsLoadingField("project", true)
 
-    const projectResponse = await RestConnector.get(`projects?id=${projectId}`)
+    const projectResponse = await RestConnector.get(`/projects?id=${projectId}`)
 
     const projectObj = projectResponse.data[0]
     if (!projectObj) {
@@ -32,7 +32,7 @@ const useProjectInfoStore = create((set, get) => ({
 
     setIsLoadingField("datasets", true)
 
-    const datasetsResponse = await RestConnector.get(`datasets?project_id=${projectId}`)
+    const datasetsResponse = await RestConnector.get(`/datasets?project_id=${projectId}`)
 
     const datasetsObj = datasetsResponse.data
     set({ datasets: datasetsObj })
@@ -45,7 +45,7 @@ const useProjectInfoStore = create((set, get) => ({
 
     setIsLoadingField("labels", true)
 
-    const labelsResponse = await RestConnector.get(`annotation_labels?project_id=${projectId}`)
+    const labelsResponse = await RestConnector.get(`/annotation_labels?project_id=${projectId}`)
 
     const labelsObj = labelsResponse.data.map(label => LabelClass.constructorFromServerData(label))
     set({ labels: labelsObj })
