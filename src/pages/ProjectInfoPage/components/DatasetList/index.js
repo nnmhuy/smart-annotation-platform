@@ -105,7 +105,7 @@ const DatasetList = (props) => {
                 <IconButton 
                   color="primary" 
                   component="a"
-                  href={`/dataset:dataset=${dataset.id}`}
+                  href={`/datasets:dataset=${dataset.id}`}
                 >
                   <EditIcon />
                 </IconButton>

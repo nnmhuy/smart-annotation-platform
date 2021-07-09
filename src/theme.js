@@ -1,4 +1,4 @@
-import { createMuiTheme } from "@material-ui/core"
+import { createTheme } from "@material-ui/core"
 
 export const theme = {
     light: {
@@ -12,4 +12,4 @@ export const theme = {
     }
 }
 
-export const themeMui = createMuiTheme(theme)
+export const themeMui = createTheme(theme)

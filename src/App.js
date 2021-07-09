@@ -1,14 +1,15 @@
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
 
 import ProjectListPage from './pages/ProjectList/index'
 import ProjectInfoPage from './pages/ProjectInfoPage/index'
 import ProjectCreatePage from './pages/ProjectCreate/index'
+import DatasetManagement from './pages/DatasetManagement/index'
 import AnnotationPage from './pages/Annotation/index'
 
 import './App.css';
 
-const appTheme = createMuiTheme({
+const appTheme = createTheme({
   palette: {
     primary: {
       light: '#eef2f7',
@@ -33,6 +34,14 @@ function App() {
             <Route path="/projects" exact component={ProjectListPage} />
             <Route path="/projects:project=:projectId" exact component={ProjectInfoPage} />
             <Route path="/projects:create" exact component={ProjectCreatePage} />
+            <Route 
+              path={[
+                "/datasets:dataset=:datasetId&page=:page",
+                "/datasets:dataset=:datasetId",
+              ]} 
+              exact 
+              component={DatasetManagement} 
+            />
             <Route path="/annotations:project=:projectId&dataset=:datasetId" exact component={AnnotationPage}/>
           </Switch>
         </Router>
