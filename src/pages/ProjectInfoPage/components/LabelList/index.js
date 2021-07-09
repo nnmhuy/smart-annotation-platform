@@ -1,19 +1,25 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles'
 import { useParams } from 'react-router'
-import { get } from 'lodash'
+import { get, cloneDeep } from 'lodash'
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  IconButton
+  Button,
+  IconButton,
 } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/HighlightOff';
+import CreateIcon from '@material-ui/icons/AddCircle';
 
+import EditLabelDialog from './components/EditLabelDialog';
 import { ColorCell } from './components/ColorCell'
+
+import LabelClass from '../../../../classes/LabelClass'
+import randomColor from '../../../../utils/randomColor'
 
 const useStyles = makeStyles(() => ({
   labelListContainer: {
@@ -45,11 +51,45 @@ const LabelList = (props) => {
 
   const labels = useStore(state => state.labels)
   const getLabels = useStore(state => state.getLabels)
+  const createLabel = useStore(state => state.createLabel)
   const updateLabel = useStore(state => state.updateLabel)
+  const deleteLabel = useStore(state => state.deleteLabel)
+
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [editingLabel, setEditingLabel] = React.useState({})
 
   React.useEffect(() => {
     getLabels(projectId)
   }, [])
+
+  const handleTriggerEditLabel = (label) => () => {
+    setEditingLabel(cloneDeep(label))
+    setOpenDialog(true)
+  }
+
+  const handleTriggerCreateLabel = () => {
+    const newLabel = new LabelClass('', 'custom label', projectId, {}, {
+      fill: randomColor,
+      stroke: '#000000'
+    })
+    setEditingLabel(newLabel)
+    setOpenDialog(true)
+  }
+
+
+  const handleSaveEditDialog = (finishedLabel) => {
+    debugger
+    if (finishedLabel.id) {
+      updateLabel(finishedLabel)
+    } else {
+      createLabel(finishedLabel)
+    }
+    setOpenDialog(false)
+  }
+
+  const handleTriggerDeleteLabel = (label) => () => {
+    deleteLabel(label)
+  }
 
 
   return (
@@ -60,7 +100,7 @@ const LabelList = (props) => {
             {tableColumns.map(col => {
               const { headerName, field, align } = col
               return (
-                <TableCell key={`column-header-${field}`} align={align}>
+                <TableCell key={`column-header-${field}-${headerName}`} align={align}>
                   {headerName}
                 </TableCell>
               )
@@ -96,6 +136,7 @@ const LabelList = (props) => {
               <TableCell align='center'>
                 <IconButton
                   color="primary"
+                  onClick={handleTriggerEditLabel(label)}
                 >
                   <EditIcon />
                 </IconButton>
@@ -103,6 +144,7 @@ const LabelList = (props) => {
               <TableCell align='center'>
                 <IconButton
                   color="secondary"
+                  onClick={handleTriggerDeleteLabel(label)}
                 >
                   <DeleteIcon />
                 </IconButton>
@@ -112,6 +154,23 @@ const LabelList = (props) => {
           }
         </TableBody>
       </Table>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20, }}>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          endIcon={<CreateIcon />}
+          onClick={handleTriggerCreateLabel}
+        >
+          New label
+        </Button>
+      </div>
+      <EditLabelDialog
+        open={openDialog}
+        setOpen={setOpenDialog}
+        handleSave={handleSaveEditDialog}
+        label={editingLabel}
+      />
     </div>
   );
 }

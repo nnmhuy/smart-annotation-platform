@@ -1,4 +1,5 @@
 import create from 'zustand'
+import { filter } from 'lodash'
 
 import LabelClass from '../../classes/LabelClass'
 
@@ -53,16 +54,33 @@ const useProjectInfoStore = create((set, get) => ({
     setIsLoadingField("labels", false)
   },
 
-  updateLabel: async (id, newLabel) => {
-    debugger
+  createLabel: async(newLabel) => {
+    const createLabelResponse = await newLabel.applyCreateLabel()
+    const newLabelObj = LabelClass.constructorFromServerData(createLabelResponse.data)
+
+    const currentLabels = get().labels
+    set({
+      labels: [...currentLabels, newLabelObj]
+    })
+  },
+
+  updateLabel: async (newLabel) => {
     newLabel.applyUpdateLabel()
     const newLabels = get().labels.map(label => {
-      if (label.id !== id) {
+      if (label.id !== newLabel.id) {
         return label
       } else {
         return newLabel
       }
     })
+
+    set({ labels: newLabels })
+  },
+
+  deleteLabel: async (deleteLabel) => {
+    deleteLabel.applyDeleteLabel()
+    const currentLabels = get().labels
+    const newLabels = filter(currentLabels, (label) => label.id !== deleteLabel.id)
 
     set({ labels: newLabels })
   }

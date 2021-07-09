@@ -1,6 +1,8 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import Dialog from '@material-ui/core/Dialog'
+import TextField from '@material-ui/core/TextField'
+import InputAdornment from '@material-ui/core/InputAdornment'
+import Popover from '@material-ui/core/Popover'
 import { SwatchesPicker } from 'react-color'
 import { get } from 'lodash'
 
@@ -31,38 +33,65 @@ export const ColorCell = (props) => {
 }
 
 const useInputCellStyles = makeStyles((theme) => ({
-
+  colorDot: {
+    display: 'inline-block',
+    width: 20,
+    height: 20,
+  }
 }))
 
-export const ColorEditInputCell = (props) => {
+export const ColorEditInput = (props) => {
   const classes = useInputCellStyles()
-  const { id, api, field, value } = props;
+  const { id, label, value, onChange, ...others } = props
 
-  const handleChange = (color) => {
-    debugger
-    api.commitCellChange({ id, field, props: {color: color.hex }});
-    api.setCellMode(id, field, 'view');
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleFocus = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    api.setCellMode(id, field, 'view');
+  const handleClosePicker = () => {
+    setAnchorEl(null);
+  };
+
+  const handleChange = (color) => {
+    onChange(id, color.hex.toUpperCase())
+    handleClosePicker()
   }
-  
+
+  const openPicker = Boolean(anchorEl);
+
   return (
-    <div className={classes.root}>
-      <Dialog
-        open
-        onClose={handleClose}
+    <>
+      <TextField
+        label={label}
+        value={value}
+        id={id}
+        onClick={handleFocus}
+        InputProps={{
+          endAdornment: <InputAdornment position="end">
+            <span className={classes.colorDot} style={{ backgroundColor: value }}></span>
+          </InputAdornment>,
+        }}
+        variant="outlined"
+        {...others}
+      />
+      <Popover
+        open={openPicker}
+        anchorEl={anchorEl}
+        onClose={handleClosePicker}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
       >
-        <div>
-          <SwatchesPicker
-            color={value}
-            onChangeComplete={handleChange}
-            height='auto'
-          />
-        </div>
-      </Dialog>
-    </div>
-  );
+        <SwatchesPicker color={value} onChangeComplete={handleChange}/>
+      </Popover>
+    </>
+  )
 }
 
