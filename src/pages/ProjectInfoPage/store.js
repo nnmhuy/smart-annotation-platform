@@ -1,5 +1,7 @@
 import create from 'zustand'
 
+import LabelClass from '../../classes/LabelClass'
+
 import RestConnector from '../../connectors/RestConnector'
 
 const useProjectInfoStore = create((set, get) => ({
@@ -24,7 +26,7 @@ const useProjectInfoStore = create((set, get) => ({
     }
     setIsLoadingField("project", false)
   },
-  
+
   getDatasets: async (projectId) => {
     const setIsLoadingField = get().setIsLoadingField
 
@@ -36,6 +38,33 @@ const useProjectInfoStore = create((set, get) => ({
     set({ datasets: datasetsObj })
 
     setIsLoadingField("datasets", false)
+  },
+
+  getLabels: async (projectId) => {
+    const setIsLoadingField = get().setIsLoadingField
+
+    setIsLoadingField("labels", true)
+
+    const labelsResponse = await RestConnector.get(`annotation_labels?project_id=${projectId}`)
+
+    const labelsObj = labelsResponse.data.map(label => LabelClass.constructorFromServerData(label))
+    set({ labels: labelsObj })
+
+    setIsLoadingField("labels", false)
+  },
+
+  updateLabel: async (id, newLabel) => {
+    debugger
+    newLabel.applyUpdateLabel()
+    const newLabels = get().labels.map(label => {
+      if (label.id !== id) {
+        return label
+      } else {
+        return newLabel
+      }
+    })
+
+    set({ labels: newLabels })
   }
 }))
 

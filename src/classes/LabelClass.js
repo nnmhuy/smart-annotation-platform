@@ -1,3 +1,5 @@
+import RestConnector from "../connectors/RestConnector"
+
 export default class LabelClass {
   constructor(labelId, label, properties = {}, annotationProperties = {}) {
     this.id = labelId
@@ -17,6 +19,16 @@ export default class LabelClass {
       ...annotationProperties,
     }
   }
+
+  async applyUpdateLabel() {
+    return await RestConnector.put('annotation_labels', {
+      id: this.id,
+      label: this.label,
+      properties: this.properties,
+      annotation_properties: this.annotationProperties
+    })
+  }
+
   static constructorFromServerData(data) {
     return new LabelClass(
       data.id,

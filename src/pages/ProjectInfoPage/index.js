@@ -8,6 +8,7 @@ import Overview from './components/Overview/index'
 import ProjectTabs from './components/Tabs/index'
 import TabPanel from './components/TabPanel/index'
 import DatasetList from './components/DatasetList/index'
+import LabelList from './components/LabelList/index'
 
 import useProjectInfoStore from './store'
 
@@ -21,7 +22,7 @@ const ProjectInfoPage = () => {
   const classes = useStyles();
   const theme = useTheme();
   const { projectId } = useParams()
-  const [activeTab, setActiveTab] = React.useState(0);
+  const [activeTab, setActiveTab] = React.useState(1);
 
   const isLoading = useProjectInfoStore(state => state.isLoading)
   const getProjectInfo = useProjectInfoStore(state => state.getProjectInfo)
@@ -54,7 +55,7 @@ const ProjectInfoPage = () => {
           <DatasetList useStore={useProjectInfoStore}/>
         </TabPanel>
         <TabPanel value={activeTab} index={1} dir={theme.direction}>
-          Item Two
+          <LabelList useStore={useProjectInfoStore}/>
         </TabPanel>
         <TabPanel value={activeTab} index={2} dir={theme.direction}>
           Item Three
