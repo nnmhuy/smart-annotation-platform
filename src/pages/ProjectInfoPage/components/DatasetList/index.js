@@ -7,13 +7,17 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  IconButton
+  IconButton,
+  Button
 } from '@material-ui/core'
 import { get } from 'lodash'
 import moment from 'moment'
 
 import EditIcon from '@material-ui/icons/Edit';
+import CreateIcon from '@material-ui/icons/AddCircle';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+
+import CreateDatasetDialog from './components/CreateDatasetDialog'
 
 const useStyles = makeStyles(() => ({
 
@@ -39,13 +43,35 @@ const DatasetList = (props) => {
 
   const datasets = useStore(state => state.datasets)
   const getDatasets = useStore(state => state.getDatasets)
+  const appendNewDataset = useStore(state => state.appendNewDataset)
+  
+  const [openDialog, setOpenDialog] = React.useState(false);
 
   React.useEffect(() => {
     getDatasets(projectId)
   }, [])
 
+  const handleTriggerCreateDataset = () => {
+    setOpenDialog(true)
+  }
+
+  const handleCreateDataset = (newDataset) => {
+    appendNewDataset(newDataset)
+  }
+
   return (
     <div className={classes.datasetListContainer}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20, }}>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          endIcon={<CreateIcon />}
+          onClick={handleTriggerCreateDataset}
+        >
+          New Dataset
+        </Button>
+      </div>
       <Table>
         <TableHead>
           <TableRow>
@@ -98,6 +124,12 @@ const DatasetList = (props) => {
           }
         </TableBody>
       </Table>
+      <CreateDatasetDialog
+        projectId={projectId}
+        open={openDialog}
+        setOpen={setOpenDialog}
+        handleCreate={handleCreateDataset}
+      />
     </div>
   )
 }

@@ -170,9 +170,6 @@ const useAnnotationStore = create((set, get) => ({
   },
   setAnnotationProperties: (id, newProperties) => {
     const annotations = get().annotations.map(annotation => {
-      if (!annotation) {
-        debugger
-      }
       if (annotation.id !== id) {
         return annotation
       } else {

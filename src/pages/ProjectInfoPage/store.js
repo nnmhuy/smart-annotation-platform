@@ -1,6 +1,7 @@
 import create from 'zustand'
 import { filter } from 'lodash'
 
+import DatasetClass from '../../classes/DatasetClass'
 import LabelClass from '../../classes/LabelClass'
 
 import RestConnector from '../../connectors/RestConnector'
@@ -34,11 +35,18 @@ const useProjectInfoStore = create((set, get) => ({
     setIsLoadingField("datasets", true)
 
     const datasetsResponse = await RestConnector.get(`/datasets?project_id=${projectId}`)
-
-    const datasetsObj = datasetsResponse.data
+    const datasetsObj = datasetsResponse.data.map(dataset => DatasetClass.constructorFromServerData(dataset))
+  
     set({ datasets: datasetsObj })
 
     setIsLoadingField("datasets", false)
+  },
+
+  appendNewDataset: (newDataset) => {
+    const currentDatasets = get().datasets
+    set({
+      datasets: [...currentDatasets, newDataset]
+    })
   },
 
   getLabels: async (projectId) => {

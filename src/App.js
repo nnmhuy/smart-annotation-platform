@@ -1,5 +1,5 @@
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
 
 import ProjectListPage from './pages/ProjectList/index'
 import ProjectInfoPage from './pages/ProjectInfoPage/index'
@@ -29,6 +29,7 @@ function App() {
       <div className="App">
         <Router>
           <Switch>
+            <Route path="/" exact render={() => <Redirect to='/projects'/>} />
             <Route path="/projects" exact component={ProjectListPage} />
             <Route path="/projects:project=:projectId" exact component={ProjectInfoPage} />
             <Route path="/projects:create" exact component={ProjectCreatePage} />

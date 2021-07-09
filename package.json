@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.1",
     "clsx": "^1.1.1",
+    "formik": "^2.2.9",
     "konva": "^7.2.5",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
@@ -29,6 +30,7 @@
     "uid-generator": "^2.0.0",
     "use-image": "^1.0.7",
     "web-vitals": "^1.0.1",
+    "yup": "^0.32.9",
     "zustand": "^3.5.2"
   },
   "scripts": {

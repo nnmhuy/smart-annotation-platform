@@ -24,7 +24,7 @@ const ProjectInfoPage = () => {
   const classes = useStyles();
   const theme = useTheme();
   const { projectId } = useParams()
-  const [activeTab, setActiveTab] = React.useState(1);
+  const [activeTab, setActiveTab] = React.useState(0);
 
   const isLoading = useProjectInfoStore(state => state.isLoading)
   const getProjectInfo = useProjectInfoStore(state => state.getProjectInfo)

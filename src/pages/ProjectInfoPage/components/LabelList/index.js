@@ -78,7 +78,6 @@ const LabelList = (props) => {
 
 
   const handleSaveEditDialog = (finishedLabel) => {
-    debugger
     if (finishedLabel.id) {
       updateLabel(finishedLabel)
     } else {
@@ -94,6 +93,17 @@ const LabelList = (props) => {
 
   return (
     <div className={classes.labelListContainer}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20, }}>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          endIcon={<CreateIcon />}
+          onClick={handleTriggerCreateLabel}
+        >
+          New label
+        </Button>
+      </div>
       <Table>
         <TableHead>
           <TableRow>
@@ -154,17 +164,6 @@ const LabelList = (props) => {
           }
         </TableBody>
       </Table>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20, }}>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          endIcon={<CreateIcon />}
-          onClick={handleTriggerCreateLabel}
-        >
-          New label
-        </Button>
-      </div>
       <EditLabelDialog
         open={openDialog}
         setOpen={setOpenDialog}
