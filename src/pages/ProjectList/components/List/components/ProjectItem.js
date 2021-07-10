@@ -49,7 +49,7 @@ const ProjectItem = (props) => {
       container xs={12}
       className={classes.projectContainer}
       component={Link}
-      to={`/projects/${id}`}
+      to={`/projects/project=${id}`}
     >
         <Grid item xs={12}>
           <Divider className={classes.divider}/>

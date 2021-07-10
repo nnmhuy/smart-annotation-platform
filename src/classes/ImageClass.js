@@ -9,7 +9,7 @@ export default class ImageClass {
     return new ImageClass(
       data.id,
       data.imageURL,
-      data.imageURL,
+      data.thumbnailURL || data.imageURL,
       data.name
     )
   }

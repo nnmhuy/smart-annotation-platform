@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 20,
     marginBottom: 20,
     padding: 20,
-    maxWidth: 500,
+    maxWidth: 600,
     margin: 'auto',
     border: '1px solid #eaeaea',
   },
@@ -31,6 +31,10 @@ const useStyles = makeStyles((theme) => ({
   },
   logError: {
     color: 'red'
+  },
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'column',
   }
 }))
 
@@ -88,14 +92,25 @@ const UploadHandle = (props) => {
       }
 
       {isUploaded &&
-        <Button
-          variant="contained"
-          color="secondary"
-          size="large"
-          href={`/datasets/${datasetId}`}
-        >
-          Back to dataset page
-        </Button>
+        <div className={classes.buttonContainer}>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            href={`/datasets/dataset=${datasetId}`}
+          >
+            Back to dataset page
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="large"
+            onClick={() => window.location.reload()}
+            style={{ marginTop: 20 }}
+          >
+            Upload more
+          </Button>
+        </div>
       }
     </div>
   )

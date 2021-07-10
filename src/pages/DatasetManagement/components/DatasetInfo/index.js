@@ -52,7 +52,7 @@ const DatasetInfo = (props) => {
             variant="outlined" className={classes.button}
             color="primary"
             startIcon={<AddIcon />}
-            href={`/datasets/upload/${datasetId}`}
+            href={`/datasets/upload/dataset=${datasetId}`}
           >
             Append to dataset
           </Button>

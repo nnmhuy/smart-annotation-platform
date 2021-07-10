@@ -33,17 +33,17 @@ function App() {
           <Switch>
             <Route path="/" exact render={() => <Redirect to='/projects'/>} />
             <Route path="/projects" exact component={ProjectListPage} />
-            <Route path="/projects/:projectId" exact component={ProjectInfoPage} />
+            <Route path="/projects/project=:projectId" exact component={ProjectInfoPage} />
             <Route path="/projects/create" exact component={ProjectCreatePage} />
             <Route 
               path={[
-                "/datasets/:datasetId?page=:page",
-                "/datasets/:datasetId",
+                "/datasets/dataset=:datasetId?page=:page",
+                "/datasets/dataset=:datasetId",
               ]} 
               exact 
               component={DatasetManagementPage} 
             />
-            <Route path="/datasets/upload/:datasetId" exact component={UploadDatasetPage} />
+            <Route path="/datasets/upload/dataset=:datasetId" exact component={UploadDatasetPage} />
             <Route path="/annotations/project=:projectId&dataset=:datasetId" exact component={AnnotationPage}/>
           </Switch>
         </Router>

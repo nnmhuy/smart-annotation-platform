@@ -32,7 +32,7 @@ const ImagesPagination = (props) => {
     window.location = `/datasets:dataset=${datasetId}&page=${value}`
   };
 
-  const pageStart = (page - 1) * IMAGES_PER_PAGE + 1
+  const pageStart = Math.min((page - 1) * IMAGES_PER_PAGE + 1, instances)
   const pageEnd = Math.min(page * IMAGES_PER_PAGE, instances)
 
   return (
