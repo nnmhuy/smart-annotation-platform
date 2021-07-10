@@ -38,7 +38,7 @@ const ImagesPagination = (props) => {
   return (
     <div className={classes.root}>
       <div className={classes.text}>
-        From {pageStart} to {pageEnd}
+        {pageStart} - {pageEnd}
       </div>
       <Pagination
         count={Number.parseInt((instances / IMAGES_PER_PAGE) + Boolean(instances % IMAGES_PER_PAGE))}

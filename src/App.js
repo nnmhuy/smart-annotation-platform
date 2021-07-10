@@ -4,7 +4,8 @@ import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-d
 import ProjectListPage from './pages/ProjectList/index'
 import ProjectInfoPage from './pages/ProjectInfoPage/index'
 import ProjectCreatePage from './pages/ProjectCreate/index'
-import DatasetManagement from './pages/DatasetManagement/index'
+import DatasetManagementPage from './pages/DatasetManagement/index'
+import UploadDatasetPage from './pages/UploadDataset/index'
 import AnnotationPage from './pages/Annotation/index'
 
 import './App.css';
@@ -32,17 +33,18 @@ function App() {
           <Switch>
             <Route path="/" exact render={() => <Redirect to='/projects'/>} />
             <Route path="/projects" exact component={ProjectListPage} />
-            <Route path="/projects:project=:projectId" exact component={ProjectInfoPage} />
-            <Route path="/projects:create" exact component={ProjectCreatePage} />
+            <Route path="/projects/:projectId" exact component={ProjectInfoPage} />
+            <Route path="/projects/create" exact component={ProjectCreatePage} />
             <Route 
               path={[
-                "/datasets:dataset=:datasetId&page=:page",
-                "/datasets:dataset=:datasetId",
+                "/datasets/:datasetId?page=:page",
+                "/datasets/:datasetId",
               ]} 
               exact 
-              component={DatasetManagement} 
+              component={DatasetManagementPage} 
             />
-            <Route path="/annotations:project=:projectId&dataset=:datasetId" exact component={AnnotationPage}/>
+            <Route path="/datasets/upload/:datasetId" exact component={UploadDatasetPage} />
+            <Route path="/annotations/project=:projectId&dataset=:datasetId" exact component={AnnotationPage}/>
           </Switch>
         </Router>
       </div>

@@ -22,7 +22,7 @@ const ImageListSection = (props) => {
   const images = useStore(state => state.images)
 
   return (
-    <ImageList className={classes.imageList} rowHeight={250}>
+    <ImageList className={classes.imageList} cols={4}>
       {images.map(item => {
         return (
           <ImageListItem key={item.id}>

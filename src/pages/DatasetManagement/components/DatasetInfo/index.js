@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
+import { useParams } from 'react-router'
 
 import AddIcon from '@material-ui/icons/Add';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 const DatasetInfo = (props) => {
   const classes = useStyles()
   const { useStore } = props
+  const { datasetId } = useParams()
 
   const dataset = useStore(state => state.dataset)
   const { name, description, instances } = dataset
@@ -50,6 +52,7 @@ const DatasetInfo = (props) => {
             variant="outlined" className={classes.button}
             color="primary"
             startIcon={<AddIcon />}
+            href={`/datasets/upload/${datasetId}`}
           >
             Append to dataset
           </Button>
