@@ -1,11 +1,14 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import moment from 'moment'
+import Grid from '@material-ui/core/Grid'
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@material-ui/icons/Close';
+
 
 const useStyles = makeStyles((theme) => ({
   overviewContainer: {
     background: theme.palette.primary.light,
-    textAlign: 'left',
     padding: 20,
   },
   projectName: {
@@ -30,13 +33,23 @@ const Overview = (props) => {
   const project = useStore(state => state.project)
   const { name, description, date_created } = project
   return (
-    <div className={classes.overviewContainer}>
-      <div className={classes.projectName}>{name}</div>     
-      <div className={classes.projectDescription}>{description}</div>
-      <div className={classes.date}>
-        {moment(date_created).format('MMMM Do YYYY, HH:mm')}
-      </div>
-    </div>
+    <Grid container className={classes.overviewContainer}>
+      <Grid container item xs={10} direction="column" alignItems="flex-start">
+        <div className={classes.projectName}>{name}</div>     
+        <div className={classes.projectDescription}>{description}</div>
+        <div className={classes.date}>
+          {moment(date_created).format('MMMM Do YYYY, HH:mm')}
+        </div>
+      </Grid>
+      <Grid container item xs={2} justifyContent="flex-end" alignItems="flex-start">
+        <IconButton
+          href={`/projects`}
+        >
+          <CloseIcon />
+        </IconButton>
+      </Grid>
+    </Grid>
+
   )
 }
 

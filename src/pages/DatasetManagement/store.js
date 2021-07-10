@@ -1,6 +1,6 @@
 import create from 'zustand'
+import { remove } from 'lodash'
 
-import RestConnector from '../../connectors/RestConnector'
 import DatasetService from '../../services/DatasetService'
 import ImageService from '../../services/ImageService'
 
@@ -8,6 +8,7 @@ const useDatasetManagementStore = create((set, get) => ({
   isLoading: {},
   dataset: {},
   images: [],
+  selected: {},
 
   setIsLoadingField: (name, value) => set(state => ({ isLoading: { ...state.isLoading, [name]: value } })),
 
@@ -29,6 +30,31 @@ const useDatasetManagementStore = create((set, get) => ({
     set({ images })
 
     setIsLoadingField("images", false)
+  },
+
+  setSelectedImage: (id, value) => {
+    const selected = get().selected
+    set({ selected: { ...selected, [id]: value }})
+  },
+  deselectAll: () => {
+    set({ selected: {} })
+  },
+  deleteSelectedImages: async () => {
+    const setIsLoadingField = get().setIsLoadingField
+    setIsLoadingField("deleting", true)
+
+    const selected = get().selected
+    let images = [...get().images]
+
+    let toDeleteImages = remove(images, img => selected[img.id])
+
+    await Promise.all(toDeleteImages.map(img => ImageService.deleteImageById(img.id)))
+
+    set({ 
+      selected: {},
+      images,
+    })
+    setIsLoadingField("deleting", false)
   }
 }))
 

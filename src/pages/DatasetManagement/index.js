@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Loading from '../../components/Loading'
 import DatasetInfo from './components/DatasetInfo/index'
+import BulkSelection from './components/BulkSelection/index'
 import ImageListSection from './components/ImageListSection/index'
 import ImagesPagination from './components/ImagesPagination/index'
 
@@ -25,6 +26,7 @@ const DatasetManagement = (props) => {
     <div>
       <Loading isLoading={isLoading}/>
       <DatasetInfo useStore={useDatasetManagementStore}/>
+      <BulkSelection useStore={useDatasetManagementStore}/>
       <ImagesPagination useStore={useDatasetManagementStore}/>
       <ImageListSection useStore={useDatasetManagementStore}/>
     </div>

@@ -1,3 +1,5 @@
+import { get } from 'lodash'
+
 import RestConnector from '../connectors/RestConnector'
 
 import ImageClass from '../classes/ImageClass'
@@ -24,6 +26,16 @@ class ImageService {
     return RestConnector.get(`/images?dataset_id=${datasetId}`)
       .then((response) => {
         return response.data.map(image => ImageClass.constructorFromServerData(image))
+      })
+  }
+
+  deleteImageById(imageId) {
+    return RestConnector.delete(`/images?id=${imageId}`)
+      .then((response) => {
+        return response.data
+      })
+      .catch(err => {
+        alert(get(err, 'data.errors[0]', 'Error'))
       })
   }
 }

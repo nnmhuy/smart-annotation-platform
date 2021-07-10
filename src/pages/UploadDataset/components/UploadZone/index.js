@@ -55,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
 const UploadZone = (props) => {
   const classes = useStyles()
   const { useStore } = props
+  const isLoading = useStore(state => state.isLoading)
   const isUploaded = useStore(state => state.isUploaded)
 
 
@@ -90,7 +91,7 @@ const UploadZone = (props) => {
 
   return (
     <section className="container">
-      {!isUploaded && 
+      {(!isUploaded && !isLoading["uploading"]) &&
         <div {...getRootProps({ className: classes.dropZone })} style={{ height: files.length ? 100 : 300 }}>
           <input {...getInputProps()} />
           <p>Drop PNG, JPEG files to upload.</p>

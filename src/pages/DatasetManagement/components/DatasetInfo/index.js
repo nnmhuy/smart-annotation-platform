@@ -6,6 +6,7 @@ import IconButton from '@material-ui/core/IconButton'
 import { useParams } from 'react-router'
 
 import AddIcon from '@material-ui/icons/Add';
+import CloseIcon from '@material-ui/icons/Close';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 const useStyles = makeStyles((theme) => ({
@@ -37,7 +38,7 @@ const DatasetInfo = (props) => {
   const { datasetId } = useParams()
 
   const dataset = useStore(state => state.dataset)
-  const { name, description, instances } = dataset
+  const { name, description, projectId, instances } = dataset
 
   return (
     <Grid container className={classes.root}>
@@ -60,6 +61,13 @@ const DatasetInfo = (props) => {
         <Grid item>
           <IconButton>
             <SettingsIcon/>
+          </IconButton>
+        </Grid>
+        <Grid item>
+          <IconButton
+            href={`/projects/project=${projectId}`}
+          >
+            <CloseIcon />
           </IconButton>
         </Grid>
       </Grid>
