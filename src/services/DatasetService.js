@@ -1,5 +1,3 @@
-import { get } from 'lodash'
-
 import RestConnector from '../connectors/RestConnector'
 
 import DatasetClass from '../classes/DatasetClass'
@@ -9,9 +7,7 @@ class DatasetService {
     return RestConnector.get(`/datasets?id=${id}`)
       .then(response => {
         if (!response.data[0]) {
-          alert("Not found dataset")
-          window.history.back()
-          return
+          throw new Error("Not found dataset")
         }
         return DatasetClass.constructorFromServerData(response.data[0])
       })

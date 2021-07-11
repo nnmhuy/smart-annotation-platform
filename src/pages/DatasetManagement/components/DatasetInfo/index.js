@@ -4,13 +4,13 @@ import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import { useParams } from 'react-router'
+import { useConfirm } from 'material-ui-confirm'
 
 import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 import SettingsMenu from './components/SettingsMenu'
-import DatasetService from '../../../../services/DatasetService'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
 
 const DatasetInfo = (props) => {
   const classes = useStyles()
+  const confirm = useConfirm()
   const { useStore } = props
   const { datasetId } = useParams()
 
@@ -55,11 +56,13 @@ const DatasetInfo = (props) => {
   };
 
   const handleClickDeleteDataset = async () => {
-    const result = window.confirm(`This action can't be undone and will delete all images and annotations belong to this dataset`);
-    if (result === true) {
+    confirm({
+      title: 'Delete dataset',
+      description: `This action can't be undone and will delete all images and annotations belong to this dataset`
+    }).then(async () => {
       await deleteDataset(datasetId)
       window.location = `/projects/project=${projectId}`
-    }
+    })
   }
 
   return (

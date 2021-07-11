@@ -18,7 +18,6 @@ const PreviewSection = (props) => {
   const { useStore } = props
 
   const files = useStore(state => state.files)
-  console.log(files)
   
   return (
     <div className={classes.thumbsContainer}>

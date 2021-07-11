@@ -24,7 +24,7 @@ const useProjectInfoStore = create((set, get) => ({
     const projectObj = projectResponse.data[0]
     if (!projectObj) {
       alert("Not found project!")
-      return;
+      window.history.back()
     } else {
       set({ project: projectObj })
     }

@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import Collapse from '@material-ui/core/Collapse'
 import { filter } from 'lodash'
-import clsx from 'clsx'
+import { useConfirm }from 'material-ui-confirm'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 
 const BulkSelection = (props) => {
   const classes = useStyles()
+  const confirm = useConfirm()
   const { useStore } = props
 
   const selected = useStore(state => state.selected)
@@ -33,10 +34,12 @@ const BulkSelection = (props) => {
   const selectedIds = filter(Object.keys(selected), key => selected[key])
 
   const handleDeleteSelected = () => {
-    const result = window.confirm(`This action can't be undone and will delete ${selectedIds.length} data instances and associated annotations.`);
-    if (result === true) {
+    confirm({
+      title: 'Delete selected images',
+      description: `This action can't be undone and will delete ${selectedIds.length} images and associated annotations.`
+    }).then(() => {
       deleteSelectedImages()
-    }
+    })
   }
 
   return (

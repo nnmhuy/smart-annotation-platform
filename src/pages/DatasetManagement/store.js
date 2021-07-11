@@ -18,6 +18,10 @@ const useDatasetManagementStore = create((set, get) => ({
     setIsLoadingField("dataset", true)
 
     const dataset = await DatasetService.getDatasetById(datasetId)
+      .catch((err) => {
+        alert(err.message)
+        window.history.back()
+      })
     set({ dataset })
 
     setIsLoadingField("dataset", false)
