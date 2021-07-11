@@ -2,7 +2,9 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import { useDropzone } from 'react-dropzone'
-import { set, cloneDeep } from 'lodash'
+import { set } from 'lodash'
+
+import Loading from '../../../../components/Loading'
 
 const useStyles = makeStyles((theme) => ({
   dropZone: {
@@ -57,6 +59,7 @@ const UploadZone = (props) => {
   const { useStore } = props
   const isLoading = useStore(state => state.isLoading)
   const isUploaded = useStore(state => state.isUploaded)
+  const setIsLoading = useStore(state => state.setIsLoading)
 
 
   const files = useStore(state => state.files)
@@ -65,6 +68,7 @@ const UploadZone = (props) => {
   const { getRootProps, getInputProps } = useDropzone({
     accept: 'image/*',
     onDrop: async (acceptedFiles) => {
+      setIsLoading("loading-new-images", true)
       const processedFiles = await Promise.all(acceptedFiles.map((file) => new Promise((resolve, reject) => {
         try {
           let processedFile = file
@@ -86,11 +90,13 @@ const UploadZone = (props) => {
         }
       })))
       appendFiles(processedFiles)
+      setIsLoading("loading-new-images", false)
     }
   });
 
   return (
     <section className="container">
+      <Loading isLoading={isLoading["loading-new-images"]}/>
       {(!isUploaded && !isLoading["uploading"]) &&
         <div {...getRootProps({ className: classes.dropZone })} style={{ height: files.length ? 100 : 300 }}>
           <input {...getInputProps()} />

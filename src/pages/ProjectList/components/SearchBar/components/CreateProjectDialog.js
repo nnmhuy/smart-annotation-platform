@@ -101,7 +101,7 @@ const CreateProjectForm = withFormik({
       handleCreate(newProject)
       setOpen(false)
     } catch (error) {
-      const errMessage = get(error, 'data.errors.json[0]', '')
+      const errMessage = get(error, 'data.errors.json.project', '')
       setErrors({ error: errMessage })
     }
     setSubmitting(false)

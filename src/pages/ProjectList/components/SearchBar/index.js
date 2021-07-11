@@ -30,6 +30,11 @@ const SearchBar = (props) => {
   const handleChangeSearchValue = (e) => {
     // queryProjects(e.target.value)
   }
+
+  const handleCreateProject = (newProject) => {
+    appendProject(newProject)
+    window.location = `/projects/project=${newProject.id}`
+  }
   
 
   return (
@@ -47,7 +52,7 @@ const SearchBar = (props) => {
       <CreateProjectDialog
         open={openCreateDialog}
         setOpen={setOpenCreateDialog}
-        handleCreate={appendProject}
+        handleCreate={handleCreateProject}
       />
     </div>
   )

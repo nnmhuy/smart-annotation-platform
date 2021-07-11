@@ -29,7 +29,7 @@ const ImagesPagination = (props) => {
   const instances = get(dataset, 'instances', 0)
 
   const handleChange = (event, value) => {
-    window.location = `/datasets:dataset=${datasetId}&page=${value}`
+    window.location = `/datasets/dataset=${datasetId}&page=${value}`
   };
 
   const pageStart = Math.min((page - 1) * IMAGES_PER_PAGE + 1, instances)
