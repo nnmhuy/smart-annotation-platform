@@ -160,6 +160,7 @@ const ScribbleToMask = (props) => {
     const toolConfig = getToolConfig()
 
     const { base64 } = data
+    // TODO: consider storing in model output size
     const originalBase64 = await resizeImage(base64,
       {
         maxWidth: image.originalWidth,

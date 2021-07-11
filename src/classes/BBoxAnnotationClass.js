@@ -34,7 +34,7 @@ export default class BBoxAnnotation extends Annotation {
     )
   }
   async applyUpdateAnnotation() {
-    return await RestConnector.post('annotations', {
+    return await RestConnector.post('/annotations', {
       id: this.id,
       annotation_type: ENUM_ANNOTATION_TYPE.BBOX,
       label_id: this.labelId,

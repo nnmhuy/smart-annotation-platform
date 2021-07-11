@@ -10,7 +10,7 @@ const useStyles = makeStyles((props) => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingBottom: 20,
+    paddingBottom: 10,
     width: '100%',
     height: 100,
     background: theme.light.forthColor

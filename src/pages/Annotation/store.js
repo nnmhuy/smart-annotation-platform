@@ -74,7 +74,7 @@ const useAnnotationStore = create((set, get) => ({
     stage.scale({ x: 1, y: 1 })
 
     // load annotations
-    const annotationResponse = await RestConnector.get(`annotations?image_id=${newImageId}`)
+    const annotationResponse = await RestConnector.get(`/annotations?image_id=${newImageId}`)
 
     const annotationsObj = await Promise.all(annotationResponse.data.map(async ann => {
       switch (ann._cls) {
@@ -170,9 +170,6 @@ const useAnnotationStore = create((set, get) => ({
   },
   setAnnotationProperties: (id, newProperties) => {
     const annotations = get().annotations.map(annotation => {
-      if (!annotation) {
-        debugger
-      }
       if (annotation.id !== id) {
         return annotation
       } else {
@@ -220,11 +217,11 @@ const useAnnotationStore = create((set, get) => ({
     // TODO: request in parallel
 
     // load images
-    const imageResponse = await RestConnector.get(`images?dataset_id=${datasetId}`)
+    const imageResponse = await RestConnector.get(`/images?dataset_id=${datasetId}`)
     const imagesObj = imageResponse.data.map(image => ImageClass.constructorFromServerData(image))
 
     // load annotation label
-    const annotationLabelResponse = await RestConnector.get(`annotation_labels?project_id=${projectId}`)
+    const annotationLabelResponse = await RestConnector.get(`/annotation_labels?project_id=${projectId}`)
     const labelsObj = annotationLabelResponse.data.map(label => LabelClass.constructorFromServerData(label))
 
     set(state => ({

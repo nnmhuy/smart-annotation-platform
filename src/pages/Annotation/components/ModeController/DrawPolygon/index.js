@@ -24,7 +24,7 @@ const useDrawPolygonStore = create((set, get) => ({
 const DrawPolygon = (props) => {
   const { useStore, eventCenter } = props
   const getImageId = useStore(state => state.getImageId)
-  const getImage = useStore(state => state.image)
+  const getImage = useStore(state => state.getImage)
   const appendAnnotation = useStore(state => state.appendAnnotation)
   const getDrawingAnnotation = useStore(state => state.getDrawingAnnotation)
   const setDrawingAnnotation = useStore(state => state.setDrawingAnnotation)

@@ -20,7 +20,7 @@ const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
     width: '100vw',
-    height: '100vh',
+    height: '100%',
     flexDirection: 'column',
     overflow: 'hidden'
   },
@@ -28,7 +28,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     flexDirection: 'row',
     width: '100vw',
-    height: '100vh',
+    flex: 1,
     overflow: 'hidden'
   },
   annotatorContainer: {
