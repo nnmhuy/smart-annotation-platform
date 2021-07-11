@@ -13,6 +13,16 @@ class ProjectService {
       })
   }
 
+  updateProject(newProject) {
+    return RestConnector.put(`/projects`, {
+      id: newProject.id,
+      name: newProject.name,
+      description: newProject.description,
+    }).then(response => {
+      return ProjectClass.constructorFromServerData(response.data)
+    })
+  }
+
   deleteProjectById(id) {
     return RestConnector.delete(`/projects?id=${id}`)
       .then((response) => {

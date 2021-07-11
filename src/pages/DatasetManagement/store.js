@@ -26,6 +26,11 @@ const useDatasetManagementStore = create((set, get) => ({
 
     setIsLoadingField("dataset", false)
   },
+  updateDatasetInfo: async (newDataset) => {
+    const updatedDataset = await DatasetService.updateDataset(newDataset)
+    set({ dataset: updatedDataset })
+  },
+
   getImages: async (datasetId, page) => {
     const setIsLoadingField = get().setIsLoadingField
     setIsLoadingField("images", true)

@@ -5,12 +5,18 @@ import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import { useParams } from 'react-router'
 import { useConfirm } from 'material-ui-confirm'
+import { withFormik, Field } from 'formik';
+import * as Yup from 'yup'
+import { get, set, cloneDeep } from 'lodash'
 
 import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
 import SettingsIcon from '@material-ui/icons/Settings';
 
+import NakedField from '../../../../components/NakedField'
 import SettingsMenu from './components/SettingsMenu'
+
+import DatasetClass from '../../../../classes/DatasetClass'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,12 +44,44 @@ const useStyles = makeStyles((theme) => ({
 const DatasetInfo = (props) => {
   const classes = useStyles()
   const confirm = useConfirm()
-  const { useStore } = props
   const { datasetId } = useParams()
+  const {
+    useStore,
+    values, setFieldValue,
+    errors,
+    setSubmitting, setErrors
+  } = props
 
   const dataset = useStore(state => state.dataset)
   const deleteDataset = useStore(state => state.deleteDataset)
-  const { name, description, projectId, instances } = dataset
+  const updateDatasetInfo = useStore(state => state.updateDatasetInfo)
+
+  const { projectId, instances } = dataset
+
+  React.useEffect(() => {
+    const { name, description } = dataset
+    setFieldValue("name", name)
+    setFieldValue("description", description)
+  }, [dataset, setFieldValue])
+
+  const handleSubmit = async () => {
+    let data = cloneDeep(values)
+    Object.keys(data).forEach(key => {
+      if (errors[key]) {
+        data[key] = dataset[key]
+      }
+    })
+
+    const newDataset = new DatasetClass(dataset.id, data.name, projectId, { description: data.description })
+
+    try {
+      await updateDatasetInfo(newDataset)
+    } catch (error) {
+      const errMessage = get(error, 'data.errors.json.dataset', '')
+      setErrors({ error: errMessage })
+    }
+    setSubmitting(false)
+  }
 
   const [settingAnchorEl, setSettingAnchorEl] = React.useState(null);
 
@@ -68,13 +106,27 @@ const DatasetInfo = (props) => {
   return (
     <Grid container className={classes.root}>
       <Grid container item xs={8} direction="column" alignItems="flex-start">
-        <div className={classes.name}>{name}</div>
-        <div className={classes.description}>{description}</div>
+        <Field
+          name={'name'}
+          component={NakedField}
+          className={classes.name}
+          fullWidth
+          onBlur={handleSubmit}
+          placeholder={dataset.name}
+        />
+        <Field
+          name={'description'}
+          component={NakedField}
+          className={classes.description}
+          fullWidth
+          onBlur={handleSubmit}
+          placeholder={dataset.description || "Add dataset description"}
+        />
         <div className={classes.instances}>{instances} instances</div>
       </Grid>
       <Grid container item xs={4} alignItems="center" justifyContent="flex-end" spacing={2}>
         <Grid item>
-          <Button 
+          <Button
             variant="outlined" className={classes.button}
             color="primary"
             startIcon={<AddIcon />}
@@ -84,11 +136,8 @@ const DatasetInfo = (props) => {
           </Button>
         </Grid>
         <Grid item>
-          <IconButton
-            onClick={handleClickSettingMenu}
-          >
-            <SettingsIcon
-            />
+          <IconButton onClick={handleClickSettingMenu}>
+            <SettingsIcon />
           </IconButton>
           <SettingsMenu
             anchorEl={settingAnchorEl}
@@ -97,9 +146,7 @@ const DatasetInfo = (props) => {
           />
         </Grid>
         <Grid item>
-          <IconButton
-            href={`/projects/project=${projectId}`}
-          >
+          <IconButton href={`/projects/project=${projectId}`}>
             <CloseIcon />
           </IconButton>
         </Grid>
@@ -108,4 +155,13 @@ const DatasetInfo = (props) => {
   )
 }
 
-export default DatasetInfo
+const DatasetInfoForm = withFormik({
+  mapPropsToValues: () => ({ name: '', description: '' }),
+
+  validationSchema: Yup.object().shape({
+    name: Yup.string().required(),
+    description: Yup.string()
+  }),
+})(DatasetInfo);
+
+export default DatasetInfoForm

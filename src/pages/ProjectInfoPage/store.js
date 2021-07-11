@@ -30,6 +30,10 @@ const useProjectInfoStore = create((set, get) => ({
     }
     setIsLoadingField("project", false)
   },
+  updateProjectInfo: async (newProject) => {
+    const updatedProject = await ProjectService.updateProject(newProject)
+    set({ project: updatedProject })
+  },
   deleteProject: async () => {
     const setIsLoadingField = get().setIsLoadingField
     

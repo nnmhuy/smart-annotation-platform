@@ -22,6 +22,16 @@ class DatasetService {
       return DatasetClass.constructorFromServerData(response.data)
     })
   }
+
+  updateDataset(newDataset) {
+    return RestConnector.put(`/datasets`, {
+      id: newDataset.id,
+      name: newDataset.name,
+      description: newDataset.description,
+    }).then(response => {
+      return DatasetClass.constructorFromServerData(response.data)
+    })
+  }
   
   deleteDatasetById(id) {
     return RestConnector.delete(`/datasets?id=${id}`)
