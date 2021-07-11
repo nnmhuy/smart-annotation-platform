@@ -9,7 +9,7 @@ export const theme = {
         fifthColor: '#b78c00',
         backgroundColor: '#f6f5f5',
         darkColor: 'black'
-    }
+    },
 }
 
 export const themeMui = createTheme(theme)

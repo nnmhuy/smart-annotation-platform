@@ -1,6 +1,8 @@
 import create from 'zustand'
 import { filter } from 'lodash'
 
+import ProjectService from '../../services/ProjectService'
+
 import DatasetClass from '../../classes/DatasetClass'
 import LabelClass from '../../classes/LabelClass'
 
@@ -27,6 +29,20 @@ const useProjectInfoStore = create((set, get) => ({
       set({ project: projectObj })
     }
     setIsLoadingField("project", false)
+  },
+  deleteProject: async () => {
+    const setIsLoadingField = get().setIsLoadingField
+    
+    setIsLoadingField("deleting-project", true)
+
+    const project = get().project
+
+    await ProjectService.deleteProjectById(project.id)
+      .catch(err => {
+        alert(get(err, 'data.errors[0]', 'Error'))
+      })
+
+    setIsLoadingField("deleting-project", false)
   },
 
   getDatasets: async (projectId) => {

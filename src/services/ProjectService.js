@@ -12,6 +12,13 @@ class ProjectService {
         return ProjectClass.constructorFromServerData(response.data)
       })
   }
+
+  deleteProjectById(id) {
+    return RestConnector.delete(`/projects?id=${id}`)
+      .then((response) => {
+        return response.data
+      })
+  }
 }
 
 export default new ProjectService()
