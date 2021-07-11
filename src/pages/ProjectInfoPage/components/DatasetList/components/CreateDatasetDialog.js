@@ -11,7 +11,7 @@ import { get } from 'lodash'
 
 import TextField from '../../../../../components/TextField'
 
-import DatasetClass from '../../../../../classes/DatasetClass'
+import DatasetService from '../../../../../services/DatasetService'
 
 const fields = [
   {
@@ -95,11 +95,13 @@ const CreateDatasetForm = withFormik({
 
   handleSubmit: async (values, { props: { projectId, handleCreate, setOpen }, setSubmitting, setErrors }) => {
     setSubmitting(true)
-    const newDataset = new DatasetClass('', values.name, projectId, { description: values.description })
-
     try {
-      const datasetResponse = await newDataset.applyCreateDataset()
-      handleCreate(DatasetClass.constructorFromServerData(datasetResponse.data))
+      const newDataset = await DatasetService.createDataset({
+        projectId,
+        name: values.name,
+        description: values.description,
+      })
+      handleCreate(newDataset)
       setOpen(false)
     } catch (error) {
       const errMessage = get(error, 'data.errors.json.dataset', '')

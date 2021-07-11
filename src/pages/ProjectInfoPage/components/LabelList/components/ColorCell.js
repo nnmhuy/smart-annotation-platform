@@ -1,10 +1,10 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import TextField from '@material-ui/core/TextField'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import Popover from '@material-ui/core/Popover'
 import { SwatchesPicker } from 'react-color'
-import { get } from 'lodash'
+
+import TextField from '../../../../../components/TextField'
 
 const useCellStyles = makeStyles((theme) => ({
   colorCell: {
@@ -42,7 +42,10 @@ const useInputCellStyles = makeStyles((theme) => ({
 
 export const ColorEditInput = (props) => {
   const classes = useInputCellStyles()
-  const { id, label, value, onChange, ...others } = props
+  const { label, field = {}, form = {}, ...others } = props
+
+  const { setFieldValue } = form
+  const { name, value } = field
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -55,7 +58,7 @@ export const ColorEditInput = (props) => {
   };
 
   const handleChange = (color) => {
-    onChange(id, color.hex.toUpperCase())
+    setFieldValue(name, color.hex.toUpperCase())
     handleClosePicker()
   }
 
@@ -64,17 +67,14 @@ export const ColorEditInput = (props) => {
   return (
     <>
       <TextField
-        label={label}
-        value={value}
-        id={id}
-        onClick={handleFocus}
+        {...props}
         InputProps={{
           endAdornment: <InputAdornment position="end">
             <span className={classes.colorDot} style={{ backgroundColor: value }}></span>
           </InputAdornment>,
         }}
-        variant="outlined"
-        {...others}
+        onClick={handleFocus}
+        onChange={handleChange}
       />
       <Popover
         open={openPicker}

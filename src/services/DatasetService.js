@@ -15,6 +15,7 @@ class DatasetService {
 
   createDataset(data) {
     return RestConnector.post(`/datasets`, {
+      project: data.projectId,
       name: data.name,
       description: data.description,
     })

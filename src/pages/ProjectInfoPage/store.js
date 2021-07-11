@@ -2,6 +2,7 @@ import create from 'zustand'
 import { filter } from 'lodash'
 
 import ProjectService from '../../services/ProjectService'
+import LabelService from '../../services/LabelService'
 
 import DatasetClass from '../../classes/DatasetClass'
 import LabelClass from '../../classes/LabelClass'
@@ -83,22 +84,22 @@ const useProjectInfoStore = create((set, get) => ({
   },
 
   createLabel: async(newLabel) => {
-    const createLabelResponse = await newLabel.applyCreateLabel()
-    const newLabelObj = LabelClass.constructorFromServerData(createLabelResponse.data)
+    const createdLabel = await LabelService.createLabel(newLabel)
 
     const currentLabels = get().labels
     set({
-      labels: [...currentLabels, newLabelObj]
+      labels: [...currentLabels, createdLabel]
     })
   },
 
   updateLabel: async (newLabel) => {
-    newLabel.applyUpdateLabel()
-    const newLabels = get().labels.map(label => {
+    const updatedLabel = await LabelService.updateLabel(newLabel)
+
+    const newLabels = [...get().labels].map(label => {
       if (label.id !== newLabel.id) {
         return label
       } else {
-        return newLabel
+        return updatedLabel
       }
     })
 
@@ -106,11 +107,15 @@ const useProjectInfoStore = create((set, get) => ({
   },
 
   deleteLabel: async (deleteLabel) => {
-    deleteLabel.applyDeleteLabel()
-    const currentLabels = get().labels
-    const newLabels = filter(currentLabels, (label) => label.id !== deleteLabel.id)
-
-    set({ labels: newLabels })
+    try {
+      await LabelService.deleteLabelById(deleteLabel.id)
+      const currentLabels = [...get().labels]
+      const newLabels = filter(currentLabels, (label) => label.id !== deleteLabel.id)
+  
+      set({ labels: newLabels })
+    } catch (error) {
+      alert(get(error, 'data.errors.json.label', ''))
+    }
   }
 }))
 
