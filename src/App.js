@@ -2,6 +2,8 @@ import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
 import { ConfirmProvider } from 'material-ui-confirm';
 
+import Layout from './components/Layout/index'
+
 import ProjectListPage from './pages/ProjectList/index'
 import ProjectInfoPage from './pages/ProjectInfoPage/index'
 import DatasetManagementPage from './pages/DatasetManagement/index'
@@ -34,21 +36,23 @@ function App() {
       <ConfirmProvider>
         <div className="App">
           <Router>
-            <Switch>
-              <Route path="/" exact render={() => <Redirect to='/projects' />} />
-              <Route path="/projects" exact component={ProjectListPage} />
-              <Route path="/projects/project=:projectId" exact component={ProjectInfoPage} />
-              <Route
-                path={[
-                  "/datasets/dataset=:datasetId?page=:page",
-                  "/datasets/dataset=:datasetId",
-                ]}
-                exact
-                component={DatasetManagementPage}
-              />
-              <Route path="/datasets/upload/dataset=:datasetId" exact component={UploadDatasetPage} />
-              <Route path="/annotations/project=:projectId&dataset=:datasetId" exact component={AnnotationPage} />
-            </Switch>
+            <Layout>
+              <Switch>
+                <Route path="/" exact render={() => <Redirect to='/projects' />} />
+                <Route path="/projects" exact component={ProjectListPage} />
+                <Route path="/projects/project=:projectId" exact component={ProjectInfoPage} />
+                <Route
+                  path={[
+                    "/datasets/dataset=:datasetId?page=:page",
+                    "/datasets/dataset=:datasetId",
+                  ]}
+                  exact
+                  component={DatasetManagementPage}
+                />
+                <Route path="/datasets/upload/dataset=:datasetId" exact component={UploadDatasetPage} />
+                <Route path="/annotations/project=:projectId&dataset=:datasetId" exact component={AnnotationPage} />
+              </Switch>
+            </Layout>
           </Router>
         </div>
       </ConfirmProvider>
