@@ -105,7 +105,7 @@ const DatasetInfo = (props) => {
 
   return (
     <Grid container className={classes.root}>
-      <Grid container item xs={8} direction="column" alignItems="flex-start">
+      <Grid container item xs={6} md={8} direction="column" alignItems="flex-start">
         <Field
           name={'name'}
           component={NakedField}
@@ -124,7 +124,7 @@ const DatasetInfo = (props) => {
         />
         <div className={classes.instances}>{instances} instances</div>
       </Grid>
-      <Grid container item xs={4} alignItems="center" justifyContent="flex-end" spacing={2}>
+      <Grid container item xs={6} md={4} alignItems="center" justifyContent="flex-end" spacing={1}>
         <Grid item>
           <Button
             variant="outlined" className={classes.button}
@@ -132,7 +132,7 @@ const DatasetInfo = (props) => {
             startIcon={<AddIcon />}
             href={`/datasets/upload/dataset=${datasetId}`}
           >
-            Append to dataset
+            Add data
           </Button>
         </Grid>
         <Grid item>

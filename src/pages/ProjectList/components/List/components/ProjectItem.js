@@ -23,6 +23,10 @@ const useStyles = makeStyles((theme) => ({
     margin: 'auto',
     width: theme.spacing(7),
     height: theme.spacing(7),
+    [theme.breakpoints.down('md')]: {
+      width: theme.spacing(5),
+      height: theme.spacing(5),
+    }
   },
   projectName: {
     fontWeight: 'bold',
@@ -31,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
   projectDescription: {
     marginTop: 5,
     fontSize: 14,
+    textAlign: 'left',
   },
   date: {
     fontSize: 12,
@@ -54,14 +59,14 @@ const ProjectItem = (props) => {
         <Grid item xs={12}>
           <Divider className={classes.divider}/>
         </Grid>
-        <Grid item xs={2} md={1}>
+        <Grid container item xs={2} md={1}>
           <Avatar className={classes.avatar}>{name[0]}</Avatar>
         </Grid>
         <Grid container item xs={7} md={8} direction="column" justifyContent="center" alignItems="flex-start">
           <div className={classes.projectName}>{name}</div>
           <div className={classes.projectDescription}>{description}</div>
         </Grid>
-        <Grid item xs={3} alignItems="flex-end">
+        <Grid container item xs={3} alignItems="center">
           <div className={classes.date}>
             {moment(date_created).format('MMMM Do YYYY, h:mm')}
           </div>

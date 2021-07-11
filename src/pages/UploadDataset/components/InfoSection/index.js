@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     fontSize: 30,
+    textAlign: 'left',
     color: theme.palette.primary.dark
   }
 }))
@@ -21,12 +22,12 @@ const Info = (props) => {
 
   return (
     <Grid container className={classes.root}>
-      <Grid container item xs={8}>
+      <Grid container item xs={10} justifyContent="flex-start">
         <div className={classes.title}>
           Append to dataset
         </div>
       </Grid>
-      <Grid container item xs={4} justifyContent="flex-end">
+      <Grid container item xs={2} justifyContent="flex-end">
         <IconButton
           href={`/datasets/${datasetId}`}
         >

@@ -93,7 +93,7 @@ const LabelList = (props) => {
 
   return (
     <div className={classes.labelListContainer}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20, }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: 15, marginBottom: 15, }}>
         <Button
           variant="contained"
           color="primary"

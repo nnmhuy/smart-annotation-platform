@@ -42,18 +42,18 @@ const SideBar = (props) => {
         <List>
           {
             navBarItems.map(item => {
-              const { name } = item
-              const isMatchRoute = (location.pathname === `/${name}`)
+              const { name, path } = item
+              const isMatchRoute = (location.pathname === path)
 
               return (
                 <ListItem button
                   component="a"
                   key={name}
                   color="inherit"
-                  href={`/${name}`}
+                  href={path}
                   className={clsx(classes.sidebar_item, isMatchRoute && classes.active_item)}
                 >
-                  <ListItemText primary={`nav-bar-items.${name}`} />
+                  <ListItemText primary={name} />
                 </ListItem>
               )
             })
@@ -61,12 +61,12 @@ const SideBar = (props) => {
         </List>
         <Divider />
         <List>
-          <ListItem button color="inherit" onClick={() => window.location = '/register'}>
+          {/* <ListItem button color="inherit" onClick={() => window.location = '/register'}>
             <ListItemText primary={'register'} />
           </ListItem>
           <ListItem button color="inherit" onClick={() => window.location='/login'}> 
             <ListItemText primary={'log-in'} />
-          </ListItem>
+          </ListItem> */}
         </List>
       </div>
     </Drawer>

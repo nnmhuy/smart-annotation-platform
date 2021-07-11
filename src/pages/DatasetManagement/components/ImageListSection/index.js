@@ -5,6 +5,7 @@ import ImageListItem from '@material-ui/core/ImageListItem';
 import ImageListItemBar from '@material-ui/core/ImageListItemBar';
 import IconButton from '@material-ui/core/IconButton';
 import CheckIcon from '@material-ui/icons/CheckCircle';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import clsx from 'clsx'
 
 const useStyles = makeStyles((theme) => ({
@@ -30,12 +31,14 @@ const ImageListSection = (props) => {
   const classes = useStyles()
   const { useStore } = props
 
+  const isMobileLayout = useMediaQuery('(max-width:800px)');
+
   const images = useStore(state => state.images)
   const setSelectedImage = useStore(state => state.setSelectedImage)
   const selected = useStore(state => state.selected)
 
   return (
-    <ImageList className={classes.imageList} cols={4}>
+    <ImageList className={classes.imageList} cols={isMobileLayout ? 2 : 4}>
       {images.map(item => {
         const isSelected = selected[item.id]
         return (

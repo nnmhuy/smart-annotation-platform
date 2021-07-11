@@ -6,9 +6,12 @@ import List from './components/List/index'
 
 import useProjectListStore from './store'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     padding: 50,
+    [theme.breakpoints.down('md')]: {
+      padding: 10,
+    }
   },
 }))
 

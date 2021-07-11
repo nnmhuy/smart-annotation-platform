@@ -50,22 +50,25 @@ const BulkSelection = (props) => {
             Selected <b>{selectedIds.length}</b> instances
           </div>
         </Grid>
-        <Grid container item xs={4} justifyContent="flex-end">
-          <Button
-            color="primary"
-            variant="outlined"
-            onClick={deselectAll}
-          >
-            Deselect all
-          </Button>
-          <Button
-            color="primary"
-            variant="outlined"
-            style={{ marginLeft: 10 }}
-            onClick={handleDeleteSelected}
-          >
-            Delete
-          </Button>
+        <Grid container item xs={4} justifyContent="flex-end" spacing={1}>
+          <Grid item>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={deselectAll}
+            >
+              Cancel
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={handleDeleteSelected}
+            >
+              Delete
+            </Button>
+          </Grid>
         </Grid>
       </Grid>
     </Collapse>

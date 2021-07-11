@@ -6,7 +6,7 @@ import SearchIcon from '@material-ui/icons/Search';
 
 const useStyles = makeStyles(() => ({
   searchField: {
-    minWidth: 400,
+    width: '100%',
   }
 }))
 

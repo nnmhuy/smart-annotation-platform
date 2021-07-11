@@ -1,6 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
+import Grid from '@material-ui/core/Grid'
 import { throttle } from 'lodash'
 
 import SearchField from './components/SearchField'
@@ -38,23 +39,27 @@ const SearchBar = (props) => {
   
 
   return (
-    <div className={classes.root}>
-      <SearchField handleChange={handleChangeSearchValue}/>
-      <Button 
-        className={classes.createButton}
-        variant="contained" 
-        color="primary"
-        size="large"
-        onClick={() => setOpenCreateDialog(true)}
-      >
-        New project
-      </Button>
-      <CreateProjectDialog
-        open={openCreateDialog}
-        setOpen={setOpenCreateDialog}
-        handleCreate={handleCreateProject}
-      />
-    </div>
+    <Grid container className={classes.root} spacing={2}>
+      <Grid container item xs={7}>
+        <SearchField handleChange={handleChangeSearchValue}/>
+      </Grid>
+      <Grid container item xs={5} justifyContent="flex-end">
+        <Button 
+          className={classes.createButton}
+          variant="contained" 
+          color="primary"
+          size="large"
+          onClick={() => setOpenCreateDialog(true)}
+        >
+          New project
+        </Button>
+        <CreateProjectDialog
+          open={openCreateDialog}
+          setOpen={setOpenCreateDialog}
+          handleCreate={handleCreateProject}
+        />
+      </Grid>
+    </Grid>
   )
 }
 

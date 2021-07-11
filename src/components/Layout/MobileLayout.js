@@ -48,8 +48,8 @@ const MobileLayout = (props) => {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" color="white" maxHeight={50}>
-        <Toolbar>
+      <AppBar position="static" color="white" elevation={1}>
+        <Toolbar style={{ minHeight: 40 }}>
           <div className={classes.leftSection}>
             <IconButton 
               edge="start" className={classes.menuButton} color="inherit" aria-label="menu"

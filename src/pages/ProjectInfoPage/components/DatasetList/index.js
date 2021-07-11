@@ -61,7 +61,7 @@ const DatasetList = (props) => {
 
   return (
     <div className={classes.datasetListContainer}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20, }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: 15, marginBottom: 15, }}>
         <Button
           variant="contained"
           color="primary"

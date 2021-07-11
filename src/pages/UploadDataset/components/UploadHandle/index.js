@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
   logItem: {
     marginTop: 5,
     marginBottom: 5,
+    textAlign: 'left',
   },
   logUploading: {
     color: 'blue'
