@@ -54,10 +54,10 @@ const ProjectItem = (props) => {
         <Grid item xs={12}>
           <Divider className={classes.divider}/>
         </Grid>
-        <Grid item xs={1}>
+        <Grid item xs={2} md={1}>
           <Avatar className={classes.avatar}>{name[0]}</Avatar>
         </Grid>
-        <Grid container item xs={8} direction="column" justifyContent="center" alignItems="flex-start">
+        <Grid container item xs={7} md={8} direction="column" justifyContent="center" alignItems="flex-start">
           <div className={classes.projectName}>{name}</div>
           <div className={classes.projectDescription}>{description}</div>
         </Grid>

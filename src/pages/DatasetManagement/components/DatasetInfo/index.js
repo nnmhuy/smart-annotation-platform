@@ -9,6 +9,9 @@ import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
 import SettingsIcon from '@material-ui/icons/Settings';
 
+import SettingsMenu from './components/SettingsMenu'
+import DatasetService from '../../../../services/DatasetService'
+
 const useStyles = makeStyles((theme) => ({
   root: {
     background: theme.palette.primary.light,
@@ -38,7 +41,26 @@ const DatasetInfo = (props) => {
   const { datasetId } = useParams()
 
   const dataset = useStore(state => state.dataset)
+  const deleteDataset = useStore(state => state.deleteDataset)
   const { name, description, projectId, instances } = dataset
+
+  const [settingAnchorEl, setSettingAnchorEl] = React.useState(null);
+
+  const handleClickSettingMenu = (event) => {
+    setSettingAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseSettingMenu = () => {
+    setSettingAnchorEl(null);
+  };
+
+  const handleClickDeleteDataset = async () => {
+    const result = window.confirm(`This action can't be undone and will delete all images and annotations belong to this dataset`);
+    if (result === true) {
+      await deleteDataset(datasetId)
+      window.location = `/projects/project=${projectId}`
+    }
+  }
 
   return (
     <Grid container className={classes.root}>
@@ -59,9 +81,17 @@ const DatasetInfo = (props) => {
           </Button>
         </Grid>
         <Grid item>
-          <IconButton>
-            <SettingsIcon/>
+          <IconButton
+            onClick={handleClickSettingMenu}
+          >
+            <SettingsIcon
+            />
           </IconButton>
+          <SettingsMenu
+            anchorEl={settingAnchorEl}
+            handleClickDelete={handleClickDeleteDataset}
+            handleClose={handleCloseSettingMenu}
+          />
         </Grid>
         <Grid item>
           <IconButton

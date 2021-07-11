@@ -55,6 +55,18 @@ const useDatasetManagementStore = create((set, get) => ({
       images,
     })
     setIsLoadingField("deleting", false)
+  },
+
+  deleteDataset: async (datasetId) => {
+    const setIsLoadingField = get().setIsLoadingField
+    setIsLoadingField("deleting-dataset", true)
+    
+    await DatasetService.deleteDatasetById(datasetId)
+      .catch(err => {
+        alert(get(err, 'data.errors[0]', 'Error'))
+      })
+    
+    setIsLoadingField("deleting-dataset", false)
   }
 }))
 

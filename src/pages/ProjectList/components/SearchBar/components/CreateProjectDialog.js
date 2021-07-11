@@ -11,13 +11,13 @@ import { get } from 'lodash'
 
 import TextField from '../../../../../components/TextField'
 
-import DatasetClass from '../../../../../classes/DatasetClass'
+import ProjectService from '../../../../../services/ProjectService';
 
 const fields = [
   {
     name: 'name',
-    label: 'Dataset name',
-    helperText: 'Must be unique in same project',
+    label: 'Project name',
+    helperText: 'Must be unique',
     variant: 'standard',
     required: true,
     fullWidth: true,
@@ -32,11 +32,11 @@ const fields = [
   },
 ]
 
-const CreateDatasetDialog = (props) => {
+const CreateProjectDialog = (props) => {
   const { 
     open, setOpen,
     errors,
-    handleSubmit, isSubmitting
+    handleSubmit, isSubmitting,
   } = props
 
   const handleClose = () => {
@@ -53,7 +53,7 @@ const CreateDatasetDialog = (props) => {
       maxWidth="sm"
     >
       <DialogTitle id="form-dialog-title">
-        Create dataset
+        Create project
         {generalError &&
           <FormHelperText error>
             {generalError}
@@ -86,28 +86,27 @@ const CreateDatasetDialog = (props) => {
 }
 
 
-const CreateDatasetForm = withFormik({
+const CreateProjectForm = withFormik({
   mapPropsToValues: () => ({ name: '', description: '' }),
 
   validationSchema: Yup.object().shape({
     name: Yup.string().required()
   }),
 
-  handleSubmit: async (values, { props: { projectId, handleCreate, setOpen }, setSubmitting, setErrors }) => {
+  handleSubmit: async (values, { props: { handleCreate, setOpen }, setSubmitting, setErrors }) => {
     setSubmitting(true)
-    const newDataset = new DatasetClass('', values.name, projectId, { description: values.description })
 
     try {
-      const datasetResponse = await newDataset.applyCreateDataset()
-      handleCreate(DatasetClass.constructorFromServerData(datasetResponse.data))
+      const newProject = await ProjectService.createProject(values)
+      handleCreate(newProject)
       setOpen(false)
     } catch (error) {
-      const errMessage = get(error, 'data.errors.json.dataset', '')
+      const errMessage = get(error, 'data.errors.json[0]', '')
       setErrors({ error: errMessage })
     }
     setSubmitting(false)
   }
-})(CreateDatasetDialog);
+})(CreateProjectDialog);
 
 
-export default CreateDatasetForm
+export default CreateProjectForm

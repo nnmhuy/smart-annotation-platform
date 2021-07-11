@@ -12,6 +12,10 @@ const useProjectListStore = create((set, get) => ({
     const projectsObj = projectsResponse.data
 
     set({ projects: projectsObj })
+  },
+  appendProject: (newProject) => {
+    const currentProjects = [...get().projects]
+    set({ projects: [...currentProjects, newProject]})
   }
 }))
 

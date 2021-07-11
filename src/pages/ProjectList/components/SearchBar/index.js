@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button'
 import { throttle } from 'lodash'
 
 import SearchField from './components/SearchField'
+import CreateProjectDialog from './components/CreateProjectDialog'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -22,10 +23,14 @@ const SearchBar = (props) => {
   const { useStore } = props
 
   const queryProjects = throttle(useStore(state => state.queryProjects), 500)
+  const appendProject = useStore(state => state.appendProject)
+
+  const [openCreateDialog, setOpenCreateDialog] = React.useState(false)
 
   const handleChangeSearchValue = (e) => {
     // queryProjects(e.target.value)
   }
+  
 
   return (
     <div className={classes.root}>
@@ -35,10 +40,15 @@ const SearchBar = (props) => {
         variant="contained" 
         color="primary"
         size="large"
-        href="/projects/create"
+        onClick={() => setOpenCreateDialog(true)}
       >
         New project
       </Button>
+      <CreateProjectDialog
+        open={openCreateDialog}
+        setOpen={setOpenCreateDialog}
+        handleCreate={appendProject}
+      />
     </div>
   )
 }

@@ -34,7 +34,6 @@ function App() {
             <Route path="/" exact render={() => <Redirect to='/projects'/>} />
             <Route path="/projects" exact component={ProjectListPage} />
             <Route path="/projects/project=:projectId" exact component={ProjectInfoPage} />
-            <Route path="/projects/create" exact component={ProjectCreatePage} />
             <Route 
               path={[
                 "/datasets/dataset=:datasetId?page=:page",
