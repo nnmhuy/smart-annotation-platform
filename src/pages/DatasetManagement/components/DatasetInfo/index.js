@@ -17,6 +17,7 @@ import NakedField from '../../../../components/NakedField'
 import SettingsMenu from './components/SettingsMenu'
 
 import DatasetClass from '../../../../classes/DatasetClass'
+import useQuery from '../../../../utils/useQuery'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,12 +47,15 @@ const DatasetInfo = (props) => {
   const history = useHistory()
   const confirm = useConfirm()
   const { datasetId } = useParams()
+  const query = useQuery()
   const {
     useStore,
     values, setFieldValue,
     errors,
     setSubmitting, setErrors
   } = props
+
+  const page = JSON.parse(query.get("page") || 1)
 
   const dataset = useStore(state => state.dataset)
   const deleteDataset = useStore(state => state.deleteDataset)
@@ -125,31 +129,45 @@ const DatasetInfo = (props) => {
         />
         <div className={classes.instances}>{instances} instances</div>
       </Grid>
-      <Grid container item xs={6} md={4} alignItems="center" justifyContent="flex-end" spacing={1}>
-        <Grid item>
-          <Button
-            variant="outlined" className={classes.button}
-            color="primary"
-            startIcon={<AddIcon />}
-            href={`/datasets/upload/dataset=${datasetId}`}
-          >
-            Add data
-          </Button>
+      <Grid container item xs={6} md={4} alignItems="center">
+        <Grid container item xs={12} spacing={1} alignItems="center" justifyContent="flex-end">
+          <Grid item>
+            <IconButton onClick={handleClickSettingMenu}>
+              <SettingsIcon />
+            </IconButton>
+            <SettingsMenu
+              anchorEl={settingAnchorEl}
+              handleClickDelete={handleClickDeleteDataset}
+              handleClose={handleCloseSettingMenu}
+            />
+          </Grid>
+          <Grid item>
+            <IconButton href={`/projects/project=${projectId}`}>
+              <CloseIcon />
+            </IconButton>
+          </Grid>
         </Grid>
-        <Grid item>
-          <IconButton onClick={handleClickSettingMenu}>
-            <SettingsIcon />
-          </IconButton>
-          <SettingsMenu
-            anchorEl={settingAnchorEl}
-            handleClickDelete={handleClickDeleteDataset}
-            handleClose={handleCloseSettingMenu}
-          />
-        </Grid>
-        <Grid item>
-          <IconButton href={`/projects/project=${projectId}`}>
-            <CloseIcon />
-          </IconButton>
+        <Grid container item xs={12} spacing={1} alignItems="center" justifyContent="flex-end">
+          <Grid item>
+            <Button
+              variant="outlined" className={classes.button}
+              color="primary"
+              startIcon={<AddIcon />}
+              href={`/annotations/project=${projectId}&dataset=${datasetId}?page=${page}`}
+            >
+              Start annotate
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="outlined" className={classes.button}
+              color="primary"
+              startIcon={<AddIcon />}
+              href={`/datasets/upload/dataset=${datasetId}`}
+            >
+              Add data
+            </Button>
+          </Grid>
         </Grid>
       </Grid>
     </Grid>

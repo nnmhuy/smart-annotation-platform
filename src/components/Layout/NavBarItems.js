@@ -45,6 +45,7 @@ const NavBarItem = (props) => {
             <Button 
               key={name} 
               color="inherit" 
+              size="small"
               className={clsx(classes.nav_bar_item, isMatchRoute && classes.active_item)}
               href={path}
             >

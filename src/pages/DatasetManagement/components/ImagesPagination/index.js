@@ -28,7 +28,7 @@ const ImagesPagination = (props) => {
   const query = useQuery()
   const { datasetId } = useParams()
 
-  const page = JSON.parse(query.get("page")) || 1
+  const page = JSON.parse(query.get("page") || 1)
   
   const { useStore } = props
 

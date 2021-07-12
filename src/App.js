@@ -30,28 +30,57 @@ const appTheme = createTheme({
   },
 });
 
+const appRoutes = [
+  {
+    path: ["/", "/projects"],
+    component: ProjectListPage,
+    withLayout: true,
+  },
+  {
+    path: "/projects/project=:projectId",
+    component: ProjectInfoPage,
+    withLayout: true,
+  },
+  {
+    path: "/datasets/dataset=:datasetId",
+    component: DatasetManagementPage,
+    withLayout: true,
+  },
+  {
+    path: "/datasets/upload/dataset=:datasetId",
+    component: UploadDatasetPage,
+    withLayout: true,
+  },
+  {
+    path: "/annotations/project=:projectId&dataset=:datasetId",
+    component: AnnotationPage,
+    withLayout: false,
+  },
+]
+
 function App() {
   return (
     <ThemeProvider theme={appTheme}>
       <ConfirmProvider>
         <div className="App">
           <Router>
-            <Layout>
-              <Switch>
-                <Route path="/" exact render={() => <Redirect to='/projects' />} />
-                <Route path="/projects" exact component={ProjectListPage} />
-                <Route path="/projects/project=:projectId" exact component={ProjectInfoPage} />
-                <Route
-                  path={"/datasets/dataset=:datasetId"}
-                  exact
-                  component={DatasetManagementPage}
-                />
-                <Route path="/datasets/upload/dataset=:datasetId" exact component={UploadDatasetPage} />
-                <Route path={"/annotations/project=:projectId&dataset=:datasetId"} 
-                 exact component={AnnotationPage} 
-                />
-              </Switch>
-            </Layout>
+            <Switch>
+              {appRoutes.map(route => {
+                const { withLayout, exact = true, component: Component, ...others } = route
+                return (
+                  <Route exact={exact} 
+                    render={() => (
+                      withLayout ?
+                        <Layout>
+                          <Component/>
+                        </Layout>
+                      : <Component/>
+                    )}
+                    {...others}
+                  />
+                )
+              })}
+            </Switch>
           </Router>
         </div>
       </ConfirmProvider>

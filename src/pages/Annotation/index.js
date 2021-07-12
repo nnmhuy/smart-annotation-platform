@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
     width: '100vw',
-    height: '100%',
+    height: '100vh',
     flexDirection: 'column',
     overflow: 'hidden'
   },
@@ -52,7 +52,7 @@ const Annotation = (props) => {
   const classes = useStyles()
   const { projectId, datasetId, } = useParams()
   const query = useQuery()
-  const page = JSON.parse(query.get("page")) || 1
+  const page = JSON.parse(query.get("page") || 1)
 
   const getDatasetData = useAnnotationStore(state => state.getDatasetData)
 

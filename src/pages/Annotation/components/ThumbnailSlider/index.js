@@ -16,10 +16,19 @@ const useStyles = makeStyles((props) => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     paddingBottom: 10,
     width: '100%',
     height: 100,
     background: theme.light.forthColor
+  },
+  pageInfo: {
+    fontWeight: 500,
+    width: 100,
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-evenly',
   },
   thumbnailWrapper: {
     whiteSpace: 'nowrap',
@@ -51,7 +60,7 @@ const ThumbnailSlider = (props) => {
   let query = useQuery()
   let history = useHistory()
 
-  const page = JSON.parse(query.get("page")) || 1
+  const page = JSON.parse(query.get("page") || 1)
 
   const { 
     useStore, 
@@ -65,17 +74,16 @@ const ThumbnailSlider = (props) => {
   const getImagesOfDataset = useStore(state => state.getImagesOfDataset)
   const imageList = useStore(state => state.imageList)
 
+  const instances = get(dataset, 'instances', 0)
+  const maxPage = Number.parseInt((instances / IMAGES_PER_PAGE) + Boolean(instances % IMAGES_PER_PAGE))
+
 
   const handleChangePage = async (val) => {
-    const pageVal = JSON.parse(page)
-    const instances = get(dataset, 'instances', 0)
-
-    const maxPage = Number.parseInt((instances / IMAGES_PER_PAGE) + Boolean(instances % IMAGES_PER_PAGE))
-    let newPage = pageVal + val
+    let newPage = page + val
 
     newPage = (Math.max(Math.min(maxPage, newPage), 1))
 
-    if (newPage !== pageVal) {
+    if (newPage !== page) {
       history.push(`/annotations/project=${projectId}&dataset=${datasetId}?page=${newPage}`)
       await getImagesOfDataset(datasetId, newPage)
       setImageId(null)
@@ -86,6 +94,10 @@ const ThumbnailSlider = (props) => {
   // TODO: show current page / total page
   return (
     <div className={classes.sliderWrapper}>
+      <div className={classes.pageInfo}>
+        <div>{`Page: ${page}`}</div>
+        <div>{`Total: ${maxPage}`}</div>
+      </div>
       <IconButton onClick={() => handleChangePage(-1)} className={classes.button}>
         <KeyboardArrowLeft />
       </IconButton>

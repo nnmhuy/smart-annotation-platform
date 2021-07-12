@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 
-import Logo from './Logo'
+// import Logo from './Logo'
 import NavBarItems from './NavBarItems'
 
 const useStyles = makeStyles((theme) => ({
@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 20,
   },
   centerSection: {
     flexGrow: 1,
@@ -29,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
   },
   mainContainer: {
     flex: 1,
-    overflow: 'hidden',
   }
 }));
 
@@ -42,13 +40,14 @@ const DesktopLayout = (props) => {
       <AppBar position="static" color="white" elevation={1}>
         <Toolbar style={{ minHeight: 40 }}>
           <div className={classes.leftSection}>
-            <Logo href='/'/>
+            {/* <Logo href='/'/> */}
+            <NavBarItems />
           </div>
           <div className={classes.centerSection}>
 
           </div>
           <div className={classes.rightSection}>
-            <NavBarItems/>
+            {/* <NavBarItems/> */}
           </div>
         </Toolbar>
       </AppBar>

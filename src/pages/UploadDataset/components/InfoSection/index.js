@@ -1,8 +1,8 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core'
+import { useParams } from 'react-router'
 import Grid from '@material-ui/core/Grid'
 import IconButton from '@material-ui/core/IconButton'
-import { useParams } from 'react-router'
 import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({

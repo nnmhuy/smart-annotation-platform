@@ -45,7 +45,9 @@ const ScribbleToMask = (props) => {
 
   React.useEffect(() => {
     let miVOSBuilder = getMiVOSBuilder()
-    miVOSBuilder.setImage(image)
+    if (image) {
+      miVOSBuilder.setImage(image)
+    }
     setMiVOSBuilder(miVOSBuilder)
   }, [image])
 

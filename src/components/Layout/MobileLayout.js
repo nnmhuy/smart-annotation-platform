@@ -5,7 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 
-import Logo from './Logo'
+// import Logo from './Logo'
 import Sidebar from './SideBar'
 
 const useStyles = makeStyles((theme) => ({
@@ -63,7 +63,7 @@ const MobileLayout = (props) => {
             </IconButton>
           </div>
           <div className={classes.centerSection}>
-            <Logo href='/'/>
+            {/* <Logo href='/'/> */}
           </div>
           <div className={classes.rightSection}>
           </div>

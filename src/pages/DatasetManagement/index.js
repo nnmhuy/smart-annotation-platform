@@ -16,7 +16,7 @@ const DatasetManagement = (props) => {
   const { datasetId } = useParams()
   let query = useQuery()
 
-  const page = JSON.parse(query.get("page")) || 1
+  const page = JSON.parse(query.get("page") || 1)
 
   const isLoading = useDatasetManagementStore(state => state.isLoading)
   const getDataset = useDatasetManagementStore(state => state.getDataset)
