@@ -28,7 +28,8 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   mainContainer: {
-    flex: 1
+    flex: 1,
+    overflow: 'hidden',
   }
 }));
 

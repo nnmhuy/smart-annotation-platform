@@ -9,13 +9,10 @@ import resizeImage from '../../utils/resizeImage'
 
 
 import ImageService from '../../services/ImageService'
+import AnnotationService from '../../services/AnnotationService'
+import DatasetService from '../../services/DatasetService'
 
 import LabelClass from '../../classes/LabelClass'
-import ImageClass from '../../classes/ImageClass'
-import BBoxAnnotationClass from '../../classes/BBoxAnnotationClass'
-import PolygonAnnotationClass from '../../classes/PolygonAnnotationClass'
-import ScribbleToMaskAnnotationClass from '../../classes/ScribbleToMaskAnnotationClass'
-import DatasetService from '../../services/DatasetService'
 
 const useAnnotationStore = create((set, get) => ({
   datasetId: null,
@@ -58,14 +55,10 @@ const useAnnotationStore = create((set, get) => ({
     const imageList = get().imageList
     const stage = get().stageRef
     const stageSize = get().stageSize
-    const isLoading = get().isLoading
+    const setIsLoading = get().setIsLoading
+    const getAnnotationByImage = get().getAnnotationByImage
 
-    set({
-      isLoading: {
-        ...isLoading,
-        isLoadingImageData: true
-      }
-    })
+    setIsLoading("isLoadingImageData", true)
 
     const data = imageList.find(data => data.id === newImageId)
     let imageBlob = null
@@ -84,36 +77,19 @@ const useAnnotationStore = create((set, get) => ({
     });
     stage.scale({ x: 1, y: 1 })
 
-    // load annotations
-    const annotationResponse = await RestConnector.get(`/annotations?image_id=${newImageId}`)
-
-    const annotationsObj = await Promise.all(annotationResponse.data.map(async ann => {
-      switch (ann._cls) {
-        case "Annotation.BBoxAnnotation":
-          return BBoxAnnotationClass.constructorFromServerData(ann)
-        case "Annotation.PolygonAnnotation":
-          return PolygonAnnotationClass.constructorFromServerData(ann)
-        case "Annotation.MaskAnnotation":
-          return await ScribbleToMaskAnnotationClass.constructorFromServerData(ann)
-        default:
-          return {}
-      }
-    }))
-
     set({
-      isLoading: {
-        ...isLoading,
-        isLoadingImageData: false,
-      },
       imageId: newImageId,
       image: {
         blob: imageBlob,
         ...newImage,
       },
-      annotations: annotationsObj,
       drawingAnnotation: null,
       editingAnnotationId: null,
     })
+
+    setIsLoading("isLoadingImageData", false)
+
+    await getAnnotationByImage(newImageId)
   },
   getImageId: () => get().imageId,
   getImage: () => get().image,
@@ -139,6 +115,20 @@ const useAnnotationStore = create((set, get) => ({
     set(state => ({
       annotations: filter(state.annotations, ann => ann.id !== deleteAnnotationId)
     }))
+  },
+  getAnnotationByImage: async (imageId) => {
+    const setIsLoading = get().setIsLoading
+    setIsLoading("annotations", true)
+
+    try {
+      const annotations = await AnnotationService.getAnnotationByImage(imageId)
+
+      set({ annotations })
+    } catch (error) {
+      console.log(error)
+    }
+
+    setIsLoading("annotations", false)
   },
 
   editingAnnotationId: null,

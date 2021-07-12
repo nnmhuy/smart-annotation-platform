@@ -1,17 +1,16 @@
 import create from 'zustand'
 
-import RestConnector from '../../connectors/RestConnector'
+import ProjectService from '../../services/ProjectService'
 
 const useProjectListStore = create((set, get) => ({
   isLoading: {},
   projects: [],
 
   setIsLoading: (name, value) => set(state => ({ isLoading: { ...state.isLoading, [name]: value }})),
-  queryProjects: async (query='') => {
-    const projectsResponse = await RestConnector.get(`/projects?q=${query}`)
-    const projectsObj = projectsResponse.data
+  queryProjects: async () => {
+    const projects = await ProjectService.getProjects()
 
-    set({ projects: projectsObj })
+    set({ projects })
   },
   appendProject: (newProject) => {
     const currentProjects = [...get().projects]

@@ -83,6 +83,7 @@ const ThumbnailSlider = (props) => {
   }
 
 
+  // TODO: show current page / total page
   return (
     <div className={classes.sliderWrapper}>
       <IconButton onClick={() => handleChangePage(-1)} className={classes.button}>

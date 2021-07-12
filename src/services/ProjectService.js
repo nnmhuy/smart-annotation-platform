@@ -3,6 +3,11 @@ import RestConnector from '../connectors/RestConnector'
 import ProjectClass from '../classes/ProjectClass'
 
 class ProjectService {
+  async getProjects() {
+    return RestConnector.get(`/projects`)
+      .then(response => response.data.map(data => ProjectClass.constructorFromServerData(data)))
+  }
+
   createProject(data) {
     return RestConnector.post(`/projects`, {
       name: data.name,
