@@ -14,6 +14,7 @@ import KeyboardHandler from './components/KeyboardHandler/index'
 
 import EventCenter from '../../classes/EventCenterClass'
 import useAnnotationStore from './store'
+import useQuery from '../../utils/useQuery'
 
 
 const useStyles = makeStyles(() => ({
@@ -49,15 +50,17 @@ const annotationEventCenter = new EventCenter()
 
 const Annotation = (props) => {
   const classes = useStyles()
-  const { projectId, datasetId } = useParams()
+  const { projectId, datasetId, } = useParams()
+  const query = useQuery()
+  const page = JSON.parse(query.get("page")) || 1
 
   const getDatasetData = useAnnotationStore(state => state.getDatasetData)
 
   React.useEffect(() => {
     if (projectId && datasetId) {
-      getDatasetData(projectId, datasetId)
+      getDatasetData(projectId, datasetId, page)
     }
-  }, [datasetId])
+  }, [projectId, datasetId, page])
 
   return (
     <div className={classes.root}>

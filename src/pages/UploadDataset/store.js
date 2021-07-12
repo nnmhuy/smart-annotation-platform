@@ -3,13 +3,21 @@ import { get as getLodash, filter } from 'lodash'
 
 import ImageService from '../../services/ImageService'
 
-const useUploadDatasetStore = create((set, get) => ({
+const initialState = {
   isLoading: {},
   files: [],
   progressInfos: {},
   uploadLogs: {},
   uploadedFiles: [],
   isUploaded: false,
+}
+
+const useUploadDatasetStore = create((set, get) => ({
+  ...initialState,
+
+  resetAllState: () => {
+    set({ ...initialState })
+  },
 
   setIsUploaded: (value) => set({ isUploaded: value }),
   setIsLoading: (name, value) => set(state => ({ isLoading: { ...state.isLoading, [name]: value } })),

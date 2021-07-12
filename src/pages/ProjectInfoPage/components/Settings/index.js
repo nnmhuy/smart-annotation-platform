@@ -2,6 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import { useConfirm } from 'material-ui-confirm';
+import { useHistory } from 'react-router'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
 const Settings = (props) => {
   const classes = useStyles()
   const confirm = useConfirm()
+  const history = useHistory()
   const { useStore } = props
 
   const project = useStore(state => state.project)
@@ -36,7 +38,7 @@ const Settings = (props) => {
     })
     .then(async () => { 
       await deleteProject()
-      window.location = `/projects`
+      history.replace(`/projects`)
     })
   }
 

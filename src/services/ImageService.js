@@ -22,8 +22,8 @@ class ImageService {
     })
   }
 
-  getImagesByDataset(datasetId, page = 1) {
-    return RestConnector.get(`/images?dataset_id=${datasetId}&page=${page}`)
+  getImagesByDataset(datasetId, page = 1, per_page = 50) {
+    return RestConnector.get(`/images?dataset_id=${datasetId}&page=${page}&per_page=${per_page}`)
       .then((response) => {
         return response.data.map(image => ImageClass.constructorFromServerData(image))
       })

@@ -57,10 +57,12 @@ const RenderComponent = (props) => {
   const setStageSize = useStore(state => state.setStageSize)
   const handleNewStageSize = debounce(() => {
     const container = stageContainerRef.current
-    setStageSize({
-      width: container.clientWidth,
-      height: container.clientHeight,
-    })
+    if (container) {
+      setStageSize({
+        width: container.clientWidth,
+        height: container.clientHeight,
+      })
+    }
   }, 500)
 
   React.useEffect(() => {

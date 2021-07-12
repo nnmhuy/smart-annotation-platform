@@ -1,5 +1,3 @@
-import RestConnector from "../connectors/RestConnector"
-
 export default class LabelClass {
   constructor(labelId = '', label = '', projectId = '', properties = {}, annotationProperties = {}) {
     this.id = labelId

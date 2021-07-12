@@ -3,11 +3,11 @@ import { makeStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
-import { useParams } from 'react-router'
+import { useParams, useHistory } from 'react-router'
 import { useConfirm } from 'material-ui-confirm'
 import { withFormik, Field } from 'formik';
 import * as Yup from 'yup'
-import { get, set, cloneDeep } from 'lodash'
+import { get, cloneDeep } from 'lodash'
 
 import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
 
 const DatasetInfo = (props) => {
   const classes = useStyles()
+  const history = useHistory()
   const confirm = useConfirm()
   const { datasetId } = useParams()
   const {
@@ -99,7 +100,7 @@ const DatasetInfo = (props) => {
       description: `This action can't be undone and will delete all images and annotations belong to this dataset`
     }).then(async () => {
       await deleteDataset(datasetId)
-      window.location = `/projects/project=${projectId}`
+      history.replace(`/projects/project=${projectId}`)
     })
   }
 

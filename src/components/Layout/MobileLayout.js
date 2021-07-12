@@ -11,6 +11,9 @@ import Sidebar from './SideBar'
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
   },
   leftSection: {
     display: 'flex',
@@ -29,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   mainContainer: {
+    flex: 1,
   }
 }));
 

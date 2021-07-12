@@ -29,7 +29,7 @@ const Info = (props) => {
       </Grid>
       <Grid container item xs={2} justifyContent="flex-end">
         <IconButton
-          href={`/datasets/${datasetId}`}
+          href={`/datasets/dataset=${datasetId}`}
         >
           <CloseIcon/>
         </IconButton>

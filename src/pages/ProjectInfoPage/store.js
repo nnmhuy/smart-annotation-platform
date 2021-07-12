@@ -74,11 +74,12 @@ const useProjectInfoStore = create((set, get) => ({
     const setIsLoadingField = get().setIsLoadingField
 
     setIsLoadingField("labels", true)
-
-    const labelsResponse = await RestConnector.get(`/annotation_labels?project_id=${projectId}`)
-
-    const labelsObj = labelsResponse.data.map(label => LabelClass.constructorFromServerData(label))
-    set({ labels: labelsObj })
+    try {
+      const labels = await LabelService.getLabelByProjectId(projectId)
+      set({ labels: labels })
+    } catch (error) {
+      alert(get(error, 'response.data.errors', 'Error getting labels'))
+    }
 
     setIsLoadingField("labels", false)
   },

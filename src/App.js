@@ -42,15 +42,14 @@ function App() {
                 <Route path="/projects" exact component={ProjectListPage} />
                 <Route path="/projects/project=:projectId" exact component={ProjectInfoPage} />
                 <Route
-                  path={[
-                    "/datasets/dataset=:datasetId?page=:page",
-                    "/datasets/dataset=:datasetId",
-                  ]}
+                  path={"/datasets/dataset=:datasetId"}
                   exact
                   component={DatasetManagementPage}
                 />
                 <Route path="/datasets/upload/dataset=:datasetId" exact component={UploadDatasetPage} />
-                <Route path="/annotations/project=:projectId&dataset=:datasetId" exact component={AnnotationPage} />
+                <Route path={"/annotations/project=:projectId&dataset=:datasetId"} 
+                 exact component={AnnotationPage} 
+                />
               </Switch>
             </Layout>
           </Router>

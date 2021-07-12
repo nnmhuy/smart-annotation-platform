@@ -2,7 +2,9 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination'
 import { get } from 'lodash'
-import { useParams } from 'react-router'
+import { useParams, useHistory } from 'react-router'
+
+import useQuery from '../../../../utils/useQuery'
 
 import { IMAGES_PER_PAGE } from '../../constant'
 
@@ -22,14 +24,22 @@ const useStyles = makeStyles((theme) => ({
 
 const ImagesPagination = (props) => {
   const classes = useStyles()
+  const history = useHistory()
+  const query = useQuery()
+  const { datasetId } = useParams()
+
+  const page = JSON.parse(query.get("page")) || 1
+  
   const { useStore } = props
-  const { datasetId, page = 1 } = useParams()
 
   const dataset = useStore(state => state.dataset)
+  const getImages = useStore(state => state.getImages)
+
   const instances = get(dataset, 'instances', 0)
 
   const handleChange = (event, value) => {
-    window.location = `/datasets/dataset=${datasetId}&page=${value}`
+    history.push(`/datasets/dataset=${datasetId}?page=${value}`)
+    getImages(datasetId, value)
   };
 
   const pageStart = Math.min((page - 1) * IMAGES_PER_PAGE + 1, instances)

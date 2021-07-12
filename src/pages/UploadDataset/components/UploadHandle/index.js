@@ -44,6 +44,7 @@ const UploadHandle = (props) => {
   const { useStore } = props
   const { datasetId } = useParams()
 
+  const resetAllState = useStore(state => state.resetAllState)
   const uploadFiles = useStore(state => state.uploadFiles)
   const isLoading = useStore(state => state.isLoading)
   const isUploaded = useStore(state => state.isUploaded)
@@ -106,7 +107,7 @@ const UploadHandle = (props) => {
             variant="contained"
             color="secondary"
             size="large"
-            onClick={() => window.location.reload()}
+            onClick={resetAllState}
             style={{ marginTop: 20 }}
           >
             Upload more

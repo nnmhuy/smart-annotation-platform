@@ -10,8 +10,13 @@ import ImagesPagination from './components/ImagesPagination/index'
 
 import useDatasetManagementStore from './store.js'
 
+import useQuery from '../../utils/useQuery'
+
 const DatasetManagement = (props) => {
-  const { datasetId, page = 1 } = useParams()
+  const { datasetId } = useParams()
+  let query = useQuery()
+
+  const page = JSON.parse(query.get("page")) || 1
 
   const isLoading = useDatasetManagementStore(state => state.isLoading)
   const getDataset = useDatasetManagementStore(state => state.getDataset)
@@ -20,7 +25,7 @@ const DatasetManagement = (props) => {
   React.useEffect(() => {
     getDataset(datasetId)
     getImages(datasetId, page)
-  }, [])
+  }, [datasetId, page])
 
   return (
     <div>

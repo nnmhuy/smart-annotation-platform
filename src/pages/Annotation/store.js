@@ -2,19 +2,24 @@ import create from 'zustand'
 import { cloneDeep, find, filter, remove } from 'lodash'
 
 import RestConnector from '../../connectors/RestConnector'
-import { MODES, STAGE_PADDING, DEFAULT_TOOL_CONFIG } from './constants'
+import { MODES, STAGE_PADDING, DEFAULT_TOOL_CONFIG, IMAGES_PER_PAGE } from './constants'
 import getPointerPosition from './utils/getPointerPosition'
 import loadImageFromURL from '../../utils/loadImageFromURL'
 import resizeImage from '../../utils/resizeImage'
+
+
+import ImageService from '../../services/ImageService'
 
 import LabelClass from '../../classes/LabelClass'
 import ImageClass from '../../classes/ImageClass'
 import BBoxAnnotationClass from '../../classes/BBoxAnnotationClass'
 import PolygonAnnotationClass from '../../classes/PolygonAnnotationClass'
 import ScribbleToMaskAnnotationClass from '../../classes/ScribbleToMaskAnnotationClass'
+import DatasetService from '../../services/DatasetService'
 
 const useAnnotationStore = create((set, get) => ({
   datasetId: null,
+  dataset: {},
   isLoading: {},
   stageRef: null,
   stageSize: { width: 0, height: 0 },
@@ -32,7 +37,7 @@ const useAnnotationStore = create((set, get) => ({
       editingAnnotationId: null,
     }
   }),
-  setIsLoading: (name, value) => set(state => ({ isLoading: { ...state.isLoading, [name]: value }})),
+  setIsLoading: (name, value) => set(state => ({ isLoading: { ...state.isLoading, [name]: value } })),
 
 
   annotations: [],
@@ -43,6 +48,13 @@ const useAnnotationStore = create((set, get) => ({
   highlightId: null,
 
   setImageId: async (newImageId) => {
+    if (!newImageId) {
+      return set({
+        imageId: null,
+        image: null,
+        annotations: [],
+      })
+    }
     const imageList = get().imageList
     const stage = get().stageRef
     const stageSize = get().stageSize
@@ -65,7 +77,6 @@ const useAnnotationStore = create((set, get) => ({
           maxHeight: stageSize.height - STAGE_PADDING,
         })
       })
-
 
     stage.position({
       x: (stageSize.width - newImage.width) / 2,
@@ -212,26 +223,35 @@ const useAnnotationStore = create((set, get) => ({
   getToolConfig: () => get().toolConfig[get().activeMode] || {},
 
 
-  getDatasetData: async (projectId, datasetId) => {
-    set(state => ({ isLoading: { ...state.isLoading, isLoadingDatasetData: true } }))
-    // TODO: request in parallel
+  getDatasetData: async (projectId, datasetId, page) => {
+    const setIsLoading = get().setIsLoading
+    const getImagesOfDataset = get().getImagesOfDataset
+    setIsLoading("isLoadingDatasetData", true)
+    // load dataset
+    const dataset = await DatasetService.getDatasetById(datasetId)
 
     // load images
-    const imageResponse = await RestConnector.get(`/images?dataset_id=${datasetId}`)
-    const imagesObj = imageResponse.data.map(image => ImageClass.constructorFromServerData(image))
+    await getImagesOfDataset(datasetId, page)
 
     // load annotation label
     const annotationLabelResponse = await RestConnector.get(`/annotation_labels?project_id=${projectId}`)
     const labelsObj = annotationLabelResponse.data.map(label => LabelClass.constructorFromServerData(label))
 
     set(state => ({
-      isLoading: {
-        ...state.isLoading,
-        isLoadingDatasetData: false
-      },
-      imageList: imagesObj,
+      dataset,
       labels: labelsObj,
     }))
+    setIsLoading("isLoadingDatasetData", false)
+  },
+  getImagesOfDataset: async (datasetId, page) => {
+    const setIsLoading = get().setIsLoading
+    setIsLoading("images", true)
+
+    const imagesObj = await ImageService.getImagesByDataset(datasetId, page, IMAGES_PER_PAGE)
+
+    set({ imageList: imagesObj })
+
+    setIsLoading("images", false)
   }
 }))
 
