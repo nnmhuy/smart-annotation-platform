@@ -109,7 +109,7 @@ const DEFAULT_TOOL_CONFIG = {
   }
 }
 
-
+const IMAGES_PER_PAGE = 5
 
 export {
   MODES,
@@ -119,6 +119,7 @@ export {
   STAGE_PADDING,
   MIN_ZOOM_SCALE,
   MAX_ZOOM_SCALE,
+  IMAGES_PER_PAGE,
 
   DEFAULT_ANNOTATION_ATTRS,
 

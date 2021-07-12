@@ -1,6 +1,12 @@
 import React from 'react'
 import { IconButton, makeStyles } from '@material-ui/core'
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons'
+import { useParams, useHistory } from 'react-router'
+import { get } from 'lodash'
+
+
+import { IMAGES_PER_PAGE } from '../../constants'
+import useQuery from '../../../../utils/useQuery'
 
 import ThumbnailImage from './ThumbnailImage'
 import { theme } from '../../../../theme'
@@ -38,44 +44,52 @@ const useStyles = makeStyles((props) => ({
   },
 }))
 
+
 const ThumbnailSlider = (props) => {
+  const classes = useStyles()
+  const { projectId, datasetId } = useParams()
+  let query = useQuery()
+  let history = useHistory()
+
+  const page = JSON.parse(query.get("page")) || 1
+
   const { 
     useStore, 
     // eventCenter 
   } = props
+
+
   const imageId = useStore(state => state.imageId)
-
+  const dataset = useStore(state => state.dataset)
   const setImageId = useStore(state => state.setImageId)
+  const getImagesOfDataset = useStore(state => state.getImagesOfDataset)
   const imageList = useStore(state => state.imageList)
-  // Page use 0-index
 
-  const [page, setPage] = React.useState(0)
-  const [imagePerPage, setImagePerPage] = React.useState(1)
-  
-  const componentRef = React.useCallback(component => {
-    if (component !== null) {
-      let newImagePerPage = Math.floor(component.offsetWidth / 120)
 
-      setImagePerPage(newImagePerPage)
+  const handleChangePage = async (val) => {
+    const pageVal = JSON.parse(page)
+    const instances = get(dataset, 'instances', 0)
+
+    const maxPage = Number.parseInt((instances / IMAGES_PER_PAGE) + Boolean(instances % IMAGES_PER_PAGE))
+    let newPage = pageVal + val
+
+    newPage = (Math.max(Math.min(maxPage, newPage), 1))
+
+    if (newPage !== pageVal) {
+      history.push(`/annotations/project=${projectId}&dataset=${datasetId}?page=${newPage}`)
+      await getImagesOfDataset(datasetId, newPage)
+      setImageId(null)
     }
-  }, [])
-
-  const classes = useStyles()
-  const handleChangePage = (val) => {
-    // Max page = total page - 1 (0-index)
-    const maxPage = Math.floor((imageList.length - 1) / imagePerPage)
-    let newPage = page + val
-    // Clamp page value into 0 - maxPage
-    newPage = (Math.max(Math.min(maxPage, newPage), 0))
-    setPage(newPage)
   }
 
+
+  // TODO: show current page / total page
   return (
     <div className={classes.sliderWrapper}>
       <IconButton onClick={() => handleChangePage(-1)} className={classes.button}>
         <KeyboardArrowLeft />
       </IconButton>
-        <div className={classes.thumbnailWrapper} ref={componentRef}>
+        <div className={classes.thumbnailWrapper}>
         {imageList.map((data, index) => {
             return (
               <ThumbnailImage

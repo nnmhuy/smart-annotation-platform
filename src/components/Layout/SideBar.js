@@ -61,12 +61,6 @@ const SideBar = (props) => {
         </List>
         <Divider />
         <List>
-          {/* <ListItem button color="inherit" onClick={() => window.location = '/register'}>
-            <ListItemText primary={'register'} />
-          </ListItem>
-          <ListItem button color="inherit" onClick={() => window.location='/login'}> 
-            <ListItemText primary={'log-in'} />
-          </ListItem> */}
         </List>
       </div>
     </Drawer>

@@ -9,7 +9,9 @@ import NavBarItems from './NavBarItems'
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    height: '100vh'
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
   },
   leftSection: {
     display: 'flex',
@@ -26,7 +28,8 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   mainContainer: {
-    height: 'calc(100% - 40px)'
+    flex: 1,
+    overflow: 'hidden',
   }
 }));
 

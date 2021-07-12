@@ -2,11 +2,8 @@ import create from 'zustand'
 import { filter } from 'lodash'
 
 import ProjectService from '../../services/ProjectService'
-
-import DatasetClass from '../../classes/DatasetClass'
-import LabelClass from '../../classes/LabelClass'
-
-import RestConnector from '../../connectors/RestConnector'
+import LabelService from '../../services/LabelService'
+import DatasetService from '../../services/DatasetService'
 
 const useProjectInfoStore = create((set, get) => ({
   isLoading: {},
@@ -19,14 +16,13 @@ const useProjectInfoStore = create((set, get) => ({
     const setIsLoadingField = get().setIsLoadingField
     setIsLoadingField("project", true)
 
-    const projectResponse = await RestConnector.get(`/projects?id=${projectId}`)
+    const project = await ProjectService.getProjectById(projectId)
 
-    const projectObj = projectResponse.data[0]
-    if (!projectObj) {
+    if (!project) {
       alert("Not found project!")
       window.history.back()
     } else {
-      set({ project: projectObj })
+      set({ project })
     }
     setIsLoadingField("project", false)
   },
@@ -54,10 +50,9 @@ const useProjectInfoStore = create((set, get) => ({
 
     setIsLoadingField("datasets", true)
 
-    const datasetsResponse = await RestConnector.get(`/datasets?project_id=${projectId}`)
-    const datasetsObj = datasetsResponse.data.map(dataset => DatasetClass.constructorFromServerData(dataset))
-  
-    set({ datasets: datasetsObj })
+    const datasets = await DatasetService.getDatasetByProject(projectId)
+
+    set({ datasets })
 
     setIsLoadingField("datasets", false)
   },
@@ -73,32 +68,33 @@ const useProjectInfoStore = create((set, get) => ({
     const setIsLoadingField = get().setIsLoadingField
 
     setIsLoadingField("labels", true)
-
-    const labelsResponse = await RestConnector.get(`/annotation_labels?project_id=${projectId}`)
-
-    const labelsObj = labelsResponse.data.map(label => LabelClass.constructorFromServerData(label))
-    set({ labels: labelsObj })
+    try {
+      const labels = await LabelService.getLabelByProject(projectId)
+      set({ labels: labels })
+    } catch (error) {
+      alert(get(error, 'response.data.errors', 'Error getting labels'))
+    }
 
     setIsLoadingField("labels", false)
   },
 
   createLabel: async(newLabel) => {
-    const createLabelResponse = await newLabel.applyCreateLabel()
-    const newLabelObj = LabelClass.constructorFromServerData(createLabelResponse.data)
+    const createdLabel = await LabelService.createLabel(newLabel)
 
     const currentLabels = get().labels
     set({
-      labels: [...currentLabels, newLabelObj]
+      labels: [...currentLabels, createdLabel]
     })
   },
 
   updateLabel: async (newLabel) => {
-    newLabel.applyUpdateLabel()
-    const newLabels = get().labels.map(label => {
+    const updatedLabel = await LabelService.updateLabel(newLabel)
+
+    const newLabels = [...get().labels].map(label => {
       if (label.id !== newLabel.id) {
         return label
       } else {
-        return newLabel
+        return updatedLabel
       }
     })
 
@@ -106,11 +102,15 @@ const useProjectInfoStore = create((set, get) => ({
   },
 
   deleteLabel: async (deleteLabel) => {
-    deleteLabel.applyDeleteLabel()
-    const currentLabels = get().labels
-    const newLabels = filter(currentLabels, (label) => label.id !== deleteLabel.id)
-
-    set({ labels: newLabels })
+    try {
+      await LabelService.deleteLabelById(deleteLabel.id)
+      const currentLabels = [...get().labels]
+      const newLabels = filter(currentLabels, (label) => label.id !== deleteLabel.id)
+  
+      set({ labels: newLabels })
+    } catch (error) {
+      alert(get(error, 'data.errors.json.label', ''))
+    }
   }
 }))
 

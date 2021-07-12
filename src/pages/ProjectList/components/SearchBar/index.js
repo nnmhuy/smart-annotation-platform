@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import { throttle } from 'lodash'
+import { useHistory } from 'react-router'
 
 import SearchField from './components/SearchField'
 import CreateProjectDialog from './components/CreateProjectDialog'
@@ -21,6 +22,7 @@ const useStyles = makeStyles(() => ({
 
 const SearchBar = (props) => {
   const classes = useStyles()
+  const history = useHistory()
   const { useStore } = props
 
   const queryProjects = throttle(useStore(state => state.queryProjects), 500)
@@ -34,7 +36,7 @@ const SearchBar = (props) => {
 
   const handleCreateProject = (newProject) => {
     appendProject(newProject)
-    window.location = `/projects/project=${newProject.id}`
+    history.push(`/projects/project=${newProject.id}`)
   }
   
 

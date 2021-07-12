@@ -63,13 +63,13 @@ const LabelList = (props) => {
   }, [])
 
   const handleTriggerEditLabel = (label) => () => {
-    setEditingLabel(cloneDeep(label))
+    setEditingLabel(label)
     setOpenDialog(true)
   }
 
   const handleTriggerCreateLabel = () => {
-    const newLabel = new LabelClass('', 'custom label', projectId, {}, {
-      fill: randomColor,
+    const newLabel = new LabelClass('', '', projectId, {}, {
+      fill: randomColor(),
       stroke: '#000000'
     })
     setEditingLabel(newLabel)
@@ -165,6 +165,7 @@ const LabelList = (props) => {
         </TableBody>
       </Table>
       <EditLabelDialog
+        projectId={projectId}
         open={openDialog}
         setOpen={setOpenDialog}
         handleSave={handleSaveEditDialog}
