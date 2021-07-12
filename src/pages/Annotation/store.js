@@ -1,7 +1,6 @@
 import create from 'zustand'
 import { cloneDeep, find, filter, remove } from 'lodash'
 
-import RestConnector from '../../connectors/RestConnector'
 import { MODES, STAGE_PADDING, DEFAULT_TOOL_CONFIG, IMAGES_PER_PAGE } from './constants'
 import getPointerPosition from './utils/getPointerPosition'
 import loadImageFromURL from '../../utils/loadImageFromURL'
@@ -11,8 +10,7 @@ import resizeImage from '../../utils/resizeImage'
 import ImageService from '../../services/ImageService'
 import AnnotationService from '../../services/AnnotationService'
 import DatasetService from '../../services/DatasetService'
-
-import LabelClass from '../../classes/LabelClass'
+import LabelService from '../../services/LabelService'
 
 const useAnnotationStore = create((set, get) => ({
   datasetId: null,
@@ -109,8 +107,7 @@ const useAnnotationStore = create((set, get) => ({
   getDrawingAnnotation: () => get().drawingAnnotation,
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
   deleteAnnotation: (deleteAnnotationId) => {
-    const annotation = find(get().annotations, { id: deleteAnnotationId })
-    annotation.applyDeleteAnnotation()
+    AnnotationService.deleteAnnotationById(deleteAnnotationId)
 
     set(state => ({
       annotations: filter(state.annotations, ann => ann.id !== deleteAnnotationId)
@@ -224,13 +221,12 @@ const useAnnotationStore = create((set, get) => ({
     await getImagesOfDataset(datasetId, page)
 
     // load annotation label
-    const annotationLabelResponse = await RestConnector.get(`/annotation_labels?project_id=${projectId}`)
-    const labelsObj = annotationLabelResponse.data.map(label => LabelClass.constructorFromServerData(label))
+    const annotationsLabels = await LabelService.getLabelByProject(projectId)
 
-    set(state => ({
+    set({
       dataset,
-      labels: labelsObj,
-    }))
+      labels: annotationsLabels,
+    })
     setIsLoading("isLoadingDatasetData", false)
   },
   getImagesOfDataset: async (datasetId, page) => {

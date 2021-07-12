@@ -3,11 +3,7 @@ import { filter } from 'lodash'
 
 import ProjectService from '../../services/ProjectService'
 import LabelService from '../../services/LabelService'
-
-import DatasetClass from '../../classes/DatasetClass'
-import LabelClass from '../../classes/LabelClass'
-
-import RestConnector from '../../connectors/RestConnector'
+import DatasetService from '../../services/DatasetService'
 
 const useProjectInfoStore = create((set, get) => ({
   isLoading: {},
@@ -20,14 +16,13 @@ const useProjectInfoStore = create((set, get) => ({
     const setIsLoadingField = get().setIsLoadingField
     setIsLoadingField("project", true)
 
-    const projectResponse = await RestConnector.get(`/projects?id=${projectId}`)
+    const project = await ProjectService.getProjectById(projectId)
 
-    const projectObj = projectResponse.data[0]
-    if (!projectObj) {
+    if (!project) {
       alert("Not found project!")
       window.history.back()
     } else {
-      set({ project: projectObj })
+      set({ project })
     }
     setIsLoadingField("project", false)
   },
@@ -55,10 +50,9 @@ const useProjectInfoStore = create((set, get) => ({
 
     setIsLoadingField("datasets", true)
 
-    const datasetsResponse = await RestConnector.get(`/datasets?project_id=${projectId}`)
-    const datasetsObj = datasetsResponse.data.map(dataset => DatasetClass.constructorFromServerData(dataset))
-  
-    set({ datasets: datasetsObj })
+    const datasets = await DatasetService.getDatasetByProject(projectId)
+
+    set({ datasets })
 
     setIsLoadingField("datasets", false)
   },
@@ -75,7 +69,7 @@ const useProjectInfoStore = create((set, get) => ({
 
     setIsLoadingField("labels", true)
     try {
-      const labels = await LabelService.getLabelByProjectId(projectId)
+      const labels = await LabelService.getLabelByProject(projectId)
       set({ labels: labels })
     } catch (error) {
       alert(get(error, 'response.data.errors', 'Error getting labels'))

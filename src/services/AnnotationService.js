@@ -24,6 +24,13 @@ class AnnotationService {
 
     return annotationsObj
   }
+
+  async deleteAnnotationById(id) {
+    return RestConnector.delete(`/annotations?id=${id}`)
+      .then((response) => {
+        return response.data
+      })
+  }
 }
 
 export default new AnnotationService()

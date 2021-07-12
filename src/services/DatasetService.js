@@ -13,6 +13,11 @@ class DatasetService {
       })
   }
 
+  async getDatasetByProject(projectId) {
+    return RestConnector.get(`/datasets?project_id=${projectId}`)
+      .then(response => response.data.map(dataset => DatasetClass.constructorFromServerData(dataset)))
+  }
+
   createDataset(data) {
     return RestConnector.post(`/datasets`, {
       project: data.projectId,

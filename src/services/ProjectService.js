@@ -8,6 +8,17 @@ class ProjectService {
       .then(response => response.data.map(data => ProjectClass.constructorFromServerData(data)))
   }
 
+  async getProjectById(projectId) {
+    const projectResponse = await RestConnector.get(`/projects?id=${projectId}`)
+    const projectData = projectResponse.data[0]
+
+    if (projectData) {
+      return ProjectClass.constructorFromServerData(projectData)
+    } else {
+      return null
+    }
+  }
+
   createProject(data) {
     return RestConnector.post(`/projects`, {
       name: data.name,

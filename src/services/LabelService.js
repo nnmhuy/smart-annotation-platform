@@ -3,7 +3,7 @@ import LabelClass from '../classes/LabelClass'
 import RestConnector from '../connectors/RestConnector'
 
 class LabelService {
-  getLabelByProjectId(projectId) {
+  getLabelByProject(projectId) {
     return RestConnector.get(`/annotation_labels?project_id=${projectId}`)
       .then(response => response.data.map(label => LabelClass.constructorFromServerData(label)))
   }
