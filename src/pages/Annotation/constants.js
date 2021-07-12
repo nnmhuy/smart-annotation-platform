@@ -109,7 +109,7 @@ const DEFAULT_TOOL_CONFIG = {
   }
 }
 
-const IMAGES_PER_PAGE = 5
+const IMAGES_PER_PAGE = 50
 
 export {
   MODES,
