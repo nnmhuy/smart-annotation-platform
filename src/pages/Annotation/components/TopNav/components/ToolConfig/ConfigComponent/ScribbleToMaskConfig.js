@@ -28,7 +28,7 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
   },
   divider: {
-    height: '80%',
+    height: 30,
   },
   optionContainer: {
     marginLeft: 10,

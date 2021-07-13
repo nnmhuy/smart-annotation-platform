@@ -66,9 +66,12 @@ function App() {
           <Router>
             <Switch>
               {appRoutes.map(route => {
-                const { withLayout, exact = true, component: Component, ...others } = route
+                const { withLayout, exact = true, path, component: Component, ...others } = route
                 return (
-                  <Route exact={exact} 
+                  <Route 
+                    key={path}
+                    path={path}
+                    exact={exact} 
                     render={() => (
                       withLayout ?
                         <Layout>

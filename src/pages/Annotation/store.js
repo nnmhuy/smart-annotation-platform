@@ -78,6 +78,7 @@ const useAnnotationStore = create((set, get) => ({
     set({
       imageId: newImageId,
       image: {
+        obj: data,
         blob: imageBlob,
         ...newImage,
       },

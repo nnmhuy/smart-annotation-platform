@@ -4,6 +4,7 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close';
 import { useParams } from 'react-router'
 
+import DataInfo from './components/DataInfo/index'
 import ToolConfig from './components/ToolConfig/index'
 import useQuery from '../../../../utils/useQuery'
 
@@ -12,10 +13,13 @@ import { theme } from '../../../../theme'
 const useStyles = makeStyles(() => ({
   topNavWrapper: {
     display: 'flex',
+    boxSizing: 'border-box',
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
     height: 60,
+    paddingLeft: 20,
+    paddingRight: 20,
     background: theme.light.forthColor
   },
   leftSection: {
@@ -44,6 +48,10 @@ const TopNav = (props) => {
   return (
     <div className={classes.topNavWrapper}>
       <div className={classes.leftSection}>
+        <DataInfo
+          useStore={useStore}
+          eventCenter={eventCenter}
+        />
       </div>
       <div className={classes.centerSection}>
         <ToolConfig
