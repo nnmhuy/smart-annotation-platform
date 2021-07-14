@@ -10,8 +10,12 @@ import * as Yup from 'yup';
 import { get } from 'lodash'
 
 import TextField from '../../../../../components/TextField'
+import SelectField from '../../../../../components/SelectField'
+
 
 import DatasetService from '../../../../../services/DatasetService'
+
+import { DATASET_DATATYPE } from '../../../../../constants/constants'
 
 const fields = [
   {
@@ -30,6 +34,18 @@ const fields = [
     fullWidth: true,
     component: TextField
   },
+  {
+    name: 'datatype',
+    label: 'Datatype',
+    options:[
+      { value: DATASET_DATATYPE.IMAGE, label: 'Image' },
+      { value: DATASET_DATATYPE.VIDEO, label: 'Video' },
+    ],
+    required: true,
+    fullWidth: true,
+    helperText: `Can't change after creation`,
+    component: SelectField,
+  }
 ]
 
 const CreateDatasetDialog = (props) => {
@@ -90,7 +106,9 @@ const CreateDatasetForm = withFormik({
   mapPropsToValues: () => ({ name: '', description: '' }),
 
   validationSchema: Yup.object().shape({
-    name: Yup.string().required()
+    name: Yup.string().required(),
+    datatype: Yup.string().required().oneOf([DATASET_DATATYPE.IMAGE, DATASET_DATATYPE.VIDEO]),
+    description: Yup.string()
   }),
 
   handleSubmit: async (values, { props: { projectId, handleCreate, setOpen }, setSubmitting, setErrors }) => {
@@ -99,6 +117,7 @@ const CreateDatasetForm = withFormik({
       const newDataset = await DatasetService.createDataset({
         projectId,
         name: values.name,
+        datatype: values.datatype,
         description: values.description,
       })
       handleCreate(newDataset)

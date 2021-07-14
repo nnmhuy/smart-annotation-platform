@@ -28,6 +28,9 @@ const tableColumns = [
     key: 'name', label: 'Name'
   },
   {
+    key: 'datatype', label: 'Type'
+  },
+  {
     key: 'instances', label: 'Instances'
   },
   {

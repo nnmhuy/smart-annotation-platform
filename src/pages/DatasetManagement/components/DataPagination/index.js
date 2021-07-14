@@ -6,7 +6,7 @@ import { useParams, useHistory } from 'react-router'
 
 import useQuery from '../../../../utils/useQuery'
 
-import { IMAGES_PER_PAGE } from '../../constant'
+import { DATA_PER_PAGE } from '../../constant'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-const ImagesPagination = (props) => {
+const DataPagination = (props) => {
   const classes = useStyles()
   const history = useHistory()
   const query = useQuery()
@@ -42,8 +42,8 @@ const ImagesPagination = (props) => {
     getImages(datasetId, value)
   };
 
-  const pageStart = Math.min((page - 1) * IMAGES_PER_PAGE + 1, instances)
-  const pageEnd = Math.min(page * IMAGES_PER_PAGE, instances)
+  const pageStart = Math.min((page - 1) * DATA_PER_PAGE + 1, instances)
+  const pageEnd = Math.min(page * DATA_PER_PAGE, instances)
 
   return (
     <div className={classes.root}>
@@ -51,7 +51,7 @@ const ImagesPagination = (props) => {
         {pageStart} - {pageEnd}
       </div>
       <Pagination
-        count={Number.parseInt((instances / IMAGES_PER_PAGE) + Boolean(instances % IMAGES_PER_PAGE))}
+        count={Number.parseInt((instances / DATA_PER_PAGE) + Boolean(instances % DATA_PER_PAGE))}
         showFirstButton 
         showLastButton
         color="primary"
@@ -65,4 +65,4 @@ const ImagesPagination = (props) => {
   )
 }
 
-export default ImagesPagination
+export default DataPagination

@@ -2,12 +2,12 @@ import create from 'zustand'
 import { remove } from 'lodash'
 
 import DatasetService from '../../services/DatasetService'
-import ImageService from '../../services/ImageService'
+import DataService from '../../services/DataService'
 
 const useDatasetManagementStore = create((set, get) => ({
   isLoading: {},
   dataset: {},
-  images: [],
+  dataList: [],
   selected: {},
 
   setIsLoadingField: (name, value) => set(state => ({ isLoading: { ...state.isLoading, [name]: value } })),
@@ -31,37 +31,37 @@ const useDatasetManagementStore = create((set, get) => ({
     set({ dataset: updatedDataset })
   },
 
-  getImages: async (datasetId, page) => {
+  getData: async (datasetId, page) => {
     const setIsLoadingField = get().setIsLoadingField
-    setIsLoadingField("images", true)
+    setIsLoadingField("dataList", true)
 
-    const images = await ImageService.getImagesByDataset(datasetId, page)
-    set({ images })
+    const dataList = await DataService.getDataByDataset(datasetId, page)
+    set({ dataList })
 
-    setIsLoadingField("images", false)
+    setIsLoadingField("dataList", false)
   },
 
-  setSelectedImage: (id, value) => {
+  setSelectedData: (id, value) => {
     const selected = get().selected
     set({ selected: { ...selected, [id]: value }})
   },
   deselectAll: () => {
     set({ selected: {} })
   },
-  deleteSelectedImages: async () => {
+  deleteSelectedData: async () => {
     const setIsLoadingField = get().setIsLoadingField
     setIsLoadingField("deleting", true)
 
     const selected = get().selected
-    let images = [...get().images]
+    let dataList = [...get().dataList]
 
-    let toDeleteImages = remove(images, img => selected[img.id])
+    let toDeleteData = remove(dataList, data => selected[data.id])
 
-    await Promise.all(toDeleteImages.map(img => ImageService.deleteImageById(img.id)))
+    await Promise.all(toDeleteData.map(img => DataService.deleteDataById(img.id)))
 
     set({ 
       selected: {},
-      images,
+      dataList,
     })
     setIsLoadingField("deleting", false)
   },

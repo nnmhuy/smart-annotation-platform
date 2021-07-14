@@ -9,7 +9,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import clsx from 'clsx'
 
 const useStyles = makeStyles((theme) => ({
-  imageList: {
+  dataList: {
     padding: 30,
   },
   icon: {
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   selectedIcon: {
     opacity: 1,
   },
-  imageListItem: {
+  dataListItem: {
     cursor: 'pointer'
   },
   selectedItemBar: {
@@ -27,26 +27,26 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const ImageListSection = (props) => {
+const DataListSection = (props) => {
   const classes = useStyles()
   const { useStore } = props
 
   const isMobileLayout = useMediaQuery('(max-width:800px)');
 
-  const images = useStore(state => state.images)
-  const setSelectedImage = useStore(state => state.setSelectedImage)
+  const dataList = useStore(state => state.dataList)
+  const setSelectedData = useStore(state => state.setSelectedData)
   const selected = useStore(state => state.selected)
 
   return (
-    <ImageList className={classes.imageList} cols={isMobileLayout ? 2 : 4}>
-      {images.map(item => {
+    <ImageList className={classes.dataList} cols={isMobileLayout ? 2 : 4}>
+      {dataList.map(item => {
         const isSelected = selected[item.id]
         return (
           <ImageListItem key={item.id}
-            className={classes.imageListItem}
-            onClick={() => setSelectedImage(item.id, !selected[item.id])}
+            className={classes.dataListItem}
+            onClick={() => setSelectedData(item.id, !selected[item.id])}
           >
-            <img src={item.thumbnailURL} alt={item.name} />
+            <img src={item?.thumbnail?.URL} alt={item.name} />
             <ImageListItemBar
               className={clsx(isSelected && classes.selectedItemBar)}
               title={item.name}
@@ -70,4 +70,4 @@ const ImageListSection = (props) => {
 }
 
 
-export default ImageListSection
+export default DataListSection
