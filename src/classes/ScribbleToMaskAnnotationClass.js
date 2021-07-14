@@ -8,8 +8,9 @@ import loadImageFromURL from '../utils/loadImageFromURL'
 import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from '../constants/constants'
 
 export default class ScribbleToMaskAnnotationClass extends Annotation {
-  constructor(annotationId, labelId, imageId, maskData, properties = {}) {
-    super(annotationId, labelId, imageId, properties)
+  constructor(id, annotation_object_id, data_info = {}, maskData) {
+    super(id, annotation_object_id, data_info)
+
     this.type = ANNOTATION_TYPE.MASK
     this.maskData = maskData
   }
@@ -29,13 +30,12 @@ export default class ScribbleToMaskAnnotationClass extends Annotation {
 
     return new ScribbleToMaskAnnotationClass(
       data.id,
-      data.label,
-      data.image,
+      data.annotation_object,
+      data.data_info,
       {
         scribbles: [],
         mask: loadedMask.base64
-      },
-      data.properties
+      }
     )
   }
 
@@ -47,10 +47,9 @@ export default class ScribbleToMaskAnnotationClass extends Annotation {
     }, '/annotations/upload-annotation-mask')
     return await RestConnector.post('/annotations', {
       id: this.id,
+      annotation_object_id: this.annotation_object_id,
       annotation_type: ENUM_ANNOTATION_TYPE.MASK,
-      label_id: this.labelId,
-      image_id: this.imageId,
-      properties: this.properties,
+      data_info: this.data_info,
       data: {
         mask: maskURL
       },

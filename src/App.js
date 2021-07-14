@@ -1,5 +1,5 @@
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
-import { Route, BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
+import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import { ConfirmProvider } from 'material-ui-confirm';
 
 import Layout from './components/Layout/index'

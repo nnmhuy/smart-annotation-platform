@@ -1,21 +1,8 @@
 export default class Annotation {
-  constructor(annotationId, labelId, imageId, properties) {
-    this.id = annotationId
-    this.labelId = labelId
-    this.imageId = imageId
-    this.properties = {
-      ...properties,
-      isHidden: false
-    }
-  }
-  set updateLabel(labelId) {
-    this.labelId = labelId
-  }
-  set updateProperties(newProperties) {
-    this.properties = {
-      ...this.properties,
-      ...newProperties,
-    }
+  constructor(id, annotation_object_id, data_info) {
+    this.id = id
+    this.annotation_object_id = annotation_object_id
+    this.data_info = data_info
   }
 
   async applyUpdateAnnotation() {

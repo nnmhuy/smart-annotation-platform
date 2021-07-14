@@ -4,8 +4,9 @@ import RestConnector from '../connectors/RestConnector'
 import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from "../constants/constants";
 
 export default class PolygonAnnotation extends Annotation {
-  constructor(annotationId, labelId, imageId, polygon, properties = {}) {
-    super(annotationId, labelId, imageId, properties)
+  constructor(id, annotation_object_id, data_info = {}, polygon) {
+    super(id, annotation_object_id, data_info)
+
     this.type = ANNOTATION_TYPE.POLYGON
     this.polygon = polygon
   }
@@ -21,24 +22,22 @@ export default class PolygonAnnotation extends Annotation {
   static constructorFromServerData(data) {
     return new PolygonAnnotation(
       data.id,
-      data.label,
-      data.image,
+      data.annotation_object,
+      data.data_info,
       {
         x: 0,
         y: 0,
         polys: data.polys
-      },
-      data.properties
+      }
     )
   }
 
   async applyUpdateAnnotation() {
     return await RestConnector.post('/annotations', {
       id: this.id,
+      annotation_object_id: this.annotation_object_id,
       annotation_type: ENUM_ANNOTATION_TYPE.POLYGON,
-      label_id: this.labelId,
-      image_id: this.imageId,
-      properties: this.properties,
+      data_info: this.data_info,
       data: {
         polys: this.polygon.polys,
       }
