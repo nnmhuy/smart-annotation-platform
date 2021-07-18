@@ -85,7 +85,9 @@ const ThumbnailSlider = (props) => {
 
     if (newPage !== page) {
       history.push(`/annotations/project=${projectId}&dataset=${datasetId}?page=${newPage}`)
+      // TODO: remove this
       await getImagesOfDataset(datasetId, newPage)
+      // TODO: put this inside get images
       setImageId(null)
     }
   }

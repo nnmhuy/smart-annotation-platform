@@ -55,12 +55,17 @@ const Annotation = (props) => {
   const page = JSON.parse(query.get("page") || 1)
 
   const getDatasetData = useAnnotationStore(state => state.getDatasetData)
+  // const getImagesOfDataset = useAnnotationStore(state => state.getImagesOfDataset)
 
   React.useEffect(() => {
     if (projectId && datasetId) {
       getDatasetData(projectId, datasetId, page)
     }
   }, [projectId, datasetId, page])
+
+  // React.useEffect(() => {
+  //   getImagesOfDataset(datasetId, page)
+  // }, [page])
 
   return (
     <div className={classes.root}>

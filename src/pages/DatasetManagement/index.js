@@ -23,8 +23,11 @@ const DatasetManagement = (props) => {
   
   React.useEffect(() => {
     getDataset(datasetId)
+  }, [datasetId])
+  
+  React.useEffect(() => {
     getData(datasetId, page)
-  }, [datasetId, page])
+  }, [page])
 
   return (
     <div>

@@ -33,13 +33,11 @@ const DataPagination = (props) => {
   const { useStore } = props
 
   const dataset = useStore(state => state.dataset)
-  const getImages = useStore(state => state.getImages)
 
   const instances = get(dataset, 'instances', 0)
 
   const handleChange = (event, value) => {
     history.push(`/datasets/dataset=${datasetId}?page=${value}`)
-    getImages(datasetId, value)
   };
 
   const pageStart = Math.min((page - 1) * DATA_PER_PAGE + 1, instances)
