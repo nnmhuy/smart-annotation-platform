@@ -1,15 +1,17 @@
-import React from 'react'
+import React, { useCallback, useMemo, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import { get, find, debounce } from 'lodash'
 
-import Loading from '../../../../components/Loading'
-import ImageRender from './ImageRender/index'
-import AnnotationRender from './AnnotationRender/index'
-import ToolRender from './ToolRender/index'
+import { useGeneralStore, useDatasetStore } from '../../stores/index'
 
-import { EVENT_TYPES, MODES } from '../../constants'
+import DataInstanceRender from './DataInstanceRender/index'
+// import AnnotationRender from './AnnotationRender/index'
+// import ToolRender from './ToolRender/index'
+
+import { EVENT_TYPES, MODES, STAGE_PADDING } from '../../constants'
 import getStagePosLimit from '../../utils/getStagePosLimit'
+import getRenderingSize from '../../utils/getRenderingSize'
 
 const useStyles = makeStyles(() => ({
   stageContainer: {
@@ -22,39 +24,22 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-
-const emittingSubjects = [
-  EVENT_TYPES.STAGE_MOUSE_CLICK,
-  EVENT_TYPES.STAGE_MOUSE_DOWN,
-  EVENT_TYPES.STAGE_MOUSE_UP,
-  EVENT_TYPES.STAGE_MOUSE_MOVE,
-
-  EVENT_TYPES.STAGE_MOUSE_OUT,
-  EVENT_TYPES.STAGE_MOUSE_ENTER,
-
-  EVENT_TYPES.STAGE_TAP,
-  EVENT_TYPES.STAGE_TOUCH_START,
-  EVENT_TYPES.STAGE_TOUCH_END,
-  EVENT_TYPES.STAGE_TOUCH_MOVE,
-
-  EVENT_TYPES.STAGE_CONTEXT_MENU,
-]
-
 const RenderComponent = (props) => {
-  const { useStore, eventCenter } = props
-  const activeMode = useStore(state => state.activeMode)
+  const { eventCenter } = props
+  const activeMode = useGeneralStore(state => state.activeMode)
   const classes = useStyles({ activeMode })
   
   const stageContainerRef = React.useRef(null)
   const stageRef = React.useRef(null)
-  const setStageRef = useStore(state => state.setStageRef)
+  const setStage = useGeneralStore(state => state.setStage)
   React.useEffect(() => {
-    setStageRef(stageRef.current)
-  }, [stageRef])
+    setStage(stageRef.current)
+  }, [setStage, stageRef])
 
 
-  const stageSize = useStore(state => state.stageSize)
-  const setStageSize = useStore(state => state.setStageSize)
+  const stage = useGeneralStore(state => state.stage)
+  const stageSize = useGeneralStore(state => state.stageSize)
+  const setStageSize = useGeneralStore(state => state.setStageSize)
   const handleNewStageSize = debounce(() => {
     const container = stageContainerRef.current
     if (container) {
@@ -73,34 +58,29 @@ const RenderComponent = (props) => {
     }
   }, [stageContainerRef])
 
+  const instanceId = useDatasetStore(state => state.instanceId)
+  const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))
 
-  // const [listeningSubjects, setListeningSubjects] = React.useState({}) // subjects listen by this component
-  React.useEffect(() => {
-    let initializingObservingSubjects = {}
+  const renderingSize = useMemo(() =>
+    getRenderingSize(stageSize, dataInstance, STAGE_PADDING)
+    , [stageSize, dataInstance]
+  )
 
-    emittingSubjects.forEach(subject => {
-      initializingObservingSubjects[subject] = eventCenter.getSubject(subject)
-    })
-  }, [])
-
-  const image = useStore(state => state.image)
-
-  const handleStageClick = (e) => {
-    // only detect left click or tap
-    if (!((e.type === "click" && e.evt.which === 1) || (e.type === "tap"))) {
-      return
+  useEffect(() => {
+    if (stage) {
+      stage.position({
+        x: (stageSize.width - renderingSize.width) / 2,
+        y: (stageSize.height - renderingSize.height) / 2,
+      });
+      stage.scale({ x: 1, y: 1 })
     }
-    eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_CLICK)(e)
-  }
+  }, [stageSize, dataInstance])
 
   const dragBoundFunc = (pos) => {
-    // TODO: limit viewport drag here
     // important pos - is absolute position of the node
     // you should return absolute position too
     const stage = stageRef.current
-
-
-    let posLimit = getStagePosLimit(stage, stageSize, image)
+    let posLimit = getStagePosLimit(stage, stageSize, renderingSize)
 
     return {
       x: Math.min(Math.max(pos.x, posLimit.xMin), posLimit.xMax),
@@ -108,7 +88,6 @@ const RenderComponent = (props) => {
     };
   }
 
-  const isLoading = useStore(state => state.isLoading)
 
   return (
     <div className={classes.stageContainer} ref={stageContainerRef}>
@@ -135,16 +114,22 @@ const RenderComponent = (props) => {
         onTouchMove={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_MOVE)}
         onMouseUp={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_UP)}
         onTouchEnd={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_END)}
-        onClick={handleStageClick} // limit to left click only
+        // only detect left click or tap
+        onClick={(e) => {
+          if (!((e.type === "click" && e.evt.which === 1) || (e.type === "tap"))) {
+            return
+          }
+          eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_CLICK)(e)
+        }}
         onTap={eventCenter.emitEvent(EVENT_TYPES.STAGE_TAP)}
       >
         <Layer>
-          <ImageRender
-            useStore={useStore}
-            eventCenter={eventCenter}
+          <DataInstanceRender 
+            eventCenter={eventCenter} 
+            renderingSize={renderingSize}
           />
         </Layer>
-        <Layer>
+        {/* <Layer>
           <AnnotationRender
             useStore={useStore}
             eventCenter={eventCenter}
@@ -153,9 +138,8 @@ const RenderComponent = (props) => {
             useStore={useStore}
             eventCenter={eventCenter}
           />
-        </Layer>
+        </Layer> */}
       </Stage>
-      <Loading isLoading={isLoading} />
     </div>
   )
 }

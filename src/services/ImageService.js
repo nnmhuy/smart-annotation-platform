@@ -2,7 +2,7 @@ import { get } from 'lodash'
 
 import RestConnector from '../connectors/RestConnector'
 
-import ImageClass from '../classes/ImageClass'
+import ImageClass from '../classes/ImageDataInstanceClass'
 
 class ImageService {
   upload(imageFile, datasetId, onUploadProgress) {

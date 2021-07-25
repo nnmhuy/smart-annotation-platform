@@ -7,6 +7,7 @@ import { get } from 'lodash'
 
 import { IMAGES_PER_PAGE } from '../../constants'
 import useQuery from '../../../../utils/useQuery'
+import { useDatasetStore } from '../../stores/index'
 
 import ThumbnailImage from './ThumbnailImage'
 import { theme } from '../../../../theme'
@@ -17,9 +18,9 @@ const useStyles = makeStyles((props) => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
     width: '100%',
-    height: 100,
     background: theme.light.forthColor
   },
   pageInfo: {
@@ -37,14 +38,14 @@ const useStyles = makeStyles((props) => ({
     overflowY: 'hidden',
     overflowX: 'scroll',
     "&::-webkit-scrollbar": {
-      height: 10,
+      height: 5,
     },
     "&::-webkit-scrollbar-track": {
-      height: 10,
+      height: 5,
     },
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: theme.light.secondaryColor,
-      height: 10,
+      height: 5,
       borderRadius: 5
     },
   },
@@ -62,17 +63,12 @@ const ThumbnailSlider = (props) => {
 
   const page = JSON.parse(query.get("page") || 1)
 
-  const { 
-    useStore, 
-    // eventCenter 
-  } = props
 
+  const dataset = useDatasetStore(state => state.dataset)
+  const dataInstances = useDatasetStore(state => state.dataInstances)
+  const instanceId = useDatasetStore(state => state.instanceId)
+  const setInstanceId = useDatasetStore(state => state.setInstanceId)
 
-  const imageId = useStore(state => state.imageId)
-  const dataset = useStore(state => state.dataset)
-  const setImageId = useStore(state => state.setImageId)
-  const getImagesOfDataset = useStore(state => state.getImagesOfDataset)
-  const imageList = useStore(state => state.imageList)
 
   const instances = get(dataset, 'instances', 0)
   const maxPage = Number.parseInt((instances / IMAGES_PER_PAGE) + Boolean(instances % IMAGES_PER_PAGE))
@@ -85,33 +81,28 @@ const ThumbnailSlider = (props) => {
 
     if (newPage !== page) {
       history.push(`/annotations/project=${projectId}&dataset=${datasetId}?page=${newPage}`)
-      // TODO: remove this
-      await getImagesOfDataset(datasetId, newPage)
-      // TODO: put this inside get images
-      setImageId(null)
     }
   }
 
 
-  // TODO: show current page / total page
   return (
     <div className={classes.sliderWrapper}>
       <div className={classes.pageInfo}>
-        <div>{`Page: ${page}`}</div>
+        <div>{`Page: ${Math.min(page, maxPage)}`}</div>
         <div>{`Total: ${maxPage}`}</div>
       </div>
       <IconButton onClick={() => handleChangePage(-1)} className={classes.button}>
         <KeyboardArrowLeft />
       </IconButton>
         <div className={classes.thumbnailWrapper}>
-        {imageList.map((data, index) => {
+        {dataInstances.map((instance) => {
             return (
               <ThumbnailImage
-                id={data.id}
-                key={`thumbnail-image-${data.id}`}
-                isSelected={data.id === imageId}
-                setSelectedId={() => setImageId(data.id)}
-                thumbnail={data.thumbnailURL}
+                id={instance.id}
+                key={`thumbnail-image-${instance.id}`}
+                isSelected={instance.id === instanceId}
+                setSelectedId={() => setInstanceId(instance.id)}
+                thumbnail={instance.thumbnail.URL}
               />)
           })}
         </div>

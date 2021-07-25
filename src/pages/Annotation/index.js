@@ -2,6 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { useParams } from 'react-router'
 
+import Loading from '../../components/Loading'
 import Toolbox from './components/Toolbox/index'
 import ModeController from './components/ModeController/index'
 import RenderComponent from './components/Stage/index'
@@ -14,6 +15,7 @@ import KeyboardHandler from './components/KeyboardHandler/index'
 
 import EventCenter from '../../classes/EventCenterClass'
 import useAnnotationStore from './store'
+import { useDatasetStore, useGeneralStore } from './stores/index'
 import useQuery from '../../utils/useQuery'
 
 
@@ -54,41 +56,47 @@ const Annotation = (props) => {
   const query = useQuery()
   const page = JSON.parse(query.get("page") || 1)
 
-  const getDatasetData = useAnnotationStore(state => state.getDatasetData)
-  // const getImagesOfDataset = useAnnotationStore(state => state.getImagesOfDataset)
+  const getDatasetInfo = useDatasetStore(state => state.getDatasetInfo)
+  const getDataInstances = useDatasetStore(state => state.getDataInstances)
+  const setInstanceId = useDatasetStore(state => state.setInstanceId)
 
   React.useEffect(() => {
-    if (projectId && datasetId) {
-      getDatasetData(projectId, datasetId, page)
+    if (datasetId) {
+      setInstanceId(null)
+      getDatasetInfo(datasetId)
     }
-  }, [projectId, datasetId, page])
+  }, [datasetId])
 
-  // React.useEffect(() => {
-  //   getImagesOfDataset(datasetId, page)
-  // }, [page])
+  React.useEffect(() => {
+    getDataInstances(datasetId, page)
+  }, [datasetId, page])
+
+  const isGeneralLoading = useGeneralStore(state => state.isLoading)
+  const isDatasetLoading = useDatasetStore(state => state.isLoading)
 
   return (
     <div className={classes.root}>
-      <TopNav
+      <Loading isLoading={{ ...isGeneralLoading, ...isDatasetLoading}} />
+      {/* <TopNav
         useStore={useAnnotationStore}
         eventCenter={annotationEventCenter}
-      />
+      /> */}
       <div className={classes.annotationWrapper}>
         <div className={classes.toolboxContainer}>
-          <Toolbox
+          {/* <Toolbox
             useStore={useAnnotationStore}
             eventCenter={annotationEventCenter}
-          />
+          /> */}
         </div>
         <div className={classes.annotatorContainer}>
-          <ModeController
+          {/* <ModeController
             useStore={useAnnotationStore}
             eventCenter={annotationEventCenter}
-          />
+          />*/}
           <RenderComponent
-            useStore={useAnnotationStore}
             eventCenter={annotationEventCenter}
           />
+          {/*
           <LabelSelection
             useStore={useAnnotationStore}
             eventCenter={annotationEventCenter}
@@ -100,17 +108,16 @@ const Annotation = (props) => {
           <KeyboardHandler
             useStore={useAnnotationStore}
             eventCenter={annotationEventCenter}
-          />
+          /> */}
         </div>
         <div className={classes.sidebarWrapper}>
-          <Sidebar
+          {/* <Sidebar
             useStore={useAnnotationStore}
             eventCenter={annotationEventCenter}
-          />
+          /> */}
         </div>
       </div>
       <ThumbnailSlider
-        useStore={useAnnotationStore}
         eventCenter={annotationEventCenter}
       />
     </div>

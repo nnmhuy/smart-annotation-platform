@@ -4,11 +4,6 @@ import { get } from 'lodash'
 
 import { EVENT_TYPES } from '../../../../../constants'
 
-const emittingSubjects = [
-  EVENT_TYPES.SELECT_ANNOTATION,
-  EVENT_TYPES.EDIT_ANNOTATION,
-]
-
 const Rectangle = (props) => {
   const { useStore, eventCenter, annotation, } = props
   const editingAnnotationId = useStore(state => state.editingAnnotationId)
@@ -46,17 +41,6 @@ const Rectangle = (props) => {
       id
     })
   }
-
-  React.useEffect(() => {
-    const { getSubject } = eventCenter
-    let initializingObservingSubjects = {}
-    emittingSubjects.forEach(subject => {
-      initializingObservingSubjects[subject] = getSubject(subject)
-    })
-
-    return () => {
-    }
-  }, [])
 
   const scaledBBox = {
     x: bBox.x * imageWidth,

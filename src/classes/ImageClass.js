@@ -1,17 +1,17 @@
-import DataClass from './DataClass'
-export default class ImageClass extends DataClass {
-  constructor(id, name='', image, thumbnail, otherData) {
-    super(id, name, thumbnail, otherData)
+import StorageFileClass from './StorageFileClass'
 
-    this.image = image
+export default class ImageClass {
+  constructor(id, original, thumbnail) {
+    this.id = id
+    this.original = original
+    this.thumbnail = thumbnail
   }
-  static constructorFromServerData(data) {
-    const { id, name, image, thumbnail, ...others } = data 
+
+  static constructFromServerData(data) {
     return new ImageClass(
-      id,
-      name,
-      image, thumbnail,
-      others
+      data.id,
+      StorageFileClass.constructorFromServerData(data.original),
+      StorageFileClass.constructorFromServerData(data.thumbnail)
     )
   }
 }
