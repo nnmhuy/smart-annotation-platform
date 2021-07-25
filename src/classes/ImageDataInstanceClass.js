@@ -13,6 +13,16 @@ export default class ImageDataInstanceClass extends DataInstanceClass {
     const image = new ImageClass(id, original, thumbnail)
     Object.assign(this, image)
   }
+
+  get currentImage() {
+    const { id, original, thumbnail } = this
+    return {
+      id,
+      original,
+      thumbnail
+    }
+  }
+
   static constructorFromServerData(data) {
     const { id, name, original, thumbnail, ...others } = data 
     return new ImageDataInstanceClass(

@@ -4,8 +4,8 @@ const getStagePosLimit = (stage, stageSize, renderingSize) => {
   const stagePos = stage.position()
 
   const scale = stage.scaleX();
-  const renderingWidth = get(renderingSize, 'width', 0)
-  const renderingHeight = get(renderingSize, 'height', 0)
+  const renderingWidth = get(renderingSize, 'width', 1)
+  const renderingHeight = get(renderingSize, 'height', 1)
 
   // limit viewport movement base on scale
   // allow at most half of each dimension out of viewport

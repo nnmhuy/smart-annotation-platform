@@ -83,10 +83,7 @@ const Annotation = (props) => {
       /> */}
       <div className={classes.annotationWrapper}>
         <div className={classes.toolboxContainer}>
-          {/* <Toolbox
-            useStore={useAnnotationStore}
-            eventCenter={annotationEventCenter}
-          /> */}
+          <Toolbox eventCenter={annotationEventCenter}/>
         </div>
         <div className={classes.annotatorContainer}>
           {/* <ModeController

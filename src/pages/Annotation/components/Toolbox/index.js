@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { useGeneralStore } from '../../stores/index'
+
 import ToolboxButton from './ToolboxButton'
 import { MODES } from '../../constants'
 
@@ -50,9 +52,9 @@ const toolBoxButtons = [
 ]
 
 const Toolbox = (props) => {
-  const { useStore } = props
-  const activeMode = useStore(state => state.activeMode)
-  const setActiveMode = useStore(state => state.setActiveMode)
+  const activeMode = useGeneralStore(state => state.activeMode)
+  const setActiveMode = useGeneralStore(state => state.setActiveMode)
+
   return (
     <div>
       {

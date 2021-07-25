@@ -34,7 +34,7 @@ const RenderComponent = (props) => {
   const setStage = useGeneralStore(state => state.setStage)
   React.useEffect(() => {
     setStage(stageRef.current)
-  }, [setStage, stageRef])
+  }, [stageRef])
 
 
   const stage = useGeneralStore(state => state.stage)
@@ -48,7 +48,7 @@ const RenderComponent = (props) => {
         height: container.clientHeight,
       })
     }
-  }, 500)
+  }, 500, { leading: true })
 
   React.useEffect(() => {
     handleNewStageSize()
@@ -61,12 +61,14 @@ const RenderComponent = (props) => {
   const instanceId = useDatasetStore(state => state.instanceId)
   const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))
 
+  const setRenderingSize = useGeneralStore(state => state.setRenderingSize)
   const renderingSize = useMemo(() =>
     getRenderingSize(stageSize, dataInstance, STAGE_PADDING)
     , [stageSize, dataInstance]
   )
 
   useEffect(() => {
+    setRenderingSize(renderingSize)
     if (stage) {
       stage.position({
         x: (stageSize.width - renderingSize.width) / 2,
@@ -74,7 +76,8 @@ const RenderComponent = (props) => {
       });
       stage.scale({ x: 1, y: 1 })
     }
-  }, [stageSize, dataInstance])
+  }, [stageSize, renderingSize])
+
 
   const dragBoundFunc = (pos) => {
     // important pos - is absolute position of the node

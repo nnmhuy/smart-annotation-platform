@@ -12,14 +12,13 @@ import VideoDataInstanceClass from '../../../../../classes/VideoDataInstanceClas
 const DataInstanceRender = (props) => {
   const { renderingSize } = props
 
-  const instanceId = useDatasetStore(state => state.instanceId)
-  const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))
+  const dataInstance = useDatasetStore(state => state.dataInstance)
 
   if (dataInstance instanceof ImageDataInstanceClass) {
-    return <ImageRender image={dataInstance} renderingSize={renderingSize}/>
+    return <ImageRender image={dataInstance} renderingSize={renderingSize} />
   }
   if (dataInstance instanceof VideoDataInstanceClass) {
-    return <VideoRender video={dataInstance} renderingSize={renderingSize}/>
+    return <VideoRender video={dataInstance} renderingSize={renderingSize} />
   }
   return null
 }

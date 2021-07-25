@@ -29,7 +29,7 @@ class MiVOSScribbleToMaskBuilder {
     }
   }
 
-  // experiment task from 50m - 150ms
+  // experiment task from 50ms - 150ms
   async setScribbles(scribbles) {
     this.p_srb = await convertScribbleToBlob(scribbles, SCRIBBLE_TYPES.POSITIVE, {
       canvasWidth: MiVOSScribbleToMaskBuilder.INPUT_WIDTH,

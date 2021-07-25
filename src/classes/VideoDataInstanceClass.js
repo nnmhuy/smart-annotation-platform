@@ -12,11 +12,39 @@ export default class VideoDataInstanceClass extends DataInstanceClass {
     this.video = video
     this.frames = frames
     this.fps = fps
-    this.num_frames = num_frames
+    this.numFrames = num_frames
+
+    this.playingState = {
+      playing: 0,
+      loaded: -1,
+      loadedFrames: {},
+    }
   }
-  static constructorFromServerData(data) {
+
+  set updatePlayingState(newState) {
+    this.playingState = {
+      ...this.playingState,
+      ...newState
+    }
+  }
+
+  nextFrame() {
+    const { playing } = this.playingState
+    this.playingState = {
+      ...this.playingState,
+      playing: Math.min(playing + 1, this.numFrames - 1)
+    }
+  }
+
+  get currentImage () {
+    const { playing } = this.playingState
+    return this.frames[playing]
+  }
+
+  static async constructorFromServerData(data) {
     const { id, name, video, frames, thumbnail, ...others } = data
     let frames_obj = frames.map(frame => ImageClass.constructFromServerData(frame))
+    // await Promise.all(frames_obj.map(async (frame) => frame.getData()))
     
     return new VideoDataInstanceClass(
       id,
