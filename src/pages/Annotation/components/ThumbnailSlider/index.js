@@ -21,7 +21,8 @@ const useStyles = makeStyles((props) => ({
     paddingTop: 5,
     paddingBottom: 5,
     width: '100%',
-    background: theme.light.forthColor
+    background: theme.light.forthColor,
+    height: 100,
   },
   pageInfo: {
     fontWeight: 500,

@@ -16,7 +16,8 @@ import getRenderingSize from '../../utils/getRenderingSize'
 const useStyles = makeStyles(() => ({
   stageContainer: {
     width: '100%',
-    height: '100%',
+    flex: 1,
+    overflowY: 'hidden',
   },
   stage: {
     background: '#f8f8f8',
@@ -40,6 +41,7 @@ const RenderComponent = (props) => {
   const stage = useGeneralStore(state => state.stage)
   const stageSize = useGeneralStore(state => state.stageSize)
   const setStageSize = useGeneralStore(state => state.setStageSize)
+
   const handleNewStageSize = debounce(() => {
     const container = stageContainerRef.current
     if (container) {
@@ -48,7 +50,8 @@ const RenderComponent = (props) => {
         height: container.clientHeight,
       })
     }
-  }, 500, { leading: true })
+  }, 500, { leading: true, trailing: true })
+
 
   React.useEffect(() => {
     handleNewStageSize()
@@ -56,7 +59,7 @@ const RenderComponent = (props) => {
     return () => {
       window.removeEventListener('resize', handleNewStageSize)
     }
-  }, [stageContainerRef])
+  }, [])
 
   const instanceId = useDatasetStore(state => state.instanceId)
   const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))

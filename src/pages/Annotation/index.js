@@ -4,10 +4,11 @@ import { useParams } from 'react-router'
 
 import Loading from '../../components/Loading'
 import Toolbox from './components/Toolbox/index'
-import ModeController from './components/ModeController/index'
 import RenderComponent from './components/Stage/index'
-import Sidebar from './components/Sidebar/index'
 import ThumbnailSlider from './components/ThumbnailSlider'
+import PlayControl from './components/PlayControl/index'
+import ModeController from './components/ModeController/index'
+import Sidebar from './components/Sidebar/index'
 import TopNav from './components/TopNav/index'
 import LabelSelection from './components/LabelSelection/index'
 import Prediction from './components/Prediction/index'
@@ -36,8 +37,9 @@ const useStyles = makeStyles(() => ({
   },
   annotatorContainer: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     flex: 1,
+    overflowX: 'hidden',
     height: '100%',
   },
   toolboxContainer: {
@@ -86,14 +88,21 @@ const Annotation = (props) => {
           <Toolbox eventCenter={annotationEventCenter}/>
         </div>
         <div className={classes.annotatorContainer}>
-          {/* <ModeController
-            useStore={useAnnotationStore}
-            eventCenter={annotationEventCenter}
-          />*/}
           <RenderComponent
             eventCenter={annotationEventCenter}
           />
-          {/*
+          <PlayControl
+            eventCenter={annotationEventCenter}
+          />
+          <ThumbnailSlider
+            eventCenter={annotationEventCenter}
+          />
+          
+          {/* Non-UI elements */}
+          {/* <ModeController
+            useStore={useAnnotationStore}
+            eventCenter={annotationEventCenter}
+          />
           <LabelSelection
             useStore={useAnnotationStore}
             eventCenter={annotationEventCenter}
@@ -114,9 +123,6 @@ const Annotation = (props) => {
           /> */}
         </div>
       </div>
-      <ThumbnailSlider
-        eventCenter={annotationEventCenter}
-      />
     </div>
   )
 }

@@ -10,19 +10,20 @@ const Video = (props) => {
   const [bitmap, setBitmap] = React.useState(null)
   const [loading, setLoading] = React.useState(false)
 
-  useEffect(() => {
-    const { fps } = video
-    const playVideoInterval = setInterval(() => {
-      while (loading) {
-      }
-      setPlayingFrame(x => {
-        return (x === video.numFrames - 1) ? 0 : x + 1
-      })
-    }, 1000 / fps);
-
-    return () => {
-      clearInterval(playVideoInterval);
+  const { fps } = video
+  const handlePlayVideo = () => {
+    while (loading) {
     }
+    setPlayingFrame(x => {
+      return (x === video.numFrames - 1) ? 0 : x + 1
+    })
+    setTimeout(() => {
+      handlePlayVideo()
+    }, 1000 / fps);
+  }
+
+  useEffect(() => {
+    handlePlayVideo()
   }, [])
 
 

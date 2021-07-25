@@ -13,32 +13,6 @@ export default class VideoDataInstanceClass extends DataInstanceClass {
     this.frames = frames
     this.fps = fps
     this.numFrames = num_frames
-
-    this.playingState = {
-      playing: 0,
-      loaded: -1,
-      loadedFrames: {},
-    }
-  }
-
-  set updatePlayingState(newState) {
-    this.playingState = {
-      ...this.playingState,
-      ...newState
-    }
-  }
-
-  nextFrame() {
-    const { playing } = this.playingState
-    this.playingState = {
-      ...this.playingState,
-      playing: Math.min(playing + 1, this.numFrames - 1)
-    }
-  }
-
-  get currentImage () {
-    const { playing } = this.playingState
-    return this.frames[playing]
   }
 
   static async constructorFromServerData(data) {
