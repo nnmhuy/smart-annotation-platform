@@ -117,7 +117,7 @@ const DatasetList = (props) => {
                 <IconButton 
                   color="secondary" 
                   component="a"
-                  href={`/annotations/project=${projectId}&dataset=${dataset.id}`}
+                  href={`/annotations/dataset=${dataset.id}`}
                 >
                   <PlayCircleFilledIcon />
                 </IconButton>

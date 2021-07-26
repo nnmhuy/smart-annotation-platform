@@ -1,7 +1,5 @@
 import RestConnector from '../connectors/RestConnector'
 
-import DataInfoService from './DataInfoService'
-
 import BBoxAnnotationClass from '../classes/BBoxAnnotationClass'
 import PolygonAnnotationClass from '../classes/PolygonAnnotationClass'
 import ScribbleToMaskAnnotationClass from '../classes/ScribbleToMaskAnnotationClass'
@@ -9,8 +7,6 @@ import ScribbleToMaskAnnotationClass from '../classes/ScribbleToMaskAnnotationCl
 
 class AnnotationService {
   async parseAnnotationObj(ann) {
-    const { data_info = {} } = ann
-    ann.data_info = DataInfoService.parseDataInfoObj(data_info)
     switch (ann._cls) {
       case "Annotation.BBoxAnnotation":
         return BBoxAnnotationClass.constructorFromServerData(ann)
@@ -23,8 +19,8 @@ class AnnotationService {
     }
   }
 
-  async getAnnotationByData(dataId) {
-    const annotationResponse = await RestConnector.get(`/annotations?data_id=${dataId}`)
+  async getAnnotationByAnnotationObject(annotationObjectId) {
+    const annotationResponse = await RestConnector.get(`/annotations?annotation_object_id=${annotationObjectId}`)
 
     const annotationsObj = await Promise.all(annotationResponse.data.map(async ann => await this.parseAnnotationObj(ann)))
 

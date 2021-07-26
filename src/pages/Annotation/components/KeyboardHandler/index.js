@@ -12,7 +12,7 @@ const mapModeToKeyboardHandler = {
 }
 
 const KeyboardHandler = (props) => {
-  const { useStore, eventCenter } = props
+  const { useStore } = props
 
   const activeMode = useStore(state => state.activeMode)
   const ActiveKeyboardHandlerComponent = get(mapModeToKeyboardHandler, activeMode, null)

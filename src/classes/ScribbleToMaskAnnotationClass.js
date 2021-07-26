@@ -1,15 +1,16 @@
-import Annotation from "./AnnotationClass";
 import { get } from 'lodash'
 
 import RestConnector from '../connectors/RestConnector'
+import AnnotationClass from "./AnnotationClass";
+import StorageFileClass from './StorageFileClass'
+
 import sendFormData from '../utils/sendFormData'
 import base64ToBlob from '../utils/base64ToBlob'
-import loadImageFromURL from '../utils/loadImageFromURL'
 import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from '../constants/constants'
 
-export default class ScribbleToMaskAnnotationClass extends Annotation {
-  constructor(id, annotation_object_id, data_info = {}, maskData) {
-    super(id, annotation_object_id, data_info)
+export default class ScribbleToMaskAnnotationClass extends AnnotationClass {
+  constructor(id, annotationObjectId, annotationImageId, maskData, key_frame=false) {
+    super(id, annotationObjectId, annotationImageId, key_frame)
 
     this.type = ANNOTATION_TYPE.MASK
     this.maskData = maskData
@@ -26,16 +27,15 @@ export default class ScribbleToMaskAnnotationClass extends Annotation {
   }
 
   static async constructorFromServerData(data) {
-    const loadedMask = await loadImageFromURL(get(data, 'mask', null))
-
     return new ScribbleToMaskAnnotationClass(
       data.id,
       data.annotation_object,
-      data.data_info,
+      data.annotation_image,
       {
-        scribbles: [],
-        mask: loadedMask.base64
-      }
+        scribbles: data.scribbles,
+        mask: StorageFileClass.constructorFromServerData(data.mask)
+      },
+      data.key_frame
     )
   }
 
@@ -49,7 +49,7 @@ export default class ScribbleToMaskAnnotationClass extends Annotation {
       id: this.id,
       annotation_object_id: this.annotation_object_id,
       annotation_type: ENUM_ANNOTATION_TYPE.MASK,
-      data_info: this.data_info,
+      key_frame: this.keyFrame,
       data: {
         mask: maskURL
       },

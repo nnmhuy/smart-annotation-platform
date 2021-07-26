@@ -1,8 +1,9 @@
 export default class Annotation {
-  constructor(id, annotation_object_id, data_info) {
+  constructor(id, annotationObjectId, annotationImageId, keyFrame=false) {
     this.id = id
-    this.annotation_object_id = annotation_object_id
-    this.data_info = data_info
+    this.annotationObjectId = annotationObjectId
+    this.annotationImageId = annotationImageId
+    this.keyFrame = keyFrame
   }
 
   async applyUpdateAnnotation() {

@@ -1,35 +1,37 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import UIDGenerator from 'uid-generator'
-import { get, cloneDeep } from 'lodash'
+import { get, cloneDeep, find } from 'lodash'
+
+import EventCenter from '../../../EventCenter'
+import { useGeneralStore, useDatasetStore, useAnnotationStore } from '../../../stores/index'
 
 import Cursor from '../Cursor/index'
 import BBoxAnnotationClass from '../../../../../classes/BBoxAnnotationClass'
 
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
 
+
 const uidgen = new UIDGenerator(96, UIDGenerator.BASE16);
 
 const DrawBBox = (props) => {
-  const { useStore, eventCenter } = props
+  const instanceId = useDatasetStore(state => state.instanceId)
+  const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))
+  
+  const updateCurrentMousePosition = useGeneralStore(state => state.updateCurrentMousePosition)
+  const getCurrentMousePosition = useGeneralStore(state => state.getCurrentMousePosition)
 
-  const getImageId = useStore(state => state.getImageId)
-  const getImage = useStore(state => state.getImage)
-  const appendAnnotation = useStore(state => state.appendAnnotation)
-  const getDrawingAnnotation = useStore(state => state.getDrawingAnnotation)
-  const setDrawingAnnotation = useStore(state => state.setDrawingAnnotation)
-  const updateCurrentMousePosition = useStore(state => state.updateCurrentMousePosition)
-  const getCurrentMousePosition = useStore(state => state.getCurrentMousePosition)
+  const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
+  const getDrawingAnnotation = useAnnotationStore(state => state.getDrawingAnnotation)
+  const setDrawingAnnotation = useAnnotationStore(state => state.setDrawingAnnotation)
 
   const handleClickDrawRectangle = () => {
-    const imageId = getImageId()
-    const image = getImage()
-    const imageWidth = get(image, 'width', 1)
-    const imageHeight = get(image, 'height', 1)
+    const imageWidth = get(dataInstance, 'width', 1)
+    const imageHeight = get(dataInstance, 'height', 1)
     const currentMousePosition = getCurrentMousePosition()
     const drawingAnnotation = getDrawingAnnotation()
 
     if (drawingAnnotation === null) {
-      setDrawingAnnotation(new BBoxAnnotationClass(uidgen.generateSync(), '', imageId, {
+      setDrawingAnnotation(new BBoxAnnotationClass(uidgen.generateSync(), '', instanceId, {
         x: currentMousePosition.x / imageWidth,
         y: currentMousePosition.y / imageHeight,
         width: 0,
@@ -41,9 +43,8 @@ const DrawBBox = (props) => {
   }
 
   const finishDrawRectangle = () => {
-    const image = getImage()
-    const imageWidth = get(image, 'width', 1)
-    const imageHeight = get(image, 'height', 1)
+    const imageWidth = get(dataInstance, 'width', 1)
+    const imageHeight = get(dataInstance, 'height', 1)
     const currentMousePosition = getCurrentMousePosition()
     const drawingAnnotation = getDrawingAnnotation()
 
@@ -61,14 +62,13 @@ const DrawBBox = (props) => {
 
     setDrawingAnnotation(null)
     appendAnnotation(finishedRectangle)
-    eventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedRectangle.id)
+    EventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedRectangle.id)
   }
 
 
   const handleDragDrawRectangle = () => {
-    const image = getImage()
-    const imageWidth = get(image, 'width', 1)
-    const imageHeight = get(image, 'height', 1)
+    const imageWidth = get(dataInstance, 'width', 1)
+    const imageHeight = get(dataInstance, 'height', 1)
     const currentMousePosition = getCurrentMousePosition()
     const drawingAnnotation = getDrawingAnnotation()
 
@@ -93,7 +93,7 @@ const DrawBBox = (props) => {
   }
 
   React.useEffect(() => {
-    const { getSubject } = eventCenter
+    const { getSubject } = EventCenter
     let subscriptions = {
       [EVENT_TYPES.STAGE_MOUSE_CLICK]: getSubject(EVENT_TYPES.STAGE_MOUSE_CLICK)
         .subscribe({ next: (e) => handleMouseClick(e) }),
@@ -106,7 +106,7 @@ const DrawBBox = (props) => {
     return () => {
       Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
     }
-  }, [])
+  }, [dataInstance])
 
   return (
     <Cursor {...props}/>

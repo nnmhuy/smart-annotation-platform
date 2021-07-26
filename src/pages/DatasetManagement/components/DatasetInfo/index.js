@@ -154,7 +154,7 @@ const DatasetInfo = (props) => {
               variant="outlined" className={classes.button}
               color="primary"
               startIcon={<AddIcon />}
-              href={`/annotations/project=${projectId}&dataset=${datasetId}?page=${page}`}
+              href={`/annotations/dataset=${datasetId}?page=${page}`}
             >
               Start annotate
             </Button>

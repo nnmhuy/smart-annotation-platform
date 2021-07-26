@@ -1,25 +1,14 @@
 import RestConnector from '../connectors/RestConnector'
 
-import AnnotationService from './AnnotationService'
-
 import AnnotationObjectClass from '../classes/AnnotationObjectClass'
 
 
 class AnnotationObjectService {
-  async getAnnotationObjectsByData(dataId) {
-    return Promise.all(RestConnector.get(`/annotation_objects?data_id=${dataId}`).data
-      .map(async annotationObjectData => {
-        let { annotations = [] } = annotationObjectData
-
-        // parse annotations
-        annotations = await Promise.all(annotations.map(async ann => await AnnotationService.parseAnnotationObj(ann)))
-
-        AnnotationObjectClass.constructFromServerData({
-          ...annotationObjectData,
-          annotations
-        })
-      })
-    )
+  async getAnnotationObjectsByDataInstance(dataInstanceId) {
+    return RestConnector.get(`/annotation_objects?data_instance_id=${dataInstanceId}`)
+      .then(response => 
+        response.data.map(annotationObjectData => AnnotationObjectClass.constructFromServerData(annotationObjectData))
+      )
   }
 
   async deleteAnnotationObjectById(id) {

@@ -18,6 +18,18 @@ export default class StorageFileClass {
     return this.bitmap
   }
 
+  async getBase64() {
+    if (!this.base64) {
+      this.base64 = await this.getBlob().then(blob => new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve({ blob, base64: reader.result })
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+      }))
+    }
+    return this.base64
+  }
+
   static constructorFromServerData(data) {
     return new StorageFileClass(data.filename, data.URL)
   }

@@ -1,15 +1,16 @@
 export default class AnnotationObjectClass {
-  constructor(id, dataId, labelId, properties = {}, annotations = []) {
+  constructor(id, dataInstanceId, labelId, properties = {}, attributes = {}) {
     this.id = id
-    this.dataId = dataId
+    this.dataInstanceId = dataInstanceId
     this.labelId = labelId
 
-    this.annotations = annotations
     this.properties = {
       ...properties,
       isHidden: false
     }
+    this.attributes = attributes
   }
+
   set updateLabel(labelId) {
     this.labelId = labelId
   }
@@ -23,10 +24,10 @@ export default class AnnotationObjectClass {
   static constructFromServerData(data) {
     return new AnnotationObjectClass(
       data.id,
-      data.data,
+      data.data_instance,
       data.label,
       data.properties,
-      data.annotations
+      data.attributes
     )
   }
 }

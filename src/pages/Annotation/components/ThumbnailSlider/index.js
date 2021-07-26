@@ -58,7 +58,7 @@ const useStyles = makeStyles((props) => ({
 
 const ThumbnailSlider = (props) => {
   const classes = useStyles()
-  const { projectId, datasetId } = useParams()
+  const { datasetId } = useParams()
   let query = useQuery()
   let history = useHistory()
 
@@ -81,7 +81,7 @@ const ThumbnailSlider = (props) => {
     newPage = (Math.max(Math.min(maxPage, newPage), 1))
 
     if (newPage !== page) {
-      history.push(`/annotations/project=${projectId}&dataset=${datasetId}?page=${newPage}`)
+      history.replace(`/annotations/dataset=${datasetId}?page=${newPage}`)
     }
   }
 

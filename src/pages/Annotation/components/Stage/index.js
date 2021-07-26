@@ -3,10 +3,11 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import { get, find, debounce } from 'lodash'
 
+import EventCenter from '../../EventCenter'
 import { useGeneralStore, useDatasetStore } from '../../stores/index'
 
 import DataInstanceRender from './DataInstanceRender/index'
-// import AnnotationRender from './AnnotationRender/index'
+import AnnotationRender from './AnnotationRender/index'
 // import ToolRender from './ToolRender/index'
 
 import { EVENT_TYPES, MODES, STAGE_PADDING } from '../../constants'
@@ -26,7 +27,6 @@ const useStyles = makeStyles(() => ({
 }))
 
 const RenderComponent = (props) => {
-  const { eventCenter } = props
   const activeMode = useGeneralStore(state => state.activeMode)
   const classes = useStyles({ activeMode })
   
@@ -105,46 +105,40 @@ const RenderComponent = (props) => {
 
         draggable
         dragBoundFunc={dragBoundFunc}
-        onDragStart={eventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_START)}
-        onDragMove={eventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_MOVE)}
-        onDragEnd={eventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_END)}
+        onDragStart={EventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_START)}
+        onDragMove={EventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_MOVE)}
+        onDragEnd={EventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_END)}
 
-        onMouseOut={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_OUT)}
-        onMouseEnter={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_ENTER)}
-        onWheel={eventCenter.emitEvent(EVENT_TYPES.STAGE_WHEEL)}
-        onContextMenu={eventCenter.emitEvent(EVENT_TYPES.STAGE_CONTEXT_MENU)}
+        onMouseOut={EventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_OUT)}
+        onMouseEnter={EventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_ENTER)}
+        onWheel={EventCenter.emitEvent(EVENT_TYPES.STAGE_WHEEL)}
+        onContextMenu={EventCenter.emitEvent(EVENT_TYPES.STAGE_CONTEXT_MENU)}
 
-        onMouseDown={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_DOWN)}
-        onTouchStart={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_START)}
-        onMouseMove={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_MOVE)}
-        onTouchMove={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_MOVE)}
-        onMouseUp={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_UP)}
-        onTouchEnd={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_END)}
+        onMouseDown={EventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_DOWN)}
+        onTouchStart={EventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_START)}
+        onMouseMove={EventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_MOVE)}
+        onTouchMove={EventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_MOVE)}
+        onMouseUp={EventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_UP)}
+        onTouchEnd={EventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_END)}
         // only detect left click or tap
         onClick={(e) => {
           if (!((e.type === "click" && e.evt.which === 1) || (e.type === "tap"))) {
             return
           }
-          eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_CLICK)(e)
+          EventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_CLICK)(e)
         }}
-        onTap={eventCenter.emitEvent(EVENT_TYPES.STAGE_TAP)}
+        onTap={EventCenter.emitEvent(EVENT_TYPES.STAGE_TAP)}
       >
         <Layer>
-          <DataInstanceRender 
-            eventCenter={eventCenter} 
-            renderingSize={renderingSize}
-          />
+          <DataInstanceRender renderingSize={renderingSize}/>
         </Layer>
-        {/* <Layer>
-          <AnnotationRender
+        <Layer>
+          <AnnotationRender/>
+          {/* <ToolRender
             useStore={useStore}
-            eventCenter={eventCenter}
-          />
-          <ToolRender
-            useStore={useStore}
-            eventCenter={eventCenter}
-          />
-        </Layer> */}
+            EventCenter={EventCenter}
+          /> */}
+        </Layer>
       </Stage>
     </div>
   )

@@ -1,15 +1,21 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { Group, Rect, Transformer } from 'react-konva';
-import { get } from 'lodash'
+import { get, find } from 'lodash'
+
+import EventCenter from '../../../../../EventCenter'
+import { useAnnotationStore, useDatasetStore } from '../../../../../stores/index'
 
 import { EVENT_TYPES } from '../../../../../constants'
 
 const Rectangle = (props) => {
-  const { useStore, eventCenter, annotation, } = props
-  const editingAnnotationId = useStore(state => state.editingAnnotationId)
-  const image = useStore(state => state.image)
-  const imageWidth = get(image, 'width', 1)
-  const imageHeight = get(image, 'height', 1)
+  const { annotation, } = props
+
+  const editingAnnotationId = useAnnotationStore(state => state.editingAnnotationId)
+
+  const instanceId = useDatasetStore(state => state.instanceId)
+  const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))
+  const imageWidth = get(dataInstance, 'width', 1)
+  const imageHeight = get(dataInstance, 'height', 1)
 
   const { id, bBox, properties } = annotation
 
@@ -29,14 +35,14 @@ const Rectangle = (props) => {
 
   const handleSelect = (e) => {
     groupRef.current.moveToTop()
-    eventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({
+    EventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({
       e,
       id
     })
   }
 
   const handleContextMenu = (e) => {
-    eventCenter.emitEvent(EVENT_TYPES.CONTEXT_MENU_ANNOTATION)({
+    EventCenter.emitEvent(EVENT_TYPES.CONTEXT_MENU_ANNOTATION)({
       e,
       id
     })
@@ -65,7 +71,7 @@ const Rectangle = (props) => {
         opacity={isSelected ? properties.opacity + 0.2 : properties.opacity}
         draggable={isSelected}
         onDragEnd={(e) => {
-          eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
+          EventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
             x: e.target.x() / imageWidth,
             y: e.target.y() / imageHeight,
           })
@@ -82,7 +88,7 @@ const Rectangle = (props) => {
           // we will reset it back
           node.scaleX(1);
           node.scaleY(1);
-          eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
+          EventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
             x: node.x() / imageWidth,
             y: node.y() / imageHeight,
             // set minimal value

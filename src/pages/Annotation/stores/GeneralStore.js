@@ -1,5 +1,7 @@
 import create from 'zustand'
 
+import getPointerPosition from '../utils/getPointerPosition'
+
 import { MODES } from '../constants'
 
 const useGeneralStore = create((set, get) => ({
@@ -13,8 +15,12 @@ const useGeneralStore = create((set, get) => ({
   setStageSize: (newStageSize) => set({ stageSize: newStageSize }),
   setRenderingSize: (newRenderingSize) => set({ renderingSize: newRenderingSize }),
   
-  activeMode: MODES.CURSOR.name,
+  activeMode: MODES.DRAW_BBOX.name,
   setActiveMode: (newMode) => set({ activeMode: newMode }),
+
+  currentMousePosition: { x: 0, y: 0 },
+  updateCurrentMousePosition: () => set(state => ({ currentMousePosition: getPointerPosition(state.stage) })),
+  getCurrentMousePosition: () => get().currentMousePosition,
 }))
 
 export default useGeneralStore

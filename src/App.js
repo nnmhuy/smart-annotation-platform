@@ -52,7 +52,7 @@ const appRoutes = [
   //   withLayout: true,
   // },
   {
-    path: "/annotations/project=:projectId&dataset=:datasetId",
+    path: "/annotations/dataset=:datasetId",
     component: AnnotationPage,
     withLayout: false,
   },
