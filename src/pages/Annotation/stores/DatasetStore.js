@@ -15,6 +15,8 @@ const useDatasetStore = create((set, get) => ({
   setIsLoading: (name, value) => set(state => ({ isLoading: { ...state.isLoading, [name]: value } })),
 
   setInstanceId: (id) => set({ instanceId: id }),
+  getInstanceId: () => get().instanceId,
+  getDataInstance: () => find(get().dataInstances, { id: get().instanceId }),
 
   getDatasetInfo: async (datasetId) => {
     const setIsLoading = get().setIsLoading
@@ -40,6 +42,8 @@ const useDatasetStore = create((set, get) => ({
 
   getPlayingState: () => get().playingState,
   setPlayingState: (newState) => set(state => ({ playingState: {...state.playingState, ...newState }})),
+  increaseBufferingFrame: (skip) => set(state => ({ playingState: { ...state.playingState, bufferingFrame: state.playingState.bufferingFrame + skip }})),
+  increaseLazyBufferingFrame: (skip) => set(state => ({ playingState: { ...state.playingState, lazyBufferingFrame: state.playingState.lazyBufferingFrame + skip }})),
 }))
 
 export default useDatasetStore

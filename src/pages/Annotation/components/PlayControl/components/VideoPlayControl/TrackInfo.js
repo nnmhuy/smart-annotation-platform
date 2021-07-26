@@ -32,10 +32,10 @@ const FrameInput = (props) => {
   const classes = useStyles()
   const { playingFrame, fps, numFrames, handleGoToFrame } = props
 
-  const [frameValue, setFrameValue] = useState(playingFrame)
+  const [frameValue, setFrameValue] = useState(playingFrame || 0)
 
   useEffect(() => {
-    setFrameValue(playingFrame)
+    setFrameValue(playingFrame || 0)
   }, [playingFrame])
 
   const handleChange = (e) => {
@@ -46,7 +46,7 @@ const FrameInput = (props) => {
   }
 
   const handleBlur = () => {
-    handleGoToFrame(frameValue)
+    handleGoToFrame(frameValue, true)
   }
 
   return (
