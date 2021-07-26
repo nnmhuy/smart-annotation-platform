@@ -42,6 +42,7 @@ const VideoTrack = (props) => {
         max={numFrames - 1}
         onChange={handleChange}
         onChangeCommitted={handleChangeCommitted}
+        valueLabelDisplay="auto"
       />
     </Grid>
   )

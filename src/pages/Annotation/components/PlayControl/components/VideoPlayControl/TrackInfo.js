@@ -64,7 +64,7 @@ const FrameInput = (props) => {
       <Grid container item xs={6} className={classes.group} alignItems="center" justifyContent="flex-end">
         <div className={classes.frameInputContainer}>
           <NakedField
-            value={frameValue}
+            value={frameValue + 1}
             size="small"
             type="number"
             onChange={handleChange}
