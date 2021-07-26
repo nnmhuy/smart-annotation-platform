@@ -33,6 +33,7 @@ const VideoPlayControl = (props) => {
   const setPlayingState = useDatasetStore(state => state.setPlayingState)
   const increaseBufferingFrame = useDatasetStore(state => state.increaseBufferingFrame)
   const increaseLazyBufferingFrame = useDatasetStore(state => state.increaseLazyBufferingFrame)
+  const increasePlayingFrame = useDatasetStore(state => state.increasePlayingFrame)
 
   const isPlaying = useVideoControlStore(state => state.isPlaying)
   const getIsPlaying = useVideoControlStore(state => state.getIsPlaying)
@@ -78,7 +79,11 @@ const VideoPlayControl = (props) => {
       setPlayingState({ bufferingFrame: frame })
     }
     await video.frames[frame].original.getBitmap()
-    setPlayingState({ playingFrame: frame })
+    if (jump) {
+      setPlayingState({ playingFrame: frame })
+    } else {
+      increasePlayingFrame(1)
+    }
   }
 
   const handlePlayVideo = async (playingId) => {

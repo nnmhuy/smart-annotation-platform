@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+import React from 'react'
+import { get } from 'lodash'
 
 import { useDatasetStore } from '../../../../stores/index'
 
@@ -11,7 +12,7 @@ const Video = (props) => {
   const playingState = useDatasetStore(state => state.playingState)
 
   const { playingFrame } = playingState
-  const bitmap = (playingFrame !== undefined) ? video.frames[playingFrame].original.bitmap : null
+  const bitmap = get(video, `frames[${playingFrame}].original.bitmap`, null)
 
   return (video ?
     <KonvaImage
