@@ -1,42 +1,17 @@
 import React, { useEffect } from 'react'
 
+import { useDatasetStore } from '../../../../stores/index'
+
 import KonvaImage from '../../../../../../components/KonvaImage'
 
 const Video = (props) => {
   const { video, renderingSize } = props
   const { width, height } = renderingSize
+  
+  const playingState = useDatasetStore(state => state.playingState)
 
-  const [playingFrame, setPlayingFrame] = React.useState(0)
-  const [bitmap, setBitmap] = React.useState(null)
-  const [loading, setLoading] = React.useState(false)
-
-  const { fps } = video
-  const handlePlayVideo = () => {
-    while (loading) {
-    }
-    setPlayingFrame(x => {
-      return (x === video.numFrames - 1) ? 0 : x + 1
-    })
-    setTimeout(() => {
-      handlePlayVideo()
-    }, 1000 / fps);
-  }
-
-  useEffect(() => {
-    handlePlayVideo()
-  }, [])
-
-
-  React.useEffect(() => {
-    const getBitmap = async () => {
-      setLoading(true)
-      const bmp = await video.frames[playingFrame].original.getBitmap()
-      setBitmap(bmp)
-      setLoading(false)
-    }
-
-    getBitmap()
-  }, [playingFrame])
+  const { playingFrame } = playingState
+  const bitmap = (playingFrame !== undefined) ? video.frames[playingFrame].original.bitmap : null
 
   return (video ?
     <KonvaImage

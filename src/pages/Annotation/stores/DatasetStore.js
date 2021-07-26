@@ -10,6 +10,7 @@ const useDatasetStore = create((set, get) => ({
   instanceId: null,
   dataInstances: [],
   isLoading: {},
+  playingState: {},
 
   setIsLoading: (name, value) => set(state => ({ isLoading: { ...state.isLoading, [name]: value } })),
 
@@ -36,6 +37,9 @@ const useDatasetStore = create((set, get) => ({
 
     setIsLoading("loading_data_instances", false)
   },
+
+  getPlayingState: () => get().playingState,
+  setPlayingState: (newState) => set(state => ({ playingState: {...state.playingState, ...newState }})),
 }))
 
 export default useDatasetStore

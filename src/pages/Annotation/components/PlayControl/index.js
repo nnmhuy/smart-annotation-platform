@@ -3,7 +3,7 @@ import { find } from 'lodash'
 
 import { useDatasetStore } from '../../stores/index'
 
-import VideoPlayControl from './components/VideoPlayControl'
+import VideoPlayControl from './components/VideoPlayControl/VideoPlayControl'
 
 import VideoDataInstanceClass from '../../../../classes/VideoDataInstanceClass'
 

@@ -36,9 +36,11 @@ const Input = (props) => {
       >
         {children}
       </InputBase>
-      <FormHelperText error>
-        <ErrorMessage name={field.name} />
-      </FormHelperText>
+      {field.name &&
+        <FormHelperText error>
+          <ErrorMessage name={field.name} />
+        </FormHelperText>
+      }
       {helperText && <FormHelperText className={classes.helperText}>{helperText}</FormHelperText>}
     </div>
   )
