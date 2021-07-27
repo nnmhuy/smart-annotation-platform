@@ -4,9 +4,11 @@ import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
 import ImageListItemBar from '@material-ui/core/ImageListItemBar';
 import IconButton from '@material-ui/core/IconButton';
-import CheckIcon from '@material-ui/icons/CheckCircle';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import clsx from 'clsx'
+
+import CheckIcon from '@material-ui/icons/CheckCircle';
+import UncheckIcon from '@material-ui/icons/RadioButtonUnchecked';
 
 const useStyles = makeStyles((theme) => ({
   dataList: {
@@ -44,7 +46,6 @@ const DataListSection = (props) => {
         return (
           <ImageListItem key={item.id}
             className={classes.dataListItem}
-            onClick={() => setSelectedData(item.id, !selected[item.id])}
           >
             <img src={item?.thumbnail?.URL} alt={item.name} />
             <ImageListItemBar
@@ -52,12 +53,19 @@ const DataListSection = (props) => {
               title={item.name}
               actionIcon={
                 <IconButton
-                  aria-label={`check ${item.name}`} 
-                  className={clsx(classes.icon, isSelected && classes.selectedIcon)}
+                  aria-label={`check ${item.name}`}
+                // className={clsx(classes.icon, isSelected && classes.selectedIcon)}
+                  onClick={() => setSelectedData(item.id, !selected[item.id])}
                 >
-                    <CheckIcon 
+                  {isSelected ?
+                    <CheckIcon
                       color="secondary"
                     />
+                    :
+                    <UncheckIcon 
+                      color="primary"
+                    />
+                  }
                 </IconButton>
               }
             />

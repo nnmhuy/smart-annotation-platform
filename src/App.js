@@ -4,10 +4,10 @@ import { ConfirmProvider } from 'material-ui-confirm';
 
 import Layout from './components/Layout/index'
 
-// import ProjectListPage from './pages/ProjectList/index'
-// import ProjectInfoPage from './pages/ProjectInfoPage/index'
-// import DatasetManagementPage from './pages/DatasetManagement/index'
-// import UploadDatasetPage from './pages/UploadDataset/index'
+import ProjectListPage from './pages/ProjectList/index'
+import ProjectInfoPage from './pages/ProjectInfoPage/index'
+import DatasetManagementPage from './pages/DatasetManagement/index'
+import UploadDatasetPage from './pages/UploadDataset/index'
 import AnnotationPage from './pages/Annotation/index'
 
 import './App.css';
@@ -31,26 +31,26 @@ const appTheme = createTheme({
 });
 
 const appRoutes = [
-  // {
-  //   path: ["/", "/projects"],
-  //   component: ProjectListPage,
-  //   withLayout: true,
-  // },
-  // {
-  //   path: "/projects/project=:projectId",
-  //   component: ProjectInfoPage,
-  //   withLayout: true,
-  // },
-  // {
-  //   path: "/datasets/dataset=:datasetId",
-  //   component: DatasetManagementPage,
-  //   withLayout: true,
-  // },
-  // {
-  //   path: "/datasets/upload/dataset=:datasetId",
-  //   component: UploadDatasetPage,
-  //   withLayout: true,
-  // },
+  {
+    path: ["/", "/projects"],
+    component: ProjectListPage,
+    withLayout: true,
+  },
+  {
+    path: "/projects/project=:projectId",
+    component: ProjectInfoPage,
+    withLayout: true,
+  },
+  {
+    path: "/datasets/dataset=:datasetId",
+    component: DatasetManagementPage,
+    withLayout: true,
+  },
+  {
+    path: "/datasets/upload/dataset=:datasetId",
+    component: UploadDatasetPage,
+    withLayout: true,
+  },
   {
     path: "/annotations/dataset=:datasetId",
     component: AnnotationPage,

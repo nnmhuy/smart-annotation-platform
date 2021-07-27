@@ -2,7 +2,7 @@ import create from 'zustand'
 import { remove } from 'lodash'
 
 import DatasetService from '../../services/DatasetService'
-import DataService from '../../services/DataService'
+import DataInstanceService from '../../services/DataInstanceService'
 
 const useDatasetManagementStore = create((set, get) => ({
   isLoading: {},
@@ -35,7 +35,7 @@ const useDatasetManagementStore = create((set, get) => ({
     const setIsLoadingField = get().setIsLoadingField
     setIsLoadingField("dataList", true)
 
-    const dataList = await DataService.getDataByDataset(datasetId, page)
+    const dataList = await DataInstanceService.getDataInstancesByDataset(datasetId, page)
     set({ dataList })
 
     setIsLoadingField("dataList", false)
@@ -57,7 +57,7 @@ const useDatasetManagementStore = create((set, get) => ({
 
     let toDeleteData = remove(dataList, data => selected[data.id])
 
-    await Promise.all(toDeleteData.map(img => DataService.deleteDataById(img.id)))
+    await Promise.all(toDeleteData.map(img => DataInstanceService.deleteDataById(img.id)))
 
     set({ 
       selected: {},
