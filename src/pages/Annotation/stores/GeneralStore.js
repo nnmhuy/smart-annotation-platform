@@ -16,7 +16,7 @@ const useGeneralStore = create((set, get) => ({
   setRenderingSize: (newRenderingSize) => set({ renderingSize: newRenderingSize }),
   getRenderingSize: () => get().renderingSize,
   
-  activeMode: MODES.DRAW_BBOX.name,
+  activeMode: MODES.EDIT.name,
   setActiveMode: (newMode) => set({ activeMode: newMode }),
 
   currentMousePosition: { x: 0, y: 0 },

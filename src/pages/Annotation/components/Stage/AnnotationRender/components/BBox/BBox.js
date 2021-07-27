@@ -35,7 +35,8 @@ const Rectangle = (props) => {
     groupRef.current.moveToTop()
     EventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({
       e,
-      id
+      id,
+      annotationObjectId
     })
   }
 

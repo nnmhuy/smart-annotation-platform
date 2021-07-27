@@ -11,7 +11,7 @@ const DrawBBox = (props) => {
   const getCurrentAnnotation = useAnnotationStore(state => state.getCurrentAnnotation)
 
   const currentAnnotation = getCurrentAnnotation(currentAnnotationImageId, selectedObjectId)
-  console.log(currentAnnotation)
+
   return (currentAnnotation ? 
     <EditingHandler currentAnnotation={currentAnnotation} {...props}/>
     : <DrawingHandler {...props}/>

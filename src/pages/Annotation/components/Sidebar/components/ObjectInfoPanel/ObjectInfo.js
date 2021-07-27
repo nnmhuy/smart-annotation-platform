@@ -60,6 +60,7 @@ const ObjectInfo = (props) => {
             setSelectedObjectId(null)
           } else {
             setSelectedObjectId(annotationObject.id)
+            // TODO: switch mode
           }
         }}
       >

@@ -1,12 +1,14 @@
 import React from 'react'
 
 import EventCenter from '../../../EventCenter';
-import { useAnnotationStore } from '../../../stores/index'
+import { useGeneralStore, useAnnotationStore } from '../../../stores/index'
 
-import { EVENT_TYPES } from '../../../constants';
+import { MODES, EVENT_TYPES } from '../../../constants';
 
 const EditingHandler = (props) => {
   const { currentAnnotation } = props
+
+  const setActiveMode = useGeneralStore(state => state.setActiveMode)
 
   const setAnnotation = useAnnotationStore(state => state.setAnnotation)
   const deleteAnnotation = useAnnotationStore(state => state.deleteAnnotation)
@@ -22,6 +24,7 @@ const EditingHandler = (props) => {
 
   const handleStageClick = (e) => {
     setSelectedObjectId(null)
+    setActiveMode(MODES.EDIT.name)
   }
 
   React.useEffect(() => {
