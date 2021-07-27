@@ -14,7 +14,6 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-// TODO: keyboard instruction
 const DataInfo = (props) => {
   const classes = useStyles()
 

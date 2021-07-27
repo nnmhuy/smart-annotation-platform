@@ -1,5 +1,5 @@
 import create from 'zustand'
-import { find, filter, cloneDeep } from 'lodash'
+import { filter, cloneDeep } from 'lodash'
 
 import LabelService from '../../../services/LabelService'
 import AnnotationObjectService from '../../../services/AnnotationObjectService'
@@ -29,7 +29,10 @@ const useAnnotationStore = create((set, get) => ({
     setIsLoading("loading_annotation_objects", true)
 
     const annotationObjects = await AnnotationObjectService.getAnnotationObjectsByDataInstance(instanceId)
-    set({ annotationObjects })
+    set({ 
+      selectedObjectId: null,
+      annotationObjects 
+    })
 
     setIsLoading("loading_annotation_objects", false)
   },
@@ -81,7 +84,10 @@ const useAnnotationStore = create((set, get) => ({
       }
       annotations[ann.annotationImageId].push(ann)
     })
-    set({ annotations })
+    set({ 
+      drawingAnnotation: null,
+      annotations 
+    })
     setIsLoading("loading_annotations", false)
   },
   setAnnotation: (annotationId, newEditingAnnotationData, commitAnnotation) => {

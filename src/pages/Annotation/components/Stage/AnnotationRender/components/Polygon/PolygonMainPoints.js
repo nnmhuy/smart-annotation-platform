@@ -1,12 +1,13 @@
 import React from 'react'
 import { Circle } from 'react-konva'
 
+import EventCenter from '../../../../../EventCenter'
+
 import { EVENT_TYPES } from '../../../../../constants'
 
 
 const PolygonMainPoints = (props) => {
   const {
-    eventCenter,
     id,
     polygon,
     imageWidth,
@@ -29,13 +30,13 @@ const PolygonMainPoints = (props) => {
     event.target.scale({ x: 2, y: 2 });
     event.target.zIndex(1000)
 
-    eventCenter.emitEvent(EVENT_TYPES.MOUSE_OVER_POLYGON_START)(true)
+    EventCenter.emitEvent(EVENT_TYPES.MOUSE_OVER_POLYGON_START)(true)
   }
 
   const handleMouseOutStartPoint = event => {
     event.target.scale({ x: 1, y: 1 });
 
-    eventCenter.emitEvent(EVENT_TYPES.MOUSE_OVER_POLYGON_START)(false)
+    EventCenter.emitEvent(EVENT_TYPES.MOUSE_OVER_POLYGON_START)(false)
   }
 
   return (polys.map((mainPoints, polyIndex) => {

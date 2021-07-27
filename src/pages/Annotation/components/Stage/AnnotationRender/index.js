@@ -2,11 +2,11 @@ import React, { useCallback } from 'react'
 import { filter, cloneDeep, get, find } from 'lodash'
 
 import BBoxAnnotation from '../../../../../classes/BBoxAnnotationClass'
-// import PolygonAnnotation from '../../../../../classes/PolygonAnnotationClass'
+import PolygonAnnotation from '../../../../../classes/PolygonAnnotationClass'
 // import ScribbleToMaskAnnotation from '../../../../../classes/ScribbleToMaskAnnotationClass'
 
 import BBox from './components/BBox/BBox'
-// import Polygon from './components/Polygon/Polygon'
+import Polygon from './components/Polygon/Polygon'
 // import ScribbleToMask from './components/ScribbleToMask/ScribbleAnnotation'
 
 import { useGeneralStore, useDatasetStore, useAnnotationStore } from '../../../stores/index'
@@ -17,10 +17,10 @@ const mapAnnotationClassToRender = [
     cls: BBoxAnnotation,
     render: BBox,
   },
-  // {
-  //   cls: PolygonAnnotation,
-  //   render: Polygon,
-  // },
+  {
+    cls: PolygonAnnotation,
+    render: Polygon,
+  },
   // {
   //   cls: ScribbleToMaskAnnotation,
   //   render: ScribbleToMask,

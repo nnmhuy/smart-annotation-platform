@@ -1,8 +1,7 @@
 import React from 'react'
-import { find } from 'lodash'
 
 import EventCenter from '../../../EventCenter'
-import { useAnnotationStore, useDatasetStore } from '../../../stores/index'
+import { useAnnotationStore } from '../../../stores/index'
 
 import { EVENT_TYPES } from '../../../constants';
 
@@ -12,7 +11,6 @@ const Edit = (props) => {
   const handleSelectAnnotation = ({e, annotationObjectId }) => {
     e.cancelBubble = true
     setSelectedObjectId(annotationObjectId)
-    // TODO: switch active mode
   }
 
   React.useEffect(() => {

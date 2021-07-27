@@ -4,7 +4,7 @@ import { find, get } from 'lodash'
 import Cursor from './Cursor/index'
 import Edit from './Edit/index'
 import DrawBBox from './DrawBBox/index'
-// import DrawPolygon from './DrawPolygon/index'
+import DrawPolygon from './DrawPolygon/index'
 // import CutPolygon from './CutPolygon/index'
 // import ScribbleToMask from './ScribbleToMask/index'
 // import Delete from './Delete/index'
@@ -18,7 +18,7 @@ const mapModeToComponent = {
   [MODES.CURSOR.name]: Cursor,
   [MODES.EDIT.name]: Edit,
   [MODES.DRAW_BBOX.name]: DrawBBox,
-  // [MODES.DRAW_POLYGON.name]: DrawPolygon,
+  [MODES.DRAW_POLYGON.name]: DrawPolygon,
   // [MODES.SCRIBBLE_TO_MASK.name]: ScribbleToMask,
   // [MODES.CUT_POLYGON.name]: CutPolygon,
   // [MODES.DELETE.name]: Delete,
@@ -37,14 +37,23 @@ const ModeController = (props) => {
 
   const selectedObjectId = useAnnotationStore(state => state.selectedObjectId)
   const annotationObjects = useAnnotationStore(state => state.annotationObjects)
+  const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
+  const setDrawingAnnotation = useAnnotationStore(state => state.setDrawingAnnotation)
+
+  const annotationObject = find(annotationObjects, { id: selectedObjectId })
+
   useEffect(() => {
-    if (!selectedObjectId) {
-      setActiveMode(MODES.EDIT.name)
-    } else {
-      const annotationObject = find(annotationObjects, { id: selectedObjectId})
+    if (selectedObjectId) {
       setActiveMode(mapAnnotationTypeToMode[annotationObject.annotationType])
     }
   }, [selectedObjectId])
+
+  useEffect(() => {
+    if (activeMode !== mapAnnotationTypeToMode[annotationObject?.annotationType]) {
+      setSelectedObjectId(null)
+      setDrawingAnnotation(null)
+    }
+  }, [activeMode])
 
   return ([
     <Cursor key="cursor-handler" {...props}/>,

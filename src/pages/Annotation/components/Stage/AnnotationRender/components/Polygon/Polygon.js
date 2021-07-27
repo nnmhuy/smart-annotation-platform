@@ -2,6 +2,9 @@ import React from 'react'
 import { Group } from 'react-konva'
 import { get, cloneDeep } from 'lodash'
 
+import EventCenter from '../../../../../EventCenter'
+import { useGeneralStore, useAnnotationStore } from '../../../../../stores/index'
+
 import PolygonPath from './PolygonPath'
 import PolygonMainPoints from './PolygonMainPoints'
 import PolygonMidPoints from './PolygonMidPoints'
@@ -9,32 +12,32 @@ import PolygonMidPoints from './PolygonMidPoints'
 import { EVENT_TYPES } from '../../../../../constants'
 
 const Polygon = (props) => {
-  const {
-    annotation, useStore, eventCenter,
-  } = props
+  const { annotation } = props
 
-  const { id, polygon, properties } = annotation
+  const { id, polygon, properties, annotationObjectId } = annotation
   const [isDraggingPolygon, setIsDraggingPolygon] = React.useState(false)
   const [draggingPointKey, setDraggingPointKey] = React.useState(null)
   const [draggingMidPoint, setDraggingMidPoint] = React.useState(null)
 
-  const stage = useStore(state => state.stageRef)
-  const drawingAnnotation = useStore(state => state.drawingAnnotation)
-  const editingAnnotationId = useStore(state => state.editingAnnotationId)
-  const image = useStore(state => state.image)
-  const imageWidth = get(image, 'width', 1)
-  const imageHeight = get(image, 'height', 1)
+  const stage = useGeneralStore(state => state.stage)
+  const renderingSize = useGeneralStore(state => state.renderingSize)
+
+  const drawingAnnotation = useAnnotationStore(state => state.drawingAnnotation)
+  const selectedObjectId = useAnnotationStore(state => state.selectedObjectId)
+  
+  const scale = stage ? stage.scaleX() : 1
+  const imageWidth = get(renderingSize, 'width', 1)
+  const imageHeight = get(renderingSize, 'height', 1)
 
   const groupRef = React.useRef(null)
-  const scale = stage ? stage.scaleX() : 1
 
 
   const isDrawing = (drawingAnnotation && drawingAnnotation.id === id)
-  const isSelected = (id === editingAnnotationId)
+  const isSelected = (annotationObjectId === selectedObjectId)
   const isCutting = polygon.isCutting
 
   const handleSelectPolygon = (e) => {
-    eventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({ e, id })
+    EventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({ e, id, annotationObjectId })
   }
 
   const onDragPolygonStart = () => {
@@ -45,7 +48,7 @@ const Polygon = (props) => {
     const dX = event.target.x() / imageWidth
     const dY = event.target.y() / imageHeight
 
-    eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
+    EventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
       x: dX,
       y: dY,
     })
@@ -57,7 +60,7 @@ const Polygon = (props) => {
 
     const polys = cloneDeep(polygon.polys)
 
-    eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
+    EventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
       polys: polys.map(poly => poly.map(p => [p[0] + dX, p[1] + dY])),
       x: 0,
       y: 0
@@ -89,13 +92,13 @@ const Polygon = (props) => {
         return [...poly.slice(0, pointIndex), pos, ...poly.slice(pointIndex + 1)]
       }
     })
-    eventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
+    EventCenter.emitEvent(EVENT_TYPES.EDIT_ANNOTATION)({
       polys: newPolys,
     })
   }
 
   const handleEndDraggingMainPoint = (event) => {
-    eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({})
+    EventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({})
     setDraggingPointKey(null)
   }
 
@@ -141,7 +144,7 @@ const Polygon = (props) => {
       position
     })
 
-    eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
+    EventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
       polys: newPolys,
     })
 
@@ -164,14 +167,14 @@ const Polygon = (props) => {
       }
     }).filter(poly => poly.length >= 3)
 
-    eventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
+    EventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({
       polys: newPolys,
     })
   }
 
 
   const handleContextMenu = (e) => {
-    eventCenter.emitEvent(EVENT_TYPES.CONTEXT_MENU_ANNOTATION)({
+    EventCenter.emitEvent(EVENT_TYPES.CONTEXT_MENU_ANNOTATION)({
       e,
       id
     })
@@ -183,8 +186,6 @@ const Polygon = (props) => {
       ref={groupRef}
     >
       <PolygonPath
-        useStore={useStore}
-        eventCenter={eventCenter}
         id={id}
         polygon={{
           ...polygon,
@@ -206,8 +207,6 @@ const Polygon = (props) => {
       />
       {(!isDraggingPolygon && (isDrawing || isSelected)) &&
         <PolygonMainPoints
-          useStore={useStore}
-          eventCenter={eventCenter}
           isDrawing={isDrawing}
           isSelected={isSelected}
           isCutting={isCutting}
@@ -223,10 +222,8 @@ const Polygon = (props) => {
           handleDoubleClickDeletePoint={handleDoubleClickDeletePoint}
         />
       }
-      {(!isDraggingPolygon && isSelected && !isCutting) &&
+      {(!isDrawing && !isDraggingPolygon && isSelected && !isCutting) &&
         <PolygonMidPoints
-          useStore={useStore}
-          eventCenter={eventCenter}
           id={id}
           polygon={polygon}
           scale={scale}
