@@ -121,7 +121,7 @@ const useAnnotationStore = create((set, get) => ({
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
   appendAnnotation: (newAnnotation) => {
     newAnnotation.applyUpdate()
-    const annotations = cloneDeep(get().annotations)
+    const annotations = get().annotations
     if (!annotations[newAnnotation.annotationImageId]) {
       annotations[newAnnotation.annotationImageId] = []
     }
