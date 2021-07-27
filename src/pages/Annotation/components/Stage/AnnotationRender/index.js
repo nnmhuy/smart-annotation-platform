@@ -34,6 +34,7 @@ const AnnotationRender = (props) => {
   const currentAnnotationImageId = useDatasetStore(state => state.currentAnnotationImageId)
 
   const annotations = useAnnotationStore(state => state.annotations[currentAnnotationImageId] || [])
+  
   const annotationObjects = useAnnotationStore(state => state.annotationObjects)
   const drawingAnnotation = useAnnotationStore(state => state.drawingAnnotation)
   const labels = useAnnotationStore(state => state.labels)

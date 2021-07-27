@@ -1,4 +1,5 @@
 import React from 'react'
+import { find } from 'lodash'
 
 import { useDatasetStore, useAnnotationStore } from '../../../stores/index'
 
@@ -8,9 +9,9 @@ import EditingHandler from './EditingHandler'
 const DrawBBox = (props) => {
   const currentAnnotationImageId = useDatasetStore(state => state.currentAnnotationImageId)
   const selectedObjectId = useAnnotationStore(state => state.selectedObjectId)
-  const getCurrentAnnotation = useAnnotationStore(state => state.getCurrentAnnotation)
+  const annotations = useAnnotationStore(state => state.annotations[currentAnnotationImageId] || [])
 
-  const currentAnnotation = getCurrentAnnotation(currentAnnotationImageId, selectedObjectId)
+  const currentAnnotation = find(annotations, { annotationObjectId: selectedObjectId })
 
   return (currentAnnotation ? 
     <EditingHandler currentAnnotation={currentAnnotation} {...props}/>

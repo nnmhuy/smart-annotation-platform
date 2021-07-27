@@ -90,9 +90,20 @@ const DrawingHandler = (props) => {
     }
   }
 
+  const handleDeleteAnnotation = () => {
+    setDrawingAnnotation(null)
+  }
+
   const handleMouseClick = (e) => {
     updateCurrentMousePosition()
     handleClickDrawRectangle()
+  }
+
+  const handleContextMenu = (e) => {
+    e.evt.preventDefault()
+    updateCurrentMousePosition()
+    // cancel drawing annotation
+    setDrawingAnnotation(null)
   }
 
   const handleMouseMove = (e) => {
@@ -105,10 +116,14 @@ const DrawingHandler = (props) => {
     let subscriptions = {
       [EVENT_TYPES.STAGE_MOUSE_CLICK]: getSubject(EVENT_TYPES.STAGE_MOUSE_CLICK)
         .subscribe({ next: (e) => handleMouseClick(e) }),
+      [EVENT_TYPES.STAGE_CONTEXT_MENU]: getSubject(EVENT_TYPES.STAGE_CONTEXT_MENU)
+        .subscribe({ next: (e) => handleContextMenu(e) }),
       [EVENT_TYPES.STAGE_MOUSE_MOVE]: getSubject(EVENT_TYPES.STAGE_MOUSE_MOVE)
         .subscribe({ next: (e) => handleMouseMove(e) }),
       [EVENT_TYPES.STAGE_TAP]: getSubject(EVENT_TYPES.STAGE_TAP)
         .subscribe({ next: (e) => handleMouseClick(e) }),
+      [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.EDIT.DELETE_ANNOTATION)
+        .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
     }
 
     return () => {

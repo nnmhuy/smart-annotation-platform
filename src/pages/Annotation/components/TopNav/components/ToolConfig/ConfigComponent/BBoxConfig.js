@@ -1,10 +1,10 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
+import EventCenter from '../../../../../EventCenter'
+
 import ToolConfigButton from '../components/ToolConfigButton'
-
 import { ReactComponent as DeleteIcon } from '../../../../../../../static/images/icons/ConfigIcon/delete.svg'
-
 
 import { EVENT_TYPES } from '../../../../../constants'
 
@@ -26,16 +26,15 @@ const useStyles = makeStyles(() => ({
 }))
 
 
-const EditConfig = (props) => {
+const BBoxConfig = (props) => {
   const classes = useStyles()
-  const { eventCenter } = props
 
   return (
     <div className={classes.root}>
       <div className={classes.optionContainer}>
         <ToolConfigButton
           name={'Delete annotation'}
-          handleClick={eventCenter.emitEvent(EVENT_TYPES.EDIT.DELETE_ANNOTATION)}
+          handleClick={EventCenter.emitEvent(EVENT_TYPES.EDIT.DELETE_ANNOTATION)}
           component={<DeleteIcon/>}
         />
       </div>
@@ -43,4 +42,4 @@ const EditConfig = (props) => {
   )
 }
 
-export default EditConfig
+export default BBoxConfig

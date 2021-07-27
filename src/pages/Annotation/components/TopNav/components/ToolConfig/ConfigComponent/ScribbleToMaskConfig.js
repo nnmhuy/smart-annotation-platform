@@ -3,9 +3,9 @@ import { makeStyles } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 
-import ToolSelector from '../ToolSelector'
-import ToolConfigPopUpButton from '../ToolConfigPopUpButton'
-import ToolConfigButton from '../ToolConfigButton'
+import ToolSelector from '../components/ToolSelector'
+import ToolConfigPopUpButton from '../components/ToolConfigPopUpButton'
+import ToolConfigButton from '../components/ToolConfigButton'
 import Slider from '../../../../../../../components/Slider'
 
 import { ReactComponent as PositiveScribbleIcon } from '../../../../../../../static/images/icons/ConfigIcon/positive_scribble.svg'

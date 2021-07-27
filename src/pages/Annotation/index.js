@@ -93,10 +93,7 @@ const Annotation = (props) => {
   return (
     <div className={classes.root}>
       <Loading isLoading={{ ...isGeneralLoading, ...isDatasetLoading, ...isAnnotationLoading }} />
-      {/* <TopNav
-        useStore={useAnnotationStore}
-        eventCenter={annotationEventCenter}
-      /> */}
+      <TopNav/>
       <div className={classes.annotationWrapper}>
         <div className={classes.toolboxContainer}>
           <Toolbox eventCenter={annotationEventCenter}/>

@@ -19,6 +19,10 @@ const useGeneralStore = create((set, get) => ({
   activeMode: MODES.EDIT.name,
   setActiveMode: (newMode) => set({ activeMode: newMode }),
 
+  toolConfig: {},
+  setToolConfig: (newToolConfig) => set(state => ({ toolConfig: { ...state.toolConfig, [state.activeMode]: newToolConfig } })),
+  getToolConfig: () => get().toolConfig[get().activeMode] || {},
+
   currentMousePosition: { x: 0, y: 0 },
   updateCurrentMousePosition: () => set(state => ({ currentMousePosition: getPointerPosition(state.stage) })),
   getCurrentMousePosition: () => get().currentMousePosition,

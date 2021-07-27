@@ -84,10 +84,6 @@ const useAnnotationStore = create((set, get) => ({
     set({ annotations })
     setIsLoading("loading_annotations", false)
   },
-  getCurrentAnnotation: (currentAnnotationImageId, selectedObjectId) => {
-    const annotations = get().annotations[currentAnnotationImageId] || []
-    return find(annotations, { annotationObjectId: selectedObjectId })
-  },
   setAnnotation: (annotationId, newEditingAnnotationData, commitAnnotation) => {
     let annotations = get().annotations
 
@@ -113,7 +109,7 @@ const useAnnotationStore = create((set, get) => ({
     let annotations = get().annotations
 
     Object.keys(annotations).forEach(annotationImageId => {
-      annotations[annotationImageId] = filter(annotations[annotationImageId], (ann) => ann.id !== annotationImageId)
+      annotations[annotationImageId] = filter(annotations[annotationImageId], (ann) => ann.id !== deleteAnnotationId)
     }) 
 
     set({ annotations })
@@ -125,11 +121,11 @@ const useAnnotationStore = create((set, get) => ({
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
   appendAnnotation: (newAnnotation) => {
     newAnnotation.applyUpdate()
-    const annotations = get().annotations
+    const annotations = cloneDeep(get().annotations)
     if (!annotations[newAnnotation.annotationImageId]) {
       annotations[newAnnotation.annotationImageId] = []
     }
-    annotations[newAnnotation.annotationImageId].push(newAnnotation)
+    annotations[newAnnotation.annotationImageId] = [...annotations[newAnnotation.annotationImageId], newAnnotation]
     set({ annotations })
   },
 }))

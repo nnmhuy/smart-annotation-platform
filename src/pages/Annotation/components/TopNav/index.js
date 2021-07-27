@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    height: 60,
+    height: 50,
     paddingLeft: 20,
     paddingRight: 20,
     background: theme.light.forthColor
@@ -43,21 +43,14 @@ const TopNav = (props) => {
   const { datasetId } = useParams()
   const query = useQuery()
   const page = JSON.parse(query.get("page") || 1)
-  const { useStore, eventCenter, } = props
 
   return (
     <div className={classes.topNavWrapper}>
       <div className={classes.leftSection}>
-        <DataInfo
-          useStore={useStore}
-          eventCenter={eventCenter}
-        />
+        <DataInfo />
       </div>
       <div className={classes.centerSection}>
-        <ToolConfig
-          useStore={useStore}
-          eventCenter={eventCenter}
-        />
+        <ToolConfig />
       </div>
       <div className={classes.rightSection}>
         <IconButton

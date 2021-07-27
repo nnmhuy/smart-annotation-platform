@@ -2,6 +2,8 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { get } from 'lodash'
 
+import { useDatasetStore } from '../../../../stores/index'
+
 const useStyles = makeStyles(() => ({
   root: {
 
@@ -15,15 +17,15 @@ const useStyles = makeStyles(() => ({
 // TODO: keyboard instruction
 const DataInfo = (props) => {
   const classes = useStyles()
-  const { useStore } = props
 
-  const image = useStore(state => state.image)
-  const imageName = get(image, 'obj.name', '')
+  const getDataInstance = useDatasetStore(state => state.getDataInstance)
+  const dataInstance = getDataInstance()
+  const dataInstanceName = get(dataInstance, 'name', '')
 
   return (
     <div className={classes.root}>
       <div className={classes.name}>
-        {imageName}
+        {dataInstanceName}
       </div>
     </div>
   )
