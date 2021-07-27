@@ -31,7 +31,7 @@ const mapAnnotationClassToRender = [
 
 const AnnotationRender = (props) => {
   const { eventCenter } = props
-
+  return null
   const annotations = useAnnotationStore(state => state.annotations)
   const drawingAnnotation = useAnnotationStore(state => state.drawingAnnotation)
   const labels = useAnnotationStore(state => state.labels)

@@ -14,7 +14,7 @@ export default class ImageDataInstanceClass extends DataInstanceClass {
     Object.assign(this, image)
   }
 
-  get currentImage() {
+  getCurrentImage() {
     const { id, original, thumbnail } = this
     return {
       id,

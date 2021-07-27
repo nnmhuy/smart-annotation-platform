@@ -14,6 +14,7 @@ const useGeneralStore = create((set, get) => ({
   setStage: (newStage) => set({ stage: newStage }),
   setStageSize: (newStageSize) => set({ stageSize: newStageSize }),
   setRenderingSize: (newRenderingSize) => set({ renderingSize: newRenderingSize }),
+  getRenderingSize: () => get().renderingSize,
   
   activeMode: MODES.DRAW_BBOX.name,
   setActiveMode: (newMode) => set({ activeMode: newMode }),

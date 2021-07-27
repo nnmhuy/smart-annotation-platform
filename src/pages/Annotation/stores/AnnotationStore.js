@@ -4,6 +4,7 @@ import { filter } from 'lodash'
 import LabelService from '../../../services/LabelService'
 import AnnotationObjectService from '../../../services/AnnotationObjectService'
 import AnnotationService from '../../../services/AnnotationService'
+import AnnotationObjectClass from '../../../classes/AnnotationObjectClass'
 
 
 const useAnnotationStore = create((set, get) => ({
@@ -21,6 +22,7 @@ const useAnnotationStore = create((set, get) => ({
     setIsLoading("loading_dataset_labels", false)
   },
 
+  selectedObjectId: null,
   annotationObjects: [],
   loadAnnotationObjects: async (instanceId) => {
     const setIsLoading = get().setIsLoading
@@ -31,24 +33,39 @@ const useAnnotationStore = create((set, get) => ({
 
     setIsLoading("loading_annotation_objects", false)
   },
+  setSelectedObjectId: (newObjectId) => set({ selectedObjectId: newObjectId }),
+  getOrCreateSelectedObjectId: (dataInstanceId, annotationType, properties = {}) => {
+    const selectedObjectId = get().selectedObjectId
+    const annotationObjects = get().annotationObjects
+
+    if (selectedObjectId) {
+      return selectedObjectId
+    } else {
+      const newAnnotationObject = new AnnotationObjectClass('', dataInstanceId, '', annotationType, properties, {})
+      newAnnotationObject.applyUpdate()
+      set({
+        annotationObjects: [...annotationObjects, newAnnotationObject],
+        selectedObjectId: newAnnotationObject.id,
+      })
+      return newAnnotationObject.id
+    }
+  },
+  deleteAnnotationObject: (objectId) => {
+    const selectedObjectId = get().selectedObjectId
+    const annotationObjects = get().annotationObjects
+    set({ annotationObjects: filter(annotationObjects, ann => ann.id !== objectId) })
+
+    if (selectedObjectId === objectId) {
+      set({ selectedObjectId: null })
+    }
+    AnnotationObjectService.deleteAnnotationObjectById(objectId)
+  },
 
   annotations: [],
-  appendAnnotation: (newAnnotation) => {
-    // newAnnotation.applyUpdateAnnotation()
-    set(state => ({ annotations: [...state.annotations, newAnnotation] }))
-  },
-  deleteAnnotation: (deleteAnnotationId) => {
-    // AnnotationService.deleteAnnotationById(deleteAnnotationId)
-
-    set(state => ({
-      annotations: filter(state.annotations, ann => ann.id !== deleteAnnotationId)
-    }))
-  },
 
   drawingAnnotation: null,
-  getDrawingAnnotation: () => get().drawingAnnotation,
+  getDrawingAnnotation: () => { /* TODO */  return null },
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
-  
 }))
 
 export default useAnnotationStore

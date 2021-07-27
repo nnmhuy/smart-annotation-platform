@@ -8,6 +8,7 @@ import { useGeneralStore, useDatasetStore, useAnnotationStore } from '../../../s
 import Cursor from '../Cursor/index'
 import BBoxAnnotationClass from '../../../../../classes/BBoxAnnotationClass'
 
+import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
 
 
@@ -15,36 +16,42 @@ const uidgen = new UIDGenerator(96, UIDGenerator.BASE16);
 
 const DrawBBox = (props) => {
   const instanceId = useDatasetStore(state => state.instanceId)
-  const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))
-  
+  const getCurrentAnnotationImageId = useDatasetStore(state => state.getCurrentAnnotationImageId)
+
+  const getRenderingSize = useGeneralStore(state => state.getRenderingSize)
   const updateCurrentMousePosition = useGeneralStore(state => state.updateCurrentMousePosition)
   const getCurrentMousePosition = useGeneralStore(state => state.getCurrentMousePosition)
 
   const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
   const getDrawingAnnotation = useAnnotationStore(state => state.getDrawingAnnotation)
   const setDrawingAnnotation = useAnnotationStore(state => state.setDrawingAnnotation)
+  const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
 
   const handleClickDrawRectangle = () => {
-    const imageWidth = get(dataInstance, 'width', 1)
-    const imageHeight = get(dataInstance, 'height', 1)
+    const renderingSize = getRenderingSize()
+    const imageWidth = get(renderingSize, 'width', 1)
+    const imageHeight = get(renderingSize, 'height', 1)
     const currentMousePosition = getCurrentMousePosition()
     const drawingAnnotation = getDrawingAnnotation()
 
     if (drawingAnnotation === null) {
-      setDrawingAnnotation(new BBoxAnnotationClass(uidgen.generateSync(), '', instanceId, {
+      const objectId = getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.BBOX, DEFAULT_ANNOTATION_ATTRS)
+      const annotationImageId = getCurrentAnnotationImageId()
+      setDrawingAnnotation(new BBoxAnnotationClass('', objectId, annotationImageId, {
         x: currentMousePosition.x / imageWidth,
         y: currentMousePosition.y / imageHeight,
         width: 0,
         height: 0,
-      }, DEFAULT_ANNOTATION_ATTRS))
+      }, true))
     } else {
       finishDrawRectangle()
     }
   }
 
   const finishDrawRectangle = () => {
-    const imageWidth = get(dataInstance, 'width', 1)
-    const imageHeight = get(dataInstance, 'height', 1)
+    const renderingSize = getRenderingSize()
+    const imageWidth = get(renderingSize, 'width', 1)
+    const imageHeight = get(renderingSize, 'height', 1)
     const currentMousePosition = getCurrentMousePosition()
     const drawingAnnotation = getDrawingAnnotation()
 
@@ -67,8 +74,9 @@ const DrawBBox = (props) => {
 
 
   const handleDragDrawRectangle = () => {
-    const imageWidth = get(dataInstance, 'width', 1)
-    const imageHeight = get(dataInstance, 'height', 1)
+    const renderingSize = getRenderingSize()
+    const imageWidth = get(renderingSize, 'width', 1)
+    const imageHeight = get(renderingSize, 'height', 1)
     const currentMousePosition = getCurrentMousePosition()
     const drawingAnnotation = getDrawingAnnotation()
 
@@ -106,7 +114,7 @@ const DrawBBox = (props) => {
     return () => {
       Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
     }
-  }, [dataInstance])
+  }, [instanceId])
 
   return (
     <Cursor {...props}/>

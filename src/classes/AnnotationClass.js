@@ -1,6 +1,8 @@
+import generateNewUid from "../utils/uidGenerator"
+
 export default class Annotation {
-  constructor(id, annotationObjectId, annotationImageId, keyFrame=false) {
-    this.id = id
+  constructor(id = '', annotationObjectId, annotationImageId, keyFrame=false) {
+    this.id = id || generateNewUid()
     this.annotationObjectId = annotationObjectId
     this.annotationImageId = annotationImageId
     this.keyFrame = keyFrame

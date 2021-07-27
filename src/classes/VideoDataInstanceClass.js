@@ -30,4 +30,9 @@ export default class VideoDataInstanceClass extends DataInstanceClass {
       others
     )
   }
+
+  getCurrentImage(playingState) {
+    const { playingFrame } = playingState
+    return this.frames[playingFrame]
+  }
 }
