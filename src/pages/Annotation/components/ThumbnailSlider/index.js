@@ -1,11 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { IconButton, makeStyles } from '@material-ui/core'
+import Collapse from '@material-ui/core/Collapse'
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons'
+import ShowMoreIcon from '@material-ui/icons/UnfoldMore';
+import ShowLessIcon from '@material-ui/icons/UnfoldLess';
 import { useParams, useHistory } from 'react-router'
 import { get } from 'lodash'
 
+import EventCenter from '../../EventCenter';
 
 import { IMAGES_PER_PAGE } from '../../constants'
+import { EVENT_TYPES } from '../../constants'
 import useQuery from '../../../../utils/useQuery'
 import { useDatasetStore } from '../../stores/index'
 
@@ -85,32 +90,51 @@ const ThumbnailSlider = (props) => {
     }
   }
 
+  const [isShowing, setIsShowing] = useState(true)
 
   return (
-    <div className={classes.sliderWrapper}>
-      <div className={classes.pageInfo}>
-        <div>{`Page: ${Math.min(page, maxPage)}`}</div>
-        <div>{`Total: ${maxPage}`}</div>
-      </div>
-      <IconButton onClick={() => handleChangePage(-1)} className={classes.button}>
-        <KeyboardArrowLeft />
+    <>
+      <IconButton 
+        size="small" 
+        className={classes.button} 
+        style={{ background: theme.light.forthColor, width: '100%' }}
+        onClick={() => {
+          setIsShowing(isShowing => !isShowing)
+          setTimeout(EventCenter.emitEvent(EVENT_TYPES.RESIZE_STAGE), 350)
+        }}
+      >
+        {isShowing ?
+          <ShowLessIcon fontSize="small" color="primary"/>
+          : <ShowMoreIcon fontSize="small" color="primary"/>
+        }
       </IconButton>
-        <div className={classes.thumbnailWrapper}>
-        {dataInstances.map((instance) => {
-            return (
-              <ThumbnailImage
-                id={instance.id}
-                key={`thumbnail-image-${instance.id}`}
-                isSelected={instance.id === instanceId}
-                setSelectedId={() => setInstanceId(instance.id)}
-                thumbnail={instance.thumbnail.URL}
-              />)
-          })}
+      <Collapse in={isShowing} timeout={300}>
+        <div className={classes.sliderWrapper}>
+          <div className={classes.pageInfo}>
+            <div>{`Page: ${Math.min(page, maxPage)}`}</div>
+            <div>{`Total: ${maxPage}`}</div>
+          </div>
+          <IconButton onClick={() => handleChangePage(-1)} className={classes.button}>
+            <KeyboardArrowLeft />
+          </IconButton>
+          <div className={classes.thumbnailWrapper}>
+            {dataInstances.map((instance) => {
+              return (
+                <ThumbnailImage
+                  id={instance.id}
+                  key={`thumbnail-image-${instance.id}`}
+                  isSelected={instance.id === instanceId}
+                  setSelectedId={() => setInstanceId(instance.id)}
+                  thumbnail={instance.thumbnail.URL}
+                />)
+            })}
+          </div>
+          <IconButton onClick={() => handleChangePage(1)} className={classes.button}>
+            <KeyboardArrowRight />
+          </IconButton>
         </div>
-      <IconButton onClick={() => handleChangePage(1)} className={classes.button}>
-        <KeyboardArrowRight />
-      </IconButton>
-    </div>
+      </Collapse>
+    </>
   )
 }
 

@@ -31,6 +31,7 @@ const RenderComponent = (props) => {
   const classes = useStyles({ activeMode })
   
   const stageContainerRef = React.useRef(null)
+  const getStageContainerRef = useCallback(() => stageContainerRef.current, [stageContainerRef])
   const stageRef = React.useRef(null)
   const setStage = useGeneralStore(state => state.setStage)
   React.useEffect(() => {
@@ -43,8 +44,9 @@ const RenderComponent = (props) => {
   const setStageSize = useGeneralStore(state => state.setStageSize)
 
   const handleNewStageSize = debounce(() => {
-    const container = stageContainerRef.current
-    if (container) {
+    const container = getStageContainerRef()
+
+    if (container && container.clientWidth > 0 && container.clientHeight > 0) {
       setStageSize({
         width: container.clientWidth,
         height: container.clientHeight,
@@ -52,12 +54,18 @@ const RenderComponent = (props) => {
     }
   }, 500, { leading: true, trailing: true })
 
-
   React.useEffect(() => {
     handleNewStageSize()
     window.addEventListener('resize', handleNewStageSize)
+    const { getSubject } = EventCenter
+    let subscriptions = {
+      [EVENT_TYPES.RESIZE_STAGE]: getSubject(EVENT_TYPES.RESIZE_STAGE)
+        .subscribe({ next: (e) => handleNewStageSize(e) }),
+    }
+
     return () => {
       window.removeEventListener('resize', handleNewStageSize)
+      Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
     }
   }, [])
 
@@ -93,7 +101,6 @@ const RenderComponent = (props) => {
       y: Math.min(Math.max(pos.y, posLimit.yMin), posLimit.yMax)
     };
   }
-
 
   return (
     <div className={classes.stageContainer} ref={stageContainerRef}>

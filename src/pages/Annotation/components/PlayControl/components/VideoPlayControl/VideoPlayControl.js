@@ -9,10 +9,14 @@ import VideoTrack from './VideoTrack'
 import TrackInfo from './TrackInfo'
 
 import { useDatasetStore } from '../../../../stores/index'
+import EventCenter from '../../../../EventCenter'
+
+import { EVENT_TYPES } from '../../../../constants'
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: 10,
+    width: '100%',
   },
 }))
 
@@ -42,6 +46,9 @@ const VideoPlayControl = (props) => {
 
   const { fps, numFrames } = video
 
+  useEffect(() => {
+    EventCenter.emitEvent(EVENT_TYPES.RESIZE_STAGE)()
+  }, [])
   useEffect(() => {
     setIsPlaying(false)
     setPlayingState({
