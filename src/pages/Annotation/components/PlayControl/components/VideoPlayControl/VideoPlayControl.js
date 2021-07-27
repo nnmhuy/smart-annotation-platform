@@ -15,7 +15,7 @@ import { EVENT_TYPES } from '../../../../constants'
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: 10,
+    padding: '5px 10px',
     width: '100%',
   },
 }))
