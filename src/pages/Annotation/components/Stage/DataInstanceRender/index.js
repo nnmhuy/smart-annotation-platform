@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import { find } from 'lodash'
 
-import { useDatasetStore } from '../../../stores/index'
+import { useDatasetStore, useGeneralStore } from '../../../stores/index'
 
 import ImageRender from './components/ImageRender'
 import VideoRender from './components/VideoRender'
@@ -10,7 +10,7 @@ import ImageDataInstanceClass from '../../../../../classes/ImageDataInstanceClas
 import VideoDataInstanceClass from '../../../../../classes/VideoDataInstanceClass'
 
 const DataInstanceRender = (props) => {
-  const { renderingSize } = props
+  const renderingSize = useGeneralStore(state => state.renderingSize)
 
   const instanceId = useDatasetStore(state => state.instanceId)
   const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))

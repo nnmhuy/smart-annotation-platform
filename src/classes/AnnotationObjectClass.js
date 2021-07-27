@@ -1,4 +1,3 @@
-import RestConnector from '../connectors/RestConnector'
 import generateNewUid from '../utils/uidGenerator'
 
 export default class AnnotationObjectClass {
@@ -34,16 +33,5 @@ export default class AnnotationObjectClass {
       data.properties,
       data.attributes
     )
-  }
-
-  async applyUpdate() {
-    return await RestConnector.post('/annotation_objects', {
-      id: this.id,
-      data_instance_id: this.dataInstanceId,
-      label_id: this.labelId,
-      annotation_type: this.annotationType,
-      properties: this.properties,
-      attributes: this.attributes
-    })
   }
 }

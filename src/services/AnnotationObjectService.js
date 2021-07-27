@@ -11,6 +11,17 @@ class AnnotationObjectService {
       )
   }
 
+  async postAnnotationObject(annotationObject) {
+    return await RestConnector.post('/annotation_objects', {
+      id: annotationObject.id,
+      data_instance_id: annotationObject.dataInstanceId,
+      label_id: annotationObject.labelId,
+      annotation_type: annotationObject.annotationType,
+      properties: annotationObject.properties,
+      attributes: annotationObject.attributes
+    })
+  }
+
   async deleteAnnotationObjectById(id) {
     return RestConnector.delete(`/annotation_objects?id=${id}`)
       .then((response) => {

@@ -34,11 +34,12 @@ export default class BBoxAnnotation extends Annotation {
       data.key_frame
     )
   }
-  async applyUpdateAnnotation() {
+
+  async applyUpdate() {
     return await RestConnector.post('/annotations', {
       id: this.id,
-      annotation_object_id: this.annotation_object_id,
-      annotation_image_id: this.annotation_image_id,
+      annotation_object_id: this.annotationObjectId,
+      annotation_image_id: this.annotationImageId,
       annotation_type: ENUM_ANNOTATION_TYPE.BBOX,
       key_frame: this.keyFrame,
       data: this.bBox

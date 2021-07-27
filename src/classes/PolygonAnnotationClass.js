@@ -33,7 +33,7 @@ export default class PolygonAnnotation extends Annotation {
     )
   }
 
-  async applyUpdateAnnotation() {
+  async applyUpdate() {
     return await RestConnector.post('/annotations', {
       id: this.id,
       annotation_object_id: this.annotation_object_id,

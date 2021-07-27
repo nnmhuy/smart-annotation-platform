@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { filter, cloneDeep, get, find } from 'lodash'
-
 
 import BBoxAnnotation from '../../../../../classes/BBoxAnnotationClass'
 // import PolygonAnnotation from '../../../../../classes/PolygonAnnotationClass'
@@ -10,7 +9,7 @@ import BBox from './components/BBox/BBox'
 // import Polygon from './components/Polygon/Polygon'
 // import ScribbleToMask from './components/ScribbleToMask/ScribbleAnnotation'
 
-import { useAnnotationStore } from '../../../stores/index'
+import { useGeneralStore, useDatasetStore, useAnnotationStore } from '../../../stores/index'
 
 
 const mapAnnotationClassToRender = [
@@ -30,32 +29,34 @@ const mapAnnotationClassToRender = [
 
 
 const AnnotationRender = (props) => {
-  const { eventCenter } = props
-  return null
-  const annotations = useAnnotationStore(state => state.annotations)
+  const renderingSize = useGeneralStore(state => state.renderingSize)
+
+  const currentAnnotationImageId = useDatasetStore(state => state.currentAnnotationImageId)
+
+  const annotations = useAnnotationStore(state => state.annotations[currentAnnotationImageId] || [])
+  const annotationObjects = useAnnotationStore(state => state.annotationObjects)
   const drawingAnnotation = useAnnotationStore(state => state.drawingAnnotation)
   const labels = useAnnotationStore(state => state.labels)
 
+  let renderingAnnotations = [...annotations, drawingAnnotation].map((ann) => {
+    if (ann === null) {
+      return null
+    }
+    let renderAnn = cloneDeep(ann)
+    const annObject = find(annotationObjects, { id: renderAnn.annotationObjectId })
+    const label = find(labels, { id: annObject.labelId })
 
-  // let renderingAnnotations = [...annotations, drawingAnnotation].map((ann) => {
-  //   if (ann === null) {
-  //     return null
-  //   }
-  //   let renderAnn = cloneDeep(ann)
-  //   const label = find(labels, { id: renderAnn.labelId })
-  //   const labelAnnotationProperties = get(label, 'annotationProperties', {})
-  //   renderAnn.updateProperties = {
-  //     ...labelAnnotationProperties,
-  //     isHidden: get(label, 'properties.isHidden', false) || get(renderAnn, 'properties.isHidden', false)
-  //   }
-  //   return renderAnn
-  // })
+    const labelAnnotationProperties = get(label, 'annotationProperties', {})
+    renderAnn.properties = {
+      ...annObject.properties,
+      ...labelAnnotationProperties,
+      isHidden: get(label, 'properties.isHidden', false) || get(annObject, 'properties.isHidden', false)
+    }
+    return renderAnn
+  })
 
-  // // filter out hidden annotations and null drawingAnnotation
-  // renderingAnnotations = filter(renderingAnnotations, (ann) => ann && !ann.properties.isHidden)
-
-  let renderingAnnotations = [...annotations, drawingAnnotation]
-  renderingAnnotations = filter(renderingAnnotations, (ann) => ann !== null)
+  // filter out hidden annotations and null drawingAnnotation
+  renderingAnnotations = filter(renderingAnnotations, (ann) => ann && !ann.properties.isHidden)
 
   return (
     renderingAnnotations.map(ann => {
@@ -65,8 +66,8 @@ const AnnotationRender = (props) => {
         return (
           <RenderComponent
             key={`annotation-${ann.id}`}
-            eventCenter={eventCenter}
             annotation={ann}
+            renderingSize={renderingSize}
           />
         )
       }

@@ -69,7 +69,7 @@ const DrawBBox = (props) => {
 
     setDrawingAnnotation(null)
     appendAnnotation(finishedRectangle)
-    EventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedRectangle.id)
+    // EventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedRectangle.id)
   }
 
 

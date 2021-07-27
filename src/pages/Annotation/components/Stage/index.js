@@ -130,7 +130,7 @@ const RenderComponent = (props) => {
         onTap={EventCenter.emitEvent(EVENT_TYPES.STAGE_TAP)}
       >
         <Layer>
-          <DataInstanceRender renderingSize={renderingSize}/>
+          <DataInstanceRender/>
         </Layer>
         <Layer>
           <AnnotationRender/>

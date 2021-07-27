@@ -90,6 +90,7 @@ const ObjectInfo = (props) => {
         <Collapse in={isSelected}>
           Annotation Object info
           {annotationObject.labelId}
+          {/* TODO: select label */}
         </Collapse>
       </Grid>
     </Grid>

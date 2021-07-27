@@ -34,6 +34,7 @@ const VideoPlayControl = (props) => {
   const increaseBufferingFrame = useDatasetStore(state => state.increaseBufferingFrame)
   const increaseLazyBufferingFrame = useDatasetStore(state => state.increaseLazyBufferingFrame)
   const increasePlayingFrame = useDatasetStore(state => state.increasePlayingFrame)
+  const setCurrentAnnotationImageId = useDatasetStore(state => state.setCurrentAnnotationImageId)
 
   const isPlaying = useVideoControlStore(state => state.isPlaying)
   const getIsPlaying = useVideoControlStore(state => state.getIsPlaying)
@@ -50,6 +51,13 @@ const VideoPlayControl = (props) => {
     })
     handleBufferingVideo(videoId)
   }, [videoId])
+
+  useEffect(() => {
+    if (video && playingState) {
+      const currentFrameId = video.getCurrentImage(playingState).id
+      setCurrentAnnotationImageId(currentFrameId)
+    }
+  }, [videoId, playingState])
 
 
   const handleBufferingVideo = async (playingId) => {

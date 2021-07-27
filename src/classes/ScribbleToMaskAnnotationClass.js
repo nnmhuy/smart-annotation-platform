@@ -39,7 +39,7 @@ export default class ScribbleToMaskAnnotationClass extends AnnotationClass {
     )
   }
 
-  async applyUpdateAnnotation() {
+  async applyUpdate() {
     const maskBlob = await base64ToBlob(get(this.maskData, 'mask', null))
     const maskURL = await sendFormData({
       id: this.id,

@@ -8,14 +8,12 @@ import { useAnnotationStore, useDatasetStore } from '../../../../../stores/index
 import { EVENT_TYPES } from '../../../../../constants'
 
 const Rectangle = (props) => {
-  const { annotation, } = props
+  const { annotation, renderingSize } = props
 
   const editingAnnotationId = useAnnotationStore(state => state.editingAnnotationId)
 
-  const instanceId = useDatasetStore(state => state.instanceId)
-  const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))
-  const imageWidth = get(dataInstance, 'width', 1)
-  const imageHeight = get(dataInstance, 'height', 1)
+  const imageWidth = get(renderingSize, 'width', 1)
+  const imageHeight = get(renderingSize, 'height', 1)
 
   const { id, bBox, properties } = annotation
 

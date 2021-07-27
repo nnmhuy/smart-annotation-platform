@@ -11,7 +11,7 @@ const Video = (props) => {
   
   const playingState = useDatasetStore(state => state.playingState)
 
-  const { playingFrame } = playingState
+  const playingFrame = get(playingState, 'playingFrame', 0)
   const bitmap = get(video, `frames[${playingFrame}].original.bitmap`, null)
 
   return (video ?

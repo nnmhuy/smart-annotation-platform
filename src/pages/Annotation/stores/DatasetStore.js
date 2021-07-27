@@ -7,27 +7,19 @@ import DataInstanceService from '../../../services/DataInstanceService'
 
 const useDatasetStore = create((set, get) => ({
   dataset: {},
-  instanceId: null,
   dataInstances: [],
   isLoading: {},
   playingState: {},
 
   setIsLoading: (name, value) => set(state => ({ isLoading: { ...state.isLoading, [name]: value } })),
 
-  instanceIndex: undefined, 
-  setInstanceId: (id) => {
-    const instanceIndex = findIndex(get().dataInstances, { id })
-    set({ instanceId: id, instanceIndex })
-  },
+  instanceId: null,
+  currentAnnotationImageId: null,
+  setInstanceId: (id) => set({ instanceId: id }),
   getInstanceId: () => get().instanceId,
   getDataInstance: () => find(get().dataInstances, { id: get().instanceId }),
-  getCurrentAnnotationImageId: () => {
-    const playingState = get().playingState
-    const dataInstances = get().dataInstances
-    const instanceIndex = get().instanceIndex
-
-    return dataInstances[instanceIndex].getCurrentImage(playingState).id
-  },
+  getCurrentAnnotationImageId: () => get().currentAnnotationImageId,
+  setCurrentAnnotationImageId: (id) => set({ currentAnnotationImageId: id }),
 
   getDatasetInfo: async (datasetId) => {
     const setIsLoading = get().setIsLoading

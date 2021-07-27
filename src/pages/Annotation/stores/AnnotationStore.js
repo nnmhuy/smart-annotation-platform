@@ -42,7 +42,7 @@ const useAnnotationStore = create((set, get) => ({
       return selectedObjectId
     } else {
       const newAnnotationObject = new AnnotationObjectClass('', dataInstanceId, '', annotationType, properties, {})
-      newAnnotationObject.applyUpdate()
+      AnnotationObjectService.postAnnotationObject(newAnnotationObject)
       set({
         annotationObjects: [...annotationObjects, newAnnotationObject],
         selectedObjectId: newAnnotationObject.id,
@@ -52,8 +52,15 @@ const useAnnotationStore = create((set, get) => ({
   },
   deleteAnnotationObject: (objectId) => {
     const selectedObjectId = get().selectedObjectId
-    const annotationObjects = get().annotationObjects
-    set({ annotationObjects: filter(annotationObjects, ann => ann.id !== objectId) })
+    let newAnnotationObjects = get().annotationObjects
+    let newAnnotations = get().annotations
+
+    Object.keys(newAnnotations).forEach(annotationImageId => {
+      newAnnotations[annotationImageId] = filter(newAnnotations[annotationImageId], ann => ann.annotationObjectId !== objectId)
+    })
+    newAnnotationObjects = filter(newAnnotationObjects, obj => obj.id !== objectId)
+
+    set({ annotations: newAnnotations, annotationObjects: newAnnotationObjects })
 
     if (selectedObjectId === objectId) {
       set({ selectedObjectId: null })
@@ -61,11 +68,20 @@ const useAnnotationStore = create((set, get) => ({
     AnnotationObjectService.deleteAnnotationObjectById(objectId)
   },
 
-  annotations: [],
+  annotations: {},
 
   drawingAnnotation: null,
-  getDrawingAnnotation: () => { /* TODO */  return null },
+  getDrawingAnnotation: () => get().drawingAnnotation,
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
+  appendAnnotation: (newAnnotation) => {
+    newAnnotation.applyUpdate()
+    const annotations = get().annotations
+    if (!annotations[newAnnotation.annotationImageId]) {
+      annotations[newAnnotation.annotationImageId] = []
+    }
+    annotations[newAnnotation.annotationImageId].push(newAnnotation)
+    set({ annotations })
+  }
 }))
 
 export default useAnnotationStore
