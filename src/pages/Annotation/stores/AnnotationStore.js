@@ -53,6 +53,32 @@ const useAnnotationStore = create((set, get) => ({
       return newAnnotationObject.id
     }
   },
+  setAnnotationObjectProperties: (id, newProperties) => {
+    const annotationObjects = get().annotationObjects.map(object => {
+      if (object.id !== id) {
+        return object
+      } else {
+        let newAnnotation = cloneDeep(object)
+        newAnnotation.updateProperties = newProperties
+        return newAnnotation
+      }
+    })
+
+    set({ annotationObjects })
+  },
+  setAnnotationObjectLabel: (id, newLabelId) => {
+    const annotationObjects = get().annotationObjects.map(object => {
+      if (object.id !== id) {
+        return object
+      } else {
+        let newAnnotation = cloneDeep(object)
+        newAnnotation.labelId = newLabelId
+        return newAnnotation
+      }
+    })
+
+    set({ annotationObjects })
+  },
   deleteAnnotationObject: (objectId) => {
     const selectedObjectId = get().selectedObjectId
     let newAnnotationObjects = get().annotationObjects

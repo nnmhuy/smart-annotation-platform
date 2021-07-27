@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import Collapse from '@material-ui/core/Collapse'
+import List from '@material-ui/core/List'
 import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
+import { find } from 'lodash'
 
 import { useAnnotationStore } from '../../../../stores/index'
 
@@ -38,6 +40,11 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     background: theme.palette.secondary.main
+  },
+  listContainer: {
+    width: '100%',
+    padding: 0,
+    background: theme.palette.primary.light,
   }
 }))
 
@@ -49,6 +56,19 @@ const ObjectInfoPanel = (props) => {
   const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
   const annotationObjects = useAnnotationStore(state => state.annotationObjects)
   const deleteAnnotationObject = useAnnotationStore(state => state.deleteAnnotationObject)
+  const labels = useAnnotationStore(state => state.labels)
+  const setAnnotationObjectProperties = useAnnotationStore(state => state.setAnnotationObjectProperties)
+  const setAnnotationObjectLabel = useAnnotationStore(state => state.setAnnotationObjectLabel)
+
+  const toggleVisibility = (id, isHidden) => {
+    setAnnotationObjectProperties(id, { isHidden })
+  }
+
+  const objectList = annotationObjects.map((obj) => ({
+    ...obj,
+    label: find(labels, { id: obj.labelId })
+  }))
+  
 
   return (
     <Grid container>
@@ -65,7 +85,7 @@ const ObjectInfoPanel = (props) => {
           }
         </Grid>
         <Grid container item xs={8} direction="row" alignItems="center">
-          <Grid item className={classes.title}>Object</Grid>
+          <Grid item className={classes.title}>Objects</Grid>
           <Grid item className={classes.titleCount}>{annotationObjects.length}</Grid>
         </Grid>
         <Grid container item xs={2} justifyContent="flex-start">
@@ -73,19 +93,24 @@ const ObjectInfoPanel = (props) => {
         </Grid>
       </Grid>
       <Grid container item xs={12}>
-        <Collapse in={isOpen || selectedObjectId}>
-          {annotationObjects.map(obj => {
-              return (
-                <ObjectInfo 
-                  key={obj.id}
-                  annotationObject={obj}
-                  isSelected={obj.id === selectedObjectId}
-                  setSelectedObjectId={setSelectedObjectId}
-                  deleteAnnotationObject={deleteAnnotationObject}
-                />
-              )
-            })
-          }
+        <Collapse in={isOpen || selectedObjectId} className={classes.listContainer}>
+          <List className={classes.listContainer}>
+            {objectList.map(obj => {
+                return (
+                  <ObjectInfo 
+                    key={obj.id}
+                    annotationObject={obj}
+                    isSelected={obj.id === selectedObjectId}
+                    labels={labels}
+                    setSelectedObjectId={setSelectedObjectId}
+                    setAnnotationObjectLabel={setAnnotationObjectLabel}
+                    toggleVisibility={toggleVisibility}
+                    deleteAnnotationObject={deleteAnnotationObject}
+                  />
+                )
+              })
+            }
+          </List>
         </Collapse>
       </Grid>
     </Grid>

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import Collapse from '@material-ui/core/Collapse'
-import Divider from '@material-ui/core/Divider'
+import List from '@material-ui/core/List'
 
 import { useAnnotationStore } from '../../../../stores/index'
 
@@ -37,14 +37,15 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
   },
-  divider: {
-    background: "#FFFFFF"
+  listContainer: {
+    width: '100%',
+    background: theme.palette.primary.light,
   }
 }))
 
 const LabelInfoPanel = (props) => {
   const classes = useStyles()
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
 
   const labels = useAnnotationStore(state => state.labels)
 
@@ -60,22 +61,23 @@ const LabelInfoPanel = (props) => {
           }
         </Grid>
         <Grid container item xs={8} direction="row" alignItems="center">
-          <Grid item className={classes.title}>Label</Grid>
+          <Grid item className={classes.title}>Labels</Grid>
           <Grid item className={classes.titleCount}>{labels.length}</Grid>
         </Grid>
-        <Divider orientation="vertical" flexItem className={classes.divider} />
         <Grid item xs={2}>
 
         </Grid>
       </Grid>
       <Grid container item xs={12}>
-        <Collapse in={isOpen}>
-          {labels.map(obj => {
-            return (
-              <LabelInfo key={obj.id} labelObject={obj} />
-            )
-          })
-          }
+        <Collapse in={isOpen} className={classes.listContainer}>
+          <List className={classes.listContainer}>
+            {labels.map(obj => {
+              return (
+                <LabelInfo key={obj.id} labelObject={obj} />
+              )
+            })
+            }
+          </List>
         </Collapse>
       </Grid>
     </Grid>

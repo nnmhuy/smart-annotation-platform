@@ -1,30 +1,41 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core'
-import Grid from '@material-ui/core/Grid'
+import { makeStyles, SvgIcon } from '@material-ui/core'
 import Collapse from '@material-ui/core/Collapse'
-import Divider from '@material-ui/core/Divider'
-import IconButton from '@material-ui/core/IconButton'
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import IconButton from '@material-ui/core/IconButton';
+import Divider from '@material-ui/core/Divider';
 import clsx from 'clsx'
 import { useConfirm } from 'material-ui-confirm'
 
 import ArrowRightIcon from '@material-ui/icons/ChevronRightRounded'
 import ArrowDownIcon from '@material-ui/icons/ExpandMoreRounded'
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import DeleteIcon from '@material-ui/icons/DeleteForeverRounded'
+
+import { ReactComponent as BBoxIcon } from '../../../../../../static/images/icons/ToolboxIcon/rectangle.svg'
+import { ReactComponent as PolygonIcon } from '../../../../../../static/images/icons/ToolboxIcon/polygon.svg'
+import { ReactComponent as MaskIcon } from '../../../../../../static/images/icons/ToolboxIcon/paintbrush.svg'
+
+import { ENUM_ANNOTATION_TYPE } from '../../../../../../constants/constants'
+
+import LabelSelection from './LabelSelection'
 
 const useStyles = makeStyles((theme) => ({
   container: {
     boxSizing: 'border-box',
-    borderRadius: 5,
+    cursor: 'pointer'
   },
   selectedContainer: {
-    borderStyle: 'solid',
-    borderWidth: 5,
-    borderColor: theme.palette.secondary.main
+    background: '#c5defc',
+    borderRadius: '5px 5px 0px 0px',
   },
-  header: {
-    cursor: 'pointer',
-    background: theme.palette.primary.light,
-    padding: 10,
+  annotationTypeIcon: {
+    width: 15,
+    height: 15,
   },
   objectId: {
     textOverflow: 'ellipsis',
@@ -34,13 +45,36 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     background: theme.palette.primary.main
+  },
+  infoContainerCollapse: {
+    width: '100%',
+    justifyContent: 'center',
+    background: '#c5defc',
+    '&.MuiCollapse-entered': {
+      borderRadius: '0px 0px 5px 5px',
+    }
+  },
+  infoContainer: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
   }
 }))
+
+const mapAnnotationTypeToIcon = {
+  [ENUM_ANNOTATION_TYPE.BBOX]: BBoxIcon,
+  [ENUM_ANNOTATION_TYPE.POLYGON]: PolygonIcon,
+  [ENUM_ANNOTATION_TYPE.MASK]: MaskIcon,
+}
 
 const ObjectInfo = (props) => {
   const confirm = useConfirm()
   const classes = useStyles()
-  const { isSelected, annotationObject, setSelectedObjectId, deleteAnnotationObject } = props
+  const { 
+    isSelected, annotationObject, labels,
+    setSelectedObjectId, deleteAnnotationObject, toggleVisibility,
+    setAnnotationObjectLabel
+  } = props
 
   const handleDeleteAnnotationObject = (e) => {
     e.stopPropagation()
@@ -52,9 +86,22 @@ const ObjectInfo = (props) => {
     })
   }
 
+  const AnnotationTypeIcon = mapAnnotationTypeToIcon[annotationObject.annotationType]
+
+  const { id, properties, label } = annotationObject
+
+  const handleChangeLabel = (newLabel) => {
+    console.log(newLabel)
+    if (newLabel) {
+      setAnnotationObjectLabel(id, newLabel.id)
+    } else {
+      setAnnotationObjectLabel(id, '')
+    }
+  }
+
   return (
-    <Grid container className={clsx(classes.container, isSelected && classes.selectedContainer)}>
-      <Grid container item xs={12} direction="row" alignItems="center" className={classes.header}
+    <>
+      <ListItem className={clsx(classes.container, isSelected && classes.selectedContainer)}
         onClick={() => {
           if (isSelected) {
             setSelectedObjectId(null)
@@ -63,37 +110,47 @@ const ObjectInfo = (props) => {
           }
         }}
       >
-        <Grid container item direction="row" alignItems="center" xs={2}>
+        <ListItemIcon style={{ alignItems: 'center' }}>
           {isSelected ?
-            <ArrowDownIcon color="primary" fontSize="small"/>
-            : <ArrowRightIcon color="primary" fontSize="small"/>
+            <ArrowDownIcon color="primary" fontSize="small" />
+            : <ArrowRightIcon color="primary" fontSize="small" />
           }
-        </Grid>
-        <Grid container item direction="row" alignItems="center" justifyContent="flex-start" xs={4}>
-          <Grid item className={classes.objectId}>
-            Type: {annotationObject.annotationType}
-          </Grid>
-        </Grid>
-        <Grid container item direction="row" alignItems="center" xs={4}>
-          <Grid item className={classes.objectId}>
-            ID: {annotationObject.id}
-          </Grid>
-        </Grid>
-        <Grid container item xs={2} direction="row" justifyContent="flex-start">
-          <Divider orientation="vertical" flexItem className={classes.divider} />
-          <IconButton size="small" onClick={handleDeleteAnnotationObject}>
-            <DeleteIcon fontSize="small" color="primary"/>
+        <SvgIcon className={classes.annotationTypeIcon}>
+          <AnnotationTypeIcon />
+        </SvgIcon>
+        </ListItemIcon>
+        <ListItemText 
+          primary={
+            <div className={classes.objectId}>
+              ID: {id}
+            </div>
+          }
+          className={classes.objectId}
+        />
+        <ListItemSecondaryAction>
+          <IconButton size="small" onClick={() => toggleVisibility(id, !properties?.isHidden)}>
+            {properties?.isHidden ?
+              <VisibilityOffIcon fontSize="small"/>
+              : <VisibilityIcon fontSize="small"/>
+            }
           </IconButton>
-        </Grid>
-      </Grid>
-      <Grid container item xs={12}>
-        <Collapse in={isSelected}>
-          Annotation Object info
-          {annotationObject.labelId}
-          {/* TODO: select label */}
-        </Collapse>
-      </Grid>
-    </Grid>
+          <IconButton size="small" onClick={handleDeleteAnnotationObject}>
+            <DeleteIcon fontSize="small"/>
+          </IconButton>
+        </ListItemSecondaryAction>
+      </ListItem>
+      <Collapse in={isSelected} className={classes.infoContainerCollapse}>
+        <Divider className={classes.divider} variant="middle" light/>
+        <div className={classes.infoContainer}>
+          <LabelSelection
+            labelValue={label?.label}
+            labels={labels}
+            handleChangeLabel={handleChangeLabel}
+          />
+          <div style={{ height: 10 }}></div>
+        </div>
+      </Collapse>
+    </>
   )
 }
 

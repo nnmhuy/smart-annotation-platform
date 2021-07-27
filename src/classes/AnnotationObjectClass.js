@@ -1,7 +1,7 @@
 import generateNewUid from '../utils/uidGenerator'
 
 export default class AnnotationObjectClass {
-  constructor(id = '', dataInstanceId, labelId, annotationType, properties = {}, attributes = {}) {
+  constructor(id = '', dataInstanceId = '', labelId = '', annotationType, properties = {}, attributes = {}) {
     this.id = id || generateNewUid()
     this.dataInstanceId = dataInstanceId
     this.labelId = labelId

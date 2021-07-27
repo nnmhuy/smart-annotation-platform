@@ -45,7 +45,7 @@ const useStyles = makeStyles(() => ({
 
   },
   sidebarWrapper: {
-    width: '20%',
+    width: '25%',
   }
 }))
 

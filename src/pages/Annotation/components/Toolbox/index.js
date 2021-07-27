@@ -10,7 +10,7 @@ import { ReactComponent as PolygonIcon } from '../../../../static/images/icons/T
 import { ReactComponent as PainBrushIcon } from '../../../../static/images/icons/ToolboxIcon/paintbrush.svg'
 import { ReactComponent as CursorIcon } from '../../../../static/images/icons/ToolboxIcon/cursor.svg'
 import { ReactComponent as EditIcon } from '../../../../static/images/icons/ToolboxIcon/edit.svg'
-import { ReactComponent as CutIcon } from '../../../../static/images/icons/ToolboxIcon/cut.svg'
+// import { ReactComponent as CutIcon } from '../../../../static/images/icons/ToolboxIcon/cut.svg'
 import { ReactComponent as DeleteIcon } from '../../../../static/images/icons/ToolboxIcon/delete.svg'
 
 const toolBoxButtons = [
