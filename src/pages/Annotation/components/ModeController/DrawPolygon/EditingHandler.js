@@ -16,7 +16,7 @@ const EditingHandler = (props) => {
   const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
 
   const handleEditPolygon = (data, commitAnnotation=false) => {
-    setAnnotation(data, commitAnnotation)
+    setAnnotation(currentAnnotation.id, data, commitAnnotation)
   }
 
   const handleDeleteAnnotation = () => {
