@@ -1,5 +1,5 @@
 import create from 'zustand'
-import { filter } from 'lodash'
+import { find, filter, cloneDeep } from 'lodash'
 
 import LabelService from '../../../services/LabelService'
 import AnnotationObjectService from '../../../services/AnnotationObjectService'
@@ -84,6 +84,41 @@ const useAnnotationStore = create((set, get) => ({
     set({ annotations })
     setIsLoading("loading_annotations", false)
   },
+  getCurrentAnnotation: (currentAnnotationImageId, selectedObjectId) => {
+    const annotations = get().annotations[currentAnnotationImageId] || []
+    return find(annotations, { annotationObjectId: selectedObjectId })
+  },
+  setAnnotation: (annotationId, newEditingAnnotationData, commitAnnotation) => {
+    let annotations = get().annotations
+
+    Object.keys(annotations).forEach(annotationImageId => {
+      annotations[annotationImageId] = annotations[annotationImageId].map((annotation) => {
+        if (annotation.id !== annotationId) {
+          return annotation
+        } else {
+          let newAnnotation = cloneDeep(annotation)
+          newAnnotation.updateData = newEditingAnnotationData
+          if (commitAnnotation) {
+            newAnnotation.applyUpdate()
+          }
+          return newAnnotation
+        }
+      })
+    })
+
+    set({ annotations })
+  },
+  deleteAnnotation: (deleteAnnotationId) => {
+    AnnotationService.deleteAnnotationById(deleteAnnotationId)
+    let annotations = get().annotations
+
+    Object.keys(annotations).forEach(annotationImageId => {
+      annotations[annotationImageId] = filter(annotations[annotationImageId], (ann) => ann.id !== annotationImageId)
+    }) 
+
+    set({ annotations })
+  },
+
 
   drawingAnnotation: null,
   getDrawingAnnotation: () => get().drawingAnnotation,
@@ -96,7 +131,7 @@ const useAnnotationStore = create((set, get) => ({
     }
     annotations[newAnnotation.annotationImageId].push(newAnnotation)
     set({ annotations })
-  }
+  },
 }))
 
 export default useAnnotationStore

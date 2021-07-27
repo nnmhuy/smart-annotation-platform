@@ -32,21 +32,21 @@ const FrameInput = (props) => {
   const classes = useStyles()
   const { playingFrame, fps, numFrames, handleGoToFrame } = props
 
-  const [frameValue, setFrameValue] = useState(playingFrame || 0)
+  const [frameValue, setFrameValue] = useState(playingFrame + 1 || 0)
 
   useEffect(() => {
-    setFrameValue(playingFrame || 0)
+    setFrameValue(playingFrame + 1 || 0)
   }, [playingFrame])
 
   const handleChange = (e) => {
     let frame = e.target.value
-    frame = Math.min(Math.max(frame, 0), numFrames - 1)
+    frame = Math.min(Math.max(frame, 0), numFrames)
 
     setFrameValue(frame)
   }
 
   const handleBlur = () => {
-    handleGoToFrame(frameValue, true)
+    handleGoToFrame(Math.max(frameValue - 1, 1), true)
   }
 
   return (
@@ -54,7 +54,7 @@ const FrameInput = (props) => {
       <Grid container item xs={6} className={classes.group} alignItems="center" justifyContent="flex-end">
         <ClockIcon fontSize="small"/>
         <span className={classes.time}>
-          {moment().minute(0).second(playingFrame / fps).format("m:ss")}
+          {moment().minute(0).second((playingFrame + 1) / fps).format("m:ss")}
         </span>
         /
         <span className={classes.time}>
@@ -64,7 +64,7 @@ const FrameInput = (props) => {
       <Grid container item xs={6} className={classes.group} alignItems="center" justifyContent="flex-end">
         <div className={classes.frameInputContainer}>
           <NakedField
-            value={frameValue + 1}
+            value={frameValue}
             size="small"
             type="number"
             onChange={handleChange}

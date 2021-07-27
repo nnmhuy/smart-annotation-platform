@@ -1,27 +1,27 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import { Group, Rect, Transformer } from 'react-konva';
-import { get, find } from 'lodash'
+import { get } from 'lodash'
 
 import EventCenter from '../../../../../EventCenter'
-import { useAnnotationStore, useDatasetStore } from '../../../../../stores/index'
+import { useAnnotationStore } from '../../../../../stores/index'
 
 import { EVENT_TYPES } from '../../../../../constants'
 
 const Rectangle = (props) => {
   const { annotation, renderingSize } = props
 
-  const editingAnnotationId = useAnnotationStore(state => state.editingAnnotationId)
+  const selectedObjectId = useAnnotationStore(state => state.selectedObjectId)
 
   const imageWidth = get(renderingSize, 'width', 1)
   const imageHeight = get(renderingSize, 'height', 1)
 
-  const { id, bBox, properties } = annotation
+  const { id, annotationObjectId, bBox, properties } = annotation
 
   const groupRef = React.useRef(null);
   const rectRef = React.useRef();
   const trRef = React.useRef();
 
-  const isSelected = (id === editingAnnotationId)
+  const isSelected = (annotationObjectId === selectedObjectId)
 
   React.useEffect(() => {
     if (isSelected) {

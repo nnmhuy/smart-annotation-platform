@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ObjectInfoPanel = (props) => {
   const classes = useStyles()
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
 
   const selectedObjectId = useAnnotationStore(state => state.selectedObjectId)
   const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)

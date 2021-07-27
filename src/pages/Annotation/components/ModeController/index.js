@@ -27,7 +27,10 @@ const ModeController = (props) => {
   const activeMode = useGeneralStore(state => state.activeMode)
   const ActiveModeComponent = get(mapModeToComponent, activeMode, null)
 
-  return (ActiveModeComponent && <ActiveModeComponent {...props}/>)
+  return ([
+    <Cursor key="cursor-handler" {...props}/>,
+    ActiveModeComponent && <ActiveModeComponent key="mode-handler" {...props}/>
+  ])
 }
 
 export default ModeController

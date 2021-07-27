@@ -1,22 +1,29 @@
 import React from 'react'
 import { find } from 'lodash'
 
+import { useAnnotationStore, useDatasetStore } from '../../../stores/index'
+
 import EditBBox from './EditHandler/EditBBox';
-import EditPolygon from './EditHandler/EditPolygon';
+// import EditPolygon from './EditHandler/EditPolygon';
 import Cursor from '../Cursor/index'
 
 import { EVENT_TYPES } from '../../../constants';
 import BBoxAnnotation from '../../../../../classes/BBoxAnnotationClass';
-import PolygonAnnotation from '../../../../../classes/PolygonAnnotationClass';
+// import PolygonAnnotation from '../../../../../classes/PolygonAnnotationClass';
+
+
 
 const mapAnnotationClassToEditHandler = [
   { annotationClass: BBoxAnnotation, handler: EditBBox, },
-  { annotationClass: PolygonAnnotation, handler: EditPolygon, },
+  // { annotationClass: PolygonAnnotation, handler: EditPolygon, },
 ]
 
 const Edit = (props) => {
   const { useStore, eventCenter } = props
-  const annotations = useStore(state => state.annotations)
+
+  const currentAnnotationImageId = useDatasetStore(state => state.currentAnnotationImageId)
+
+  const annotations = useAnnotationStore(state => state.annotations[currentAnnotationImageId])
   const deleteAnnotation = useStore(state => state.deleteAnnotation)
   const editingAnnotationId = useStore(stage => stage.editingAnnotationId)
   const getEditingAnnotationId = useStore(stage => stage.getEditingAnnotationId)

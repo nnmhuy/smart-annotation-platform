@@ -28,18 +28,19 @@ const VideoTrack = (props) => {
 
 
   const handleChange = (_, frame) => {
-    setCurrentFrame(frame)
+    setCurrentFrame(frame - 1)
   }
 
   const handleChangeCommitted = (_, frame) => {
-    handleGoToFrame(frame, true)
+    handleGoToFrame(frame - 1, true)
   }
 
   return (
     <Grid container item xs={5} className={classes.root} alignItems="center">
       <Slider
-        value={currentFrame}
-        max={numFrames - 1}
+        value={currentFrame + 1}
+        min={1}
+        max={numFrames}
         onChange={handleChange}
         onChangeCommitted={handleChangeCommitted}
         valueLabelDisplay="auto"

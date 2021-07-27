@@ -1,0 +1,48 @@
+import React from 'react'
+
+import EventCenter from '../../../EventCenter';
+import { useAnnotationStore } from '../../../stores/index'
+
+import { EVENT_TYPES } from '../../../constants';
+
+const EditingHandler = (props) => {
+  const { currentAnnotation } = props
+
+  const setAnnotation = useAnnotationStore(state => state.setAnnotation)
+  const deleteAnnotation = useAnnotationStore(state => state.deleteAnnotation)
+  const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
+
+  const handleEditBBox = (data, commitAnnotation = false) => {
+    setAnnotation(currentAnnotation.id, data, commitAnnotation)
+  }
+
+  const handleDeleteAnnotation = () => {
+    deleteAnnotation(currentAnnotation.id)
+  }
+
+  const handleStageClick = (e) => {
+    setSelectedObjectId(null)
+  }
+
+  React.useEffect(() => {
+    const { getSubject } = EventCenter
+    let subscriptions = {
+      [EVENT_TYPES.STAGE_MOUSE_CLICK]: getSubject(EVENT_TYPES.STAGE_MOUSE_CLICK)
+        .subscribe({ next: (e) => handleStageClick(e) }),
+      [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.EDIT.DELETE_ANNOTATION)
+        .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
+      [EVENT_TYPES.EDIT_ANNOTATION]: getSubject(EVENT_TYPES.EDIT_ANNOTATION)
+        .subscribe({ next: (data) => handleEditBBox(data) }),
+      [EVENT_TYPES.COMMIT_EDIT_ANNOTATION]: getSubject(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)
+        .subscribe({ next: (data) => handleEditBBox(data, true) }),
+    }
+
+    return () => {
+      Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
+    }
+  }, [currentAnnotation])
+ 
+  return null
+}
+
+export default EditingHandler

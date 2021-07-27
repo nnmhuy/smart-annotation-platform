@@ -1,123 +1,20 @@
-import React, { useCallback } from 'react'
-import UIDGenerator from 'uid-generator'
-import { get, cloneDeep, find } from 'lodash'
+import React from 'react'
 
-import EventCenter from '../../../EventCenter'
-import { useGeneralStore, useDatasetStore, useAnnotationStore } from '../../../stores/index'
+import { useDatasetStore, useAnnotationStore } from '../../../stores/index'
 
-import Cursor from '../Cursor/index'
-import BBoxAnnotationClass from '../../../../../classes/BBoxAnnotationClass'
-
-import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
-import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
-
-
-const uidgen = new UIDGenerator(96, UIDGenerator.BASE16);
+import DrawingHandler from './DrawingHandler'
+import EditingHandler from './EditingHandler'
 
 const DrawBBox = (props) => {
-  const instanceId = useDatasetStore(state => state.instanceId)
-  const getCurrentAnnotationImageId = useDatasetStore(state => state.getCurrentAnnotationImageId)
+  const currentAnnotationImageId = useDatasetStore(state => state.currentAnnotationImageId)
+  const selectedObjectId = useAnnotationStore(state => state.selectedObjectId)
+  const getCurrentAnnotation = useAnnotationStore(state => state.getCurrentAnnotation)
 
-  const getRenderingSize = useGeneralStore(state => state.getRenderingSize)
-  const updateCurrentMousePosition = useGeneralStore(state => state.updateCurrentMousePosition)
-  const getCurrentMousePosition = useGeneralStore(state => state.getCurrentMousePosition)
-
-  const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
-  const getDrawingAnnotation = useAnnotationStore(state => state.getDrawingAnnotation)
-  const setDrawingAnnotation = useAnnotationStore(state => state.setDrawingAnnotation)
-  const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
-
-  const handleClickDrawRectangle = () => {
-    const renderingSize = getRenderingSize()
-    const imageWidth = get(renderingSize, 'width', 1)
-    const imageHeight = get(renderingSize, 'height', 1)
-    const currentMousePosition = getCurrentMousePosition()
-    const drawingAnnotation = getDrawingAnnotation()
-
-    if (drawingAnnotation === null) {
-      const objectId = getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.BBOX, DEFAULT_ANNOTATION_ATTRS)
-      const annotationImageId = getCurrentAnnotationImageId()
-      setDrawingAnnotation(new BBoxAnnotationClass('', objectId, annotationImageId, {
-        x: currentMousePosition.x / imageWidth,
-        y: currentMousePosition.y / imageHeight,
-        width: 0,
-        height: 0,
-      }, true))
-    } else {
-      finishDrawRectangle()
-    }
-  }
-
-  const finishDrawRectangle = () => {
-    const renderingSize = getRenderingSize()
-    const imageWidth = get(renderingSize, 'width', 1)
-    const imageHeight = get(renderingSize, 'height', 1)
-    const currentMousePosition = getCurrentMousePosition()
-    const drawingAnnotation = getDrawingAnnotation()
-
-    let finishedRectangle = cloneDeep(drawingAnnotation)
-
-    const bBoxWidth = currentMousePosition.x / imageWidth - drawingAnnotation.bBox.x
-    const bBoxHeight = currentMousePosition.y / imageHeight - drawingAnnotation.bBox.y
-
-    finishedRectangle.updateData = {
-      x: (finishedRectangle.bBox.x + Math.min(0, bBoxWidth)),
-      width: Math.abs(bBoxWidth),
-      y: (finishedRectangle.bBox.y + Math.min(0, bBoxHeight)),
-      height: Math.abs(bBoxHeight)
-    }
-
-    setDrawingAnnotation(null)
-    appendAnnotation(finishedRectangle)
-    // EventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedRectangle.id)
-  }
-
-
-  const handleDragDrawRectangle = () => {
-    const renderingSize = getRenderingSize()
-    const imageWidth = get(renderingSize, 'width', 1)
-    const imageHeight = get(renderingSize, 'height', 1)
-    const currentMousePosition = getCurrentMousePosition()
-    const drawingAnnotation = getDrawingAnnotation()
-
-    if (drawingAnnotation !== null) {
-      let newDrawingAnnotation = cloneDeep(drawingAnnotation)
-      newDrawingAnnotation.updateData = {
-        width: currentMousePosition.x / imageWidth - drawingAnnotation.bBox.x,
-        height: currentMousePosition.y / imageHeight - drawingAnnotation.bBox.y,
-      }
-      setDrawingAnnotation(newDrawingAnnotation)
-    }
-  }
-
-  const handleMouseClick = (e) => {
-    updateCurrentMousePosition()
-    handleClickDrawRectangle()
-  }
-
-  const handleMouseMove = (e) => {
-    updateCurrentMousePosition()
-    handleDragDrawRectangle()
-  }
-
-  React.useEffect(() => {
-    const { getSubject } = EventCenter
-    let subscriptions = {
-      [EVENT_TYPES.STAGE_MOUSE_CLICK]: getSubject(EVENT_TYPES.STAGE_MOUSE_CLICK)
-        .subscribe({ next: (e) => handleMouseClick(e) }),
-      [EVENT_TYPES.STAGE_MOUSE_MOVE]: getSubject(EVENT_TYPES.STAGE_MOUSE_MOVE)
-        .subscribe({ next: (e) => handleMouseMove(e) }),
-      [EVENT_TYPES.STAGE_TAP]: getSubject(EVENT_TYPES.STAGE_TAP)
-        .subscribe({ next: (e) => handleMouseClick(e) }),
-    }
-
-    return () => {
-      Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
-    }
-  }, [instanceId])
-
-  return (
-    <Cursor {...props}/>
+  const currentAnnotation = getCurrentAnnotation(currentAnnotationImageId, selectedObjectId)
+  console.log(currentAnnotation)
+  return (currentAnnotation ? 
+    <EditingHandler currentAnnotation={currentAnnotation} {...props}/>
+    : <DrawingHandler {...props}/>
   )
 }
 
