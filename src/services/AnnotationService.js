@@ -19,6 +19,14 @@ class AnnotationService {
     }
   }
 
+  async getAnnotationsByDataInstance(dataInstanceId) {
+    const annotationResponse = await RestConnector.get(`/annotations?data_instance_id=${dataInstanceId}`)
+
+    const annotationsObj = await Promise.all(annotationResponse.data.map(async ann => await this.parseAnnotationObj(ann)))
+
+    return annotationsObj
+  }
+
   async getAnnotationByAnnotationObject(annotationObjectId) {
     const annotationResponse = await RestConnector.get(`/annotations?annotation_object_id=${annotationObjectId}`)
 

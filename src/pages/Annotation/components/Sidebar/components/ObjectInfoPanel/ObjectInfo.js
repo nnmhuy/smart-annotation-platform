@@ -69,7 +69,7 @@ const ObjectInfo = (props) => {
             : <ArrowRightIcon color="primary" fontSize="small"/>
           }
         </Grid>
-        <Grid container item direction="row" alignItems="center" justify="flex-start" xs={4}>
+        <Grid container item direction="row" alignItems="center" justifyContent="flex-start" xs={4}>
           <Grid item className={classes.objectId}>
             Type: {annotationObject.annotationType}
           </Grid>
@@ -79,7 +79,7 @@ const ObjectInfo = (props) => {
             ID: {annotationObject.id}
           </Grid>
         </Grid>
-        <Grid container item xs={2} direction="row" justify="flex-start">
+        <Grid container item xs={2} direction="row" justifyContent="flex-start">
           <Divider orientation="vertical" flexItem className={classes.divider} />
           <IconButton size="small" onClick={handleDeleteAnnotationObject}>
             <DeleteIcon fontSize="small" color="primary"/>

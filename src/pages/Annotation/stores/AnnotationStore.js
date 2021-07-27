@@ -69,6 +69,21 @@ const useAnnotationStore = create((set, get) => ({
   },
 
   annotations: {},
+  loadAnnotations: async (instanceId) => {
+    const setIsLoading = get().setIsLoading
+    setIsLoading("loading_annotations", true)
+
+    let annotationsObj = await AnnotationService.getAnnotationsByDataInstance(instanceId)
+    let annotations = {}
+    annotationsObj.forEach(ann => {
+      if (!annotations[ann.annotationImageId]) {
+        annotations[ann.annotationImageId] = []
+      }
+      annotations[ann.annotationImageId].push(ann)
+    })
+    set({ annotations })
+    setIsLoading("loading_annotations", false)
+  },
 
   drawingAnnotation: null,
   getDrawingAnnotation: () => get().drawingAnnotation,

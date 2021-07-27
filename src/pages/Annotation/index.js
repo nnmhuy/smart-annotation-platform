@@ -63,6 +63,7 @@ const Annotation = (props) => {
 
   const loadAnnotationLabels = useAnnotationStore(state => state.loadAnnotationLabels)
   const loadAnnotationObjects = useAnnotationStore(state => state.loadAnnotationObjects)
+  const loadAnnotations = useAnnotationStore(state => state.loadAnnotations)
 
   useEffect(() => {
     if (datasetId) {
@@ -79,6 +80,7 @@ const Annotation = (props) => {
   useEffect(() => {
     if (instanceId) {
       loadAnnotationObjects(instanceId)
+      loadAnnotations(instanceId)
     }
   }, [instanceId])
 

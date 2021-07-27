@@ -44,6 +44,10 @@ const AnnotationRender = (props) => {
     }
     let renderAnn = cloneDeep(ann)
     const annObject = find(annotationObjects, { id: renderAnn.annotationObjectId })
+    if (!annObject) {
+      return null
+    }
+
     const label = find(labels, { id: annObject.labelId })
 
     const labelAnnotationProperties = get(label, 'annotationProperties', {})

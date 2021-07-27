@@ -68,7 +68,7 @@ const ObjectInfoPanel = (props) => {
           <Grid item className={classes.title}>Object</Grid>
           <Grid item className={classes.titleCount}>{annotationObjects.length}</Grid>
         </Grid>
-        <Grid container item xs={2} justify="flex-start">
+        <Grid container item xs={2} justifyContent="flex-start">
           {/* <Divider orientation="vertical" flexItem className={classes.divider} /> */}
         </Grid>
       </Grid>
