@@ -90,10 +90,6 @@ const DrawingHandler = (props) => {
     }
   }
 
-  const handleDeleteAnnotation = () => {
-    setDrawingAnnotation(null)
-  }
-
   const handleMouseClick = (e) => {
     updateCurrentMousePosition()
     handleClickDrawRectangle()
@@ -109,6 +105,10 @@ const DrawingHandler = (props) => {
   const handleMouseMove = (e) => {
     updateCurrentMousePosition()
     handleDragDrawRectangle()
+  }
+
+  const handleDeleteAnnotation = () => {
+    setDrawingAnnotation(null)
   }
 
   React.useEffect(() => {

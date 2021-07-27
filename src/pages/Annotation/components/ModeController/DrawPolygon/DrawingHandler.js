@@ -86,8 +86,8 @@ const DrawingHandler = (props) => {
 
     setDrawingAnnotation(null)
     setDrawingPoly(null)
-    appendAnnotation(finishedPolygon)
     setIsMouseOverPolygonStart(false)
+    appendAnnotation(finishedPolygon)
     // EventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedPolygon.id)
   }
 
@@ -156,17 +156,29 @@ const DrawingHandler = (props) => {
     handleRightClickDrawPolygon()
   }
 
+  const handleDeleteAnnotation = () => {
+    setDrawingAnnotation(null)
+    setDrawingPoly(null)
+    setIsMouseOverPolygonStart(false)
+  }
+
   React.useEffect(() => {
     const { getSubject } = EventCenter
     let subscriptions = {
       [EVENT_TYPES.STAGE_MOUSE_CLICK]: getSubject(EVENT_TYPES.STAGE_MOUSE_CLICK)
         .subscribe({ next: (e) => handleMouseClick(e) }),
+      [EVENT_TYPES.STAGE_TAP]: getSubject(EVENT_TYPES.STAGE_TAP)
+        .subscribe({ next: (e) => handleMouseClick(e) }),
       [EVENT_TYPES.STAGE_MOUSE_MOVE]: getSubject(EVENT_TYPES.STAGE_MOUSE_MOVE)
         .subscribe({ next: (e) => handleMouseMove(e) }),
       [EVENT_TYPES.STAGE_CONTEXT_MENU]: getSubject(EVENT_TYPES.STAGE_CONTEXT_MENU)
         .subscribe({ next: (e) => handleContextMenu(e) }),
+      [EVENT_TYPES.POLYGON.REMOVE_LAST_DRAWN_POINT]: getSubject(EVENT_TYPES.POLYGON.REMOVE_LAST_DRAWN_POINT)
+        .subscribe({ next: (e) => handleRightClickDrawPolygon(e) }),
       [EVENT_TYPES.MOUSE_OVER_POLYGON_START]: getSubject(EVENT_TYPES.MOUSE_OVER_POLYGON_START)
         .subscribe({ next: (e) => handleMouseOverPolygonStart(e) }),
+      [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.EDIT.DELETE_ANNOTATION)
+        .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
     }
 
     return () => {

@@ -39,11 +39,11 @@ const toolBoxButtons = [
     mode: MODES.SCRIBBLE_TO_MASK.name,
     component: <PainBrushIcon />,
   },
-  {
-    name: 'Cut',
-    mode: MODES.CUT_POLYGON.name,
-    component: <CutIcon />
-  },
+  // {
+  //   name: 'Cut',
+  //   mode: MODES.CUT_POLYGON.name,
+  //   component: <CutIcon />
+  // },
   {
     name: 'Delete',
     mode: MODES.DELETE.name,
