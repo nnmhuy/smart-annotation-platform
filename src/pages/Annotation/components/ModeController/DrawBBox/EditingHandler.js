@@ -15,7 +15,7 @@ const EditingHandler = (props) => {
   const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
 
   const handleEditBBox = (data, commitAnnotation = false) => {
-    setAnnotation(currentAnnotation.id, data, commitAnnotation)
+    setAnnotation(currentAnnotation.id, data, { commitAnnotation })
   }
 
   const handleDeleteAnnotation = () => {

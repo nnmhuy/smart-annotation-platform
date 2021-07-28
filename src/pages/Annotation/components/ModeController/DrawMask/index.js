@@ -84,7 +84,7 @@ const ScribbleToMask = (props) => {
       miVOSBuilder.setScribbles([])
       miVOSBuilder.setMask(null)
   
-      appendAnnotation(newAnnotation)
+      appendAnnotation(newAnnotation, { commitAnnotation: true, delayUpdateTime: 100 })
   
       return newAnnotation
     }
@@ -105,7 +105,7 @@ const ScribbleToMask = (props) => {
       type: toolConfig.scribbleType,
       strokeWidth: toolConfig.scribbleSize,
     })
-    setAnnotation(drawingAnnotation.id, maskData, true)
+    setAnnotation(drawingAnnotation.id, maskData, { commitAnnotation: true, delayUpdateTime: 100 })
 
     setIsDrawingScribble(true)
   }
@@ -133,7 +133,7 @@ const ScribbleToMask = (props) => {
     drawingScribble.points.push([currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight])
     maskData.scribbles = [...scribbles, drawingScribble]
 
-    setAnnotation(drawingAnnotation.id, maskData, false)
+    setAnnotation(drawingAnnotation.id, maskData, { commitAnnotation: false })
   }
 
   const handleFinishDrawByBrush = async () => {
@@ -144,7 +144,7 @@ const ScribbleToMask = (props) => {
 
     setIsDrawingScribble(false)
     const drawingAnnotation = getCurrentAnnotation()
-    setAnnotation(drawingAnnotation.id, {}, true)
+    setAnnotation(drawingAnnotation.id, {}, { commitAnnotation: true, delayUpdateTime: 100 })
 
     let miVOSBuilder = getMiVOSBuilder()
     await miVOSBuilder.setScribbles(drawingAnnotation.maskData.scribbles)
@@ -157,7 +157,7 @@ const ScribbleToMask = (props) => {
     const drawingAnnotation = getCurrentAnnotation()
     setAnnotation(drawingAnnotation.id, {
       scribbles: []
-    }, true)
+    }, { commitAnnotation: true, delayUpdateTime: 100 })
 
     let miVOSBuilder = getMiVOSBuilder()
     await miVOSBuilder.setScribbles([])
@@ -197,7 +197,7 @@ const ScribbleToMask = (props) => {
 
     setAnnotation(drawingAnnotation.id, {
       threshold: toolConfig.threshold
-    }, true)
+    }, { commitAnnotation: true, delayUpdateTime: 100 })
   }
 
   const handleTriggerPredict = async () => {
@@ -225,7 +225,7 @@ const ScribbleToMask = (props) => {
     const { base64 } = data
     await drawingAnnotation.setMaskBase64(base64)
 
-    setAnnotation(drawingAnnotation.id, cloneDeep(drawingAnnotation.maskData), true)
+    setAnnotation(drawingAnnotation.id, cloneDeep(drawingAnnotation.maskData), { commitAnnotation: true })
     setIsLoading("predicting_scribble_to_mask", false)
   }
 
