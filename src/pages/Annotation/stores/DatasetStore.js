@@ -15,11 +15,13 @@ const useDatasetStore = create((set, get) => ({
 
   instanceId: null,
   currentAnnotationImageId: null,
+  // currentAnnotationImage: null, // May cause duplication and take time to reload
   setInstanceId: (id) => set({ instanceId: id }),
   getInstanceId: () => get().instanceId,
   getDataInstance: () => find(get().dataInstances, { id: get().instanceId }),
   getCurrentAnnotationImageId: () => get().currentAnnotationImageId,
   setCurrentAnnotationImageId: (id) => set({ currentAnnotationImageId: id }),
+  // setCurrentAnnotationImage: (currentAnnotationImage) => set({ currentAnnotationImage }),
 
   getDatasetInfo: async (datasetId) => {
     const setIsLoading = get().setIsLoading

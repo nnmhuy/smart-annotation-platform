@@ -18,15 +18,15 @@ class MiVOSScribbleToMaskBuilder {
   }
 
   async setImage(image) {
-    const blob = await resizeImage(image.img, {
+    if (!image) {
+      return
+    }
+    const base64 = await image.original.getBase64()
+    const blob = await resizeImage(base64, {
       maxWidth: MiVOSScribbleToMaskBuilder.INPUT_WIDTH,
       maxHeight: MiVOSScribbleToMaskBuilder.INPUT_HEIGHT
     }, true).then(({ img }) => base64ToBlob(img))
-    this.image = {
-      blob,
-      imageWidth: image.originalWidth,
-      imageHeight: image.originalHeight,
-    }
+    this.image = blob
   }
 
   // experiment task from 50ms - 150ms
@@ -47,7 +47,7 @@ class MiVOSScribbleToMaskBuilder {
 
   getMiVOSScribbleToMaskInput() {
     return {
-      image: this.image.blob,
+      image: this.blob,
       p_srb: this.p_srb,
       n_srb: this.n_srb,
       mask: this.mask,

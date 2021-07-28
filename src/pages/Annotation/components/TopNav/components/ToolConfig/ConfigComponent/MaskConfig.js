@@ -3,6 +3,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 
+import EventCenter from '../../../../../EventCenter'
+
 import ToolSelector from '../components/ToolSelector'
 import ToolConfigPopUpButton from '../components/ToolConfigPopUpButton'
 import ToolConfigButton from '../components/ToolConfigButton'
@@ -77,7 +79,7 @@ const scribbleToMaskTools = [
 
 const ScribbleToMaskConfig = (props) => {
   const classes = useStyles()
-  const { eventCenter, toolConfig, setToolConfig, } = props
+  const { toolConfig, setToolConfig, } = props
   const { scribbleSize, threshold } = toolConfig
 
   return (
@@ -90,7 +92,7 @@ const ScribbleToMaskConfig = (props) => {
         />
         <ToolConfigButton
           name={'Clear all'}
-          handleClick={eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.CLEAR_ALL)}
+          handleClick={EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.CLEAR_ALL)}
           component={<ClearIcon />}
         />
       </div>
@@ -146,7 +148,7 @@ const ScribbleToMaskConfig = (props) => {
                 valueLabelDisplay="auto"
                 onChange={(e, newValue) => {
                   setToolConfig({ ...toolConfig, threshold: newValue })
-                  eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.UPDATE_THRESHOLD)()
+                  EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD)()
                 }}
               />
             </div>
@@ -154,12 +156,12 @@ const ScribbleToMaskConfig = (props) => {
         </ToolConfigPopUpButton>
         <ToolConfigButton
           name={'MiVOS - S2M'}
-          handleClick={eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT)}
+          handleClick={EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT)}
           component={<S2MIcon/>}
         />
         <ToolConfigButton
           name={'Save'}
-          handleClick={eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.SAVE)}
+          handleClick={EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.SAVE)}
           component={<SaveIcon/>}
         />
       </div>

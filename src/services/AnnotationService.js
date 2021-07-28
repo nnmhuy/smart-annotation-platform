@@ -2,7 +2,7 @@ import RestConnector from '../connectors/RestConnector'
 
 import BBoxAnnotationClass from '../classes/BBoxAnnotationClass'
 import PolygonAnnotationClass from '../classes/PolygonAnnotationClass'
-import ScribbleToMaskAnnotationClass from '../classes/ScribbleToMaskAnnotationClass'
+import MaskAnnotationClass from '../classes/MaskAnnotationClass'
 
 
 class AnnotationService {
@@ -13,7 +13,7 @@ class AnnotationService {
       case "Annotation.PolygonAnnotation":
         return PolygonAnnotationClass.constructorFromServerData(ann)
       case "Annotation.MaskAnnotation":
-        return await ScribbleToMaskAnnotationClass.constructorFromServerData(ann)
+        return await MaskAnnotationClass.constructorFromServerData(ann)
       default:
         return {}
     }

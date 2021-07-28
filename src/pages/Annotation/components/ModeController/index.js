@@ -6,7 +6,7 @@ import Edit from './Edit/index'
 import DrawBBox from './DrawBBox/index'
 import DrawPolygon from './DrawPolygon/index'
 // import CutPolygon from './CutPolygon/index'
-// import ScribbleToMask from './ScribbleToMask/index'
+import DrawMask from './DrawMask/index'
 // import Delete from './Delete/index'
 
 import { MODES } from '../../constants'
@@ -19,7 +19,7 @@ const mapModeToComponent = {
   [MODES.EDIT.name]: Edit,
   [MODES.DRAW_BBOX.name]: DrawBBox,
   [MODES.DRAW_POLYGON.name]: DrawPolygon,
-  // [MODES.SCRIBBLE_TO_MASK.name]: ScribbleToMask,
+  [MODES.DRAW_MASK.name]: DrawMask,
   // [MODES.CUT_POLYGON.name]: CutPolygon,
   // [MODES.DELETE.name]: Delete,
 }
@@ -27,7 +27,7 @@ const mapModeToComponent = {
 const mapAnnotationTypeToMode = {
   [ENUM_ANNOTATION_TYPE.BBOX]: MODES.DRAW_BBOX.name,
   [ENUM_ANNOTATION_TYPE.POLYGON]: MODES.DRAW_POLYGON.name,
-  [ENUM_ANNOTATION_TYPE.MASK]: MODES.SCRIBBLE_TO_MASK.name,
+  [ENUM_ANNOTATION_TYPE.MASK]: MODES.DRAW_MASK.name,
 }
 
 const ModeController = (props) => {

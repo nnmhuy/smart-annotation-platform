@@ -107,15 +107,13 @@ const Annotation = (props) => {
           {/* Non-UI elements */}
           <ModeController/>
           <KeyboardHandler /> 
+          <Prediction />
           {/*
           <LabelSelection
             useStore={useAnnotationStore}
             eventCenter={annotationEventCenter}
           />
-          <Prediction
-            useStore={useAnnotationStore}
-            eventCenter={annotationEventCenter}
-          /> */}
+          */}
         </div>
         <div className={classes.sidebarWrapper}>
           <Sidebar/>

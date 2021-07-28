@@ -22,7 +22,7 @@ export default class StorageFileClass {
     if (!this.base64) {
       this.base64 = await this.getBlob().then(blob => new Promise((resolve, reject) => {
         const reader = new FileReader()
-        reader.onloadend = () => resolve({ blob, base64: reader.result })
+        reader.onloadend = () => resolve( reader.result )
         reader.onerror = reject
         reader.readAsDataURL(blob)
       }))

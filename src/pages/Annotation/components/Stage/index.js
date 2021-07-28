@@ -8,7 +8,7 @@ import { useGeneralStore, useDatasetStore } from '../../stores/index'
 
 import DataInstanceRender from './DataInstanceRender/index'
 import AnnotationRender from './AnnotationRender/index'
-// import ToolRender from './ToolRender/index'
+import ToolRender from './ToolRender/index'
 
 import { EVENT_TYPES, MODES, STAGE_PADDING } from '../../constants'
 import getStagePosLimit from '../../utils/getStagePosLimit'
@@ -141,10 +141,7 @@ const RenderComponent = (props) => {
         </Layer>
         <Layer>
           <AnnotationRender/>
-          {/* <ToolRender
-            useStore={useStore}
-            EventCenter={EventCenter}
-          /> */}
+          <ToolRender/>
         </Layer>
       </Stage>
     </div>

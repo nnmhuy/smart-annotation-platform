@@ -2,6 +2,9 @@ import React from 'react'
 import { Group } from 'react-konva'
 import { get, debounce } from 'lodash'
 
+import EventCenter from '../../../../../EventCenter'
+import { useAnnotationStore } from '../../../../../stores/index'
+
 import Scribble from './Scribble'
 import Mask from './Mask'
 
@@ -10,30 +13,31 @@ import thresholdMask from '../../../../../utils/thresholdMask'
 import hexColorToRGB from '../../../../../../../utils/hexColorToRGB'
 
 const MaskAnnotation = (props) => {
-  const { annotation , useStore, eventCenter } = props
+  const { annotation, renderingSize } = props
 
-  const { id, properties, maskData } = annotation
+  const selectedObjectId = useAnnotationStore(state => state.selectedObjectId)
+
+  const { id, annotationObjectId, properties, maskData } = annotation
+
+  const imageWidth = get(renderingSize, 'width', 1)
+  const imageHeight = get(renderingSize, 'height', 1)
 
   const [displayMask, setDisplayMask] = React.useState(null)
 
-  const editingAnnotationId = useStore(state => state.editingAnnotationId)
-  const image = useStore(state => state.image)
+  const isSelected = (annotationObjectId === selectedObjectId)
 
-  const isSelected = (id === editingAnnotationId)
-  
   const scribbles = maskData.scribbles
-
   const mask = maskData.mask
   let threshold = get(properties, 'threshold', 0)
   let color = get(properties, 'fill', '')
 
   React.useEffect(() => {
     async function getThresholdImage() {
-      if (image && mask) {
+      if (mask) {
         const thresholdedMask = await thresholdMask(mask, threshold, {
           color: hexColorToRGB(color),
-          canvasWidth: image.width,
-          canvasHeight: image.height
+          canvasWidth: imageWidth,
+          canvasHeight: imageHeight
         })
         setDisplayMask(thresholdedMask)
       } else {
@@ -43,15 +47,15 @@ const MaskAnnotation = (props) => {
 
     const debounced = debounce(getThresholdImage, 100)
     debounced()
-  }, [mask, image, threshold, color])
+  }, [mask, threshold, color])
 
 
   const handleSelectMask = (e) => {
-    eventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({ e, id })
+    EventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({ e, id })
   }
 
   const handleContextMenu = (e) => {
-    eventCenter.emitEvent(EVENT_TYPES.CONTEXT_MENU_ANNOTATION)({
+    EventCenter.emitEvent(EVENT_TYPES.CONTEXT_MENU_ANNOTATION)({
       e,
       id
     })
@@ -61,20 +65,22 @@ const MaskAnnotation = (props) => {
     <Group
       id={id}
     >
-      {scribbles.map((scribble, index) => 
-        <Scribble 
-          key={`scribble-${id}-${index}`} scribble={scribble}
-          imageWidth={image.width}
-          imageHeight={image.height}
-        />
-        )}
+      {isSelected &&
+        scribbles.map((scribble, index) =>
+          <Scribble
+            key={`scribble-${id}-${index}`} scribble={scribble}
+            imageWidth={imageWidth}
+            imageHeight={imageHeight}
+          />
+        )
+      }
       <Mask
         isSelected={isSelected}
         mask={displayMask}
         handleSelectMask={handleSelectMask}
         handleContextMenu={handleContextMenu}
-        imageWidth={image.width}
-        imageHeight={image.height}
+        imageWidth={imageWidth}
+        imageHeight={imageHeight}
       />
     </Group>
   )

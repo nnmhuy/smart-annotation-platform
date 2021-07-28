@@ -1,13 +1,13 @@
 import React from 'react'
 
+import EventCenter from '../../../EventCenter'
+
 import { EVENT_TYPES } from '../../../constants'
 import sendFormData from '../../../../../utils/sendFormData'
 import bufferArrayToBase64 from '../../../../../utils/bufferArrayToBase64'
 
 
 const MiVOSScribbleToMask = (props) => {
-  const { eventCenter } = props
-
   /**
    * 
    * @param {object} data - image, p_srb, n_srb, mask (optional)
@@ -30,19 +30,19 @@ const MiVOSScribbleToMask = (props) => {
       })
 
     if (!predictedMask) {
-      eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT_ERROR)()
+      EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT_ERROR)()
       return;
     }
 
-    eventCenter.emitEvent(EVENT_TYPES.SCRIBBLE_TO_MASK.PREDICT_FINISH)({
+    EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT_FINISH)({
       base64: predictedMask,
     })
   }
 
   React.useEffect(() => {
-    const { getSubject } = eventCenter
+    const { getSubject } = EventCenter
     let subscriptions = {
-      [EVENT_TYPES.SCRIBBLE_TO_MASK.MI_VOS_S2M]: getSubject(EVENT_TYPES.SCRIBBLE_TO_MASK.MI_VOS_S2M)
+      [EVENT_TYPES.DRAW_MASK.MI_VOS_S2M]: getSubject(EVENT_TYPES.DRAW_MASK.MI_VOS_S2M)
         .subscribe({ next: (data) => handleScribbleToMask(data) }),
     }
 

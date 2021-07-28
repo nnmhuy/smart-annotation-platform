@@ -2,7 +2,7 @@ import create from 'zustand'
 
 import getPointerPosition from '../utils/getPointerPosition'
 
-import { MODES } from '../constants'
+import { MODES, DEFAULT_TOOL_CONFIG } from '../constants'
 
 const useGeneralStore = create((set, get) => ({
   isLoading: {},
@@ -19,7 +19,7 @@ const useGeneralStore = create((set, get) => ({
   activeMode: MODES.EDIT.name,
   setActiveMode: (newMode) => set({ activeMode: newMode }),
 
-  toolConfig: {},
+  toolConfig: DEFAULT_TOOL_CONFIG,
   setToolConfig: (newToolConfig) => set(state => ({ toolConfig: { ...state.toolConfig, [state.activeMode]: newToolConfig } })),
   getToolConfig: () => get().toolConfig[get().activeMode] || {},
 

@@ -1,13 +1,13 @@
 import React from 'react'
 import { Circle } from 'react-konva'
 
+import { useGeneralStore } from '../../../../stores/index'
+
 import { COLOR_BY_SCRIBBLE_TYPE } from '../../../../constants'
 
 const DrawScribbleToMask = (props) => {
-  const { useStore } = props
-
-  const getToolConfig = useStore(state => state.getToolConfig)
-  const currentMousePosition = useStore(state => state.currentMousePosition)
+  const getToolConfig = useGeneralStore(state => state.getToolConfig)
+  const currentMousePosition = useGeneralStore(state => state.currentMousePosition)
 
   const toolConfig = getToolConfig()
 

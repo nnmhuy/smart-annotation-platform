@@ -1,5 +1,5 @@
 import create from 'zustand'
-import { filter, cloneDeep } from 'lodash'
+import { filter, cloneDeep, find } from 'lodash'
 
 import LabelService from '../../../services/LabelService'
 import AnnotationObjectService from '../../../services/AnnotationObjectService'
@@ -135,6 +135,11 @@ const useAnnotationStore = create((set, get) => ({
     })
 
     set({ annotations })
+  },
+  getAnnotationByAnnotationObjectId: (annotationObjectId, annotationImageId) => {
+    let annotations = get().annotations
+
+    return find(annotations[annotationImageId], { annotationObjectId })
   },
   deleteAnnotation: (deleteAnnotationId) => {
     AnnotationService.deleteAnnotationById(deleteAnnotationId)

@@ -1,13 +1,13 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import { filter, cloneDeep, get, find } from 'lodash'
 
 import BBoxAnnotation from '../../../../../classes/BBoxAnnotationClass'
 import PolygonAnnotation from '../../../../../classes/PolygonAnnotationClass'
-// import ScribbleToMaskAnnotation from '../../../../../classes/ScribbleToMaskAnnotationClass'
+import MaskAnnotation from '../../../../../classes/MaskAnnotationClass'
 
 import BBox from './components/BBox/BBox'
 import Polygon from './components/Polygon/Polygon'
-// import ScribbleToMask from './components/ScribbleToMask/ScribbleAnnotation'
+import Mask from './components/Mask/MaskAnnotation'
 
 import { useGeneralStore, useDatasetStore, useAnnotationStore } from '../../../stores/index'
 
@@ -21,10 +21,10 @@ const mapAnnotationClassToRender = [
     cls: PolygonAnnotation,
     render: Polygon,
   },
-  // {
-  //   cls: ScribbleToMaskAnnotation,
-  //   render: ScribbleToMask,
-  // },
+  {
+    cls: MaskAnnotation,
+    render: Mask,
+  },
 ]
 
 
@@ -52,6 +52,7 @@ const AnnotationRender = (props) => {
     const label = find(labels, { id: annObject.labelId })
 
     const labelAnnotationProperties = get(label, 'annotationProperties', {})
+    renderAnn.annotationType = annObject.annotationType
     renderAnn.properties = {
       ...annObject.properties,
       ...labelAnnotationProperties,

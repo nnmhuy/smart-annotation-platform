@@ -4,10 +4,10 @@ import { get } from 'lodash'
 
 import { useGeneralStore } from '../../../../stores/index'
 
-import ScribbleToMaskConfig from './ConfigComponent/ScribbleToMaskConfig'
 import EditConfig from './ConfigComponent/EditConfig'
 import BBoxConfig from './ConfigComponent/BBoxConfig'
 import PolygonConfig from './ConfigComponent/PolygonConfig'
+import MaskConfig from './ConfigComponent/MaskConfig'
 
 import { MODES } from '../../../../constants'
 
@@ -22,7 +22,7 @@ const toolBoxConfigs = {
   // [MODES.EDIT.name]: EditConfig,
   [MODES.DRAW_BBOX.name]: BBoxConfig,
   [MODES.DRAW_POLYGON.name]: PolygonConfig,
-  [MODES.SCRIBBLE_TO_MASK.name]: ScribbleToMaskConfig,
+  [MODES.DRAW_MASK.name]: MaskConfig,
 }
 
 const ToolConfig = (props) => {
