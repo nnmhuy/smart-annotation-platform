@@ -6,7 +6,7 @@ import KonvaImage from '../../../../../../../components/KonvaImage'
 const Mask = (props) => {
   const { 
     isSelected, 
-    mask,
+    maskBmp,
     handleSelectMask,
     handleContextMenu,
     imageWidth,
@@ -19,7 +19,7 @@ const Mask = (props) => {
     <KonvaImage
       cache
       hitFromCache
-      src={mask}
+      bitmap={maskBmp}
       opacity={isSelected ? 0.6 : 0.4}
       onClick={handleSelectMask}
       onTap={handleSelectMask}

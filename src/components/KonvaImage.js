@@ -8,7 +8,7 @@ const KonvaImage = (props) => {
 
   const drawHitFromCache = (img) => {
     try {
-      if (img && src) {
+      if (img && (src || bitmap)) {
         if (cache) img.cache();
         if (hitFromCache) img.drawHitFromCache();
       }

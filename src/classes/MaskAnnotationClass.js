@@ -35,19 +35,22 @@ export default class MaskAnnotation extends AnnotationClass {
     const maskFile = StorageFileClass.constructorFromServerData(uploadMaskData)
     maskFile.blob = blob
     maskFile.base64 = base64
+    await maskFile.getBitmap()
     this.updateData = {
       mask: maskFile
     }
   }
 
   static async constructorFromServerData(data) {
+    const maskFile = StorageFileClass.constructorFromServerData(data.mask)
+    await maskFile.getBitmap()
     return new MaskAnnotation(
       data.id,
       data.annotation_object,
       data.annotation_image,
       {
         scribbles: data.scribbles,
-        mask: StorageFileClass.constructorFromServerData(data.mask),
+        mask: maskFile,
         threshold: data.threshold,
       },
       data.key_frame

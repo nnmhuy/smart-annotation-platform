@@ -9,13 +9,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const FrameThumbnail = (props) => {
-  console.log(props)
-  return (
-    <div>
-    </div>
-  )
-}
 
 const VideoTrack = (props) => {
   const classes = useStyles()

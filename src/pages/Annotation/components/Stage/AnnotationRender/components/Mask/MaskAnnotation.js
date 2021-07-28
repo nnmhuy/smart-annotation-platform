@@ -21,30 +21,12 @@ const MaskAnnotation = (props) => {
   const imageWidth = get(renderingSize, 'width', 1)
   const imageHeight = get(renderingSize, 'height', 1)
 
-  const [displayMask, setDisplayMask] = React.useState(null)
-
   const isSelected = (annotationObjectId === selectedObjectId)
 
   const { mask, scribbles, threshold } = maskData
+  const displayMask = get(mask, 'bitmap', null)
 
   let color = get(properties, 'fill', '')
-
-  React.useEffect(() => {
-    async function getThresholdImage() {
-      if (mask) {
-        const maskBase64 = await mask.getBase64()
-        setDisplayMask(maskBase64)
-      } else {
-        setDisplayMask(null)
-      }
-    }
-
-    const debounced = debounce(getThresholdImage, 100)
-    debounced()
-    return () => {
-      debounced.cancel()
-    }
-  }, [mask])
 
 
   const handleSelectMask = (e) => {
@@ -73,7 +55,7 @@ const MaskAnnotation = (props) => {
       }
       <Mask
         isSelected={isSelected}
-        mask={displayMask}
+        maskBmp={displayMask}
         color={hexColorToRGB(color)}
         handleSelectMask={handleSelectMask}
         handleContextMenu={handleContextMenu}
