@@ -116,7 +116,9 @@ const useAnnotationStore = create((set, get) => ({
     })
     setIsLoading("loading_annotations", false)
   },
-  setAnnotation: (annotationId, newEditingAnnotationData, { commitAnnotation = true, delayUpdateTime }) => {
+  setAnnotation: (annotationId, newEditingAnnotationData, options = {}) => {
+    const { commitAnnotation = true, delayUpdateTime = 100 } = options
+
     let annotations = get().annotations
 
     Object.keys(annotations).forEach(annotationImageId => {
@@ -129,6 +131,8 @@ const useAnnotationStore = create((set, get) => ({
           if (commitAnnotation) {
             if (delayUpdateTime) {
               setTimeout(() => newAnnotation.applyUpdate(), delayUpdateTime)
+            } else {
+              newAnnotation.applyUpdate()
             }
           }
           return newAnnotation
@@ -158,17 +162,22 @@ const useAnnotationStore = create((set, get) => ({
   drawingAnnotation: null,
   getDrawingAnnotation: () => get().drawingAnnotation,
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
-  appendAnnotation: (newAnnotation, { commitAnnotation = true, delayUpdateTime }) => {
+  appendAnnotation: (newAnnotation, options = {} ) => {
+    const { commitAnnotation = true, delayUpdateTime } = options
     if (commitAnnotation) {
       if (delayUpdateTime) {
         setTimeout(() => newAnnotation.applyUpdate(), delayUpdateTime)
-      }    
+      } else {
+        newAnnotation.applyUpdate()
+      }
     }
     const annotations = get().annotations
+
     if (!annotations[newAnnotation.annotationImageId]) {
       annotations[newAnnotation.annotationImageId] = []
     }
     annotations[newAnnotation.annotationImageId] = [...annotations[newAnnotation.annotationImageId], newAnnotation]
+
     set({ annotations })
   },
 }))

@@ -17,7 +17,7 @@ export default class VideoDataInstanceClass extends DataInstanceClass {
 
   static async constructorFromServerData(data) {
     const { id, name, video, frames, thumbnail, ...others } = data
-    let frames_obj = frames.map(frame => ImageClass.constructFromServerData(frame))
+    let frames_obj = frames.map(frame => ImageClass.constructorFromServerData(frame))
     // await Promise.all(frames_obj.map(async (frame) => frame.getData()))
     await frames_obj[0].getData()
 

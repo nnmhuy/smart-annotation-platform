@@ -7,7 +7,7 @@ class AnnotationObjectService {
   async getAnnotationObjectsByDataInstance(dataInstanceId) {
     return RestConnector.get(`/annotation_objects?data_instance_id=${dataInstanceId}`)
       .then(response => 
-        response.data.map(annotationObjectData => AnnotationObjectClass.constructFromServerData(annotationObjectData))
+        response.data.map(annotationObjectData => AnnotationObjectClass.constructorFromServerData(annotationObjectData))
       )
   }
 

@@ -18,7 +18,7 @@ export default class ImageClass {
     await this.thumbnail.getBitmap()
   }
 
-  static constructFromServerData(data) {
+  static constructorFromServerData(data) {
     return new ImageClass(
       data.id,
       StorageFileClass.constructorFromServerData(data.original),

@@ -24,7 +24,7 @@ export default class AnnotationObjectClass {
     }
   }
 
-  static constructFromServerData(data) {
+  static constructorFromServerData(data) {
     return new AnnotationObjectClass(
       data.id,
       data.data_instance,

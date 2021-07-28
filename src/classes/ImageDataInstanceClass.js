@@ -6,31 +6,25 @@ import StorageFileClass from './StorageFileClass'
 export default class ImageDataInstanceClass extends DataInstanceClass {
   static _cls = "ImageDataInstance"
 
-  constructor(id, name = '', original, thumbnail, otherData) {
+  constructor(id, name = '', thumbnail, image, otherData) {
     const { width, height, ...others } = otherData
 
     super(id, name, thumbnail, width, height, others)
 
-    const image = new ImageClass(id, original, thumbnail)
-    Object.assign(this, image)
+    this.image = image
   }
 
   getCurrentImage() {
-    const { id, original, thumbnail } = this
-    return {
-      id,
-      original,
-      thumbnail
-    }
+    return this.image
   }
 
   static constructorFromServerData(data) {
-    const { id, name, original, thumbnail, ...others } = data 
+    const { id, name, image, thumbnail, ...others } = data 
     return new ImageDataInstanceClass(
       id,
       name,
-      StorageFileClass.constructorFromServerData(original),
       StorageFileClass.constructorFromServerData(thumbnail),
+      ImageClass.constructorFromServerData(image),
       others
     )
   }

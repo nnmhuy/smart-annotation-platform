@@ -51,7 +51,6 @@ const DrawingHandler = (props) => {
     const imageHeight = get(renderingSize, 'height', 1)
     const currentMousePosition = getCurrentMousePosition()
     const drawingAnnotation = getDrawingAnnotation()
-
     let finishedRectangle = cloneDeep(drawingAnnotation)
 
     const bBoxWidth = currentMousePosition.x / imageWidth - drawingAnnotation.bBox.x
@@ -68,7 +67,7 @@ const DrawingHandler = (props) => {
     finishedRectangle.annotationImageId = annotationImageId
 
     setDrawingAnnotation(null)
-    appendAnnotation(finishedRectangle)
+    appendAnnotation(finishedRectangle, { commitAnnotation: true })
     // EventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedRectangle.id)
   }
 
@@ -124,7 +123,7 @@ const DrawingHandler = (props) => {
         .subscribe({ next: (e) => handleMouseClick(e) }),
       [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.EDIT.DELETE_ANNOTATION)
         .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
-      [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.BBOX.CANCEL_DRAWING_BBOX)
+      [EVENT_TYPES.BBOX.CANCEL_DRAWING_BBOX]: getSubject(EVENT_TYPES.BBOX.CANCEL_DRAWING_BBOX)
         .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
     }
 
