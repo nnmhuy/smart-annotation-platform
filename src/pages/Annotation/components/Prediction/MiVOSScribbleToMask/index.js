@@ -5,6 +5,9 @@ import EventCenter from '../../../EventCenter'
 import { EVENT_TYPES } from '../../../constants'
 import sendFormData from '../../../../../utils/sendFormData'
 import bufferArrayToBase64 from '../../../../../utils/bufferArrayToBase64'
+import syncAllImageChannels from '../../../utils/syncAllImageChannels'
+
+import MiVOSScribbleToMaskBuilder from '../../ModeController/DrawMask/MiVOSScribbleToMaskBuilder/index'
 
 
 const MiVOSScribbleToMask = (props) => {
@@ -21,9 +24,13 @@ const MiVOSScribbleToMask = (props) => {
         responseType: "arraybuffer"
       }
     )
-      .then(async (newMask) => {
+      .then((newMask) => {
         return bufferArrayToBase64(newMask, "image/jpeg")
       })
+      .then(base64 => syncAllImageChannels(base64, {
+        canvasWidth: MiVOSScribbleToMaskBuilder.INPUT_WIDTH,
+        canvasHeight: MiVOSScribbleToMaskBuilder.INPUT_HEIGHT,
+       }))
       .catch((err) => {
         console.log(err)
         return null

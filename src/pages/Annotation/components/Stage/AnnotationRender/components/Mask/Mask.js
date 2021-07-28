@@ -11,7 +11,8 @@ const Mask = (props) => {
     handleContextMenu,
     imageWidth,
     imageHeight,
-    color
+    color,
+    threshold
   } = props
 
   return (
@@ -28,7 +29,8 @@ const Mask = (props) => {
       red={color.r}
       green={color.g}
       blue={color.b}
-      filters={[Konva.Filters.RGB]}
+      threshold={0.2 + (threshold / 100) * 0.8}
+      filters={[Konva.Filters.Threshold, Konva.Filters.Mask, Konva.Filters.RGB]}
     />
   )
 }

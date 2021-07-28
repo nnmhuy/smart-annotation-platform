@@ -142,7 +142,7 @@ const ScribbleToMaskConfig = (props) => {
                 value={threshold}
                 aria-labelledby="threshold-slider"
                 step={1}
-                min={0}
+                min={1}
                 max={100}
                 valueLabelDisplay="auto"
                 onChange={(e, newValue) => {

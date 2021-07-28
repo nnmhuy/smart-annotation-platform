@@ -12,8 +12,6 @@ import MiVOSScribbleToMaskBuilder from './MiVOSScribbleToMaskBuilder/index'
 import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants'
 
-import thresholdMask from '../../../utils/thresholdMask'
-
 const useScribbleToMaskStore = create((set, get) => ({
   isDrawingScribble: false,
   getIsDrawingScribble: () => get().isDrawingScribble,
@@ -107,7 +105,7 @@ const ScribbleToMask = (props) => {
       type: toolConfig.scribbleType,
       strokeWidth: toolConfig.scribbleSize,
     })
-    setAnnotation(drawingAnnotation.id, maskData, false)
+    setAnnotation(drawingAnnotation.id, maskData, true)
 
     setIsDrawingScribble(true)
   }
@@ -210,18 +208,11 @@ const ScribbleToMask = (props) => {
       alert("Image not found")
       return
     }
-    const renderingSize = getRenderingSize()
-    const { mask, threshold, scribbles} = drawingAnnotation.maskData
+    const { mask, scribbles} = drawingAnnotation.maskData
     const maskBase64 = await mask.getBase64()
-    // TODO: update code here
-    const thresholdedMask = await thresholdMask(maskBase64, threshold, {
-      canvasWidth: renderingSize.width,
-      canvasHeight: renderingSize.height,
-      makeTransparent: true,
-    })
     await miVOSBuilder.setScribbles(scribbles)
 
-    miVOSBuilder.setMask(thresholdedMask)
+    miVOSBuilder.setMask(maskBase64)
 
     setIsLoading("predicting_scribble_to_mask", true)
     const data = miVOSBuilder.getMiVOSScribbleToMaskInput()
@@ -230,6 +221,7 @@ const ScribbleToMask = (props) => {
 
   const handleFinishPredict = async (data) => {
     const drawingAnnotation = getCurrentAnnotation()
+
     const { base64 } = data
     await drawingAnnotation.setMaskBase64(base64)
 
@@ -271,6 +263,8 @@ const ScribbleToMask = (props) => {
         .subscribe({ next: (e) => handleUpdateThreshold(e) }),
       [EVENT_TYPES.UNSELECT_CURRENT_ANNOTATION_OBJECT]: getSubject(EVENT_TYPES.UNSELECT_CURRENT_ANNOTATION_OBJECT)
         .subscribe({ next: (e) => handleUnselectCurrentAnnotationObject(e) }),
+      // [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.EDIT.DELETE_ANNOTATION)
+      //   .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
     }
 
     return () => {

@@ -9,7 +9,6 @@ import Scribble from './Scribble'
 import Mask from './Mask'
 
 import { EVENT_TYPES } from '../../../../../constants'
-import thresholdMask from '../../../../../utils/thresholdMask'
 import hexColorToRGB from '../../../../../../../utils/hexColorToRGB'
 
 const MaskAnnotation = (props) => {
@@ -34,12 +33,7 @@ const MaskAnnotation = (props) => {
     async function getThresholdImage() {
       if (mask) {
         const maskBase64 = await mask.getBase64()
-        const thresholdedMask = await thresholdMask(maskBase64, threshold, {
-          canvasWidth: imageWidth,
-          canvasHeight: imageHeight,
-          makeTransparent: true,
-        })
-        setDisplayMask(thresholdedMask)
+        setDisplayMask(maskBase64)
       } else {
         setDisplayMask(null)
       }
@@ -50,7 +44,7 @@ const MaskAnnotation = (props) => {
     return () => {
       debounced.cancel()
     }
-  }, [mask, threshold])
+  }, [mask])
 
 
   const handleSelectMask = (e) => {
@@ -68,7 +62,7 @@ const MaskAnnotation = (props) => {
     <Group
       id={id}
     >
-      {isSelected &&
+      {isSelected && scribbles &&
         scribbles.map((scribble, index) =>
           <Scribble
             key={`scribble-${id}-${index}`} scribble={scribble}
@@ -85,6 +79,7 @@ const MaskAnnotation = (props) => {
         handleContextMenu={handleContextMenu}
         imageWidth={imageWidth}
         imageHeight={imageHeight}
+        threshold={threshold}
       />
     </Group>
   )

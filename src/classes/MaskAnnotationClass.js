@@ -33,6 +33,7 @@ export default class MaskAnnotation extends AnnotationClass {
       mask: blob
     })
     const maskFile = StorageFileClass.constructorFromServerData(uploadMaskData)
+    maskFile.blob = blob
     maskFile.base64 = base64
     this.updateData = {
       mask: maskFile
