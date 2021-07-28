@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { useParams } from 'react-router'
 
-import Loading from '../../components/Loading'
+// import Loading from '../../components/Loading'
 import Toolbox from './components/Toolbox/index'
 import RenderComponent from './components/Stage/index'
 import ThumbnailSlider from './components/ThumbnailSlider'
@@ -86,13 +86,14 @@ const Annotation = (props) => {
 
 
 
-  const isGeneralLoading = useGeneralStore(state => state.isLoading)
-  const isDatasetLoading = useDatasetStore(state => state.isLoading)
-  const isAnnotationLoading = useAnnotationStore(state => state.isLoading)
+  // const isGeneralLoading = useGeneralStore(state => state.isLoading)
+  // const isDatasetLoading = useDatasetStore(state => state.isLoading)
+  // const isAnnotationLoading = useAnnotationStore(state => state.isLoading)
 
   return (
     <div className={classes.root}>
-      <Loading isLoading={{ ...isGeneralLoading, ...isDatasetLoading, ...isAnnotationLoading }} />
+      {/* TODO: loading by component  */}
+      {/* <Loading isLoading={{ ...isGeneralLoading, ...isDatasetLoading, ...isAnnotationLoading }} /> */}
       <TopNav/>
       <div className={classes.annotationWrapper}>
         <div className={classes.toolboxContainer}>
@@ -105,16 +106,13 @@ const Annotation = (props) => {
           
           {/* Non-UI elements */}
           <ModeController/>
+          <KeyboardHandler /> 
           {/*
           <LabelSelection
             useStore={useAnnotationStore}
             eventCenter={annotationEventCenter}
           />
           <Prediction
-            useStore={useAnnotationStore}
-            eventCenter={annotationEventCenter}
-          />
-          <KeyboardHandler
             useStore={useAnnotationStore}
             eventCenter={annotationEventCenter}
           /> */}

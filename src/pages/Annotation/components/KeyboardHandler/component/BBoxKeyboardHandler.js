@@ -6,7 +6,7 @@ import EventCenter from '../../../EventCenter'
 import { EVENT_TYPES } from '../../../constants'
 
 
-const EditKeyboardHandler = (props) => {
+const BBoxKeyboardHandler = (props) => {
 
   return (
     <>
@@ -15,8 +15,16 @@ const EditKeyboardHandler = (props) => {
         handleKeys={['backspace']}
         onKeyEvent={EventCenter.emitEvent(EVENT_TYPES.EDIT.DELETE_ANNOTATION)}
       />
+      <KeyboardEventHandler
+        handleKeys={['esc']}
+        onKeyEvent={EventCenter.emitEvent(EVENT_TYPES.BBOX.CANCEL_DRAWING_BBOX)}
+      />
+      <KeyboardEventHandler
+        handleKeys={['esc']}
+        onKeyEvent={EventCenter.emitEvent(EVENT_TYPES.UNSELECT_CURRENT_ANNOTATION_OBJECT)}
+      />
     </>
   )
 }
 
-export default EditKeyboardHandler
+export default BBoxKeyboardHandler

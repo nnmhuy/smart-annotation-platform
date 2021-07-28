@@ -27,6 +27,10 @@ const EditingHandler = (props) => {
     setActiveMode(MODES.EDIT.name)
   }
 
+  const handleUnselectCurrentAnnotationObject = () => {
+    setSelectedObjectId(null)
+  }
+
   React.useEffect(() => {
     const { getSubject } = EventCenter
     let subscriptions = {
@@ -38,6 +42,8 @@ const EditingHandler = (props) => {
         .subscribe({ next: (data) => handleEditBBox(data) }),
       [EVENT_TYPES.COMMIT_EDIT_ANNOTATION]: getSubject(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)
         .subscribe({ next: (data) => handleEditBBox(data, true) }),
+      [EVENT_TYPES.COMMIT_EDIT_ANNOTATION]: getSubject(EVENT_TYPES.UNSELECT_CURRENT_ANNOTATION_OBJECT)
+        .subscribe({ next: (data) => handleUnselectCurrentAnnotationObject(data) }),
     }
 
     return () => {

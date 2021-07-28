@@ -52,7 +52,7 @@ const DatasetList = (props) => {
 
   React.useEffect(() => {
     getDatasets(projectId)
-  }, [])
+  }, [projectId])
 
   const handleTriggerCreateDataset = () => {
     setOpenDialog(true)

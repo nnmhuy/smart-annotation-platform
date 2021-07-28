@@ -179,6 +179,8 @@ const DrawingHandler = (props) => {
         .subscribe({ next: (e) => handleMouseOverPolygonStart(e) }),
       [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.EDIT.DELETE_ANNOTATION)
         .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
+      [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.POLYGON.CANCEL_DRAWING_POLYGON)
+        .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
     }
 
     return () => {

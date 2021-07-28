@@ -1,5 +1,5 @@
 import create from 'zustand'
-import { find, findIndex } from 'lodash'
+import { find } from 'lodash'
 
 import DatasetService from '../../../services/DatasetService'
 import DataInstanceService from '../../../services/DataInstanceService'

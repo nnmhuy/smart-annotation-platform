@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react'
-import { get, cloneDeep, find } from 'lodash'
+import React from 'react'
+import { get, cloneDeep } from 'lodash'
 
 import EventCenter from '../../../EventCenter'
 import { useGeneralStore, useDatasetStore, useAnnotationStore } from '../../../stores/index'
@@ -123,6 +123,8 @@ const DrawingHandler = (props) => {
       [EVENT_TYPES.STAGE_TAP]: getSubject(EVENT_TYPES.STAGE_TAP)
         .subscribe({ next: (e) => handleMouseClick(e) }),
       [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.EDIT.DELETE_ANNOTATION)
+        .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
+      [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.BBOX.CANCEL_DRAWING_BBOX)
         .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
     }
 
