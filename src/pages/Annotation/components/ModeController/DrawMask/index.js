@@ -84,7 +84,7 @@ const ScribbleToMask = (props) => {
       miVOSBuilder.setScribbles([])
       miVOSBuilder.setMask(null)
   
-      appendAnnotation(newAnnotation, false)
+      appendAnnotation(newAnnotation)
   
       return newAnnotation
     }

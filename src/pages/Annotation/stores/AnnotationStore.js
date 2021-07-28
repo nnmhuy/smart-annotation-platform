@@ -127,7 +127,11 @@ const useAnnotationStore = create((set, get) => ({
           let newAnnotation = cloneDeep(annotation)
           newAnnotation.updateData = newEditingAnnotationData
           if (commitAnnotation) {
-            newAnnotation.applyUpdate()
+            try {
+              newAnnotation.applyUpdate()
+            } catch (error) {
+              console.log(error)
+            }
           }
           return newAnnotation
         }
@@ -158,7 +162,11 @@ const useAnnotationStore = create((set, get) => ({
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
   appendAnnotation: (newAnnotation, commitAnnotation = true) => {
     if (commitAnnotation) {
-      newAnnotation.applyUpdate()
+      try {
+        newAnnotation.applyUpdate()
+      } catch (error) {
+        console.log(error)
+      }
     }
     const annotations = get().annotations
     if (!annotations[newAnnotation.annotationImageId]) {

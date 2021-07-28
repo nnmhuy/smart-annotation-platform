@@ -1,6 +1,6 @@
 import React from 'react'
 import { Group } from 'react-konva'
-import { get, debounce } from 'lodash'
+import { get } from 'lodash'
 
 import EventCenter from '../../../../../EventCenter'
 import { useAnnotationStore } from '../../../../../stores/index'

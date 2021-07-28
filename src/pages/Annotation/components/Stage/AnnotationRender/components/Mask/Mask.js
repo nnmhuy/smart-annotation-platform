@@ -29,7 +29,7 @@ const Mask = (props) => {
       red={color.r}
       green={color.g}
       blue={color.b}
-      threshold={0.2 + (threshold / 100) * 0.8}
+      threshold={threshold / 100}
       filters={[Konva.Filters.Threshold, Konva.Filters.Mask, Konva.Filters.RGB]}
     />
   )
