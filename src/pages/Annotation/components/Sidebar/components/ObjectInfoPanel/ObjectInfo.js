@@ -91,7 +91,6 @@ const ObjectInfo = (props) => {
   const { id, properties, label } = annotationObject
 
   const handleChangeLabel = (newLabel) => {
-    console.log(newLabel)
     if (newLabel) {
       setAnnotationObjectLabel(id, newLabel.id)
     } else {

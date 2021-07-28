@@ -156,8 +156,10 @@ const useAnnotationStore = create((set, get) => ({
   drawingAnnotation: null,
   getDrawingAnnotation: () => get().drawingAnnotation,
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
-  appendAnnotation: (newAnnotation) => {
-    newAnnotation.applyUpdate()
+  appendAnnotation: (newAnnotation, commitAnnotation = true) => {
+    if (commitAnnotation) {
+      newAnnotation.applyUpdate()
+    }
     const annotations = get().annotations
     if (!annotations[newAnnotation.annotationImageId]) {
       annotations[newAnnotation.annotationImageId] = []

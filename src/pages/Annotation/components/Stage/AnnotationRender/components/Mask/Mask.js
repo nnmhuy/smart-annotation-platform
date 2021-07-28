@@ -1,4 +1,5 @@
 import React from 'react'
+import Konva from 'konva'
 
 import KonvaImage from '../../../../../../../components/KonvaImage'
 
@@ -10,6 +11,7 @@ const Mask = (props) => {
     handleContextMenu,
     imageWidth,
     imageHeight,
+    color
   } = props
 
   return (
@@ -23,6 +25,10 @@ const Mask = (props) => {
       onContextMenu={handleContextMenu}
       width={imageWidth}
       height={imageHeight}
+      red={color.r}
+      green={color.g}
+      blue={color.b}
+      filters={[Konva.Filters.RGB]}
     />
   )
 }

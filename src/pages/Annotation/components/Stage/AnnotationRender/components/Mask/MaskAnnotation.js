@@ -26,18 +26,18 @@ const MaskAnnotation = (props) => {
 
   const isSelected = (annotationObjectId === selectedObjectId)
 
-  const scribbles = maskData.scribbles
-  const mask = maskData.mask
-  let threshold = get(properties, 'threshold', 0)
+  const { mask, scribbles, threshold } = maskData
+
   let color = get(properties, 'fill', '')
 
   React.useEffect(() => {
     async function getThresholdImage() {
       if (mask) {
-        const thresholdedMask = await thresholdMask(mask, threshold, {
-          color: hexColorToRGB(color),
+        const maskBase64 = await mask.getBase64()
+        const thresholdedMask = await thresholdMask(maskBase64, threshold, {
           canvasWidth: imageWidth,
-          canvasHeight: imageHeight
+          canvasHeight: imageHeight,
+          makeTransparent: true,
         })
         setDisplayMask(thresholdedMask)
       } else {
@@ -47,7 +47,10 @@ const MaskAnnotation = (props) => {
 
     const debounced = debounce(getThresholdImage, 100)
     debounced()
-  }, [mask, threshold, color])
+    return () => {
+      debounced.cancel()
+    }
+  }, [mask, threshold])
 
 
   const handleSelectMask = (e) => {
@@ -77,6 +80,7 @@ const MaskAnnotation = (props) => {
       <Mask
         isSelected={isSelected}
         mask={displayMask}
+        color={hexColorToRGB(color)}
         handleSelectMask={handleSelectMask}
         handleContextMenu={handleContextMenu}
         imageWidth={imageWidth}

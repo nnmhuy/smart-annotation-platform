@@ -1,4 +1,4 @@
-import { get } from 'lodash'
+import { cloneDeep } from 'lodash'
 
 import RestConnector from '../connectors/RestConnector'
 import AnnotationClass from "./AnnotationClass";
@@ -26,6 +26,19 @@ export default class MaskAnnotation extends AnnotationClass {
     }
   }
 
+  async setMaskBase64(base64) {
+    const blob = await base64ToBlob(base64)
+    const uploadMaskData = await sendFormData('/annotations/upload-annotation-mask',{
+      id: this.id,
+      mask: blob
+    })
+    const maskFile = StorageFileClass.constructorFromServerData(uploadMaskData)
+    maskFile.base64 = base64
+    this.updateData = {
+      mask: maskFile
+    }
+  }
+
   static async constructorFromServerData(data) {
     return new MaskAnnotation(
       data.id,
@@ -41,19 +54,23 @@ export default class MaskAnnotation extends AnnotationClass {
   }
 
   async applyUpdate() {
-    const maskData = this.maskData
-    // const maskBlob = await base64ToBlob(get(this.maskData, 'mask', null))
-    // const maskURL = await sendFormData({
-    //   id: this.id,
-    //   mask: maskBlob
-    // }, '/annotations/upload-annotation-mask')
-    // return await RestConnector.post('/annotations', {
-    //   id: this.id,
-    //   annotation_object_id: this.annotationObjectId,
-    //   annotation_image_id: this.annotationImageId,
-    //   annotation_type: ENUM_ANNOTATION_TYPE.MASK,
-    //   key_frame: this.keyFrame,
-    //   data: maskData,
-    // })
+    let maskData = cloneDeep(this.maskData)
+    if (!maskData.mask.URL) {
+      delete maskData.mask
+    }
+    if (maskData.mask) {
+      maskData.mask = {
+        filename: maskData.mask.filename,
+        URL: maskData.mask.URL
+      }
+    }
+    return await RestConnector.post('/annotations', {
+      id: this.id,
+      annotation_object_id: this.annotationObjectId,
+      annotation_image_id: this.annotationImageId,
+      annotation_type: ENUM_ANNOTATION_TYPE.MASK,
+      key_frame: this.keyFrame,
+      data: maskData
+    })
   }
 }

@@ -1,5 +1,6 @@
 import DataInstanceClass from './DataInstanceClass'
 import ImageClass from './ImageClass'
+import StorageFileClass from './StorageFileClass'
 
 
 export default class ImageDataInstanceClass extends DataInstanceClass {
@@ -28,8 +29,8 @@ export default class ImageDataInstanceClass extends DataInstanceClass {
     return new ImageDataInstanceClass(
       id,
       name,
-      original,
-      thumbnail,
+      StorageFileClass.constructorFromServerData(original),
+      StorageFileClass.constructorFromServerData(thumbnail),
       others
     )
   }

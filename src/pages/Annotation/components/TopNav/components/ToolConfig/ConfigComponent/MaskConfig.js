@@ -15,9 +15,10 @@ import { ReactComponent as NegativeScribbleIcon } from '../../../../../../../sta
 import { ReactComponent as EraserIcon } from '../../../../../../../static/images/icons/ConfigIcon/eraser.svg'
 import { ReactComponent as SizeSliderIcon } from '../../../../../../../static/images/icons/ConfigIcon/size_slider.svg'
 import { ReactComponent as S2MIcon } from '../../../../../../../static/images/icons/ConfigIcon/s2m.svg'
-import { ReactComponent as SaveIcon } from '../../../../../../../static/images/icons/ConfigIcon/save.svg'
 import { ReactComponent as ClearIcon } from '../../../../../../../static/images/icons/ConfigIcon/clear.svg'
 import { ReactComponent as ThresholdIcon } from '../../../../../../../static/images/icons/ConfigIcon/threshold.svg'
+import { ReactComponent as DeleteIcon } from '../../../../../../../static/images/icons/ConfigIcon/delete.svg'
+
 
 
 import { SCRIBBLE_TO_MASK_CONSTANTS, EVENT_TYPES } from '../../../../../constants'
@@ -90,17 +91,9 @@ const ScribbleToMaskConfig = (props) => {
           toolList={scribbleToMaskTools}
           onSelect={(tool) => setToolConfig({ ...toolConfig, scribbleType: tool })}
         />
-        <ToolConfigButton
-          name={'Clear all'}
-          handleClick={EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.CLEAR_ALL)}
-          component={<ClearIcon />}
-        />
-      </div>
-      <Divider orientation="vertical" className={classes.divider}/>
-      <div className={classes.optionContainer}>
         <ToolConfigPopUpButton
           name={'Scribble size'}
-          component={<SizeSliderIcon/>}
+          component={<SizeSliderIcon />}
         >
           <div className={classes.popUpContainer}>
             <OutlinedInput
@@ -123,7 +116,13 @@ const ScribbleToMaskConfig = (props) => {
             </div>
           </div>
         </ToolConfigPopUpButton>
+        <ToolConfigButton
+          name={'Clear all scribbles'}
+          handleClick={EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.CLEAR_ALL_SCRIBBLES)}
+          component={<ClearIcon />}
+        />
       </div>
+      <Divider orientation="vertical" className={classes.divider}/>
       <Divider orientation="vertical" className={classes.divider} />
       <div className={classes.optionContainer}>
         <ToolConfigPopUpButton
@@ -155,14 +154,17 @@ const ScribbleToMaskConfig = (props) => {
           </div>
         </ToolConfigPopUpButton>
         <ToolConfigButton
-          name={'MiVOS - S2M'}
+          name={'MiVOS - Scribbles to mask'}
           handleClick={EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT)}
           component={<S2MIcon/>}
         />
+      </div>
+      <Divider orientation="vertical" className={classes.divider} />
+      <div className={classes.optionContainer}>
         <ToolConfigButton
-          name={'Save'}
-          handleClick={EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.SAVE)}
-          component={<SaveIcon/>}
+          name={'Delete annotation'}
+          handleClick={EventCenter.emitEvent(EVENT_TYPES.EDIT.DELETE_ANNOTATION)}
+          component={<DeleteIcon />}
         />
       </div>
     </div>
