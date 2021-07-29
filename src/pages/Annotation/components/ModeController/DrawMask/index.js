@@ -19,14 +19,11 @@ const useScribbleToMaskStore = create((set, get) => ({
 
   miVOSBuilder: new MiVOSScribbleToMaskBuilder(),
   getMiVOSBuilder: () => get().miVOSBuilder,
-  setMiVOSBuilder: (newBuilder) => set({ miVOSBuilder: newBuilder })
+  setMiVOSBuilder: (newBuilder) => set({ miVOSBuilder: newBuilder }),
 }))
 
 const ScribbleToMask = (props) => {
   const instanceId = useDatasetStore(state => state.instanceId)
-  const playingState = useDatasetStore(state => state.playingState)
-  const getDataInstance = useDatasetStore(state => state.getDataInstance)
-  const currentAnnotationImageId = useDatasetStore(state => state.currentAnnotationImageId)
   const getCurrentAnnotationImageId = useDatasetStore(state => state.getCurrentAnnotationImageId)
 
   const getRenderingSize = useGeneralStore(state => state.getRenderingSize)
@@ -48,19 +45,6 @@ const ScribbleToMask = (props) => {
   const setMiVOSBuilder = useScribbleToMaskStore(state => state.setMiVOSBuilder)
 
 
-  useEffect(() => {
-    let miVOSBuilder = getMiVOSBuilder()
-    if (currentAnnotationImageId) {
-      const dataInstance = getDataInstance()
-      if (dataInstance && playingState) {
-        const currentImage = dataInstance.getCurrentImage(playingState)
-        miVOSBuilder.setImage(currentImage)
-      }
-    }
-    setMiVOSBuilder(miVOSBuilder)
-  }, [currentAnnotationImageId])
-
-
   const getCurrentAnnotation = () => {
     const objectId = getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.MASK, {
       ...DEFAULT_ANNOTATION_ATTRS,
@@ -71,6 +55,9 @@ const ScribbleToMask = (props) => {
     const drawingAnnotation = getAnnotationByAnnotationObjectId(objectId, annotationImageId)
 
     if (drawingAnnotation) {
+      let miVOSBuilder = getMiVOSBuilder()
+      miVOSBuilder.setAnnotationId(drawingAnnotation.id)
+
       return drawingAnnotation
     } else {
       const toolConfig = getToolConfig()
@@ -87,7 +74,6 @@ const ScribbleToMask = (props) => {
       miVOSBuilder.setMask(null)
   
       appendAnnotation(newAnnotation, { commitAnnotation: true })
-  
       return newAnnotation
     }
   }
@@ -101,13 +87,13 @@ const ScribbleToMask = (props) => {
     const currentMousePosition = getCurrentMousePosition()
     const toolConfig = getToolConfig()
 
-    const maskData = cloneDeep(drawingAnnotation.maskData)
-    maskData.scribbles.push({
+    let scribbles = cloneDeep(drawingAnnotation.maskData.scribbles)
+    scribbles.push({
       points: [[currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]],
       type: toolConfig.scribbleType,
       strokeWidth: toolConfig.scribbleSize,
     })
-    setAnnotation(drawingAnnotation.id, maskData, { commitAnnotation: true })
+    setAnnotation(drawingAnnotation.id, { scribbles }, { commitAnnotation: true })
 
     setIsDrawingScribble(true)
   }
@@ -125,17 +111,14 @@ const ScribbleToMask = (props) => {
     const drawingAnnotation = getCurrentAnnotation()
     const currentMousePosition = getCurrentMousePosition()
 
-    const maskData = cloneDeep(drawingAnnotation.maskData)
-    let scribbles = maskData.scribbles
+    let scribbles = cloneDeep(drawingAnnotation.maskData.scribbles)
     let drawingScribble = scribbles.pop()
-    // not finish initialization
     if (!drawingScribble){
       return
     }
     drawingScribble.points.push([currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight])
-    maskData.scribbles = [...scribbles, drawingScribble]
-
-    setAnnotation(drawingAnnotation.id, maskData, { commitAnnotation: false })
+    scribbles = [...scribbles, drawingScribble]
+    setAnnotation(drawingAnnotation.id, { scribbles }, { commitAnnotation: false })
   }
 
   const handleFinishDrawByBrush = async () => {
@@ -216,11 +199,8 @@ const ScribbleToMask = (props) => {
     const drawingAnnotation = getCurrentAnnotation()
     let miVOSBuilder = getMiVOSBuilder()
 
-    const { mask, scribbles} = drawingAnnotation.maskData
-    const maskBase64 = await mask.getBase64()
+    const { scribbles} = drawingAnnotation.maskData
     await miVOSBuilder.setScribbles(scribbles)
-
-    miVOSBuilder.setMask(maskBase64)
 
     setIsLoading("predicting_scribble_to_mask", true)
     const data = miVOSBuilder.getMiVOSScribbleToMaskInput()

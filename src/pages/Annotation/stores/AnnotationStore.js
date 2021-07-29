@@ -116,26 +116,26 @@ const useAnnotationStore = create((set, get) => ({
     })
     setIsLoading("loading_annotations", false)
   },
-  setAnnotation: (annotationId, newEditingAnnotationData, options = {}) => {
-    const { commitAnnotation = true, delayUpdateTime = 1000 } = options
-
-    let annotations = get().annotations
+  setAnnotation: async (annotationId, newEditingAnnotationData, options = {}) => {
+    const { commitAnnotation = true, delayUpdateTime } = options
+    let annotations = cloneDeep(get().annotations)
 
     Object.keys(annotations).forEach(annotationImageId => {
       annotations[annotationImageId] = annotations[annotationImageId].map((annotation) => {
         if (annotation.id !== annotationId) {
           return annotation
         } else {
-          let newAnnotation = cloneDeep(annotation)
-          newAnnotation.updateData = newEditingAnnotationData
+
+          annotation.updateData = newEditingAnnotationData
           if (commitAnnotation) {
             if (delayUpdateTime) {
-              setTimeout(() => newAnnotation.applyUpdate(), delayUpdateTime)
+              setTimeout(() => annotation.applyUpdate(), delayUpdateTime)
             } else {
-              newAnnotation.applyUpdate()
+              annotation.applyUpdate()
             }
           }
-          return newAnnotation
+
+          return annotation
         }
       })
     })
@@ -163,7 +163,7 @@ const useAnnotationStore = create((set, get) => ({
   getDrawingAnnotation: () => get().drawingAnnotation,
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
   appendAnnotation: (newAnnotation, options = {} ) => {
-    const { commitAnnotation = true, delayUpdateTime = 1000 } = options
+    const { commitAnnotation = true, delayUpdateTime } = options
     try {
       if (commitAnnotation) {
         if (delayUpdateTime) {

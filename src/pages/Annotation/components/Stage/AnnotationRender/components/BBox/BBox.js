@@ -67,7 +67,7 @@ const Rectangle = (props) => {
         strokeScaleEnabled={false}
         {...scaledBBox}
         {...properties}
-        opacity={isSelected ? properties.opacity + 0.2 : properties.opacity}
+        opacity={isSelected ? properties?.opacity + 0.2 : properties?.opacity}
         draggable={isSelected}
         onDragEnd={(e) => {
           EventCenter.emitEvent(EVENT_TYPES.COMMIT_EDIT_ANNOTATION)({

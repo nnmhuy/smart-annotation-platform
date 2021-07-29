@@ -1,7 +1,27 @@
 import React from 'react'
-import Konva from 'konva'
 
 import KonvaImage from '../../../../../../../components/KonvaImage'
+
+const ThresholdAndColorFilter = function (imageData) {
+  var data = imageData.data,
+    nPixels = data.length,
+    red = this.red() || 255,
+    green = this.green() || 255,
+    blue = this.blue() || 255,
+    threshold = (this.threshold() || 0.5) * 255,
+    i;
+
+  for (i = 0; i < nPixels; i += 4) {
+    if (data[i] < threshold) {
+      data[i + 3] = 0
+    } else {
+      data[i] = red; // r
+      data[i + 1] = green; // g
+      data[i + 2] = blue; // b
+      data[i + 3] = 255; // alpha
+    }
+  }
+}
 
 const Mask = (props) => {
   const { 
@@ -30,7 +50,7 @@ const Mask = (props) => {
       green={color.g}
       blue={color.b}
       threshold={threshold / 100}
-      filters={[Konva.Filters.Threshold, Konva.Filters.Mask, Konva.Filters.RGB]}
+      filters={[ThresholdAndColorFilter]}
     />
   )
 }

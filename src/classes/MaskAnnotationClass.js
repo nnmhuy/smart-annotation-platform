@@ -1,11 +1,7 @@
-import { cloneDeep } from 'lodash'
-
 import RestConnector from '../connectors/RestConnector'
 import AnnotationClass from "./AnnotationClass";
 import StorageFileClass from './StorageFileClass'
 
-import sendFormData from '../utils/sendFormData'
-import base64ToBlob from '../utils/base64ToBlob'
 import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from '../constants/constants'
 
 export default class MaskAnnotation extends AnnotationClass {
@@ -16,14 +12,8 @@ export default class MaskAnnotation extends AnnotationClass {
     this.maskData = maskData
   }
 
-  /**
-   * mask: base64 of mask
-   */
   set updateData(newData) {
-    this.maskData = {
-      ...this.maskData,
-      ...newData,
-    }
+    Object.keys(newData).forEach(key => this.maskData[key] = newData[key])
   }
 
   async setMask(maskResponse) {
@@ -51,14 +41,14 @@ export default class MaskAnnotation extends AnnotationClass {
   }
 
   async applyUpdate() {
-    let maskData = cloneDeep(this.maskData)
-    if (!maskData.mask.URL) {
-      delete maskData.mask
+    let data = {
+      scribbles: this.maskData.scribbles,
+      threshold: this.maskData.threshold,
     }
-    if (maskData.mask) {
-      maskData.mask = {
-        filename: maskData.mask.filename,
-        URL: maskData.mask.URL
+    if (this.maskData.mask.URL) {
+      data.mask = {
+        filename: this.maskData.mask.filename,
+        URL: this.maskData.mask.URL,
       }
     }
     return await RestConnector.post('/annotations', {
@@ -67,7 +57,7 @@ export default class MaskAnnotation extends AnnotationClass {
       annotation_image_id: this.annotationImageId,
       annotation_type: ENUM_ANNOTATION_TYPE.MASK,
       key_frame: this.keyFrame,
-      data: maskData
+      data,
     }).catch(error => console.log(error))
   }
 }

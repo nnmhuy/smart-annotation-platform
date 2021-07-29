@@ -62,7 +62,7 @@ const AnnotationRender = (props) => {
   })
 
   // filter out hidden annotations and null drawingAnnotation
-  renderingAnnotations = filter(renderingAnnotations, (ann) => ann && !ann.properties.isHidden)
+  renderingAnnotations = filter(renderingAnnotations, (ann) => ann && !ann?.properties?.isHidden)
   return (
     renderingAnnotations.map(ann => {
       const renderer = find(mapAnnotationClassToRender, (value => ann instanceof value.cls))

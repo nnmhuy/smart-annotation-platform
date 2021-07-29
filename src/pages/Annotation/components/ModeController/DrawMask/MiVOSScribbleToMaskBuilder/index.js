@@ -12,7 +12,6 @@ class MiVOSScribbleToMaskBuilder {
 
   constructor() {
     this.annotationId = null
-    this.image = null
     this.p_srb = null
     this.n_srb = null
     this.mask = null
@@ -22,18 +21,6 @@ class MiVOSScribbleToMaskBuilder {
     this.annotationId = id
   }
 
-  async setImage(image) {
-    if (!image) {
-      this.image = null
-      return
-    }
-    const base64 = await image.original.getBase64()
-    const blob = await resizeImage(base64, {
-      maxWidth: MiVOSScribbleToMaskBuilder.INPUT_WIDTH,
-      maxHeight: MiVOSScribbleToMaskBuilder.INPUT_HEIGHT
-    }, true).then(({ img }) => base64ToBlob(img))
-    this.image = blob
-  }
 
   // experiment task from 50ms - 150ms
   async setScribbles(scribbles) {
@@ -62,10 +49,9 @@ class MiVOSScribbleToMaskBuilder {
   getMiVOSScribbleToMaskInput() {
     return {
       annotation_id: this.annotationId,
-      image: this.image,
       p_srb: this.p_srb,
       n_srb: this.n_srb,
-      mask: this.mask,
+      // mask: this.mask,
     }
   }
 }

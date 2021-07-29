@@ -4,7 +4,11 @@ const hexColorToRGB = (hex) => {
     r: parseInt(result[1], 16),
     g: parseInt(result[2], 16),
     b: parseInt(result[3], 16)
-  } : null;
+  } : {
+    r: 255,
+    g: 255,
+    b: 255
+  };
 }
 
 export default hexColorToRGB
