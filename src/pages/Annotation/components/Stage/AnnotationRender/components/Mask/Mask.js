@@ -184,7 +184,7 @@ const Mask = (props) => {
       cache
       hitFromCache
       bitmap={maskBmp}
-      opacity={isSelected ? 0.6 : 0.4}
+      opacity={isSelected ? 0.4 : 0.2}
       onClick={handleSelectMask}
       onTap={handleSelectMask}
       onContextMenu={handleContextMenu}

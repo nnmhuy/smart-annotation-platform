@@ -29,7 +29,7 @@ const MaskAnnotation = (props) => {
   let color = get(properties, 'fill', '')
 
   const handleSelectMask = (e) => {
-    EventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({ e, id })
+    EventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({ e, id, annotationObjectId })
   }
 
   const handleContextMenu = (e) => {

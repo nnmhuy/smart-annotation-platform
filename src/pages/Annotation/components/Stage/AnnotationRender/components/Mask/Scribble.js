@@ -1,5 +1,5 @@
 import React from 'react'
-import { Line } from 'react-konva'
+import { Circle, Line } from 'react-konva'
 
 import pointArrayToFlattenPointArray from '../../../../../utils/pointArrayToFlattenPointArray'
 import { SCRIBBLE_TO_MASK_CONSTANTS, COLOR_BY_SCRIBBLE_TYPE } from '../../../../../constants'
@@ -18,14 +18,56 @@ const Scribble = (props) => {
   const strokeColor = COLOR_BY_SCRIBBLE_TYPE[type]
 
   return (
-    <Line
-      points={flattenPoints}
-      {...others}
-      strokeWidth={strokeWidth}
-      globalCompositeOperation={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 'destination-out' : undefined}
-      opacity={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 1 : 0.6}
-      stroke={strokeColor}
-    />
+    <>
+      <Circle
+        x={points[0][0] * imageWidth}
+        y={points[0][1] * imageHeight}
+        radius={strokeWidth / 2}
+        opacity={1}
+        globalCompositeOperation={'destination-out'}
+        fill={strokeColor}
+      />
+      <Circle
+        x={points[0][0] * imageWidth}
+        y={points[0][1] * imageHeight}
+        radius={strokeWidth / 2}
+        opacity={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 1 : 0.6}
+        globalCompositeOperation={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 'destination-out' : 'source-over'}
+        fill={strokeColor}
+      />
+      <Line
+        points={flattenPoints}
+        {...others}
+        strokeWidth={strokeWidth}
+        globalCompositeOperation={'destination-out'}
+        opacity={1}
+        stroke={strokeColor}
+      />
+      <Line
+        points={flattenPoints}
+        {...others}
+        strokeWidth={strokeWidth}
+        globalCompositeOperation={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 'destination-out' : undefined}
+        opacity={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 1 : 0.6}
+        stroke={strokeColor}
+      />
+      <Circle
+        x={points[points.length - 1][0] * imageWidth}
+        y={points[points.length - 1][1] * imageHeight}
+        radius={strokeWidth / 2}
+        opacity={1}
+        globalCompositeOperation={'destination-out'}
+        fill={strokeColor}
+      />
+      <Circle
+        x={points[points.length - 1][0] * imageWidth}
+        y={points[points.length - 1][1] * imageHeight}
+        radius={strokeWidth / 2}
+        opacity={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 1 : 0.6}
+        globalCompositeOperation={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 'destination-out' : 'source-over'}
+        fill={strokeColor}
+      />
+    </>
   )
 }
 
