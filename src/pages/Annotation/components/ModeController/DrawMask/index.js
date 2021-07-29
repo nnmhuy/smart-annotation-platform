@@ -67,13 +67,14 @@ const ScribbleToMask = (props) => {
       fill: '#FFFFFF'
     })
     const annotationImageId = getCurrentAnnotationImageId()
-    const toolConfig = getToolConfig()
 
     const drawingAnnotation = getAnnotationByAnnotationObjectId(objectId, annotationImageId)
 
     if (drawingAnnotation) {
       return drawingAnnotation
     } else {
+      const toolConfig = getToolConfig()
+
       const newAnnotation = new MaskAnnotationClass('', objectId, annotationImageId, {
         scribbles: [],
         mask: new StorageFileClass(),
@@ -81,10 +82,11 @@ const ScribbleToMask = (props) => {
       }, true)
   
       let miVOSBuilder = getMiVOSBuilder()
+      miVOSBuilder.setAnnotationId(newAnnotation.id)
       miVOSBuilder.setScribbles([])
       miVOSBuilder.setMask(null)
   
-      appendAnnotation(newAnnotation, { commitAnnotation: true, delayUpdateTime: 100 })
+      appendAnnotation(newAnnotation, { commitAnnotation: true })
   
       return newAnnotation
     }
@@ -105,7 +107,7 @@ const ScribbleToMask = (props) => {
       type: toolConfig.scribbleType,
       strokeWidth: toolConfig.scribbleSize,
     })
-    setAnnotation(drawingAnnotation.id, maskData, { commitAnnotation: true, delayUpdateTime: 100 })
+    setAnnotation(drawingAnnotation.id, maskData, { commitAnnotation: true })
 
     setIsDrawingScribble(true)
   }
@@ -144,7 +146,7 @@ const ScribbleToMask = (props) => {
 
     setIsDrawingScribble(false)
     const drawingAnnotation = getCurrentAnnotation()
-    setAnnotation(drawingAnnotation.id, {}, { commitAnnotation: true, delayUpdateTime: 100 })
+    setAnnotation(drawingAnnotation.id, {}, { commitAnnotation: true })
 
     let miVOSBuilder = getMiVOSBuilder()
     await miVOSBuilder.setScribbles(drawingAnnotation.maskData.scribbles)
@@ -154,10 +156,13 @@ const ScribbleToMask = (props) => {
   }
 
   const handleClearAllScribbles = async () => {
+    if (!instanceId) {
+      return
+    }
     const drawingAnnotation = getCurrentAnnotation()
     setAnnotation(drawingAnnotation.id, {
       scribbles: []
-    }, { commitAnnotation: true, delayUpdateTime: 100 })
+    }, { commitAnnotation: true })
 
     let miVOSBuilder = getMiVOSBuilder()
     await miVOSBuilder.setScribbles([])
@@ -192,22 +197,25 @@ const ScribbleToMask = (props) => {
   }
 
   const handleUpdateThreshold = async () => {
+    if (!instanceId) {
+      return
+    }
     const drawingAnnotation = getCurrentAnnotation()
     const toolConfig = getToolConfig()
 
     setAnnotation(drawingAnnotation.id, {
       threshold: toolConfig.threshold
-    }, { commitAnnotation: true, delayUpdateTime: 100 })
+    }, { commitAnnotation: true })
   }
 
   const handleTriggerPredict = async () => {
-    const drawingAnnotation = getCurrentAnnotation()
-    let miVOSBuilder = getMiVOSBuilder()
-
     if (!instanceId) {
       alert("Image not found")
       return
     }
+    const drawingAnnotation = getCurrentAnnotation()
+    let miVOSBuilder = getMiVOSBuilder()
+
     const { mask, scribbles} = drawingAnnotation.maskData
     const maskBase64 = await mask.getBase64()
     await miVOSBuilder.setScribbles(scribbles)
@@ -222,8 +230,7 @@ const ScribbleToMask = (props) => {
   const handleFinishPredict = async (data) => {
     const drawingAnnotation = getCurrentAnnotation()
 
-    const { base64 } = data
-    await drawingAnnotation.setMaskBase64(base64)
+    await drawingAnnotation.setMask(data)
 
     setAnnotation(drawingAnnotation.id, cloneDeep(drawingAnnotation.maskData), { commitAnnotation: true })
     setIsLoading("predicting_scribble_to_mask", false)

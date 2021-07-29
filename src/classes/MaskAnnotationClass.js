@@ -26,15 +26,8 @@ export default class MaskAnnotation extends AnnotationClass {
     }
   }
 
-  async setMaskBase64(base64) {
-    const blob = await base64ToBlob(base64)
-    const uploadMaskData = await sendFormData('/annotations/upload-annotation-mask',{
-      id: this.id,
-      mask: blob
-    })
-    const maskFile = StorageFileClass.constructorFromServerData(uploadMaskData)
-    maskFile.blob = blob
-    maskFile.base64 = base64
+  async setMask(maskResponse) {
+    const maskFile = StorageFileClass.constructorFromServerData(maskResponse)
     await maskFile.getBitmap()
     this.updateData = {
       mask: maskFile
@@ -75,6 +68,6 @@ export default class MaskAnnotation extends AnnotationClass {
       annotation_type: ENUM_ANNOTATION_TYPE.MASK,
       key_frame: this.keyFrame,
       data: maskData
-    })
+    }).catch(error => console.log(error))
   }
 }

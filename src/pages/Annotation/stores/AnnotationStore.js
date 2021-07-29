@@ -117,7 +117,7 @@ const useAnnotationStore = create((set, get) => ({
     setIsLoading("loading_annotations", false)
   },
   setAnnotation: (annotationId, newEditingAnnotationData, options = {}) => {
-    const { commitAnnotation = true, delayUpdateTime = 100 } = options
+    const { commitAnnotation = true, delayUpdateTime = 1000 } = options
 
     let annotations = get().annotations
 
@@ -163,13 +163,17 @@ const useAnnotationStore = create((set, get) => ({
   getDrawingAnnotation: () => get().drawingAnnotation,
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
   appendAnnotation: (newAnnotation, options = {} ) => {
-    const { commitAnnotation = true, delayUpdateTime } = options
-    if (commitAnnotation) {
-      if (delayUpdateTime) {
-        setTimeout(() => newAnnotation.applyUpdate(), delayUpdateTime)
-      } else {
-        newAnnotation.applyUpdate()
+    const { commitAnnotation = true, delayUpdateTime = 1000 } = options
+    try {
+      if (commitAnnotation) {
+        if (delayUpdateTime) {
+          setTimeout(() => newAnnotation.applyUpdate(), delayUpdateTime)
+        } else {
+          newAnnotation.applyUpdate()
+        }
       }
+    } catch (error) {
+      console.log(error)
     }
     const annotations = get().annotations
 

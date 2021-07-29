@@ -2,6 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
+import { debounce } from 'lodash'
 
 import EventCenter from '../../../../../EventCenter'
 
@@ -83,6 +84,17 @@ const ScribbleToMaskConfig = (props) => {
   const { toolConfig, setToolConfig, } = props
   const { scribbleSize, threshold } = toolConfig
 
+  const emitThresholdUpdate = debounce(
+    EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD),
+    500
+  )
+
+  const handleSliderChange = (e, newValue) => {
+    setToolConfig({ ...toolConfig, threshold: newValue })
+    emitThresholdUpdate()
+    // EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD)()
+  }
+
   return (
     <div className={classes.root}>
       <div className={classes.optionContainer}>
@@ -145,10 +157,7 @@ const ScribbleToMaskConfig = (props) => {
                 min={1}
                 max={100}
                 valueLabelDisplay="auto"
-                onChange={(e, newValue) => {
-                  setToolConfig({ ...toolConfig, threshold: newValue })
-                  EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD)()
-                }}
+                onChange={handleSliderChange}
               />
             </div>
           </div>

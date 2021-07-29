@@ -11,10 +11,15 @@ class MiVOSScribbleToMaskBuilder {
   static INPUT_HEIGHT = 480
 
   constructor() {
+    this.annotationId = null
     this.image = null
     this.p_srb = null
     this.n_srb = null
     this.mask = null
+  }
+
+  setAnnotationId(id) {
+    this.annotationId = id
   }
 
   async setImage(image) {
@@ -56,6 +61,7 @@ class MiVOSScribbleToMaskBuilder {
 
   getMiVOSScribbleToMaskInput() {
     return {
+      annotation_id: this.annotationId,
       image: this.image,
       p_srb: this.p_srb,
       n_srb: this.n_srb,
