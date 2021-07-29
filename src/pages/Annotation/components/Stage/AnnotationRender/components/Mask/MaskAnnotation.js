@@ -25,9 +25,8 @@ const MaskAnnotation = (props) => {
 
   const { mask, scribbles, threshold } = maskData
   const displayMask = get(mask, 'bitmap', null)
-
+  
   let color = get(properties, 'fill', '')
-
 
   const handleSelectMask = (e) => {
     EventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({ e, id })

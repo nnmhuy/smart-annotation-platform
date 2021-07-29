@@ -71,9 +71,10 @@ const useAnnotationStore = create((set, get) => ({
       if (object.id !== id) {
         return object
       } else {
-        let newAnnotation = cloneDeep(object)
-        newAnnotation.labelId = newLabelId
-        return newAnnotation
+        let newAnnotationObject = cloneDeep(object)
+        newAnnotationObject.labelId = newLabelId
+        AnnotationObjectService.postAnnotationObject(newAnnotationObject)
+        return newAnnotationObject
       }
     })
 
