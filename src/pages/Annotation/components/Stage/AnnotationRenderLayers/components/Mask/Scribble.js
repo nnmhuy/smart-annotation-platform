@@ -26,6 +26,7 @@ const Scribble = (props) => {
         opacity={1}
         globalCompositeOperation={'destination-out'}
         fill={strokeColor}
+        listening={false}
       />
       <Circle
         x={points[0][0] * imageWidth}
@@ -34,6 +35,7 @@ const Scribble = (props) => {
         opacity={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 1 : 0.6}
         globalCompositeOperation={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 'destination-out' : 'source-over'}
         fill={strokeColor}
+        listening={false}
       />
       <Line
         points={flattenPoints}
@@ -42,6 +44,7 @@ const Scribble = (props) => {
         globalCompositeOperation={'destination-out'}
         opacity={1}
         stroke={strokeColor}
+        listening={false}
       />
       <Line
         points={flattenPoints}
@@ -50,6 +53,7 @@ const Scribble = (props) => {
         globalCompositeOperation={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 'destination-out' : undefined}
         opacity={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 1 : 0.6}
         stroke={strokeColor}
+        listening={false}
       />
       <Circle
         x={points[points.length - 1][0] * imageWidth}
@@ -58,6 +62,7 @@ const Scribble = (props) => {
         opacity={1}
         globalCompositeOperation={'destination-out'}
         fill={strokeColor}
+        listening={false}
       />
       <Circle
         x={points[points.length - 1][0] * imageWidth}
@@ -66,6 +71,7 @@ const Scribble = (props) => {
         opacity={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 1 : 0.6}
         globalCompositeOperation={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 'destination-out' : 'source-over'}
         fill={strokeColor}
+        listening={false}
       />
     </>
   )

@@ -87,7 +87,7 @@ const EVENT_TYPES = {
 
 const DEFAULT_ANNOTATION_ATTRS = {
   fill: '#00FF00',
-  opacity: 0.2,
+  opacity: 0.3,
   stroke: '#000000',
   strokeWidth: 2,
 }

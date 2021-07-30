@@ -7,7 +7,7 @@ import EventCenter from '../../EventCenter'
 import { useGeneralStore, useDatasetStore } from '../../stores/index'
 
 import DataInstanceRender from './DataInstanceRender/index'
-import AnnotationRender from './AnnotationRender/index'
+import AnnotationRenderLayers from './AnnotationRenderLayers/index'
 import ToolRender from './ToolRender/index'
 
 import { EVENT_TYPES, MODES, STAGE_PADDING } from '../../constants'
@@ -136,11 +136,11 @@ const RenderComponent = (props) => {
         }}
         onTap={EventCenter.emitEvent(EVENT_TYPES.STAGE_TAP)}
       >
-        <Layer>
+        <Layer listening={false}>
           <DataInstanceRender/>
         </Layer>
-        <Layer>
-          <AnnotationRender/>
+        <AnnotationRenderLayers/>
+        <Layer listening={false}>
           <ToolRender/>
         </Layer>
       </Stage>

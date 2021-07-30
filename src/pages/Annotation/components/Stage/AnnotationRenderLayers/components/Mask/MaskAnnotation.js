@@ -27,6 +27,7 @@ const MaskAnnotation = (props) => {
   const displayMask = get(mask, 'bitmap', null)
   
   let color = get(properties, 'fill', '')
+  let opacity = get(properties, 'opacity', 0.2)
 
   const handleSelectMask = (e) => {
     EventCenter.emitEvent(EVENT_TYPES.SELECT_ANNOTATION)({ e, id, annotationObjectId })
@@ -56,6 +57,7 @@ const MaskAnnotation = (props) => {
         isSelected={isSelected}
         maskBmp={displayMask}
         color={hexColorToRGB(color)}
+        opacity={opacity}
         handleSelectMask={handleSelectMask}
         handleContextMenu={handleContextMenu}
         imageWidth={imageWidth}

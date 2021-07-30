@@ -1,4 +1,5 @@
 import React from 'react'
+import { Layer } from 'react-konva'
 import { filter, cloneDeep, get, find } from 'lodash'
 
 import BBoxAnnotation from '../../../../../classes/BBoxAnnotationClass'
@@ -32,9 +33,11 @@ const AnnotationRender = (props) => {
   const renderingSize = useGeneralStore(state => state.renderingSize)
 
   const currentAnnotationImageId = useDatasetStore(state => state.currentAnnotationImageId)
+  const selectedObjectId = useAnnotationStore(state => state.selectedObjectId)
+
 
   const annotations = useAnnotationStore(state => state.annotations[currentAnnotationImageId] || [])
-  
+
   const annotationObjects = useAnnotationStore(state => state.annotationObjects)
   const drawingAnnotation = useAnnotationStore(state => state.drawingAnnotation)
   const labels = useAnnotationStore(state => state.labels)
@@ -61,14 +64,25 @@ const AnnotationRender = (props) => {
     return renderAnn
   })
 
+  let Layer1 = []
+  let Layer2 = []
+
   // filter out hidden annotations and null drawingAnnotation
   renderingAnnotations = filter(renderingAnnotations, (ann) => ann && !ann?.properties?.isHidden)
-  return (
-    renderingAnnotations.map(ann => {
-      const renderer = find(mapAnnotationClassToRender, (value => ann instanceof value.cls))
-      if (renderer) {
-        const RenderComponent = renderer.render
-        return (
+  renderingAnnotations.forEach(ann => {
+    const renderer = find(mapAnnotationClassToRender, (value => ann instanceof value.cls))
+    if (renderer) {
+      const RenderComponent = renderer.render
+      if (ann.annotationObjectId === selectedObjectId) {
+        Layer2.push(
+          <RenderComponent
+            key={`annotation-${ann.id}`}
+            annotation={ann}
+            renderingSize={renderingSize}
+          />
+        )
+      } else {
+        Layer1.push(
           <RenderComponent
             key={`annotation-${ann.id}`}
             annotation={ann}
@@ -76,9 +90,17 @@ const AnnotationRender = (props) => {
           />
         )
       }
-      return null
-    })
-  )
+    }
+  })
+  return ([
+    (!selectedObjectId) && // TODO: check this condition is suitable or only not listening
+    <Layer key="all-annotations">
+      {Layer1}
+    </Layer>,
+    <Layer key="drawing-annotations">
+      {Layer2}
+    </Layer>
+  ])
 }
 
 export default AnnotationRender
