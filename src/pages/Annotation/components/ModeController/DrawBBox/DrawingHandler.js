@@ -24,7 +24,7 @@ const DrawingHandler = (props) => {
   const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
 
 
-  const handleClickDrawRectangle = () => {
+  const handleClickDrawRectangle = async () => {
     const renderingSize = getRenderingSize()
     const imageWidth = get(renderingSize, 'width', 1)
     const imageHeight = get(renderingSize, 'height', 1)
@@ -32,7 +32,7 @@ const DrawingHandler = (props) => {
     const drawingAnnotation = getDrawingAnnotation()
 
     if (drawingAnnotation === null) {
-      const objectId = getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.BBOX, DEFAULT_ANNOTATION_ATTRS)
+      const objectId = await getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.BBOX, DEFAULT_ANNOTATION_ATTRS)
       const annotationImageId = getCurrentAnnotationImageId()
       setDrawingAnnotation(new BBoxAnnotationClass('', objectId, annotationImageId, {
         x: currentMousePosition.x / imageWidth,

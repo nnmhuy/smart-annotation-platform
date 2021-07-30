@@ -98,7 +98,7 @@ const MAX_ZOOM_SCALE = 5
 
 const SCRIBBLE_TO_MASK_CONSTANTS = {
   MAX_SCRIBBLE_SIZE: 100,
-  MIN_SCRIBBLE_SIZE: 10,
+  MIN_SCRIBBLE_SIZE: 1,
   SCRIBBLE_TYPES: {
     POSITIVE: "POSITIVE",
     NEGATIVE: "NEGATIVE",
@@ -116,7 +116,7 @@ const DEFAULT_TOOL_CONFIG = {
   [MODES.DRAW_MASK.name]: {
     scribbleSize: 20,
     scribbleType: SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.POSITIVE,
-    threshold: 50,
+    threshold: 20,
   }
 }
 

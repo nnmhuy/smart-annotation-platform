@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import create from 'zustand'
 import { get, cloneDeep } from 'lodash'
 
@@ -29,6 +29,7 @@ const DrawingHandler = (props) => {
   const instanceId = useDatasetStore(state => state.instanceId)
   const getCurrentAnnotationImageId = useDatasetStore(state => state.getCurrentAnnotationImageId)
 
+  const selectedObjectId = useAnnotationStore(state => state.selectedObjectId)
   const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
   const getDrawingAnnotation = useAnnotationStore(state => state.getDrawingAnnotation)
   const setDrawingAnnotation = useAnnotationStore(state => state.setDrawingAnnotation)
@@ -40,7 +41,11 @@ const DrawingHandler = (props) => {
   const setDrawingPoly = useDrawPolygonStore(state => state.setDrawingPoly)
   const appendDrawingPoly = useDrawPolygonStore(state => state.appendDrawingPoly)
 
-  const handleClickDrawPolygon = () => {
+  useEffect(() => {
+    setDrawingPoly(null)
+  }, [selectedObjectId])
+
+  const handleClickDrawPolygon = async () => {
     const renderingSize = getRenderingSize()
     const imageWidth = get(renderingSize, 'width', 1)
     const imageHeight = get(renderingSize, 'height', 1)
@@ -52,7 +57,7 @@ const DrawingHandler = (props) => {
     const isMouseOverPolygonStart = getIsMouseOverPolygonStart()
 
     if (drawingPoly === null) {
-      const objectId = getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.POLYGON, DEFAULT_ANNOTATION_ATTRS)
+      const objectId = await getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.POLYGON, DEFAULT_ANNOTATION_ATTRS)
       const annotationImageId = getCurrentAnnotationImageId()
 
       setDrawingAnnotation(new PolygonAnnotationClass('', objectId, annotationImageId, {

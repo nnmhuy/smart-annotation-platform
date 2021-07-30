@@ -37,7 +37,7 @@ const useAnnotationStore = create((set, get) => ({
     setIsLoading("loading_annotation_objects", false)
   },
   setSelectedObjectId: (newObjectId) => set({ selectedObjectId: newObjectId }),
-  getOrCreateSelectedObjectId: (dataInstanceId, annotationType, properties = {}) => {
+  getOrCreateSelectedObjectId: async (dataInstanceId, annotationType, properties = {}) => {
     const selectedObjectId = get().selectedObjectId
     const annotationObjects = get().annotationObjects
 
@@ -45,7 +45,7 @@ const useAnnotationStore = create((set, get) => ({
       return selectedObjectId
     } else {
       const newAnnotationObject = new AnnotationObjectClass('', dataInstanceId, '', annotationType, properties, {})
-      AnnotationObjectService.postAnnotationObject(newAnnotationObject)
+      await AnnotationObjectService.postAnnotationObject(newAnnotationObject)
       set({
         annotationObjects: [...annotationObjects, newAnnotationObject],
         selectedObjectId: newAnnotationObject.id,
