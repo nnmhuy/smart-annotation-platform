@@ -21,10 +21,16 @@ const ENUM_ANNOTATION_TYPE = {
   MASK: 3,
 }
 
+const DATASET_DATATYPE = {
+  IMAGE: 'image',
+  VIDEO: 'video',
+}
+
 export {
   backendURL,
   ResponseCode,
 
   ANNOTATION_TYPE,
   ENUM_ANNOTATION_TYPE,
+  DATASET_DATATYPE
 }

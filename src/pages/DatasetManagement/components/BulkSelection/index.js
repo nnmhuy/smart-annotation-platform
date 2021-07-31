@@ -29,16 +29,16 @@ const BulkSelection = (props) => {
 
   const selected = useStore(state => state.selected)
   const deselectAll = useStore(state => state.deselectAll)
-  const deleteSelectedImages = useStore(state => state.deleteSelectedImages)
+  const deleteSelectedData = useStore(state => state.deleteSelectedData)
 
   const selectedIds = filter(Object.keys(selected), key => selected[key])
 
   const handleDeleteSelected = () => {
     confirm({
-      title: 'Delete selected images',
-      description: `This action can't be undone and will delete ${selectedIds.length} images and associated annotations.`
+      title: 'Delete selected data instances',
+      description: `This action can't be undone and will delete ${selectedIds.length} instances and associated annotations.`
     }).then(() => {
-      deleteSelectedImages()
+      deleteSelectedData()
     })
   }
 

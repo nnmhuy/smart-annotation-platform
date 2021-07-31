@@ -1,18 +1,19 @@
 import React from 'react'
 import KeyboardEventHandler from 'react-keyboard-event-handler';
 
+import EventCenter from '../../../EventCenter'
+
 import { EVENT_TYPES } from '../../../constants'
 
 
 const EditKeyboardHandler = (props) => {
-  const { eventCenter } = props
 
   return (
     <>
       {/* Handle key delete: delete selected annotation */}
       <KeyboardEventHandler
         handleKeys={['backspace']}
-        onKeyEvent={eventCenter.emitEvent(EVENT_TYPES.EDIT.DELETE_ANNOTATION)}
+        onKeyEvent={EventCenter.emitEvent(EVENT_TYPES.EDIT.DELETE_ANNOTATION)}
       />
     </>
   )

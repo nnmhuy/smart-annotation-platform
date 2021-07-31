@@ -3,12 +3,12 @@ import { Image } from 'react-konva'
 import useImage from 'use-image'
 
 const KonvaImage = (props) => {
-  const { src, isMovingViewport, cache, hitFromCache, ...others } = props
+  const { bitmap, src, isMovingViewport, cache, hitFromCache, ...others } = props
   const [image] = useImage(src)
 
   const drawHitFromCache = (img) => {
     try {
-      if (img && src) {
+      if (img && (src || bitmap)) {
         if (cache) img.cache();
         if (hitFromCache) img.drawHitFromCache();
       }
@@ -19,7 +19,7 @@ const KonvaImage = (props) => {
   return (
     <Image 
       ref={(node) => { drawHitFromCache(node); }}
-      image={image} offsetX={0} offsetY={0}
+      image={bitmap || image} offsetX={0} offsetY={0}
       hitFunc={isMovingViewport && function () {
         // disable hitFunc while dragging viewport
       }}

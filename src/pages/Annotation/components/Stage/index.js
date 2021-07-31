@@ -1,20 +1,24 @@
-import React from 'react'
+import React, { useCallback, useMemo, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Stage, Layer } from 'react-konva'
 import { get, find, debounce } from 'lodash'
 
-import Loading from '../../../../components/Loading'
-import ImageRender from './ImageRender/index'
-import AnnotationRender from './AnnotationRender/index'
+import EventCenter from '../../EventCenter'
+import { useGeneralStore, useDatasetStore } from '../../stores/index'
+
+import DataInstanceRender from './DataInstanceRender/index'
+import AnnotationRenderLayers from './AnnotationRenderLayers/index'
 import ToolRender from './ToolRender/index'
 
-import { EVENT_TYPES, MODES } from '../../constants'
+import { EVENT_TYPES, MODES, STAGE_PADDING } from '../../constants'
 import getStagePosLimit from '../../utils/getStagePosLimit'
+import getRenderingSize from '../../utils/getRenderingSize'
 
 const useStyles = makeStyles(() => ({
   stageContainer: {
     width: '100%',
-    height: '100%',
+    flex: 1,
+    overflowY: 'hidden',
   },
   stage: {
     background: '#f8f8f8',
@@ -22,93 +26,81 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-
-const emittingSubjects = [
-  EVENT_TYPES.STAGE_MOUSE_CLICK,
-  EVENT_TYPES.STAGE_MOUSE_DOWN,
-  EVENT_TYPES.STAGE_MOUSE_UP,
-  EVENT_TYPES.STAGE_MOUSE_MOVE,
-
-  EVENT_TYPES.STAGE_MOUSE_OUT,
-  EVENT_TYPES.STAGE_MOUSE_ENTER,
-
-  EVENT_TYPES.STAGE_TAP,
-  EVENT_TYPES.STAGE_TOUCH_START,
-  EVENT_TYPES.STAGE_TOUCH_END,
-  EVENT_TYPES.STAGE_TOUCH_MOVE,
-
-  EVENT_TYPES.STAGE_CONTEXT_MENU,
-]
-
 const RenderComponent = (props) => {
-  const { useStore, eventCenter } = props
-  const activeMode = useStore(state => state.activeMode)
+  const activeMode = useGeneralStore(state => state.activeMode)
   const classes = useStyles({ activeMode })
   
   const stageContainerRef = React.useRef(null)
+  const getStageContainerRef = useCallback(() => stageContainerRef.current, [stageContainerRef])
   const stageRef = React.useRef(null)
-  const setStageRef = useStore(state => state.setStageRef)
+  const setStage = useGeneralStore(state => state.setStage)
   React.useEffect(() => {
-    setStageRef(stageRef.current)
+    setStage(stageRef.current)
   }, [stageRef])
 
 
-  const stageSize = useStore(state => state.stageSize)
-  const setStageSize = useStore(state => state.setStageSize)
+  const stage = useGeneralStore(state => state.stage)
+  const stageSize = useGeneralStore(state => state.stageSize)
+  const setStageSize = useGeneralStore(state => state.setStageSize)
+
   const handleNewStageSize = debounce(() => {
-    const container = stageContainerRef.current
-    if (container) {
+    const container = getStageContainerRef()
+
+    if (container && container.clientWidth > 0 && container.clientHeight > 0) {
       setStageSize({
         width: container.clientWidth,
         height: container.clientHeight,
       })
     }
-  }, 500)
+  }, 500, { leading: true, trailing: true })
 
   React.useEffect(() => {
     handleNewStageSize()
     window.addEventListener('resize', handleNewStageSize)
+    const { getSubject } = EventCenter
+    let subscriptions = {
+      [EVENT_TYPES.RESIZE_STAGE]: getSubject(EVENT_TYPES.RESIZE_STAGE)
+        .subscribe({ next: (e) => handleNewStageSize(e) }),
+    }
+
     return () => {
       window.removeEventListener('resize', handleNewStageSize)
+      Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
     }
-  }, [stageContainerRef])
-
-
-  // const [listeningSubjects, setListeningSubjects] = React.useState({}) // subjects listen by this component
-  React.useEffect(() => {
-    let initializingObservingSubjects = {}
-
-    emittingSubjects.forEach(subject => {
-      initializingObservingSubjects[subject] = eventCenter.getSubject(subject)
-    })
   }, [])
 
-  const image = useStore(state => state.image)
+  const instanceId = useDatasetStore(state => state.instanceId)
+  const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))
 
-  const handleStageClick = (e) => {
-    // only detect left click or tap
-    if (!((e.type === "click" && e.evt.which === 1) || (e.type === "tap"))) {
-      return
+  const setRenderingSize = useGeneralStore(state => state.setRenderingSize)
+  const renderingSize = useMemo(() =>
+    getRenderingSize(stageSize, dataInstance, STAGE_PADDING)
+    , [stageSize, dataInstance]
+  )
+
+  useEffect(() => {
+    setRenderingSize(renderingSize)
+    if (stage) {
+      stage.position({
+        x: (stageSize.width - renderingSize.width) / 2,
+        y: (stageSize.height - renderingSize.height) / 2,
+      });
+      stage.scale({ x: 1, y: 1 })
     }
-    eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_CLICK)(e)
-  }
+  }, [stageSize, renderingSize])
+
 
   const dragBoundFunc = (pos) => {
-    // TODO: limit viewport drag here
     // important pos - is absolute position of the node
     // you should return absolute position too
     const stage = stageRef.current
-
-
-    let posLimit = getStagePosLimit(stage, stageSize, image)
+    let posLimit = getStagePosLimit(stage, stageSize, renderingSize)
 
     return {
       x: Math.min(Math.max(pos.x, posLimit.xMin), posLimit.xMax),
       y: Math.min(Math.max(pos.y, posLimit.yMin), posLimit.yMax)
     };
   }
-
-  const isLoading = useStore(state => state.isLoading)
 
   return (
     <div className={classes.stageContainer} ref={stageContainerRef}>
@@ -120,42 +112,38 @@ const RenderComponent = (props) => {
 
         draggable
         dragBoundFunc={dragBoundFunc}
-        onDragStart={eventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_START)}
-        onDragMove={eventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_MOVE)}
-        onDragEnd={eventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_END)}
+        onDragStart={EventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_START)}
+        onDragMove={EventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_MOVE)}
+        onDragEnd={EventCenter.emitEvent(EVENT_TYPES.STAGE_DRAG_END)}
 
-        onMouseOut={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_OUT)}
-        onMouseEnter={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_ENTER)}
-        onWheel={eventCenter.emitEvent(EVENT_TYPES.STAGE_WHEEL)}
-        onContextMenu={eventCenter.emitEvent(EVENT_TYPES.STAGE_CONTEXT_MENU)}
+        onMouseOut={EventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_OUT)}
+        onMouseEnter={EventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_ENTER)}
+        onWheel={EventCenter.emitEvent(EVENT_TYPES.STAGE_WHEEL)}
+        onContextMenu={EventCenter.emitEvent(EVENT_TYPES.STAGE_CONTEXT_MENU)}
 
-        onMouseDown={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_DOWN)}
-        onTouchStart={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_START)}
-        onMouseMove={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_MOVE)}
-        onTouchMove={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_MOVE)}
-        onMouseUp={eventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_UP)}
-        onTouchEnd={eventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_END)}
-        onClick={handleStageClick} // limit to left click only
-        onTap={eventCenter.emitEvent(EVENT_TYPES.STAGE_TAP)}
+        onMouseDown={EventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_DOWN)}
+        onTouchStart={EventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_START)}
+        onMouseMove={EventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_MOVE)}
+        onTouchMove={EventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_MOVE)}
+        onMouseUp={EventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_UP)}
+        onTouchEnd={EventCenter.emitEvent(EVENT_TYPES.STAGE_TOUCH_END)}
+        // only detect left click or tap
+        onClick={(e) => {
+          if (!((e.type === "click" && e.evt.which === 1) || (e.type === "tap"))) {
+            return
+          }
+          EventCenter.emitEvent(EVENT_TYPES.STAGE_MOUSE_CLICK)(e)
+        }}
+        onTap={EventCenter.emitEvent(EVENT_TYPES.STAGE_TAP)}
       >
-        <Layer>
-          <ImageRender
-            useStore={useStore}
-            eventCenter={eventCenter}
-          />
+        <Layer listening={false}>
+          <DataInstanceRender/>
         </Layer>
-        <Layer>
-          <AnnotationRender
-            useStore={useStore}
-            eventCenter={eventCenter}
-          />
-          <ToolRender
-            useStore={useStore}
-            eventCenter={eventCenter}
-          />
+        <AnnotationRenderLayers/>
+        <Layer listening={false}>
+          <ToolRender/>
         </Layer>
       </Stage>
-      <Loading isLoading={isLoading} />
     </div>
   )
 }

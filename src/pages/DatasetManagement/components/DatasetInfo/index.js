@@ -61,7 +61,7 @@ const DatasetInfo = (props) => {
   const deleteDataset = useStore(state => state.deleteDataset)
   const updateDatasetInfo = useStore(state => state.updateDatasetInfo)
 
-  const { projectId, instances } = dataset
+  const { projectId, datatype, instances, } = dataset
 
   React.useEffect(() => {
     const { name, description } = dataset
@@ -77,7 +77,7 @@ const DatasetInfo = (props) => {
       }
     })
 
-    const newDataset = new DatasetClass(dataset.id, data.name, projectId, { description: data.description })
+    const newDataset = new DatasetClass(dataset.id, data.name, projectId, data.datatype, { description: data.description })
 
     try {
       await updateDatasetInfo(newDataset)
@@ -127,6 +127,7 @@ const DatasetInfo = (props) => {
           onBlur={handleSubmit}
           placeholder={dataset.description || "Add dataset description"}
         />
+        <div className={classes.datatype}>Datatype: {datatype}</div>
         <div className={classes.instances}>{instances} instances</div>
       </Grid>
       <Grid container item xs={6} md={4} alignItems="center">
@@ -153,7 +154,7 @@ const DatasetInfo = (props) => {
               variant="outlined" className={classes.button}
               color="primary"
               startIcon={<AddIcon />}
-              href={`/annotations/project=${projectId}&dataset=${datasetId}?page=${page}`}
+              href={`/annotations/dataset=${datasetId}?page=${page}`}
             >
               Start annotate
             </Button>
@@ -175,7 +176,10 @@ const DatasetInfo = (props) => {
 }
 
 const DatasetInfoForm = withFormik({
-  mapPropsToValues: () => ({ name: '', description: '' }),
+  mapPropsToValues: () => ({ 
+    name: '', 
+    description: '' 
+  }),
 
   validationSchema: Yup.object().shape({
     name: Yup.string().required(),

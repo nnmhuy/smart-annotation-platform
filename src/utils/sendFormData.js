@@ -1,6 +1,6 @@
 import RestConnector from '../connectors/RestConnector'
 
-const sendFormData = async (objectData, url, options) => {
+const sendFormData = async (url, objectData, options) => {
   const formData = new FormData();
   Object.keys(objectData).forEach(key => {
     if (objectData[key]) {

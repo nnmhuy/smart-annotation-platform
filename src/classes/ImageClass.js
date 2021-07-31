@@ -1,16 +1,28 @@
+import StorageFileClass from './StorageFileClass'
+
 export default class ImageClass {
-  constructor(id, imageURL, thumbnailURL, name='') {
+  /**
+   * 
+   * @param {String} id 
+   * @param {StorageFile} original 
+   * @param {StorageFile} thumbnail 
+   */
+  constructor(id, original, thumbnail) {
     this.id = id
-    this.imageURL = imageURL
-    this.thumbnailURL = thumbnailURL
-    this.name = name
+    this.original = original
+    this.thumbnail = thumbnail
   }
+  
+  async getData() {
+    await this.original.getBitmap()
+    await this.thumbnail.getBitmap()
+  }
+
   static constructorFromServerData(data) {
     return new ImageClass(
       data.id,
-      data.imageURL,
-      data.thumbnailURL || data.imageURL,
-      data.name
+      StorageFileClass.constructorFromServerData(data.original),
+      StorageFileClass.constructorFromServerData(data.thumbnail)
     )
   }
 }

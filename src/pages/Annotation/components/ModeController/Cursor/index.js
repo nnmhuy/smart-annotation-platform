@@ -1,6 +1,9 @@
 import React from 'react'
 import create from 'zustand'
 
+import { useGeneralStore } from '../../../stores'
+import EventCenter from '../../../EventCenter'
+
 import {
   EVENT_TYPES,
   MIN_ZOOM_SCALE, MAX_ZOOM_SCALE, } from '../../../constants';
@@ -16,8 +19,7 @@ const useCursorStore = create((set, get) => ({
 }))
 
 const Cursor = (props) => {
-  const { useStore, eventCenter } = props
-  const stage = useStore(state => state.stageRef)
+  const stage = useGeneralStore(state => state.stage)
 
   const setLastCenter = useCursorStore(state => state.setLastCenter)
   const getLastCenter = useCursorStore(state => state.getLastCenter)
@@ -141,7 +143,7 @@ const Cursor = (props) => {
   }
 
   React.useEffect(() => {
-    const { getSubject } = eventCenter
+    const { getSubject } = EventCenter
     let subscriptions = {
       [EVENT_TYPES.STAGE_TOUCH_MOVE]: getSubject(EVENT_TYPES.STAGE_TOUCH_MOVE)
         .subscribe({ next: (e) => handleTouchMove(e) }),

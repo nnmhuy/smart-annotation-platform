@@ -1,21 +1,11 @@
+import generateNewUid from "../utils/uidGenerator"
+
 export default class Annotation {
-  constructor(annotationId, labelId, imageId, properties) {
-    this.id = annotationId
-    this.labelId = labelId
-    this.imageId = imageId
-    this.properties = {
-      ...properties,
-      isHidden: false
-    }
-  }
-  set updateLabel(labelId) {
-    this.labelId = labelId
-  }
-  set updateProperties(newProperties) {
-    this.properties = {
-      ...this.properties,
-      ...newProperties,
-    }
+  constructor(id = '', annotationObjectId, annotationImageId, keyFrame=false) {
+    this.id = id || generateNewUid()
+    this.annotationObjectId = annotationObjectId
+    this.annotationImageId = annotationImageId
+    this.keyFrame = keyFrame
   }
 
   async applyUpdateAnnotation() {

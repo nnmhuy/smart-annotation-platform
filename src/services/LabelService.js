@@ -8,6 +8,11 @@ class LabelService {
       .then(response => response.data.map(label => LabelClass.constructorFromServerData(label)))
   }
 
+  getLabelByDataset(datasetId) {
+    return RestConnector.get(`/annotation_labels?dataset_id=${datasetId}`)
+      .then(response => response.data.map(label => LabelClass.constructorFromServerData(label)))
+  }
+
   createLabel(data) {
     return RestConnector.post('/annotation_labels', {
       label: data.label,

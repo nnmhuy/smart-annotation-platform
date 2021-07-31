@@ -28,6 +28,9 @@ const tableColumns = [
     key: 'name', label: 'Name'
   },
   {
+    key: 'datatype', label: 'Type'
+  },
+  {
     key: 'instances', label: 'Instances'
   },
   {
@@ -49,7 +52,7 @@ const DatasetList = (props) => {
 
   React.useEffect(() => {
     getDatasets(projectId)
-  }, [])
+  }, [projectId])
 
   const handleTriggerCreateDataset = () => {
     setOpenDialog(true)
@@ -114,7 +117,7 @@ const DatasetList = (props) => {
                 <IconButton 
                   color="secondary" 
                   component="a"
-                  href={`/annotations/project=${projectId}&dataset=${dataset.id}`}
+                  href={`/annotations/dataset=${dataset.id}`}
                 >
                   <PlayCircleFilledIcon />
                 </IconButton>

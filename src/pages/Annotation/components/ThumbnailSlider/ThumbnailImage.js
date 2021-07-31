@@ -7,20 +7,19 @@ import { theme } from '../../../../theme'
 const useStyles = makeStyles((props) => ({
   imageWrapper: {
     display: 'inline-block',
-    height: 50,
+    height: 60,
     width: 100,
     borderRadius: 5,
     padding: 5,
-    margin: 10,
+    margin: 5,
     backgroundColor: 'white',
-    borderWidth: 5,
     borderColor: props => props.isSelected ? theme.light.secondaryColor : 'rgba(0, 0, 0, 0)',
     borderStyle: 'solid'
   },
   image: {
     width: '100%',
     height: '100%',
-    objectFit: 'contain'
+    objectFit: 'cover'
   }
 }))
 

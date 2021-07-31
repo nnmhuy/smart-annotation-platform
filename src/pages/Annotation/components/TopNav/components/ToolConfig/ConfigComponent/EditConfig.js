@@ -1,7 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
-import ToolConfigButton from '../ToolConfigButton'
+import ToolConfigButton from '../components/ToolConfigButton'
 
 import { ReactComponent as DeleteIcon } from '../../../../../../../static/images/icons/ConfigIcon/delete.svg'
 

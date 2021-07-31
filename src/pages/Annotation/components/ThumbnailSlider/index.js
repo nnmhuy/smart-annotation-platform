@@ -1,12 +1,18 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { IconButton, makeStyles } from '@material-ui/core'
+import Collapse from '@material-ui/core/Collapse'
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons'
+import ShowMoreIcon from '@material-ui/icons/UnfoldMore';
+import ShowLessIcon from '@material-ui/icons/UnfoldLess';
 import { useParams, useHistory } from 'react-router'
 import { get } from 'lodash'
 
+import EventCenter from '../../EventCenter';
 
 import { IMAGES_PER_PAGE } from '../../constants'
+import { EVENT_TYPES } from '../../constants'
 import useQuery from '../../../../utils/useQuery'
+import { useDatasetStore } from '../../stores/index'
 
 import ThumbnailImage from './ThumbnailImage'
 import { theme } from '../../../../theme'
@@ -17,10 +23,11 @@ const useStyles = makeStyles((props) => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
     width: '100%',
+    background: theme.light.forthColor,
     height: 100,
-    background: theme.light.forthColor
   },
   pageInfo: {
     fontWeight: 500,
@@ -37,14 +44,14 @@ const useStyles = makeStyles((props) => ({
     overflowY: 'hidden',
     overflowX: 'scroll',
     "&::-webkit-scrollbar": {
-      height: 10,
+      height: 5,
     },
     "&::-webkit-scrollbar-track": {
-      height: 10,
+      height: 5,
     },
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: theme.light.secondaryColor,
-      height: 10,
+      height: 5,
       borderRadius: 5
     },
   },
@@ -56,23 +63,18 @@ const useStyles = makeStyles((props) => ({
 
 const ThumbnailSlider = (props) => {
   const classes = useStyles()
-  const { projectId, datasetId } = useParams()
+  const { datasetId } = useParams()
   let query = useQuery()
   let history = useHistory()
 
   const page = JSON.parse(query.get("page") || 1)
 
-  const { 
-    useStore, 
-    // eventCenter 
-  } = props
 
+  const dataset = useDatasetStore(state => state.dataset)
+  const dataInstances = useDatasetStore(state => state.dataInstances)
+  const instanceId = useDatasetStore(state => state.instanceId)
+  const setInstanceId = useDatasetStore(state => state.setInstanceId)
 
-  const imageId = useStore(state => state.imageId)
-  const dataset = useStore(state => state.dataset)
-  const setImageId = useStore(state => state.setImageId)
-  const getImagesOfDataset = useStore(state => state.getImagesOfDataset)
-  const imageList = useStore(state => state.imageList)
 
   const instances = get(dataset, 'instances', 0)
   const maxPage = Number.parseInt((instances / IMAGES_PER_PAGE) + Boolean(instances % IMAGES_PER_PAGE))
@@ -84,39 +86,55 @@ const ThumbnailSlider = (props) => {
     newPage = (Math.max(Math.min(maxPage, newPage), 1))
 
     if (newPage !== page) {
-      history.push(`/annotations/project=${projectId}&dataset=${datasetId}?page=${newPage}`)
-      await getImagesOfDataset(datasetId, newPage)
-      setImageId(null)
+      history.replace(`/annotations/dataset=${datasetId}?page=${newPage}`)
     }
   }
 
+  const [isShowing, setIsShowing] = useState(true)
 
-  // TODO: show current page / total page
   return (
-    <div className={classes.sliderWrapper}>
-      <div className={classes.pageInfo}>
-        <div>{`Page: ${page}`}</div>
-        <div>{`Total: ${maxPage}`}</div>
-      </div>
-      <IconButton onClick={() => handleChangePage(-1)} className={classes.button}>
-        <KeyboardArrowLeft />
+    <>
+      <IconButton 
+        size="small" 
+        className={classes.button} 
+        style={{ background: theme.light.forthColor, width: '100%' }}
+        onClick={() => {
+          setIsShowing(isShowing => !isShowing)
+          setTimeout(EventCenter.emitEvent(EVENT_TYPES.RESIZE_STAGE), 350)
+        }}
+      >
+        {isShowing ?
+          <ShowLessIcon fontSize="small" color="primary"/>
+          : <ShowMoreIcon fontSize="small" color="primary"/>
+        }
       </IconButton>
-        <div className={classes.thumbnailWrapper}>
-        {imageList.map((data, index) => {
-            return (
-              <ThumbnailImage
-                id={data.id}
-                key={`thumbnail-image-${data.id}`}
-                isSelected={data.id === imageId}
-                setSelectedId={() => setImageId(data.id)}
-                thumbnail={data.thumbnailURL}
-              />)
-          })}
+      <Collapse in={isShowing} timeout={300}>
+        <div className={classes.sliderWrapper}>
+          <div className={classes.pageInfo}>
+            <div>{`Page: ${Math.min(page, maxPage)}`}</div>
+            <div>{`Total: ${maxPage}`}</div>
+          </div>
+          <IconButton onClick={() => handleChangePage(-1)} className={classes.button}>
+            <KeyboardArrowLeft />
+          </IconButton>
+          <div className={classes.thumbnailWrapper}>
+            {dataInstances.map((instance) => {
+              return (
+                <ThumbnailImage
+                  id={instance.id}
+                  key={`thumbnail-image-${instance.id}`}
+                  isSelected={instance.id === instanceId}
+                  setSelectedId={() => setInstanceId(instance.id)}
+                  thumbnail={instance.thumbnail.URL}
+                />)
+            })}
+          </div>
+          <IconButton onClick={() => handleChangePage(1)} className={classes.button}>
+            <KeyboardArrowRight />
+          </IconButton>
         </div>
-      <IconButton onClick={() => handleChangePage(1)} className={classes.button}>
-        <KeyboardArrowRight />
-      </IconButton>
-    </div>
+      </Collapse>
+    </>
   )
 }
 

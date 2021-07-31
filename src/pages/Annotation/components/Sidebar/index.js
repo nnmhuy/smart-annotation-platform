@@ -1,10 +1,11 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core'
-import { filter } from 'lodash'
 
-import LabelList from './components/LabelList'
-
+import { useAnnotationStore } from '../../stores'
 import { theme } from '../../../../theme'
+
+import ObjectInfoPanel from './components/ObjectInfoPanel/index'
+import LabelInfoPanel from './components/LabelInfoPanel/index'
 
 
 const useStyles = makeStyles((props) => ({
@@ -13,30 +14,17 @@ const useStyles = makeStyles((props) => ({
     boxSizing: 'border-box',
     height: '100%',
     backgroundColor: theme.light.primaryColor,
-    padding: 20,
+    padding: 10,
     overflowY: 'scroll',
   },
 }))
 
 const SideBar = (props) => {
-  const { useStore, eventCenter } = props
-
-  const annotations = useStore(state => state.annotations)
-  const labels = useStore(state => state.labels)
-
   const classes = useStyles()
   return (
     <div className={classes.sideBarWrapper}>
-      {
-        labels.map(value => {
-          return <LabelList
-            useStore={useStore}
-            key={`label-${value.id}-${value.label}`}
-            annotations={filter(annotations, { labelId: value.id })}
-            classLabel={value}
-          />
-        })
-      }
+      <ObjectInfoPanel/>
+      <LabelInfoPanel/>
     </div>
   )
 }

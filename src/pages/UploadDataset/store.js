@@ -1,9 +1,11 @@
 import create from 'zustand'
 import { get as getLodash, filter } from 'lodash'
 
-import ImageService from '../../services/ImageService'
+import DatasetService from '../../services/DatasetService'
+import DataInstanceService from '../../services/DataInstanceService'
 
 const initialState = {
+  datasetInfo: {},
   isLoading: {},
   files: [],
   progressInfos: {},
@@ -21,92 +23,88 @@ const useUploadDatasetStore = create((set, get) => ({
 
   setIsUploaded: (value) => set({ isUploaded: value }),
   setIsLoading: (name, value) => set(state => ({ isLoading: { ...state.isLoading, [name]: value } })),
-  appendFiles: (files) => {
-    let currentFiles = [...get().files]
-    let newFiles = [...currentFiles, ...files]
 
-    let isDuplicate = false
-    newFiles.forEach(file => {
-      const duplicateError = filter(newFiles, (f) => f.name === file.name).length > 1
-      if (duplicateError) {
-        file = Object.assign(file, {
-          duplicateError: true
-        })
-      }
-      isDuplicate = isDuplicate || duplicateError
+  getDatasetInfo: async (datasetId) => {
+    const setIsLoading = get().setIsLoading
+    setIsLoading("loading-dataset-info", true)
+
+    const dataset = await DatasetService.getDatasetById(datasetId)
+    set({ datasetInfo: dataset })
+
+    setIsLoading("loading-dataset-info", false)
+  },
+
+  appendFile: (file) => {
+    const datasetInfo = get().datasetInfo
+
+    set(state => ({ files: [...state.files, file] }))
+
+    const uploadFile = get().uploadFile
+    uploadFile(datasetInfo.id, file)
+  },
+
+  deleteFileById: (fileId) => {
+    let currentFiles = [...get().files]
+    const removedFiles = filter(currentFiles, (file) => file.id === fileId)
+    const remainingFiles = filter(currentFiles, (file) => file.id !== fileId)
+
+    set({ files: remainingFiles })
+
+    removedFiles.forEach(file => {
+      URL.revokeObjectURL(file.preview)
     })
+  },
 
-    if (isDuplicate) {
-      alert("Error: files with duplicated names won't be uploaded")
+  uploadedFiles: {},
+  appendUploadedFiles: (localId, uploadedFile) => set(state => (
+    {
+      uploadedFiles:
+      {
+        ...state.uploadedFiles,
+        [localId]: uploadedFile
+      }
     }
+  )),
 
-    set({ files: newFiles })
-  },
-
-  deleteFileAtIndex: (index) => {
-    let currentFiles = [...get().files]
-    const removedFiles = currentFiles.splice(index, 1)
-    
-    set({ files: currentFiles })
-    removedFiles.forEach(file => URL.revokeObjectURL(file.preview));
-  },
-
-  setProgressInfo: (index, value) => {
+  setProgressInfo: (fileId, value) => {
     const progressInfos = get().progressInfos
 
-    set({ 
+    set({
       progressInfos: {
         ...progressInfos,
-        [index]: value
+        [fileId]: value
       }
     })
   },
 
-  setUploadLogs: (index, err) => {
-    const uploadLogs = get().uploadLogs
-    set({
-      uploadLogs: {
-        ...uploadLogs,
-        [index]: err 
-    }})
-  },
+  setUploadLogs: (fileId, log) => set(state => ({
+    uploadLogs: {
+      ...state.uploadLogs,
+      [fileId]: log
+    }
+  })),
 
-
-  uploadFiles: async (datasetId) => {
-    const setIsLoading = get().setIsLoading
-    const setIsUploaded = get().setIsUploaded
-
-    setIsLoading("uploading", true)
-  
-    const files = get().files
+  uploadFile: async (datasetId, file) => {
     const setProgressInfo = get().setProgressInfo
     const setUploadLogs = get().setUploadLogs
-  
-    let uploadedFiles = await Promise.all(files.map(async (file, fileIndex) => {
-      return ImageService.upload(file, datasetId, (event) => {
-        setProgressInfo(fileIndex, Math.round((100 * event.loaded) / event.total))
-      })
-      .then(file => {
-        setUploadLogs(fileIndex, {
+    const appendUploadedFiles = get().appendUploadedFiles
+
+    DataInstanceService.upload(file, datasetId, (event) => {
+      setProgressInfo(file.id, Math.round((100 * event.loaded) / event.total))
+    })
+      .then((uploadedFile) => {
+        setUploadLogs(file.id, {
           success: true,
           message: "Success"
         })
-        return file
+        appendUploadedFiles(file.id, uploadedFile)
       })
       .catch((error) => {
-        setProgressInfo(fileIndex, 0)
-        setUploadLogs(fileIndex, {
+        setUploadLogs(file.id, {
           success: false,
           message: getLodash(error, 'data.errors', 'upload error')
         })
-        return null
       });
-    }))
-    
-    uploadedFiles = filter(uploadedFiles, (file) => file !== null)
-    set({ uploadedFiles })
-    setIsLoading("uploading", false)
-    setIsUploaded(true)
   }
 }))
 

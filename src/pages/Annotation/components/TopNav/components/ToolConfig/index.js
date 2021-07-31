@@ -2,8 +2,12 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { get } from 'lodash'
 
-import ScribbleToMaskConfig from './ConfigComponent/ScribbleToMaskConfig'
+import { useGeneralStore } from '../../../../stores/index'
+
 import EditConfig from './ConfigComponent/EditConfig'
+import BBoxConfig from './ConfigComponent/BBoxConfig'
+import PolygonConfig from './ConfigComponent/PolygonConfig'
+import MaskConfig from './ConfigComponent/MaskConfig'
 
 import { MODES } from '../../../../constants'
 
@@ -15,17 +19,18 @@ const useStyles = makeStyles(() => ({
 }))
 
 const toolBoxConfigs = {
-  [MODES.SCRIBBLE_TO_MASK.name]: ScribbleToMaskConfig,
-  [MODES.EDIT.name]: EditConfig
+  // [MODES.EDIT.name]: EditConfig,
+  [MODES.DRAW_BBOX.name]: BBoxConfig,
+  [MODES.DRAW_POLYGON.name]: PolygonConfig,
+  [MODES.DRAW_MASK.name]: MaskConfig,
 }
 
 const ToolConfig = (props) => {
   const classes = useStyles()
-  const { useStore, eventCenter } = props
 
-  const activeMode = useStore(state => state.activeMode)
-  const toolConfig = get(useStore(state => state.toolConfig), activeMode, {})
-  const setToolConfig = useStore(state => state.setToolConfig)
+  const activeMode = useGeneralStore(state => state.activeMode)
+  const toolConfig = useGeneralStore(state => state.toolConfig[activeMode] || {})
+  const setToolConfig = useGeneralStore(state => state.setToolConfig)
 
   const ActiveConfigComponent = get(toolBoxConfigs, activeMode, null)
 
@@ -35,7 +40,6 @@ const ToolConfig = (props) => {
         <ActiveConfigComponent
           toolConfig={toolConfig}
           setToolConfig={setToolConfig}
-          eventCenter={eventCenter}
         />
       }
     </div>

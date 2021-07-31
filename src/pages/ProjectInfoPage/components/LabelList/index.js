@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles'
 import { useParams } from 'react-router'
-import { get, cloneDeep } from 'lodash'
+import { get } from 'lodash'
 import {
   Table,
   TableBody,

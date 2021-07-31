@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { useGeneralStore } from '../../stores/index'
+
 import ToolboxButton from './ToolboxButton'
 import { MODES } from '../../constants'
 
@@ -8,7 +10,7 @@ import { ReactComponent as PolygonIcon } from '../../../../static/images/icons/T
 import { ReactComponent as PainBrushIcon } from '../../../../static/images/icons/ToolboxIcon/paintbrush.svg'
 import { ReactComponent as CursorIcon } from '../../../../static/images/icons/ToolboxIcon/cursor.svg'
 import { ReactComponent as EditIcon } from '../../../../static/images/icons/ToolboxIcon/edit.svg'
-import { ReactComponent as CutIcon } from '../../../../static/images/icons/ToolboxIcon/cut.svg'
+// import { ReactComponent as CutIcon } from '../../../../static/images/icons/ToolboxIcon/cut.svg'
 import { ReactComponent as DeleteIcon } from '../../../../static/images/icons/ToolboxIcon/delete.svg'
 
 const toolBoxButtons = [
@@ -33,15 +35,15 @@ const toolBoxButtons = [
     component: <PolygonIcon />,
   },
   {
-    name: 'Scribble',
-    mode: MODES.SCRIBBLE_TO_MASK.name,
+    name: 'Mask',
+    mode: MODES.DRAW_MASK.name,
     component: <PainBrushIcon />,
   },
-  {
-    name: 'Cut',
-    mode: MODES.CUT_POLYGON.name,
-    component: <CutIcon />
-  },
+  // {
+  //   name: 'Cut',
+  //   mode: MODES.CUT_POLYGON.name,
+  //   component: <CutIcon />
+  // },
   {
     name: 'Delete',
     mode: MODES.DELETE.name,
@@ -50,9 +52,9 @@ const toolBoxButtons = [
 ]
 
 const Toolbox = (props) => {
-  const { useStore } = props
-  const activeMode = useStore(state => state.activeMode)
-  const setActiveMode = useStore(state => state.setActiveMode)
+  const activeMode = useGeneralStore(state => state.activeMode)
+  const setActiveMode = useGeneralStore(state => state.setActiveMode)
+
   return (
     <div>
       {
