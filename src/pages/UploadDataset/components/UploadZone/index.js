@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import { useDropzone } from 'react-dropzone'
-import { set } from 'lodash'
 
 import Loading from '../../../../components/Loading'
+
+import generateNewUid from '../../../../utils/uidGenerator'
+import { DATASET_DATATYPE } from '../../../../constants/constants'
 
 const useStyles = makeStyles((theme) => ({
   dropZone: {
@@ -54,60 +56,63 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
+const acceptedFormats = {
+  [DATASET_DATATYPE.IMAGE]: { accept: "image/*", message: "Drop PNG, JPEG files to upload." },
+  [DATASET_DATATYPE.VIDEO]: { accept: "video/*", message: "Drop MP4 files to upload." },
+}
+
 const UploadZone = (props) => {
   const classes = useStyles()
   const { useStore } = props
   const isLoading = useStore(state => state.isLoading)
   const isUploaded = useStore(state => state.isUploaded)
-  const setIsLoading = useStore(state => state.setIsLoading)
+  const datasetInfo = useStore(state => state.datasetInfo)
 
+  const [acceptedFormat, setAcceptedFormat] = useState(acceptedFormats[DATASET_DATATYPE.IMAGE])
+
+  useEffect(() => {
+    if (datasetInfo) {
+      setAcceptedFormat(acceptedFormats[datasetInfo.datatype])
+    }
+  }, [datasetInfo])
 
   const files = useStore(state => state.files)
-  const appendFiles = useStore(state => state.appendFiles)
+  const appendFile = useStore(state => state.appendFile)
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: 'image/*',
+    accept: acceptedFormat?.accept,
     onDrop: async (acceptedFiles) => {
-      setIsLoading("loading-new-images", true)
-      const processedFiles = await Promise.all(acceptedFiles.map((file) => new Promise((resolve, reject) => {
+      acceptedFiles.map((file) => new Promise((resolve, reject) => {
         try {
           let processedFile = file
 
-          const img = new Image();
           const objectUrl = URL.createObjectURL(file);
-          set(processedFile, 'preview', objectUrl)
-
-          img.onload = function () {
-            processedFile = Object.assign(processedFile, {
-              width: this.width,
-              height: this.height,
-            })
-            resolve(processedFile)
-          };
-          img.src = objectUrl;
+          processedFile = Object.assign(processedFile, {
+            id: generateNewUid(),
+            preview: objectUrl
+          })
+          resolve(processedFile)
         } catch (error) {
           reject(error)
         }
-      })))
-      appendFiles(processedFiles)
-      setIsLoading("loading-new-images", false)
+      }).then(processedFile => appendFile(processedFile)))
     }
   });
 
   return (
     <section className="container">
-      <Loading isLoading={isLoading["loading-new-images"]}/>
+      <Loading isLoading={isLoading["loading-new-images"]} />
       {(!isUploaded && !isLoading["uploading"]) &&
         <div {...getRootProps({ className: classes.dropZone })} style={{ height: files.length ? 100 : 300 }}>
           <input {...getInputProps()} />
-          <p>Drop PNG, JPEG files to upload.</p>
+          <p>{acceptedFormat?.message}</p>
           <Button
             color="primary"
             variant="contained"
           >
             Choose files to upload
           </Button>
-          <p>10MB maximum size</p>
+          <p>256MB maximum size</p>
         </div>
       }
     </section>
