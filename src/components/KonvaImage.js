@@ -4,7 +4,7 @@ import useImage from 'use-image'
 
 const KonvaImage = (props) => {
   const { bitmap, src, isMovingViewport, cache, hitFromCache, ...others } = props
-  const [image] = useImage(src)
+  const [image] = useImage(src, 'Anonymous')
 
   const drawHitFromCache = (img) => {
     try {

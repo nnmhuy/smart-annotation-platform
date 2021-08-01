@@ -142,7 +142,7 @@ const ObjectInfo = (props) => {
         <Divider className={classes.divider} variant="middle" light/>
         <div className={classes.infoContainer}>
           <LabelSelection
-            labelValue={label?.label}
+            labelId={label?.id}
             labels={labels}
             handleChangeLabel={handleChangeLabel}
           />

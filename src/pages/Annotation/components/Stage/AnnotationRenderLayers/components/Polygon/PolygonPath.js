@@ -13,6 +13,7 @@ const PolygonPath = (props) => {
     imageHeight,
 
     isSelected,
+    isDrawing,
     isCutting,
     handleSelectPolygon,
     handleContextMenu,
@@ -40,7 +41,7 @@ const PolygonPath = (props) => {
       {...properties}
       strokeWidth={properties.strokeWidth / scale}
       opacity={isSelected ? properties.opacity + 0.2 : properties.opacity}
-      draggable={isSelected}
+      draggable={isSelected && !isDrawing}
       onClick={handleSelectPolygon}
       onTap={handleSelectPolygon}
       onContextMenu={handleContextMenu}

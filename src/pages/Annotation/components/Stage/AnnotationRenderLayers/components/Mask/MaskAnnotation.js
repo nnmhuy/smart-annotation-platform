@@ -9,7 +9,6 @@ import Scribble from './Scribble'
 import Mask from './Mask'
 
 import { EVENT_TYPES } from '../../../../../constants'
-import hexColorToRGB from '../../../../../../../utils/hexColorToRGB'
 
 const MaskAnnotation = (props) => {
   const { annotation, renderingSize } = props
@@ -56,7 +55,7 @@ const MaskAnnotation = (props) => {
       <Mask
         isSelected={isSelected}
         maskBmp={displayMask}
-        color={hexColorToRGB(color)}
+        color={color}
         opacity={opacity}
         handleSelectMask={handleSelectMask}
         handleContextMenu={handleContextMenu}

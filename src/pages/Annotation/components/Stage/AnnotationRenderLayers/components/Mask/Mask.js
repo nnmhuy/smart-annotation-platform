@@ -2,12 +2,12 @@ import React from 'react'
 
 import KonvaImage from '../../../../../../../components/KonvaImage'
 
+import hexColorToRGB from '../../../../../../../utils/hexColorToRGB';
+
 const ThresholdAndColorFilter = function (imageData) {
   var data = imageData.data,
     nPixels = data.length,
-    red = this.red(),
-    green = this.green(),
-    blue = this.blue(),
+    color = hexColorToRGB(this.fill()),
     threshold = (this.threshold() || 0.5) * 255,
     i;
 
@@ -15,9 +15,9 @@ const ThresholdAndColorFilter = function (imageData) {
     if (data[i] < threshold) {
       data[i + 3] = 0
     } else {
-      data[i] = red; // r
-      data[i + 1] = green; // g
-      data[i + 2] = blue; // b
+      data[i] = color.r; // r
+      data[i + 1] = color.g; // g
+      data[i + 2] = color.b; // b
       data[i + 3] = 255; // alpha
     }
   }
@@ -36,7 +36,7 @@ const Mask = (props) => {
     threshold
   } = props
 
-  return (
+  return (maskBmp && 
     <KonvaImage
       cache
       hitFromCache
@@ -47,12 +47,10 @@ const Mask = (props) => {
       onContextMenu={handleContextMenu}
       width={imageWidth}
       height={imageHeight}
-      red={color.r}
-      green={color.g}
-      blue={color.b}
+      fill={color}
       threshold={threshold / 100}
       filters={[ThresholdAndColorFilter]}
-      globalCompositeOperation={'source-over'}
+      globalCompositeOperation={'lighten'}
     />
   )
 }

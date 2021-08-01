@@ -200,6 +200,7 @@ const Polygon = (props) => {
         imageWidth={imageWidth}
         imageHeight={imageHeight}
         isSelected={isSelected}
+        isDrawing={isDrawing}
         isCutting={isCutting}
         handleSelectPolygon={handleSelectPolygon}
         handleContextMenu={handleContextMenu}

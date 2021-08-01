@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 const LabelSelection = (props) => {
   const classes = useStyles()
-  const { labels, labelValue, handleChangeLabel } = props
+  const { labels, labelId, handleChangeLabel } = props
 
   return (
     <Autocomplete
@@ -33,10 +33,11 @@ const LabelSelection = (props) => {
       options={labels}
       selectOnFocus
       clearOnBlur
-      getOptionLabel={(options) => options.label || ''}
+      getOptionLabel={(option) => option.label || ''}
+      getOptionSelected={(option) => (option.id === labelId)}
       renderOption={(option) => (
         <React.Fragment>
-          <span 
+          <span
             className={classes.colorIndicator}
             style={{
               background: get(option, 'annotationProperties.fill', DEFAULT_ANNOTATION_ATTRS.fill),
@@ -46,7 +47,7 @@ const LabelSelection = (props) => {
           {option.label}
         </React.Fragment>
       )}
-      value={labelValue}
+      value={labelId}
       onChange={(event, newValue) => handleChangeLabel(newValue)}
       autoHighlight
       renderInput={(params) => (
