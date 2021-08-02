@@ -7,6 +7,7 @@ import DrawBBox from './DrawBBox/index'
 import DrawPolygon from './DrawPolygon/index'
 // import CutPolygon from './CutPolygon/index'
 import DrawMask from './DrawMask/index'
+import ReferringExpression from './ReferringExpression/index'
 // import Delete from './Delete/index'
 
 import { MODES } from '../../constants'
@@ -20,14 +21,15 @@ const mapModeToComponent = {
   [MODES.DRAW_BBOX.name]: DrawBBox,
   [MODES.DRAW_POLYGON.name]: DrawPolygon,
   [MODES.DRAW_MASK.name]: DrawMask,
+  [MODES.REFERRING_EXPRESSION.name]: ReferringExpression,
   // [MODES.CUT_POLYGON.name]: CutPolygon,
   // [MODES.DELETE.name]: Delete,
 }
 
 const mapAnnotationTypeToMode = {
-  [ENUM_ANNOTATION_TYPE.BBOX]: MODES.DRAW_BBOX.name,
-  [ENUM_ANNOTATION_TYPE.POLYGON]: MODES.DRAW_POLYGON.name,
-  [ENUM_ANNOTATION_TYPE.MASK]: MODES.DRAW_MASK.name,
+  [ENUM_ANNOTATION_TYPE.BBOX]: [MODES.DRAW_BBOX.name],
+  [ENUM_ANNOTATION_TYPE.POLYGON]: [MODES.DRAW_POLYGON.name],
+  [ENUM_ANNOTATION_TYPE.MASK]: [MODES.DRAW_MASK.name, MODES.REFERRING_EXPRESSION.name],
 }
 
 const ModeController = (props) => {
@@ -42,14 +44,23 @@ const ModeController = (props) => {
 
   const annotationObject = find(annotationObjects, { id: selectedObjectId })
 
+  const checkModeMatchAnnotationType = (annotationType, mode) => {
+    return (
+      !mapAnnotationTypeToMode[annotationType] ||
+      mapAnnotationTypeToMode[annotationType].includes(mode)
+    )
+  }
+
   useEffect(() => {
     if (selectedObjectId) {
-      setActiveMode(mapAnnotationTypeToMode[annotationObject.annotationType])
+      if (!checkModeMatchAnnotationType(annotationObject?.annotationType, activeMode)) {
+        setActiveMode(mapAnnotationTypeToMode[annotationObject.annotationType][0])
+      }
     }
   }, [selectedObjectId])
 
   useEffect(() => {
-    if (activeMode !== mapAnnotationTypeToMode[annotationObject?.annotationType]) {
+    if (!checkModeMatchAnnotationType(annotationObject?.annotationType, activeMode)) {
       setSelectedObjectId(null)
       setDrawingAnnotation(null)
     }

@@ -19,6 +19,10 @@ const MODES = {
     name: 'DRAW_MASK',
     cursor: 'crosshair',
   },
+  REFERRING_EXPRESSION: {
+    name: 'REFERRING_EXPRESSION',
+    cursor: 'text',
+  },
   CUT_POLYGON: {
     name: 'CUT_POLYGON',
     cursor: 'nw-resize'
@@ -83,11 +87,17 @@ const EVENT_TYPES = {
     UPDATE_THRESHOLD: 'UPDATE_THRESHOLD',
     MI_VOS_S2M: 'MI_VOS_S2M'
   },
+
+  REFERRING_EXPRESSION: {
+    PREDICT: 'PREDICT',
+    FOCUS_TEXT_INPUT: 'FOCUS_TEXT_INPUT',
+    REFERRING_EXPRESSION_CHANGE: 'REFERRING_EXPRESSION_CHANGE',
+  }
 }
 
 const DEFAULT_ANNOTATION_ATTRS = {
   fill: '#00FF00',
-  opacity: 0.3,
+  opacity: 0.4,
   stroke: '#000000',
   strokeWidth: 2,
 }

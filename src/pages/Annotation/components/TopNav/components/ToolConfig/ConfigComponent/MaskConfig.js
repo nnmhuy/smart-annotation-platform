@@ -92,7 +92,6 @@ const ScribbleToMaskConfig = (props) => {
   const handleSliderChange = (e, newValue) => {
     setToolConfig({ ...toolConfig, threshold: newValue })
     emitThresholdUpdate()
-    // EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD)()
   }
 
   return (

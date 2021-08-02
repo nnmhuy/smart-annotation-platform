@@ -10,8 +10,9 @@ import { ReactComponent as PolygonIcon } from '../../../../static/images/icons/T
 import { ReactComponent as PainBrushIcon } from '../../../../static/images/icons/ToolboxIcon/paintbrush.svg'
 import { ReactComponent as CursorIcon } from '../../../../static/images/icons/ToolboxIcon/cursor.svg'
 import { ReactComponent as EditIcon } from '../../../../static/images/icons/ToolboxIcon/edit.svg'
+import { ReactComponent as RefExIcon } from '../../../../static/images/icons/ToolboxIcon/refex.svg'
 // import { ReactComponent as CutIcon } from '../../../../static/images/icons/ToolboxIcon/cut.svg'
-import { ReactComponent as DeleteIcon } from '../../../../static/images/icons/ToolboxIcon/delete.svg'
+// import { ReactComponent as DeleteIcon } from '../../../../static/images/icons/ToolboxIcon/delete.svg'
 
 const toolBoxButtons = [
   {
@@ -39,16 +40,21 @@ const toolBoxButtons = [
     mode: MODES.DRAW_MASK.name,
     component: <PainBrushIcon />,
   },
+  {
+    name: 'Referring expression',
+    mode: MODES.REFERRING_EXPRESSION.name,
+    component: <RefExIcon />,
+  },
   // {
   //   name: 'Cut',
   //   mode: MODES.CUT_POLYGON.name,
   //   component: <CutIcon />
   // },
-  {
-    name: 'Delete',
-    mode: MODES.DELETE.name,
-    component: <DeleteIcon />,
-  },
+  // {
+  //   name: 'Delete',
+  //   mode: MODES.DELETE.name,
+  //   component: <DeleteIcon />,
+  // },
 ]
 
 const Toolbox = (props) => {

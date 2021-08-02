@@ -5,11 +5,17 @@ import StorageFileClass from './StorageFileClass'
 import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from '../constants/constants'
 
 export default class MaskAnnotation extends AnnotationClass {
-  constructor(id, annotationObjectId, annotationImageId, maskData, key_frame=false) {
-    super(id, annotationObjectId, annotationImageId, key_frame)
+  constructor(id, annotationObjectId, annotationImageId, maskData, keyFrame=false) {
+    super(id, annotationObjectId, annotationImageId, keyFrame)
 
     this.type = ANNOTATION_TYPE.MASK
-    this.maskData = maskData
+    this.maskData = {
+      scribbles: [],
+      mask: new StorageFileClass(),
+      threshold: 50,
+      referring_expression: '',
+      ...maskData,
+    }
   }
 
   set updateData(newData) {
@@ -35,6 +41,7 @@ export default class MaskAnnotation extends AnnotationClass {
         scribbles: data.scribbles,
         mask: maskFile,
         threshold: data.threshold,
+        referringExpressions: data.referring_expression,
       },
       data.key_frame
     )
@@ -44,6 +51,7 @@ export default class MaskAnnotation extends AnnotationClass {
     let data = {
       scribbles: this.maskData.scribbles,
       threshold: this.maskData.threshold,
+      referring_expression: this.maskData.referringExpression,
     }
     if (this.maskData.mask.URL) {
       data.mask = {
