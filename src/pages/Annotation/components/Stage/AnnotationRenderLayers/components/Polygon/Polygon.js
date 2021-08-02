@@ -154,7 +154,7 @@ const Polygon = (props) => {
 
   const handleClickMainPoint = (event) => {
     // prevent trigger stage click which stops double click
-    if (!isDrawing) { // for clicking start point to end
+    if (!isDrawing && !isCutting) { // for clicking start point to end
       event.cancelBubble = true
     }
   }

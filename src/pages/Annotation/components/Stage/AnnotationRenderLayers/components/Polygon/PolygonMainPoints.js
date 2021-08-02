@@ -60,7 +60,9 @@ const PolygonMainPoints = (props) => {
               context.fillStrokeShape(this);
             },
           }
-          : null;
+          : {
+            scale: { x: 1, y: 1 }
+          };
       return (
         <Circle
           key={`poly-main_points-${id}-${polyIndex}-${pointIndex}`}
