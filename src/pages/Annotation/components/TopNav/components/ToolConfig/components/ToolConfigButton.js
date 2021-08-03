@@ -1,39 +1,51 @@
 import React from 'react'
 import Tooltip from '@material-ui/core/Tooltip'
 import { makeStyles, SvgIcon } from '@material-ui/core'
+import IconButton from '@material-ui/core/IconButton'
 import clsx from 'clsx'
+import BounceLoader from 'react-spinners/BounceLoader'
 
-import { theme } from '../../../../../../../theme'
 
-const useStyles = makeStyles((props) => ({
+const useStyles = makeStyles(theme => ({
   button: {
-    width: 20,
-    height: 20,
-    padding: 5,
-    margin: 5,
+    margin: 10,
     borderRadius: 5,
-    alignItem: 'center',
-    backgroundColor: props => !props.isActive ? theme.light.primaryColor : theme.light.secondaryColor,
-    cursor: 'pointer',
+    backgroundColor: theme.palette.secondary.lighter,
+    overflow: 'hidden',
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.lighter
+    }
+  },
+  activeButton: {
+    backgroundColor: theme.palette.secondary.main,
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.main
+    }
   },
   icon: {
-    width: 20,
-    height: 20,
-    color: theme.light.darkColor
+    color: theme.palette.primary.darker
   },
 }))
 
 export default function ToolboxButton(props) {
-  const { name, component, handleClick, isActive } = props
+  const { name, component, handleClick, isActive, isLoading, ...others } = props
 
   const classes = useStyles(props)
   return (
     <Tooltip title={name} placement="bottom">
-      <div className={clsx(classes.button, isActive && classes.activeIcon)} onClick={handleClick}>
-        <SvgIcon className={classes.icon}>
-          {component}
-        </SvgIcon>
-      </div>
+      <IconButton
+        size="medium" className={clsx(classes.button, isActive && classes.activeButton)}
+        onClick={handleClick}
+        {...others}
+      >
+        {isLoading ?
+          <BounceLoader size={15} className={classes.icon}/>
+          :
+          <SvgIcon className={classes.icon} fontSize="small">
+            {component}
+          </SvgIcon>
+        }
+      </IconButton>
     </Tooltip>
   )
 }

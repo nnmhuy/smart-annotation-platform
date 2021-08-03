@@ -4,11 +4,13 @@ import { get } from 'lodash'
 import { useGeneralStore } from '../../stores/index'
 
 import MiVOSScribbleToMask from './MiVOSScribbleToMask/index'
+import CMPCReferringExpressionToMask from './CMPCReferringExpressionToMask/index'
 
 import { MODES } from '../../constants'
 
 const mapActiveModeToPredictor = {
-  [MODES.DRAW_MASK.name]: MiVOSScribbleToMask
+  [MODES.DRAW_MASK.name]: MiVOSScribbleToMask,
+  [MODES.REFERRING_EXPRESSION.name]: CMPCReferringExpressionToMask,
 }
 
 

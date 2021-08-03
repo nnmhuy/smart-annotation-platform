@@ -1,4 +1,5 @@
 import React from 'react'
+import { cloneDeep } from 'lodash'
 
 import EventCenter from '../../../EventCenter'
 import { useDatasetStore, useGeneralStore, useAnnotationStore } from '../../../stores/index'
@@ -19,13 +20,18 @@ const ReferringExpression = (props) => {
   const setAnnotation = useAnnotationStore(state => state.setAnnotation)
   const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
   const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
+  const setAnnotationObjectAttributes = useAnnotationStore(state => state.setAnnotationObjectAttributes)
 
-
-  const getCurrentAnnotation = async () => {
+  const getCurrentAnnotationObjectId = async () => {
     const objectId = await getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.MASK, {
       ...DEFAULT_ANNOTATION_ATTRS,
       fill: '#FFFFFF'
     })
+    return objectId
+  }
+
+  const getCurrentAnnotation = async () => {
+    const objectId = await getCurrentAnnotationObjectId()
     const annotationImageId = getCurrentAnnotationImageId()
 
     const drawingAnnotation = getAnnotationByAnnotationObjectId(objectId, annotationImageId)
@@ -36,8 +42,7 @@ const ReferringExpression = (props) => {
       const newAnnotation = new MaskAnnotationClass('', objectId, annotationImageId, {
         scribbles: [],
         mask: new StorageFileClass(),
-        threshold: DEFAULT_TOOL_CONFIG[MODES.MASK.name].threshold,
-        referringExpression: ''
+        threshold: DEFAULT_TOOL_CONFIG[MODES.DRAW_MASK.name].threshold,
       }, true)
 
       appendAnnotation(newAnnotation, { commitAnnotation: true })
@@ -49,18 +54,42 @@ const ReferringExpression = (props) => {
     EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.FOCUS_TEXT_INPUT)()
   }
 
-  const handleReferringExpressionChange = (value) => {
-    
+  const handleReferringExpressionChange = async (value) => {
+    const objectId = await getCurrentAnnotationObjectId()
+    setAnnotationObjectAttributes(objectId, {
+      referringExpression: value
+    })
   }
 
-  const handleTriggerPredict = async () => {
+  const handleTriggerPredict = async (value) => {
+    if (!instanceId) {
+      alert("Image not found")
+      return
+    }
+    
+    const objectId = await getCurrentAnnotationObjectId()
+    const annotationImageId = getCurrentAnnotationImageId()
+    const data = {
+      annotation_image_id: annotationImageId,
+      annotation_object_id: objectId,
+      referring_expression: value,
+    }
+
+    EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK)(data)
   }
 
   const handleFinishPredict = async (data) => {
+    const currentAnnotation = await getCurrentAnnotation()
+
+    await currentAnnotation.setMask(data)
+
+    setAnnotation(currentAnnotation.id, cloneDeep(currentAnnotation.maskData), { commitAnnotation: true })
+    EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_FINISH)()
   }
 
   const handlePredictError = () => {
     alert("Prediction error")
+    EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_ERROR)()
   }
 
   const handleUnselectCurrentAnnotationObject = () => {
@@ -80,12 +109,16 @@ const ReferringExpression = (props) => {
         .subscribe({ next: (e) => handleTriggerPredict(e) }),
       [EVENT_TYPES.UNSELECT_CURRENT_ANNOTATION_OBJECT]: getSubject(EVENT_TYPES.UNSELECT_CURRENT_ANNOTATION_OBJECT)
         .subscribe({ next: (e) => handleUnselectCurrentAnnotationObject(e) }),
+      [EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK_FINISH]: getSubject(EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK_FINISH)
+        .subscribe({ next: (e) => handleFinishPredict(e) }),
+      [EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK_ERROR]: getSubject(EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK_ERROR)
+        .subscribe({ next: (e) => handlePredictError(e) }),
     }
 
     return () => {
       Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
     }
-  }, [])
+  }, [instanceId])
 
   return null
 }

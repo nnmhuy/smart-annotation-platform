@@ -13,7 +13,6 @@ export default class MaskAnnotation extends AnnotationClass {
       scribbles: [],
       mask: new StorageFileClass(),
       threshold: 50,
-      referring_expression: '',
       ...maskData,
     }
   }
@@ -41,7 +40,6 @@ export default class MaskAnnotation extends AnnotationClass {
         scribbles: data.scribbles,
         mask: maskFile,
         threshold: data.threshold,
-        referringExpressions: data.referring_expression,
       },
       data.key_frame
     )
@@ -51,7 +49,6 @@ export default class MaskAnnotation extends AnnotationClass {
     let data = {
       scribbles: this.maskData.scribbles,
       threshold: this.maskData.threshold,
-      referring_expression: this.maskData.referringExpression,
     }
     if (this.maskData.mask.URL) {
       data.mask = {
