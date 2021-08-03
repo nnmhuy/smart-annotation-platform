@@ -50,6 +50,9 @@ const useDatasetStore = create((set, get) => ({
   increaseBufferingFrame: (skip) => set(state => ({ playingState: { ...state.playingState, bufferingFrame: state.playingState.bufferingFrame + skip }})),
   increaseLazyBufferingFrame: (skip) => set(state => ({ playingState: { ...state.playingState, lazyBufferingFrame: state.playingState.lazyBufferingFrame + skip }})),
   increasePlayingFrame: (skip) => set(state => ({ playingState: { ...state.playingState, playingFrame: state.playingState.playingFrame + skip }})),
+  isPlaying: false,
+  getIsPlaying: () => get().isPlaying,
+  setIsPlaying: (isPlaying) => set({ isPlaying }),
 }))
 
 export default useDatasetStore

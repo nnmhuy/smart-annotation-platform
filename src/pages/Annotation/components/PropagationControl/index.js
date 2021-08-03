@@ -7,7 +7,7 @@ import VideoPropagationControl from './components/VideoPropagationControl/index'
 
 import VideoDataInstanceClass from '../../../../classes/VideoDataInstanceClass'
 
-const PlayControl = () => {
+const PropagationControl = () => {
   const instanceId = useDatasetStore(state => state.instanceId)
   const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))
 
@@ -23,4 +23,4 @@ const PlayControl = () => {
   return null
 }
 
-export default PlayControl
+export default PropagationControl

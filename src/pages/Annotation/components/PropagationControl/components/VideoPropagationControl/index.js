@@ -22,15 +22,12 @@ const VideoPropagationControl = (props) => {
 
   const videoId = useDatasetStore(state => state.instanceId)
   const video = useDatasetStore(useCallback(state => find(state.dataInstances, { id: videoId }), [videoId]))
-  const getVideoId = useDatasetStore(state => state.getInstanceId)
   const playingState = useDatasetStore(state => state.playingState)
-  const getPlayingState = useDatasetStore(state => state.getPlayingState)
-  const setPlayingState = useDatasetStore(state => state.setPlayingState)
 
   const selectedObjectId = useAnnotationStore(state => state.selectedObjectId)
   const annotations = useAnnotationStore(state => state.annotations)
 
-  const { fps, numFrames, frames } = video
+  const { frames } = video
   const { playingFrame } = playingState
 
   const currentAnnotations = useMemo(() =>

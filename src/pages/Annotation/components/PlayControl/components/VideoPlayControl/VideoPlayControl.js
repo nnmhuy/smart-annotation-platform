@@ -20,11 +20,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const useVideoControlStore = create((set, get) => ({
-  isPlaying: false,
-  getIsPlaying: () => get().isPlaying,
-  setIsPlaying: (isPlaying) => set({ isPlaying }),
-}))
 
 const VideoPlayControl = (props) => {
   const classes = useStyles()
@@ -41,9 +36,9 @@ const VideoPlayControl = (props) => {
   const setCurrentAnnotationImageId = useDatasetStore(state => state.setCurrentAnnotationImageId)
   // const setCurrentAnnotationImage = useDatasetStore(state => state.setCurrentAnnotationImage)
 
-  const isPlaying = useVideoControlStore(state => state.isPlaying)
-  const getIsPlaying = useVideoControlStore(state => state.getIsPlaying)
-  const setIsPlaying = useVideoControlStore(state => state.setIsPlaying)
+  const isPlaying = useDatasetStore(state => state.isPlaying)
+  const getIsPlaying = useDatasetStore(state => state.getIsPlaying)
+  const setIsPlaying = useDatasetStore(state => state.setIsPlaying)
 
   const { fps, numFrames } = video
 
