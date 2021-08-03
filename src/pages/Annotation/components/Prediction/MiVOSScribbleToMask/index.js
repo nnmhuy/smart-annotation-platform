@@ -23,11 +23,11 @@ const MiVOSScribbleToMask = (props) => {
       })
 
     if (!predictedMask) {
-      EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT_ERROR)()
+      EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.MI_VOS_S2M_ERROR)()
       return;
     }
 
-    EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT_FINISH)(predictedMask)
+    EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.MI_VOS_S2M_FINISH)(predictedMask)
   }
 
   React.useEffect(() => {

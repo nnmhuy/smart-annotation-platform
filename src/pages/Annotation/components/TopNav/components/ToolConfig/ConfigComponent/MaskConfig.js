@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
@@ -84,6 +84,8 @@ const ScribbleToMaskConfig = (props) => {
   const { toolConfig, setToolConfig, } = props
   const { scribbleSize, threshold } = toolConfig
 
+  const [isPredicting, setIsPredicting] = useState(false)
+
   const emitThresholdUpdate = debounce(
     EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD),
     500
@@ -93,6 +95,31 @@ const ScribbleToMaskConfig = (props) => {
     setToolConfig({ ...toolConfig, threshold: newValue })
     emitThresholdUpdate()
   }
+
+  const handlePredictStart = () => {
+    setIsPredicting(true)
+  }
+
+  const handlePredictEnd = () => {
+    setIsPredicting(false)
+  }
+
+  useEffect(() => {
+    const { getSubject } = EventCenter
+    let subscriptions = {
+      [EVENT_TYPES.REFERRING_EXPRESSION.PREDICT]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT)
+        .subscribe({ next: (e) => handlePredictStart(e) }),
+      [EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_FINISH]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT_FINISH)
+        .subscribe({ next: (e) => handlePredictEnd(e) }),
+      [EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_ERROR]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT_ERROR)
+        .subscribe({ next: (e) => handlePredictEnd(e) }),
+    }
+
+    return () => {
+      Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
+    }
+  }, [])
+
 
   return (
     <div className={classes.root}>
@@ -165,6 +192,8 @@ const ScribbleToMaskConfig = (props) => {
           name={'MiVOS - Scribbles to mask'}
           handleClick={EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT)}
           component={<S2MIcon/>}
+          disabled={isPredicting}
+          isLoading={isPredicting}
         />
       </div>
       <Divider orientation="vertical" className={classes.divider} />

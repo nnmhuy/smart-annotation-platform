@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import create from 'zustand'
 import { get, cloneDeep } from 'lodash'
 
@@ -23,6 +23,7 @@ const useScribbleToMaskStore = create((set, get) => ({
 }))
 
 const ScribbleToMask = (props) => {
+  const [isPredicting, setIsPredicting] = useState(false)
   const instanceId = useDatasetStore(state => state.instanceId)
   const getCurrentAnnotationImageId = useDatasetStore(state => state.getCurrentAnnotationImageId)
 
@@ -37,7 +38,6 @@ const ScribbleToMask = (props) => {
   const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
 
   const getToolConfig = useGeneralStore(state => state.getToolConfig)
-  const setIsLoading = useGeneralStore(state => state.setIsLoading)
 
   const getIsDrawingScribble = useScribbleToMaskStore(state => state.getIsDrawingScribble)
   const setIsDrawingScribble = useScribbleToMaskStore(state => state.setIsDrawingScribble)
@@ -194,15 +194,19 @@ const ScribbleToMask = (props) => {
   const handleTriggerPredict = async () => {
     if (!instanceId) {
       alert("Image not found")
+      EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT_ERROR)()
       return
     }
+    if (isPredicting) {
+      return
+    }
+    setIsPredicting(true)
     const drawingAnnotation = await getCurrentAnnotation()
     let miVOSBuilder = getMiVOSBuilder()
 
     const { scribbles} = drawingAnnotation.maskData
     await miVOSBuilder.setScribbles(scribbles)
 
-    setIsLoading("predicting_scribble_to_mask", true)
     const data = miVOSBuilder.getMiVOSScribbleToMaskInput()
     EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.MI_VOS_S2M)(data)
   }
@@ -213,12 +217,14 @@ const ScribbleToMask = (props) => {
     await drawingAnnotation.setMask(data)
 
     setAnnotation(drawingAnnotation.id, cloneDeep(drawingAnnotation.maskData), { commitAnnotation: true })
-    setIsLoading("predicting_scribble_to_mask", false)
+    EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT_FINISH)()
+    setIsPredicting(false)
   }
 
   const handlePredictError = () => {
     alert("Prediction error")
-    setIsLoading("predicting_scribble_to_mask", false)
+    EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT_ERROR)()
+    setIsPredicting(false)
   }
 
   const handleUnselectCurrentAnnotationObject = () => {
@@ -226,6 +232,9 @@ const ScribbleToMask = (props) => {
   }
 
   useEffect(() => {
+    if (!instanceId) {
+      return
+    }
     const { getSubject } = EventCenter
     let subscriptions = {
       [EVENT_TYPES.STAGE_DRAG_START]: getSubject(EVENT_TYPES.STAGE_DRAG_START)
@@ -240,9 +249,9 @@ const ScribbleToMask = (props) => {
         .subscribe({ next: (e) => handleMouseEnter(e) }),
       [EVENT_TYPES.DRAW_MASK.PREDICT]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT)
         .subscribe({ next: (e) => handleTriggerPredict(e) }),
-      [EVENT_TYPES.DRAW_MASK.PREDICT_ERROR]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT_ERROR)
+      [EVENT_TYPES.DRAW_MASK.MI_VOS_S2M_ERROR]: getSubject(EVENT_TYPES.DRAW_MASK.MI_VOS_S2M_ERROR)
         .subscribe({ next: (e) => handlePredictError(e) }),
-      [EVENT_TYPES.DRAW_MASK.PREDICT_FINISH]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT_FINISH)
+      [EVENT_TYPES.DRAW_MASK.MI_VOS_S2M_FINISH]: getSubject(EVENT_TYPES.DRAW_MASK.MI_VOS_S2M_FINISH)
         .subscribe({ next: (e) => handleFinishPredict(e) }),
       [EVENT_TYPES.DRAW_MASK.CLEAR_ALL]: getSubject(EVENT_TYPES.DRAW_MASK.CLEAR_ALL_SCRIBBLES)
         .subscribe({ next: (e) => handleClearAllScribbles(e) }),

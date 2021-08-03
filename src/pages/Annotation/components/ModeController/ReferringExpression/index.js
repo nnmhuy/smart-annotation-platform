@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { cloneDeep } from 'lodash'
 
 import EventCenter from '../../../EventCenter'
@@ -12,6 +12,7 @@ import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
 
 
 const ReferringExpression = (props) => {
+  const [isPredicting, setIsPredicting] = useState(false)
   const instanceId = useDatasetStore(state => state.instanceId)
   const getCurrentAnnotationImageId = useDatasetStore(state => state.getCurrentAnnotationImageId)
 
@@ -64,8 +65,13 @@ const ReferringExpression = (props) => {
   const handleTriggerPredict = async (value) => {
     if (!instanceId) {
       alert("Image not found")
+      EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_ERROR)()
       return
     }
+    if (isPredicting) {
+      return
+    }
+    setIsPredicting(true)
     
     const objectId = await getCurrentAnnotationObjectId()
     const annotationImageId = getCurrentAnnotationImageId()
@@ -85,11 +91,13 @@ const ReferringExpression = (props) => {
 
     setAnnotation(currentAnnotation.id, cloneDeep(currentAnnotation.maskData), { commitAnnotation: true })
     EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_FINISH)()
+    setIsPredicting(false)
   }
 
   const handlePredictError = () => {
     alert("Prediction error")
     EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_ERROR)()
+    setIsPredicting(false)
   }
 
   const handleUnselectCurrentAnnotationObject = () => {
@@ -97,6 +105,9 @@ const ReferringExpression = (props) => {
   }
 
   React.useEffect(() => {
+    if (!instanceId) {
+      return
+    }
     const { getSubject } = EventCenter
     let subscriptions = {
       [EVENT_TYPES.STAGE_MOUSE_CLICK]: getSubject(EVENT_TYPES.STAGE_MOUSE_CLICK)
