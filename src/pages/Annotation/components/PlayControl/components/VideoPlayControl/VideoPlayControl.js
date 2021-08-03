@@ -141,6 +141,18 @@ const VideoPlayControl = (props) => {
     setIsPlaying(false)
   }
 
+  React.useEffect(() => {
+    const { getSubject } = EventCenter
+    let subscriptions = {
+      [EVENT_TYPES.PLAY_CONTROL.GO_TO_FRAME]: getSubject(EVENT_TYPES.PLAY_CONTROL.GO_TO_FRAME)
+        .subscribe({ next: (frame) => handleGoToFrame(frame, true) }),
+    }
+
+    return () => {
+      Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
+    }
+  }, [])
+
   return (
     <Grid container className={classes.root} direction="row">
       <ButtonControlGroup
