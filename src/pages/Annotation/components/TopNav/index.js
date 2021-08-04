@@ -8,19 +8,17 @@ import DataInfo from './components/DataInfo/index'
 import ToolConfig from './components/ToolConfig/index'
 import useQuery from '../../../../utils/useQuery'
 
-import { theme } from '../../../../theme'
-
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   topNavWrapper: {
     display: 'flex',
     boxSizing: 'border-box',
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    height: 60,
+    height: 55,
     paddingLeft: 20,
     paddingRight: 20,
-    background: theme.light.forthColor
+    background: theme.palette.primary.darker
   },
   leftSection: {
     display: 'flex',
@@ -56,7 +54,7 @@ const TopNav = (props) => {
         <IconButton
           href={`/datasets/dataset=${datasetId}?page=${page}`}
         >
-          <CloseIcon />
+          <CloseIcon color="secondary"/>
         </IconButton>
       </div>
     </div>

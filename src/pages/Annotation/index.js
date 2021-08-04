@@ -19,13 +19,13 @@ import { useDatasetStore, useGeneralStore, useAnnotationStore } from './stores/i
 import useQuery from '../../utils/useQuery'
 
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     width: '100vw',
     height: '100vh',
     flexDirection: 'column',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   annotationWrapper: {
     display: 'flex',
@@ -40,9 +40,12 @@ const useStyles = makeStyles(() => ({
     flex: 1,
     overflowX: 'hidden',
     height: '100%',
+    boxSizing: 'border-box',
+    paddingBottom: 10,
+    background: theme.palette.primary.darker
   },
   toolboxContainer: {
-
+    height: '100%',
   },
   sidebarWrapper: {
     width: '25%',

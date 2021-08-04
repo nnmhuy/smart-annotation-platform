@@ -7,6 +7,7 @@ import { useDatasetStore, useAnnotationStore } from '../../../../stores/index'
 import EventCenter from '../../../../EventCenter'
 
 import FrameCarousel from './FrameCarousel/index.js'
+import PropagationConfig from './PropagationConfig/index.js'
 
 import { EVENT_TYPES } from '../../../../constants'
 
@@ -14,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: '5px 10px',
     width: '100%',
-    background: theme.palette.secondary.lighter
+    background: theme.palette.secondary.light
   },
 }))
 
@@ -48,6 +49,7 @@ const VideoPropagationControl = (props) => {
   return (
     <Grid container className={classes.root} direction="row">
       <FrameCarousel playingFrame={playingFrame} annotations={currentAnnotations}/>
+      <PropagationConfig annotations={currentAnnotations}/>
     </Grid>
   )
 }

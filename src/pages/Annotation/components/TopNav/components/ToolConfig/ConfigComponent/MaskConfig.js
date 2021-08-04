@@ -24,7 +24,7 @@ import { ReactComponent as DeleteIcon } from '../../../../../../../static/images
 
 import { SCRIBBLE_TO_MASK_CONSTANTS, EVENT_TYPES } from '../../../../../constants'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   root: {
     height: '100%',
     display: 'flex',
@@ -33,6 +33,7 @@ const useStyles = makeStyles(() => ({
   },
   divider: {
     height: 30,
+    background: theme.palette.secondary.main
   },
   optionContainer: {
     marginLeft: 10,
@@ -161,7 +162,6 @@ const ScribbleToMaskConfig = (props) => {
         />
       </div>
       <Divider orientation="vertical" className={classes.divider}/>
-      <Divider orientation="vertical" className={classes.divider} />
       <div className={classes.optionContainer}>
         <ToolConfigPopUpButton
           name={'Score threshold'}

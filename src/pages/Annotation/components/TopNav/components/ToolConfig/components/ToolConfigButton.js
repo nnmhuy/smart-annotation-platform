@@ -10,19 +10,19 @@ const useStyles = makeStyles(theme => ({
   button: {
     margin: 10,
     borderRadius: 5,
+    padding: 5,
     backgroundColor: theme.palette.secondary.lighter,
     overflow: 'hidden',
     '&:hover': {
       backgroundColor: theme.palette.secondary.lighter
-    }
+    },
+    color: theme.palette.primary.dark
   },
   activeButton: {
     backgroundColor: theme.palette.secondary.main,
     '&:hover': {
       backgroundColor: theme.palette.secondary.main
-    }
-  },
-  icon: {
+    },
     color: theme.palette.primary.darker
   },
 }))
@@ -34,14 +34,14 @@ export default function ToolboxButton(props) {
   return (
     <Tooltip title={name} placement="bottom">
       <IconButton
-        size="medium" className={clsx(classes.button, isActive && classes.activeButton)}
+        size="small" className={clsx(classes.button, isActive && classes.activeButton)}
         onClick={handleClick}
         {...others}
       >
         {isLoading ?
           <BounceLoader size={15} className={classes.icon}/>
           :
-          <SvgIcon className={classes.icon} fontSize="small">
+          <SvgIcon fontSize="small">
             {component}
           </SvgIcon>
         }

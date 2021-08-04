@@ -13,21 +13,19 @@ const useStyles = makeStyles(theme => ({
   button: {
     margin: 10,
     borderRadius: 5,
+    padding: 5,
     backgroundColor: theme.palette.secondary.lighter,
     overflow: 'hidden',
     '&:hover': {
       backgroundColor: theme.palette.secondary.lighter
-    }
+    },
+    color: theme.palette.primary.dark
   },
   activeButton: {
     backgroundColor: theme.palette.secondary.main,
     '&:hover': {
       backgroundColor: theme.palette.secondary.main
-    }
-  },
-  icon: {
-    width: 20,
-    height: 20,
+    },
     color: theme.palette.primary.darker
   },
 }))
@@ -55,12 +53,12 @@ const ToolConfigPopUpButton = (props) => {
     <>
     <Tooltip title={!isActive ? name : ''} placement="top">
         <IconButton
-          size="medium" className={clsx(classes.button, isActive && classes.activeButton)}
+          size="small" className={clsx(classes.button, isActive && classes.activeButton)}
           onClick={handleClick}
           ref={anchorRef}
           {...others}
         >
-          <SvgIcon className={classes.icon}>
+          <SvgIcon className={classes.icon} fontSize="small">
             {component}
           </SvgIcon>
         </IconButton>

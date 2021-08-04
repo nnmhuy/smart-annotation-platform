@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     height: 25,
     '&:hover': {
-      background: theme.palette.primary.dark,
+      background: theme.palette.primary.main,
     }
   },
   activeAnnotationIndicator: {
@@ -58,7 +58,7 @@ const useStyles = makeStyles(theme => ({
   keyFrameAnnotationIndicator: {
     background: theme.palette.primary.dark,
     '&:hover': {
-      background: theme.palette.primary.darker,
+      background: theme.palette.primary.main,
     }
   }
 }))

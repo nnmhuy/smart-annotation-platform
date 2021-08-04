@@ -6,7 +6,7 @@ import ToolConfigButton from './ToolConfigButton'
 const useStyles = makeStyles(() => ({
   toolSelectorWrapper: {
     display: 'flex',
-    flexDirection: 'row',
+    alignItems: 'center',
   }
 }))
 

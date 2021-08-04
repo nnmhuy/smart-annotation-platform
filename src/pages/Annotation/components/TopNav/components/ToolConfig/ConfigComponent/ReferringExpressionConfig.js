@@ -12,7 +12,7 @@ import { ReactComponent as SendIcon } from '../../../../../../../static/images/i
 
 import { EVENT_TYPES } from '../../../../../constants'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   root: {
     height: '100%',
     display: 'flex',
@@ -29,7 +29,21 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
   },
   referringExpressionInput: {
-    width: 500
+    width: 500,
+    '& label.MuiFormLabel-root': {
+      color: theme.palette.secondary.light
+    },
+    '& label.Mui-focused': {
+      color: theme.palette.secondary.main
+    },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: theme.palette.secondary.light
+      },
+    },
+  },
+  textFieldInput: {
+    color: theme.palette.primary.contrastText
   }
 }))
 
@@ -104,10 +118,14 @@ const ReferringExpressionConfig = (props) => {
           className={classes.referringExpressionInput}
           label="Referring expression" 
           variant="outlined"
+          color="secondary"
           size="small"
           onChange={debouncedHandleTextChange}
           onKeyPress={handleKeyPress}
           disabled={isPredicting}
+          InputProps={{
+            className: classes.textFieldInput
+          }}
         />
         <ToolConfigButton
           name={'Run referring expression'}

@@ -1,4 +1,5 @@
 import React from 'react'
+import { makeStyles } from '@material-ui/core'
 
 import { useGeneralStore } from '../../stores/index'
 
@@ -13,6 +14,15 @@ import { ReactComponent as EditIcon } from '../../../../static/images/icons/Tool
 import { ReactComponent as RefExIcon } from '../../../../static/images/icons/ToolboxIcon/refex.svg'
 // import { ReactComponent as CutIcon } from '../../../../static/images/icons/ToolboxIcon/cut.svg'
 // import { ReactComponent as DeleteIcon } from '../../../../static/images/icons/ToolboxIcon/delete.svg'
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    background: theme.palette.primary.darker,
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column'
+  }
+}))
 
 const toolBoxButtons = [
   {
@@ -57,12 +67,13 @@ const toolBoxButtons = [
   // },
 ]
 
-const Toolbox = (props) => {
+const Toolbox = () => {
+  const classes = useStyles()
   const activeMode = useGeneralStore(state => state.activeMode)
   const setActiveMode = useGeneralStore(state => state.setActiveMode)
 
   return (
-    <div>
+    <div className={classes.root}>
       {
         toolBoxButtons.map((btn) => {
           const { name, component, mode, } = btn

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import { find } from 'lodash'
-import create from 'zustand'
 
 import ButtonControlGroup from './ButtonControlGroup'
 import VideoTrack from './VideoTrack'
@@ -17,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: '5px 10px',
     width: '100%',
+    background: theme.palette.primary.darker
   },
 }))
 
