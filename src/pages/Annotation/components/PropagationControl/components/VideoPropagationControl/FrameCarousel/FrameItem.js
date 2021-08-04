@@ -2,10 +2,16 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import clsx from 'clsx'
+import { Slide } from 'pure-react-carousel';
+
 
 const useStyles = makeStyles(theme => ({
   frameItem: {
-    height: 50
+    height: 50,
+    boxSizing: 'border-box'
+  },
+  activeFrameItem: {
+    fontWeight: 'bold'
   }
 }))
 
@@ -15,14 +21,18 @@ const FrameItem = (props) => {
   const { index, isActive, isKeyFrame, hasAnnotation, ...others } = props
 
   return (
-    <Grid container {...others} className={classes.frameItem} direction="column" alignItems="center" justify="space-evenly">
-      <Grid item>
-        {index + 1}
-      </Grid>
-      <Grid item>
+    <Slide {...others}>
+      <Grid container direction="column" alignItems="center" justifyContent="space-evenly"
+        className={clsx(classes.frameItem, isActive && classes.activeFrameItem)}
+      >
+        <Grid item>
+          {index + 1}
+        </Grid>
+        <Grid item>
 
+        </Grid>
       </Grid>
-    </Grid>
+    </Slide>
   )
 }
 

@@ -6,7 +6,7 @@ import { find } from 'lodash'
 import { useDatasetStore, useAnnotationStore } from '../../../../stores/index'
 import EventCenter from '../../../../EventCenter'
 
-import FrameCarousel from './FrameCarousel/index'
+import FrameCarousel from './FrameCarousel/index.js'
 
 import { EVENT_TYPES } from '../../../../constants'
 
