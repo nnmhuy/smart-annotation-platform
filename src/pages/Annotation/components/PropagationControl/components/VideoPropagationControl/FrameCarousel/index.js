@@ -14,14 +14,13 @@ import FrameItem from './FrameItem'
 const useStyles = makeStyles(theme => ({
   sliderRoot: {
     width: '100%',
-
   },
   slider:{
     overflow: 'visible'
   }
 }))
 
-const SLIDE_WIDTH = 100
+const SLIDE_WIDTH = 40
 
 const FrameCarousel = (props) => {
   const classes = useStyles()

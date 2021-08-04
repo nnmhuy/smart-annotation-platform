@@ -34,6 +34,7 @@ const ScribbleToMask = (props) => {
   const getAnnotationByAnnotationObjectId = useAnnotationStore(state => state.getAnnotationByAnnotationObjectId)
   const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
   const setAnnotation = useAnnotationStore(state => state.setAnnotation)
+  const deleteAnnotation = useAnnotationStore(state => state.deleteAnnotation)
   const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
   const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
 
@@ -231,6 +232,12 @@ const ScribbleToMask = (props) => {
     setSelectedObjectId(null)
   }
 
+  const handleDeleteAnnotation = () => {
+    // TODO: only delete if exists
+    // deleteAnnotation(currentAnnotation.id)
+    // setIsDrawingScribble(false)
+  }
+
   useEffect(() => {
     if (!instanceId) {
       return
@@ -259,8 +266,8 @@ const ScribbleToMask = (props) => {
         .subscribe({ next: (e) => handleUpdateThreshold(e) }),
       [EVENT_TYPES.UNSELECT_CURRENT_ANNOTATION_OBJECT]: getSubject(EVENT_TYPES.UNSELECT_CURRENT_ANNOTATION_OBJECT)
         .subscribe({ next: (e) => handleUnselectCurrentAnnotationObject(e) }),
-      // [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.EDIT.DELETE_ANNOTATION)
-      //   .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
+      [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.EDIT.DELETE_ANNOTATION)
+        .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
     }
 
     return () => {

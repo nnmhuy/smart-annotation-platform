@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: '5px 10px',
     width: '100%',
+    background: theme.palette.secondary.lighter
   },
 }))
 
