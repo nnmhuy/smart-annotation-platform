@@ -5,7 +5,7 @@ import { useParams } from 'react-router'
 // import Loading from '../../components/Loading'
 import Toolbox from './components/Toolbox/index'
 import RenderComponent from './components/Stage/index'
-import ThumbnailSlider from './components/ThumbnailSlider'
+// import ThumbnailSlider from './components/ThumbnailSlider'
 import PlayControl from './components/PlayControl/index'
 import PropagationControl from './components/PropagationControl/index'
 import ModeController from './components/ModeController/index'
@@ -103,7 +103,7 @@ const Annotation = (props) => {
           <RenderComponent/>
           <PropagationControl/>
           <PlayControl/>
-          <ThumbnailSlider/>
+          {/* <ThumbnailSlider/> */}
           
           {/* Non-UI elements */}
           <ModeController/>

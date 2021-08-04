@@ -6,6 +6,7 @@ import { theme } from '../../../../theme'
 
 import ObjectInfoPanel from './components/ObjectInfoPanel/index'
 import LabelInfoPanel from './components/LabelInfoPanel/index'
+import DataInstanceListPanel from './components/DataInstanceListPanel/index'
 
 
 const useStyles = makeStyles((props) => ({
@@ -24,6 +25,7 @@ const SideBar = (props) => {
   return (
     <div className={classes.sideBarWrapper}>
       <ObjectInfoPanel/>
+      <DataInstanceListPanel/>
       <LabelInfoPanel/>
     </div>
   )
