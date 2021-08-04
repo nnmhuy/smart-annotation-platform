@@ -2,15 +2,13 @@ import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
-import InputBase from '@material-ui/core/InputBase'
-import FormControl from '@material-ui/core/FormControl'
-import InputLabel from '@material-ui/core/InputLabel'
-import Select from '@material-ui/core/Select'
-import MenuItem from '@material-ui/core/MenuItem'
 
 import PropagateIcon from '@material-ui/icons/DoubleArrowRounded';
 import SettingsIcon from '@material-ui/icons/SettingsRounded';
+
+import PopoverConfig from './PopoverConfig'
+
+import { PROPAGATION_DIRECTION } from '../../../../../constants'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,10 +32,6 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.primary.contrastText,
     fontSize: 10,
   },
-  directionSelect: {
-    marginRight: 10,
-    color: theme.palette.primary.contrastText,
-  },
   configInfo: {
     marginRight: 10,
     background: theme.palette.primary.darker,
@@ -49,13 +43,9 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const PROPAGATION_DIRECTION = {
-  FORWARD: 'Forward',
-  BACKWARD: 'Backward',
-}
-
 const PropagationConfig = (props) => {
   const classes = useStyles()
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const [propagationConfig, setPropagationConfig] = useState({
     direction: PROPAGATION_DIRECTION.FORWARD,
@@ -79,36 +69,18 @@ const PropagationConfig = (props) => {
               Backward
             </Button>
           }
-          {/* <FormControl variant="outlined" size="small" color="secondary" className={classes.directionSelect}>
-            <InputLabel id="select-direction-label">Direction</InputLabel>
-            <Select
-              labelId="select-direction-label"
-              id="select-direction"
-              value={propagationConfig.direction}
-              onChange={(value) => {alert(value)}}
-              label="Direction"
-              size="small"
-            >
-              <MenuItem value={PROPAGATION_DIRECTION.FORWARD}>Forward</MenuItem>
-              <MenuItem value={PROPAGATION_DIRECTION.BACKWARD}>Backward</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            className={classes.margin}
-            variant="outlined"
-            color="secondary"
-            label="Frames"
-            size="small"
-            type={"number"}
-            min={1}
-            max={20} // TODO: calculate max limit by next keyframe
-            value={propagationConfig.frames}
-          /> */}
+          <PopoverConfig
+            anchorEl={anchorEl}
+            setAnchorEl={setAnchorEl}
+            propagationConfig={propagationConfig}
+            setPropagationConfig={setPropagationConfig}
+          />
           <Button
             color="secondary"
             size="small"
             className={classes.configInfo}
             startIcon={<SettingsIcon fontSize="small" />}
+            onClick={(e) => { setAnchorEl(e.currentTarget) }}
           >
             {propagationConfig.frames} frames
           </Button>
