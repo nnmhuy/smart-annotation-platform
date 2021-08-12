@@ -119,6 +119,7 @@ const ObjectInfo = (props) => {
         </SvgIcon>
         </ListItemIcon>
         <ListItemText 
+          disableTypography
           primary={
             <div className={classes.objectId}>
               ID: {id}

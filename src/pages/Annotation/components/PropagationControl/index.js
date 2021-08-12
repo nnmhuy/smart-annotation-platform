@@ -10,12 +10,6 @@ import VideoDataInstanceClass from '../../../../classes/VideoDataInstanceClass'
 const PropagationControl = () => {
   const instanceId = useDatasetStore(state => state.instanceId)
   const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))
-
-  const selectedObjectId = useAnnotationStore(state => state.selectedObjectId)
-
-  if (!selectedObjectId) {
-    return null
-  }
   
   if (dataInstance instanceof VideoDataInstanceClass) {
     return <VideoPropagationControl/>

@@ -5,7 +5,7 @@ import StorageFileClass from './StorageFileClass'
 import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from '../constants/constants'
 
 export default class MaskAnnotation extends AnnotationClass {
-  constructor(id, annotationObjectId, annotationImageId, maskData, keyFrame=false) {
+  constructor(id, annotationObjectId, annotationImageId, maskData = {}, keyFrame=false) {
     super(id, annotationObjectId, annotationImageId, keyFrame)
 
     this.type = ANNOTATION_TYPE.MASK

@@ -29,6 +29,7 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 5,
     width: '100%',
     height: 25,
+    background: theme.palette.secondary.lighter,
     '&:hover': {
       background: theme.palette.primary.main,
     }

@@ -4,6 +4,8 @@ import { find } from 'lodash'
 import DatasetService from '../../../services/DatasetService'
 import DataInstanceService from '../../../services/DataInstanceService'
 
+import { IMAGES_PER_PAGE } from '../constants'
+
 
 const useDatasetStore = create((set, get) => ({
   dataset: {},
@@ -38,7 +40,7 @@ const useDatasetStore = create((set, get) => ({
     const setIsLoading = get().setIsLoading
     setIsLoading("loading_data_instances", true)
 
-    const dataInstancesObj = await DataInstanceService.getDataInstancesByDataset(datasetId, page)
+    const dataInstancesObj = await DataInstanceService.getDataInstancesByDataset(datasetId, page, IMAGES_PER_PAGE)
 
     set({ dataInstances: dataInstancesObj })
 

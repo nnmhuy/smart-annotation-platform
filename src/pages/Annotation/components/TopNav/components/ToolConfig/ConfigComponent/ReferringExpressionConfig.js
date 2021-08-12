@@ -36,9 +36,23 @@ const useStyles = makeStyles(theme => ({
     '& label.Mui-focused': {
       color: theme.palette.secondary.main
     },
+    '&:hover': {
+      '& label.MuiFormLabel-root': {
+        color: theme.palette.secondary.main
+      },
+    },
     '& .MuiOutlinedInput-root': {
       '& fieldset': {
-        borderColor: theme.palette.secondary.light
+        borderColor: theme.palette.secondary.light,
+      },
+      '&.Mui-disabled fieldset': {
+        borderColor: theme.palette.secondary.light,
+      },
+      '&:hover fieldset': {
+        borderColor: theme.palette.secondary.main,
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: theme.palette.secondary.main,
       },
     },
   },
@@ -46,6 +60,14 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.primary.contrastText
   }
 }))
+
+const usePrevious = (value) => {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+};
 
 
 const ReferringExpressionConfig = (props) => {
@@ -55,16 +77,19 @@ const ReferringExpressionConfig = (props) => {
   const [isPredicting, setIsPredicting] = useState(false)
 
   const selectedObjectId = useAnnotationStore(state => state.selectedObjectId)
+  const prevObjectId = usePrevious(selectedObjectId)
   const annotationObjects = useAnnotationStore(state => state.annotationObjects)
+
   useEffect(() => {
     const currentAnnotationObject = find(annotationObjects, { id: selectedObjectId })
     if (inputRef?.current) {
-      handleFocusTextInput()
-      inputRef.current.value = get(currentAnnotationObject, 'attributes.referringExpression', '')
+      if (!(prevObjectId === null && inputRef.current.value !== '')) {
+        inputRef.current.value = get(currentAnnotationObject, 'attributes.referringExpression', '')
+      }
     }
   }, [selectedObjectId])
 
-  const handleFocusTextInput = () => {
+  const focusTextInput = () => {
     inputRef.current.focus()
   }
 
@@ -81,7 +106,11 @@ const ReferringExpressionConfig = (props) => {
     EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.REFERRING_EXPRESSION_CHANGE)(e.target.value)
   }
 
-  const debouncedHandleTextChange = debounce(handleTextChange, 500)
+  const debouncedHandleTextChange = debounce(handleTextChange, 500, { leading: true, trailing: true })
+
+  // const handleFocusTextInput = (e) => {
+  //   EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.REFERRING_EXPRESSION_CHANGE)(e.target.value)
+  // }
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -95,7 +124,7 @@ const ReferringExpressionConfig = (props) => {
     const { getSubject } = EventCenter
     let subscriptions = {
       [EVENT_TYPES.REFERRING_EXPRESSION.FOCUS_TEXT_INPUT]: getSubject(EVENT_TYPES.REFERRING_EXPRESSION.FOCUS_TEXT_INPUT)
-        .subscribe({ next: (e) => handleFocusTextInput(e) }),
+        .subscribe({ next: (e) => focusTextInput(e) }),
       [EVENT_TYPES.REFERRING_EXPRESSION.PREDICT]: getSubject(EVENT_TYPES.REFERRING_EXPRESSION.PREDICT)
         .subscribe({ next: (e) => handlePredictStart(e) }),
       [EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_FINISH]: getSubject(EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_FINISH)
@@ -114,16 +143,16 @@ const ReferringExpressionConfig = (props) => {
       <div className={classes.optionContainer}>
         <TextField
           inputRef={inputRef}
-          autoFocus
           className={classes.referringExpressionInput}
           label="Referring expression" 
           variant="outlined"
           color="secondary"
           size="small"
           onChange={debouncedHandleTextChange}
+          // onFocus={handleFocusTextInput}
           onKeyPress={handleKeyPress}
           disabled={isPredicting}
-          InputProps={{
+          inputProps={{
             className: classes.textFieldInput
           }}
         />

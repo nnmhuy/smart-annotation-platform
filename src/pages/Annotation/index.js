@@ -41,8 +41,8 @@ const useStyles = makeStyles(theme => ({
     overflowX: 'hidden',
     height: '100%',
     boxSizing: 'border-box',
-    paddingBottom: 10,
-    background: theme.palette.primary.darker
+    // paddingBottom: 10,
+    background: theme.palette.primary.dark
   },
   toolboxContainer: {
     height: '100%',

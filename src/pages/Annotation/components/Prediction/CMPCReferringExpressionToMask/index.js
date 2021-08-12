@@ -14,7 +14,7 @@ const CMPCReferringExpressionToMask = (props) => {
    */
   const handleRunReferringExpressionToMask = async (data) => {
     const predictedMask = await sendFormData(
-      '/cmpc/predict',
+      '/refex/predict',
       data
     )
       .catch((err) => {

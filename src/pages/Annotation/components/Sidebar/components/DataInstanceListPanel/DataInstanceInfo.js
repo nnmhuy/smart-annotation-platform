@@ -87,11 +87,7 @@ const DataInstanceInfo = (props) => {
           />
         </ListItemIcon>
         <ListItemText 
-          primary={
-            // <div className={classes.objectId}> 
-              `Name: ${name}`
-            // </div>
-          }
+          primary={name}
           secondary={
             <div className={classes.objectId}>
               ID: {id}

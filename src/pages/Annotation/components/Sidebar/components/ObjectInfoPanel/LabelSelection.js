@@ -37,6 +37,7 @@ const LabelSelection = (props) => {
       options={labels}
       selectOnFocus
       blurOnSelect
+      clearOnBlur={false}
       getOptionLabel={(option) => option.label || ''}
       getOptionSelected={(option, value) => (option.id === value)}
       renderOption={(option) => (

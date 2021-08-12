@@ -23,11 +23,12 @@ const ReferringExpression = (props) => {
   const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
   const setAnnotationObjectAttributes = useAnnotationStore(state => state.setAnnotationObjectAttributes)
 
-  const getCurrentAnnotationObjectId = async () => {
+  const getCurrentAnnotationObjectId = async (properties = {}, attributes = {}) => {
     const objectId = await getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.MASK, {
       ...DEFAULT_ANNOTATION_ATTRS,
-      fill: '#FFFFFF'
-    })
+      fill: '#FFFFFF',
+      ...properties,
+    }, attributes)
     return objectId
   }
 
@@ -40,13 +41,9 @@ const ReferringExpression = (props) => {
     if (drawingAnnotation) {
       return drawingAnnotation
     } else {
-      const newAnnotation = new MaskAnnotationClass('', objectId, annotationImageId, {
-        scribbles: [],
-        mask: new StorageFileClass(),
-        threshold: DEFAULT_TOOL_CONFIG[MODES.DRAW_MASK.name].threshold,
-      }, true)
+      const newAnnotation = new MaskAnnotationClass('', objectId, annotationImageId, {}, true)
 
-      appendAnnotation(newAnnotation, { commitAnnotation: true })
+      await appendAnnotation(newAnnotation, { commitAnnotation: true })
       return newAnnotation
     }
   }
@@ -56,7 +53,7 @@ const ReferringExpression = (props) => {
   }
 
   const handleReferringExpressionChange = async (value) => {
-    const objectId = await getCurrentAnnotationObjectId()
+    const objectId = await getCurrentAnnotationObjectId({}, { referringExpression: value })
     setAnnotationObjectAttributes(objectId, {
       referringExpression: value
     })
@@ -72,13 +69,11 @@ const ReferringExpression = (props) => {
       return
     }
     setIsPredicting(true)
+    const currentAnnotation = await getCurrentAnnotation()
     
-    const objectId = await getCurrentAnnotationObjectId()
-    const annotationImageId = getCurrentAnnotationImageId()
     const data = {
-      annotation_image_id: annotationImageId,
-      annotation_object_id: objectId,
-      referring_expression: value,
+      annotation_id: currentAnnotation.id,
+      expression: value,
     }
 
     EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK)(data)
@@ -89,7 +84,7 @@ const ReferringExpression = (props) => {
 
     await currentAnnotation.setMask(data)
 
-    setAnnotation(currentAnnotation.id, cloneDeep(currentAnnotation.maskData), { commitAnnotation: true })
+    setAnnotation(currentAnnotation.id, cloneDeep(currentAnnotation.maskData))
     EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_FINISH)()
     setIsPredicting(false)
   }
