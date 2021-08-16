@@ -11,7 +11,11 @@ const useStyles = makeStyles(theme => ({
   name: {
     fontWeight: 500,
     fontSize: 14,
-    color: theme.palette.primary.contrastText
+    color: theme.palette.primary.contrastText,
+    whiteSpace: 'nowrap',
+    maxWidth: 200,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
   }
 }))
 

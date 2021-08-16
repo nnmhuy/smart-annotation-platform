@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react'
-import TextField from '@material-ui/core/TextField'
 import { makeStyles } from '@material-ui/core/styles'
+import TextField from '@material-ui/core/TextField'
+import OutlinedInput from '@material-ui/core/OutlinedInput';
 import { find, get, debounce } from 'lodash'
 
 import EventCenter from '../../../../../EventCenter'
 import { useAnnotationStore } from '../../../../../stores/index'
 
 import ToolConfigButton from '../components/ToolConfigButton'
+import ToolConfigPopUpButton from '../components/ToolConfigPopUpButton'
+import Slider from '../../../../../../../components/Slider'
 
 import { ReactComponent as SendIcon } from '../../../../../../../static/images/icons/ConfigIcon/send.svg'
+import { ReactComponent as ThresholdIcon } from '../../../../../../../static/images/icons/ConfigIcon/threshold.svg'
 
 import { EVENT_TYPES } from '../../../../../constants'
 
@@ -58,6 +62,25 @@ const useStyles = makeStyles(theme => ({
   },
   textFieldInput: {
     color: theme.palette.primary.contrastText
+  },
+  sliderContainer: {
+    width: 150,
+    marginLeft: 20,
+  },
+  sliderInput: {
+    width: 70,
+    '& .MuiOutlinedInput-input': {
+      padding: 10,
+    },
+    '& .MuiInputAdornment-positionEnd': {
+      marginLeft: 0,
+    }
+  },
+  popUpContainer: {
+    padding: 20,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-around',
   }
 }))
 
@@ -73,6 +96,8 @@ const usePrevious = (value) => {
 const ReferringExpressionConfig = (props) => {
   const classes = useStyles()
   const inputRef = useRef(null)
+  const { toolConfig, setToolConfig, } = props
+  const { threshold } = toolConfig
 
   const [isPredicting, setIsPredicting] = useState(false)
 
@@ -108,15 +133,21 @@ const ReferringExpressionConfig = (props) => {
 
   const debouncedHandleTextChange = debounce(handleTextChange, 500, { leading: true, trailing: true })
 
-  // const handleFocusTextInput = (e) => {
-  //   EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.REFERRING_EXPRESSION_CHANGE)(e.target.value)
-  // }
-
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault()
       EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.PREDICT)(inputRef?.current?.value)
     }
+  }
+
+  const emitThresholdUpdate = debounce(
+    EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.UPDATE_THRESHOLD),
+    500
+  )
+
+  const handleThresholdChange = (_, newValue) => {
+    setToolConfig({ ...toolConfig, threshold: newValue })
+    emitThresholdUpdate(newValue)
   }
 
 
@@ -144,7 +175,7 @@ const ReferringExpressionConfig = (props) => {
         <TextField
           inputRef={inputRef}
           className={classes.referringExpressionInput}
-          label="Referring expression" 
+          label="Referring expression"
           variant="outlined"
           color="secondary"
           size="small"
@@ -163,6 +194,31 @@ const ReferringExpressionConfig = (props) => {
           isLoading={isPredicting}
           disabled={isPredicting}
         />
+        <ToolConfigPopUpButton
+          name={'Score threshold'}
+          component={<ThresholdIcon />}
+        >
+          <div className={classes.popUpContainer}>
+            <OutlinedInput
+              id="outlined-adornment-weight"
+              value={threshold}
+              onChange={(e) => handleThresholdChange(e, Math.max(Math.min(Number(e.target.value), 100), 0))}
+              className={classes.sliderInput}
+              type="number"
+            />
+            <div className={classes.sliderContainer}>
+              <Slider
+                value={threshold}
+                aria-labelledby="threshold-slider"
+                step={1}
+                min={1}
+                max={100}
+                valueLabelDisplay="auto"
+                onChange={handleThresholdChange}
+              />
+            </div>
+          </div>
+        </ToolConfigPopUpButton>
       </div>
     </div>
   )

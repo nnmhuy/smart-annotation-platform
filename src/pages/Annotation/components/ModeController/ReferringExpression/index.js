@@ -2,12 +2,11 @@ import React, { useState } from 'react'
 import { cloneDeep } from 'lodash'
 
 import EventCenter from '../../../EventCenter'
-import { useDatasetStore, useGeneralStore, useAnnotationStore } from '../../../stores/index'
+import { useDatasetStore, useAnnotationStore } from '../../../stores/index'
 
-import StorageFileClass from '../../../../../classes/StorageFileClass'
 import MaskAnnotationClass from '../../../../../classes/MaskAnnotationClass'
 
-import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS, DEFAULT_TOOL_CONFIG, MODES } from '../../../constants';
+import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
 import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
 
 
@@ -99,6 +98,17 @@ const ReferringExpression = (props) => {
     setSelectedObjectId(null)
   }
 
+  const handleUpdateThreshold = async (newThreshold) => {
+    if (!instanceId) {
+      return
+    }
+    const drawingAnnotation = await getCurrentAnnotation()
+
+    setAnnotation(drawingAnnotation.id, {
+      threshold: newThreshold
+    }, { commitAnnotation: true })
+  }
+
   React.useEffect(() => {
     if (!instanceId) {
       return
@@ -119,6 +129,8 @@ const ReferringExpression = (props) => {
         .subscribe({ next: (e) => handleFinishPredict(e) }),
       [EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK_ERROR]: getSubject(EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK_ERROR)
         .subscribe({ next: (e) => handlePredictError(e) }),
+      [EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD]: getSubject(EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD)
+        .subscribe({ next: (e) => handleUpdateThreshold(e) }),
     }
 
     return () => {

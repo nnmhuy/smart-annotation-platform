@@ -92,7 +92,7 @@ const ScribbleToMaskConfig = (props) => {
     500
   )
 
-  const handleSliderChange = (e, newValue) => {
+  const handleThresholdChange = (_, newValue) => {
     setToolConfig({ ...toolConfig, threshold: newValue })
     emitThresholdUpdate()
   }
@@ -171,7 +171,7 @@ const ScribbleToMaskConfig = (props) => {
             <OutlinedInput
               id="outlined-adornment-weight"
               value={threshold}
-              onChange={(e) => setToolConfig({ ...toolConfig, threshold: Math.max(Math.min(Number(e.target.value), 100), 0) })}
+              onChange={(e) => handleThresholdChange(e, Math.max(Math.min(Number(e.target.value), 100), 0))}
               className={classes.sliderInput}
               type="number"
             />
@@ -183,7 +183,7 @@ const ScribbleToMaskConfig = (props) => {
                 min={1}
                 max={100}
                 valueLabelDisplay="auto"
-                onChange={handleSliderChange}
+                onChange={handleThresholdChange}
               />
             </div>
           </div>
