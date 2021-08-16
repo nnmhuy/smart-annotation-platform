@@ -37,14 +37,14 @@ const useAnnotationStore = create((set, get) => ({
     setIsLoading("loading_annotation_objects", false)
   },
   setSelectedObjectId: (newObjectId) => set({ selectedObjectId: newObjectId }),
-  getOrCreateSelectedObjectId: async (dataInstanceId, annotationType, properties = {}) => {
+  getOrCreateSelectedObjectId: async (dataInstanceId, annotationType, properties = {}, attributes = {}) => {
     const selectedObjectId = get().selectedObjectId
     const annotationObjects = get().annotationObjects
 
     if (selectedObjectId) {
       return selectedObjectId
     } else {
-      const newAnnotationObject = new AnnotationObjectClass('', dataInstanceId, '', annotationType, properties, {})
+      const newAnnotationObject = new AnnotationObjectClass('', dataInstanceId, '', annotationType, properties, attributes)
       await AnnotationObjectService.postAnnotationObject(newAnnotationObject)
       set({
         annotationObjects: [...annotationObjects, newAnnotationObject],
@@ -53,13 +53,32 @@ const useAnnotationStore = create((set, get) => ({
       return newAnnotationObject.id
     }
   },
-  setAnnotationObjectProperties: (id, newProperties) => {
+  setAnnotationObjectProperties: (id, newProperties, commit = true) => {
     const annotationObjects = get().annotationObjects.map(object => {
       if (object.id !== id) {
         return object
       } else {
         let newAnnotation = cloneDeep(object)
         newAnnotation.updateProperties = newProperties
+        if (commit) {
+          AnnotationObjectService.postAnnotationObject(newAnnotation)
+        }
+        return newAnnotation
+      }
+    })
+
+    set({ annotationObjects })
+  },
+  setAnnotationObjectAttributes: (id, newAttributes, commit = true) => {
+    const annotationObjects = get().annotationObjects.map(object => {
+      if (object.id !== id) {
+        return object
+      } else {
+        let newAnnotation = cloneDeep(object)
+        newAnnotation.updateAttributes = newAttributes
+        if (commit) {
+          AnnotationObjectService.postAnnotationObject(newAnnotation)
+        }
         return newAnnotation
       }
     })
@@ -118,7 +137,7 @@ const useAnnotationStore = create((set, get) => ({
     setIsLoading("loading_annotations", false)
   },
   setAnnotation: async (annotationId, newEditingAnnotationData, options = {}) => {
-    const { commitAnnotation = true, delayUpdateTime } = options
+    const { commitAnnotation = true } = options
     let annotations = cloneDeep(get().annotations)
 
     Object.keys(annotations).forEach(annotationImageId => {
@@ -129,11 +148,7 @@ const useAnnotationStore = create((set, get) => ({
 
           annotation.updateData = newEditingAnnotationData
           if (commitAnnotation) {
-            if (delayUpdateTime) {
-              setTimeout(() => annotation.applyUpdate(), delayUpdateTime)
-            } else {
-              annotation.applyUpdate()
-            }
+            annotation.applyUpdate()
           }
 
           return annotation
@@ -163,15 +178,11 @@ const useAnnotationStore = create((set, get) => ({
   drawingAnnotation: null,
   getDrawingAnnotation: () => get().drawingAnnotation,
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
-  appendAnnotation: (newAnnotation, options = {} ) => {
-    const { commitAnnotation = true, delayUpdateTime } = options
+  appendAnnotation: async (newAnnotation, options = {} ) => {
+    const { commitAnnotation = true } = options
     try {
       if (commitAnnotation) {
-        if (delayUpdateTime) {
-          setTimeout(() => newAnnotation.applyUpdate(), delayUpdateTime)
-        } else {
-          newAnnotation.applyUpdate()
-        }
+        await newAnnotation.applyUpdate()
       }
     } catch (error) {
       console.log(error)

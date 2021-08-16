@@ -25,16 +25,21 @@ const useStyles = makeStyles((theme) => ({
 
 const LabelSelection = (props) => {
   const classes = useStyles()
-  const { labels, labelId, handleChangeLabel } = props
+  const { labels, selectedLabel, handleChangeLabel } = props
+  const [inputValue, setInputValue] = React.useState(get(selectedLabel, 'label', ''))
+  React.useEffect(() => {
+    setInputValue(get(selectedLabel, 'label', ''))
+  }, [selectedLabel])
 
   return (
     <Autocomplete
       className={classes.root}
       options={labels}
       selectOnFocus
-      clearOnBlur
+      blurOnSelect
+      clearOnBlur={false}
       getOptionLabel={(option) => option.label || ''}
-      getOptionSelected={(option) => (option.id === labelId)}
+      getOptionSelected={(option, value) => (option.id === value)}
       renderOption={(option) => (
         <React.Fragment>
           <span
@@ -47,8 +52,12 @@ const LabelSelection = (props) => {
           {option.label}
         </React.Fragment>
       )}
-      value={labelId}
-      onChange={(event, newValue) => handleChangeLabel(newValue)}
+      value={selectedLabel?.id}
+      onChange={(_, newValue) => handleChangeLabel(newValue)}
+      inputValue={inputValue}
+      onInputChange={(_, newInputValue) => {
+        setInputValue(newInputValue);
+      }}
       autoHighlight
       renderInput={(params) => (
         <TextField
@@ -58,7 +67,7 @@ const LabelSelection = (props) => {
           size="small"
           inputProps={{
             ...params.inputProps,
-            autoComplete: 'new-password'
+            autoComplete: 'new-password',
           }}
         />
       )}

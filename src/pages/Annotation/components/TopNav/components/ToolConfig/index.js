@@ -4,10 +4,11 @@ import { get } from 'lodash'
 
 import { useGeneralStore } from '../../../../stores/index'
 
-import EditConfig from './ConfigComponent/EditConfig'
+// import EditConfig from './ConfigComponent/EditConfig'
 import BBoxConfig from './ConfigComponent/BBoxConfig'
 import PolygonConfig from './ConfigComponent/PolygonConfig'
 import MaskConfig from './ConfigComponent/MaskConfig'
+import ReferringExpressionConfig from './ConfigComponent/ReferringExpressionConfig'
 
 import { MODES } from '../../../../constants'
 
@@ -23,6 +24,7 @@ const toolBoxConfigs = {
   [MODES.DRAW_BBOX.name]: BBoxConfig,
   [MODES.DRAW_POLYGON.name]: PolygonConfig,
   [MODES.DRAW_MASK.name]: MaskConfig,
+  [MODES.REFERRING_EXPRESSION.name]: ReferringExpressionConfig,
 }
 
 const ToolConfig = (props) => {

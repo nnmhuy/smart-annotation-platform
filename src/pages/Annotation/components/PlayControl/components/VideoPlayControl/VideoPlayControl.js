@@ -2,7 +2,6 @@ import React, { useCallback, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import { find } from 'lodash'
-import create from 'zustand'
 
 import ButtonControlGroup from './ButtonControlGroup'
 import VideoTrack from './VideoTrack'
@@ -17,14 +16,10 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: '5px 10px',
     width: '100%',
+    background: theme.palette.primary.dark
   },
 }))
 
-const useVideoControlStore = create((set, get) => ({
-  isPlaying: false,
-  getIsPlaying: () => get().isPlaying,
-  setIsPlaying: (isPlaying) => set({ isPlaying }),
-}))
 
 const VideoPlayControl = (props) => {
   const classes = useStyles()
@@ -41,9 +36,9 @@ const VideoPlayControl = (props) => {
   const setCurrentAnnotationImageId = useDatasetStore(state => state.setCurrentAnnotationImageId)
   // const setCurrentAnnotationImage = useDatasetStore(state => state.setCurrentAnnotationImage)
 
-  const isPlaying = useVideoControlStore(state => state.isPlaying)
-  const getIsPlaying = useVideoControlStore(state => state.getIsPlaying)
-  const setIsPlaying = useVideoControlStore(state => state.setIsPlaying)
+  const isPlaying = useDatasetStore(state => state.isPlaying)
+  const getIsPlaying = useDatasetStore(state => state.getIsPlaying)
+  const setIsPlaying = useDatasetStore(state => state.setIsPlaying)
 
   const { fps, numFrames } = video
 
@@ -140,6 +135,18 @@ const VideoPlayControl = (props) => {
   const handleClickPause = () => {
     setIsPlaying(false)
   }
+
+  React.useEffect(() => {
+    const { getSubject } = EventCenter
+    let subscriptions = {
+      [EVENT_TYPES.PLAY_CONTROL.GO_TO_FRAME]: getSubject(EVENT_TYPES.PLAY_CONTROL.GO_TO_FRAME)
+        .subscribe({ next: (frame) => handleGoToFrame(frame, true) }),
+    }
+
+    return () => {
+      Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
+    }
+  }, [])
 
   return (
     <Grid container className={classes.root} direction="row">

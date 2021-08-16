@@ -18,11 +18,13 @@ const appTheme = createTheme({
       light: '#eef2f7',
       main: '#2876D4',
       dark: '#49535f',
+      darker: '#212933',
       contrastText: '#ffffff'
     },
     secondary: {
       main: '#ffc074',
       light: '#ffddb5',
+      lighter: '#ffefdb',
     },
     error: {
       main: '#E91D00'

@@ -1,26 +1,28 @@
 import React from 'react'
 import Tooltip from '@material-ui/core/Tooltip'
 import { makeStyles, SvgIcon } from '@material-ui/core'
+import IconButton from '@material-ui/core/IconButton'
 import clsx from 'clsx'
 
-import { theme } from '../../../../theme'
-
-const useStyles = makeStyles((props) => ({
+const useStyles = makeStyles(theme => ({
   button: {
-    width: 20,
-    height: 20,
-    padding: 10,
     margin: 10,
-    borderRadius: 10,
-    alignItem: 'center',
-    backgroundColor: props => !props.isActive ? theme.light.primaryColor : theme.light.secondaryColor,
-    cursor: 'pointer',
+    borderRadius: 5,
+    padding: 5,
+    backgroundColor: theme.palette.secondary.lighter,
+    overflow: 'hidden',
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.lighter
+    },
+    color: theme.palette.primary.dark
   },
-  icon: {
-    width: 20,
-    height: 20,
-    color: theme.light.darkColor
-  },
+  activeButton: {
+    backgroundColor: theme.palette.secondary.main,
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.main
+    },
+    color: theme.palette.primary.darker
+  }
 }))
 
 export default function ToolboxButton(props) {
@@ -29,11 +31,14 @@ export default function ToolboxButton(props) {
 
   return (
     <Tooltip title={name} placement="right">
-      <div className={clsx(classes.button, isActive && classes.activeIcon)} onClick={handleClick}>
-        <SvgIcon className={classes.icon}>
+      <IconButton
+        size="small" className={clsx(classes.button, isActive && classes.activeButton)}
+        onClick={handleClick}
+      >
+        <SvgIcon className={classes.icon} fontSize="small">
           {component}
         </SvgIcon>
-      </div>
+      </IconButton>
     </Tooltip>
   )
 }

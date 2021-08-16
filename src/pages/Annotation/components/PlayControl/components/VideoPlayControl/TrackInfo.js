@@ -7,11 +7,11 @@ import moment from 'moment'
 import NakedField from '../../../../../../components/NakedField'
 
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
-
   },
   group: {
+    color: theme.palette.primary.contrastText
   },
   time: {
     marginLeft: 5,

@@ -119,6 +119,7 @@ const ObjectInfo = (props) => {
         </SvgIcon>
         </ListItemIcon>
         <ListItemText 
+          disableTypography
           primary={
             <div className={classes.objectId}>
               ID: {id}
@@ -142,7 +143,7 @@ const ObjectInfo = (props) => {
         <Divider className={classes.divider} variant="middle" light/>
         <div className={classes.infoContainer}>
           <LabelSelection
-            labelId={label?.id}
+            selectedLabel={label}
             labels={labels}
             handleChangeLabel={handleChangeLabel}
           />

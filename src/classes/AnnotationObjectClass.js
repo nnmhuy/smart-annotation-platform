@@ -11,16 +11,27 @@ export default class AnnotationObjectClass {
       ...properties,
       isHidden: false
     }
-    this.attributes = attributes
+    this.attributes = {
+      referringExpression: '',
+      ...attributes
+    }
   }
 
   set updateLabel(labelId) {
     this.labelId = labelId
   }
+
   set updateProperties(newProperties) {
     this.properties = {
       ...this.properties,
       ...newProperties,
+    }
+  }
+
+  set updateAttributes(newAttributes) {
+    this.attributes = {
+      ...this.attributes,
+      ...newAttributes,
     }
   }
 

@@ -5,12 +5,12 @@ import { useParams } from 'react-router'
 // import Loading from '../../components/Loading'
 import Toolbox from './components/Toolbox/index'
 import RenderComponent from './components/Stage/index'
-import ThumbnailSlider from './components/ThumbnailSlider'
+// import ThumbnailSlider from './components/ThumbnailSlider'
 import PlayControl from './components/PlayControl/index'
+import PropagationControl from './components/PropagationControl/index'
 import ModeController from './components/ModeController/index'
 import Sidebar from './components/Sidebar/index'
 import TopNav from './components/TopNav/index'
-import LabelSelection from './components/LabelSelection/index'
 import Prediction from './components/Prediction/index'
 import KeyboardHandler from './components/KeyboardHandler/index'
 
@@ -19,13 +19,13 @@ import { useDatasetStore, useGeneralStore, useAnnotationStore } from './stores/i
 import useQuery from '../../utils/useQuery'
 
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     width: '100vw',
     height: '100vh',
     flexDirection: 'column',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   annotationWrapper: {
     display: 'flex',
@@ -40,9 +40,12 @@ const useStyles = makeStyles(() => ({
     flex: 1,
     overflowX: 'hidden',
     height: '100%',
+    boxSizing: 'border-box',
+    // paddingBottom: 10,
+    background: theme.palette.primary.dark
   },
   toolboxContainer: {
-
+    height: '100%',
   },
   sidebarWrapper: {
     width: '25%',
@@ -101,19 +104,14 @@ const Annotation = (props) => {
         </div>
         <div className={classes.annotatorContainer}>
           <RenderComponent/>
+          <PropagationControl/>
           <PlayControl/>
-          <ThumbnailSlider/>
+          {/* <ThumbnailSlider/> */}
           
           {/* Non-UI elements */}
           <ModeController/>
           <KeyboardHandler /> 
           <Prediction />
-          {/*
-          <LabelSelection
-            useStore={useAnnotationStore}
-            eventCenter={annotationEventCenter}
-          />
-          */}
         </div>
         <div className={classes.sidebarWrapper}>
           <Sidebar/>

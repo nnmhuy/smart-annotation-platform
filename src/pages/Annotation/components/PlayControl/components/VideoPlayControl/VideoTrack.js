@@ -37,6 +37,7 @@ const VideoTrack = (props) => {
         onChange={handleChange}
         onChangeCommitted={handleChangeCommitted}
         valueLabelDisplay="auto"
+        color="secondary"
       />
     </Grid>
   )

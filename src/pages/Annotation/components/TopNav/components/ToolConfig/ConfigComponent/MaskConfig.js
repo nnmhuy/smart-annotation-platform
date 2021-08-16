@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
@@ -24,7 +24,7 @@ import { ReactComponent as DeleteIcon } from '../../../../../../../static/images
 
 import { SCRIBBLE_TO_MASK_CONSTANTS, EVENT_TYPES } from '../../../../../constants'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   root: {
     height: '100%',
     display: 'flex',
@@ -33,6 +33,7 @@ const useStyles = makeStyles(() => ({
   },
   divider: {
     height: 30,
+    background: theme.palette.secondary.main
   },
   optionContainer: {
     marginLeft: 10,
@@ -84,16 +85,42 @@ const ScribbleToMaskConfig = (props) => {
   const { toolConfig, setToolConfig, } = props
   const { scribbleSize, threshold } = toolConfig
 
+  const [isPredicting, setIsPredicting] = useState(false)
+
   const emitThresholdUpdate = debounce(
     EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD),
     500
   )
 
-  const handleSliderChange = (e, newValue) => {
+  const handleThresholdChange = (_, newValue) => {
     setToolConfig({ ...toolConfig, threshold: newValue })
     emitThresholdUpdate()
-    // EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD)()
   }
+
+  const handlePredictStart = () => {
+    setIsPredicting(true)
+  }
+
+  const handlePredictEnd = () => {
+    setIsPredicting(false)
+  }
+
+  useEffect(() => {
+    const { getSubject } = EventCenter
+    let subscriptions = {
+      [EVENT_TYPES.REFERRING_EXPRESSION.PREDICT]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT)
+        .subscribe({ next: (e) => handlePredictStart(e) }),
+      [EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_FINISH]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT_FINISH)
+        .subscribe({ next: (e) => handlePredictEnd(e) }),
+      [EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_ERROR]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT_ERROR)
+        .subscribe({ next: (e) => handlePredictEnd(e) }),
+    }
+
+    return () => {
+      Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
+    }
+  }, [])
+
 
   return (
     <div className={classes.root}>
@@ -135,7 +162,6 @@ const ScribbleToMaskConfig = (props) => {
         />
       </div>
       <Divider orientation="vertical" className={classes.divider}/>
-      <Divider orientation="vertical" className={classes.divider} />
       <div className={classes.optionContainer}>
         <ToolConfigPopUpButton
           name={'Score threshold'}
@@ -145,7 +171,7 @@ const ScribbleToMaskConfig = (props) => {
             <OutlinedInput
               id="outlined-adornment-weight"
               value={threshold}
-              onChange={(e) => setToolConfig({ ...toolConfig, threshold: Math.max(Math.min(Number(e.target.value), 100), 0) })}
+              onChange={(e) => handleThresholdChange(e, Math.max(Math.min(Number(e.target.value), 100), 0))}
               className={classes.sliderInput}
               type="number"
             />
@@ -157,7 +183,7 @@ const ScribbleToMaskConfig = (props) => {
                 min={1}
                 max={100}
                 valueLabelDisplay="auto"
-                onChange={handleSliderChange}
+                onChange={handleThresholdChange}
               />
             </div>
           </div>
@@ -166,6 +192,8 @@ const ScribbleToMaskConfig = (props) => {
           name={'MiVOS - Scribbles to mask'}
           handleClick={EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT)}
           component={<S2MIcon/>}
+          disabled={isPredicting}
+          isLoading={isPredicting}
         />
       </div>
       <Divider orientation="vertical" className={classes.divider} />

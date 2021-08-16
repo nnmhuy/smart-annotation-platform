@@ -27,25 +27,25 @@ const ButtonControlGroup = (props) => {
 
   return (
     <Grid container item xs={3} className={classes.root}>
-      <Button size="small" color="primary" onClick={handleSkipFrame(-10)} className={classes.button}>
+      <Button size="small" color="secondary" onClick={handleSkipFrame(-10)} className={classes.button}>
         <SkipPreviousIcon fontSize="small" />
       </Button>
-      <Button size="small" color="primary" onClick={handleSkipFrame(-1)} className={classes.button}>
+      <Button size="small" color="secondary" onClick={handleSkipFrame(-1)} className={classes.button}>
         <PreviousIcon fontSize="small" />
       </Button>
       {!isPlaying ?
-        <Button size="small" color="primary" onClick={handleClickPlay} className={classes.button}>
+        <Button size="small" color="secondary" onClick={handleClickPlay} className={classes.button}>
           <PlayIcon fontSize="small" />
         </Button>
         :
-        <Button size="small" color="primary" onClick={handleClickPause} className={classes.button}>
+        <Button size="small" color="secondary" onClick={handleClickPause} className={classes.button}>
           <PauseIcon fontSize="small" />
         </Button>
       }
-      <Button size="small" color="primary" onClick={handleSkipFrame(1)} className={classes.button}>
+      <Button size="small" color="secondary" onClick={handleSkipFrame(1)} className={classes.button}>
         <NextIcon fontSize="small" />
       </Button>
-      <Button size="small" color="primary" onClick={handleSkipFrame(10)} className={classes.button}>
+      <Button size="small" color="secondary" onClick={handleSkipFrame(10)} className={classes.button}>
         <SkipNextIcon fontSize="small" />
       </Button>
     </Grid>
