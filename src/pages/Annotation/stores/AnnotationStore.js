@@ -158,13 +158,46 @@ const useAnnotationStore = create((set, get) => ({
 
     set({ annotations })
   },
+  updateAnnotation: async (newAnnotation, options = {}) => {
+    const { commitAnnotation = true } = options
+    let annotations = cloneDeep(get().annotations)
+
+    try {
+      if (commitAnnotation) {
+        newAnnotation.applyUpdate()
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+    Object.keys(annotations).forEach(annotationImageId => {
+      annotations[annotationImageId] = annotations[annotationImageId].map((annotation) => {
+        if (annotation.id !== newAnnotation.id) {
+          return annotation
+        } else {
+          return newAnnotation
+        }
+      })
+    })
+
+    set({ annotations })
+  },
   getAnnotationByAnnotationObjectId: (annotationObjectId, annotationImageId) => {
     let annotations = get().annotations
 
     return find(annotations[annotationImageId], { annotationObjectId })
   },
-  deleteAnnotation: (deleteAnnotationId) => {
-    AnnotationService.deleteAnnotationById(deleteAnnotationId)
+  deleteAnnotation: (deleteAnnotationId, options = {}) => {
+    const { commitAnnotation = true } = options
+
+    try {
+      if (commitAnnotation) {
+        AnnotationService.deleteAnnotationById(deleteAnnotationId)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
     let annotations = get().annotations
 
     Object.keys(annotations).forEach(annotationImageId => {
@@ -172,6 +205,13 @@ const useAnnotationStore = create((set, get) => ({
     }) 
 
     set({ annotations })
+  },
+  cleanUpPropagatingAnnotation: (propagatingAnnotationId) => {
+    let annotations = get().annotations
+
+    Object.keys(annotations).forEach(annotationImageId => {
+      annotations[annotationImageId] = filter(annotations[annotationImageId], (ann) => ann.id !== propagatingAnnotationId || !ann?.isPropagating)
+    })
   },
 
 
@@ -188,7 +228,6 @@ const useAnnotationStore = create((set, get) => ({
       console.log(error)
     }
     const annotations = get().annotations
-
     if (!annotations[newAnnotation.annotationImageId]) {
       annotations[newAnnotation.annotationImageId] = []
     }

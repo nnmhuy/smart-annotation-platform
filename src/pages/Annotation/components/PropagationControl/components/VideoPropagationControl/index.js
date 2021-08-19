@@ -49,7 +49,12 @@ const VideoPropagationControl = (props) => {
   return (
     <Grid container className={classes.root} direction="row">
       <FrameCarousel playingFrame={playingFrame} annotations={currentAnnotations}/>
-      <PropagationConfig annotations={currentAnnotations}/>
+      <PropagationConfig 
+        selectedObjectId={selectedObjectId}
+        playingFrame={playingFrame} 
+        frames={frames}
+        annotations={currentAnnotations}  
+      />
     </Grid>
   )
 }

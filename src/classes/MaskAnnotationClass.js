@@ -15,6 +15,7 @@ export default class MaskAnnotation extends AnnotationClass {
       threshold: 50,
       ...maskData,
     }
+    this.isPropagating = false
   }
 
   set updateData(newData) {

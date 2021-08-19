@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import { find, get, debounce } from 'lodash'
+import usePrevious from '../../../../../../../utils/usePrevious'
 
 import EventCenter from '../../../../../EventCenter'
 import { useAnnotationStore } from '../../../../../stores/index'
@@ -83,14 +84,6 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-around',
   }
 }))
-
-const usePrevious = (value) => {
-  const ref = useRef();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-};
 
 
 const ReferringExpressionConfig = (props) => {

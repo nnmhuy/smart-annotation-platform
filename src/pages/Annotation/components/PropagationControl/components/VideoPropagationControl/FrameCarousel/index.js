@@ -70,6 +70,7 @@ const FrameCarousel = (props) => {
               index={index}
               isActive={playingFrame === index}
               isKeyFrame={ann?.keyFrame}
+              annotation={ann}
               hasAnnotation={!!ann}
               onFocus={() => handleGoToFrame(index)}
               onClick={() => handleGoToFrame(index)}
