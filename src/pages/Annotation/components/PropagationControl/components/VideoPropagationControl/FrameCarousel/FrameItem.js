@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid'
 import clsx from 'clsx'
 import { Slide } from 'pure-react-carousel';
 
+import './index.css'
 
 const useStyles = makeStyles(theme => ({
   frameItem: {
@@ -78,7 +79,11 @@ const useStyles = makeStyles(theme => ({
         ${theme.palette.secondary.darker} 5px,
         ${theme.palette.secondary.darker} 10px
       )`,
-    }
+    },
+    'animation-name': 'FadeIn',
+    'animation-duration': '2s',
+    'animation-fill-mode': 'forwards',
+    'animation-iteration-count': 'infinite'
   }
 }))
 
