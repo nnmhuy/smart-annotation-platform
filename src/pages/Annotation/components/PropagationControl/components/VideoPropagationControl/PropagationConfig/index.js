@@ -3,6 +3,8 @@ import { makeStyles } from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import { cloneDeep } from 'lodash'
+import create from 'zustand'
+import { CancelToken } from 'axios'
 
 import { useAnnotationStore } from '../../../../../stores'
 
@@ -16,6 +18,7 @@ import RestConnector from '../../../../../../../connectors/RestConnector'
 import MaskAnnotationClass from '../../../../../../../classes/MaskAnnotationClass'
 
 import { PROPAGATION_DIRECTION } from '../../../../../constants'
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -50,6 +53,33 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
+const usePropagationStore = create((set, get) => ({
+  isPropagating: false,
+  blockPropagation: false,
+  
+  setBlockPropagation: (value) => set({ blockPropagation: value }),
+  setIsPropagating: (value) => set({ isPropagating: value }),
+  getIsPropagating: () => get().isPropagating,
+  
+  cancelToken: null,
+  setCancelToken: (token) => set({ cancelToken: token }),
+  getCancelToken: () => get().cancelToken,
+  
+  localAnnotationStore: {},
+  setLocalAnnotationStore: (newValue) => set({ localAnnotationStore: newValue }),
+  getLocalAnnotationStore: () => get().localAnnotationStore,
+  updateLocalAnnotationStore: (key, value) => set(state => ({
+    localAnnotationStore: {
+      ...state.localAnnotationStore,
+      [key]: value
+    }
+  })),
+
+  isTemporaryAnnotation: {},
+  setIsTemporaryAnnotation: (newValue) => set({ isTemporaryAnnotation: newValue }),
+  getIsTemporaryAnnotation: () => get().isTemporaryAnnotation,
+}))
+
 const PropagationConfig = (props) => {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null);
@@ -61,29 +91,90 @@ const PropagationConfig = (props) => {
   const cleanUpPropagatingAnnotation = useAnnotationStore(state => state.cleanUpPropagatingAnnotation)
 
 
-  const [isPropagating, setIsPropagating] = useState(false)
+  const isPropagating = usePropagationStore(state => state.isPropagating)
+  const getIsPropagating = usePropagationStore(state => state.getIsPropagating)
+  const setIsPropagating = usePropagationStore(state => state.setIsPropagating)
+  const blockPropagation = usePropagationStore(state => state.blockPropagation)
+  const setBlockPropagation = usePropagationStore(state => state.setBlockPropagation)
+  const getLocalAnnotationStore = usePropagationStore(state => state.getLocalAnnotationStore)
+  const setLocalAnnotationStore = usePropagationStore(state => state.setLocalAnnotationStore)
+  const updateLocalAnnotationStore = usePropagationStore(state => state.updateLocalAnnotationStore)
+  const getIsTemporaryAnnotation = usePropagationStore(state => state.getIsTemporaryAnnotation)
+  const setIsTemporaryAnnotation = usePropagationStore(state => state.setIsTemporaryAnnotation)
+  const setCancelToken = usePropagationStore(state => state.setCancelToken)
+  const getCancelToken = usePropagationStore(state => state.getCancelToken)
+
+
   const [propagationConfig, setPropagationConfig] = useState({
     direction: PROPAGATION_DIRECTION.FORWARD,
     frames: 20
   })
 
-  const setPropagatedMasks = async (localAnnotationStore, propagatedFrames, propagatedMasks) => {
-    for (let j = 0; j < propagatedFrames.length; ++j) {
 
-      const newAnnotation = localAnnotationStore[propagatedFrames[j]]
-      try {
-        await newAnnotation.setMask(propagatedMasks[j])
-        newAnnotation.isPropagating = false
+  const runPropagation = async (keyFrame, numFrames, direction) => {
+    const BATCH_SIZE = 10
+    const totalFrames = frames.length
 
-        updateAnnotation(newAnnotation, { commitAnnotation: true })
-      } catch (error) {
-        debugger
+    let count = 0
+    for (count = 1; count <= numFrames; count += BATCH_SIZE) {
+      let isPropagating = getIsPropagating()
+      if (!isPropagating) return
+      let propagatingFrames = []
+      for (let j = 0; j < Math.min(BATCH_SIZE, numFrames - count + 1) && keyFrame + count + j < totalFrames; ++j) {
+        const frameIndex = keyFrame + (direction === PROPAGATION_DIRECTION.FORWARD ? 1 : -1) * (count + j)
+        if (annotations[frameIndex]?.keyFrame) {
+          continue;
+        }
+        propagatingFrames.push(frameIndex)
       }
+      // TODO: should or should not await?
+      // await => cannot cancel immediately
+      // not await => wait performance of models
+      // Promise.all?
+      await RestConnector.post('/mask_propagation/predict', {
+        "annotation_id": annotations[keyFrame].id,
+        "key_frame": keyFrame,
+        "propagating_frames": propagatingFrames
+      }, {
+        cancelToken: getCancelToken().token
+      })
+        .then(response => response.data)
+        .then((propagatedMasks) => {
+          // Assign urls to annotations and commit
+          return setPropagatedMasks(propagatingFrames, propagatedMasks)
+        })
+        .catch(() => {
+          console.log("Canceled propagation")
+          return cleanUpCanceledPropagation()
+        })
     }
   }
 
-  const cleanUpCanceledPropagation = async (localAnnotationStore, isTemporaryAnnotation) => {
+  const setPropagatedMasks = async (propagatedFrames, propagatedMasks) => {
+    const localAnnotationStore = getLocalAnnotationStore()
+
+    const newAnnotations = await Promise.all(propagatedFrames.map(async (frameIndex, index) => {
+      const newAnnotation = localAnnotationStore[frameIndex]
+      await newAnnotation.setMask(propagatedMasks[index])
+      newAnnotation.isPropagating = false
+      return newAnnotation
+    }))
+    newAnnotations.forEach((annotation, index) => {
+      const frameIndex = propagatedFrames[index]
+      updateAnnotation(annotation, { commitAnnotation: true })
+      updateLocalAnnotationStore(frameIndex, annotation)
+    })
+  }
+
+  const cleanUpCanceledPropagation = async () => {
+    console.log("clean up")
+    // TODO: this function run too slow (15s)
+    const start_time = performance.now()
+    const localAnnotationStore = getLocalAnnotationStore()
+    const isTemporaryAnnotation = getIsTemporaryAnnotation()
     Object.keys(localAnnotationStore).forEach(frameIndex => {
+      if (!localAnnotationStore[frameIndex].isPropagating) return;
+
       if (isTemporaryAnnotation[frameIndex]) {
         cleanUpPropagatingAnnotation(localAnnotationStore[frameIndex].id)
       } else {
@@ -92,10 +183,14 @@ const PropagationConfig = (props) => {
         updateAnnotation(newAnnotation, { commitAnnotation: false })
       }
     })
+    console.log("clean up done")
+    console.log(performance.now() - start_time)
   }
 
   const handleStartPropagation = async () => {
     setIsPropagating(true)
+    setBlockPropagation(true)
+    setCancelToken(CancelToken.source())
 
     const keyFrame = cloneDeep(playingFrame)
     const numFrames = cloneDeep(propagationConfig.frames)
@@ -128,41 +223,20 @@ const PropagationConfig = (props) => {
         isTemporaryAnnotation[frameIndex] = true
       }
     }
+    setLocalAnnotationStore(localAnnotationStore)
+    setIsTemporaryAnnotation(isTemporaryAnnotation)
+    await runPropagation(keyFrame, numFrames, direction)
 
-    const BATCH_SIZE = 10
-    const totalFrames = frames.length
-
-    let count = 0
-    for (count = 1; count <= numFrames; count += BATCH_SIZE) {
-      let propagatingFrames = []
-      for (let j = 0; j < Math.min(BATCH_SIZE, numFrames - count + 1) && keyFrame + count + j < totalFrames; ++j) {
-        const frameIndex = keyFrame + (direction === PROPAGATION_DIRECTION.FORWARD ? 1 : -1) * (count + j)
-        if (annotations[frameIndex]?.keyFrame) {
-          continue;
-        }
-        propagatingFrames.push(frameIndex)
-      }
-      // TODO: should or should not await?
-      // Promise.all?
-      await RestConnector.post('/mask_propagation/predict', {
-        "annotation_id": annotations[keyFrame].id,
-        "key_frame": keyFrame,
-        "propagating_frames": propagatingFrames
-      })
-        .then(response => response.data)
-        .then((propagatedMasks) => {
-          // Assign urls to annotations and commit
-          setPropagatedMasks(localAnnotationStore, propagatingFrames, propagatedMasks)
-        })
-    }
-
-    await cleanUpCanceledPropagation(localAnnotationStore, isTemporaryAnnotation)
     setIsPropagating(false)
+    setBlockPropagation(false)
+    setLocalAnnotationStore({})
+    setIsTemporaryAnnotation({})
   }
 
   const handleCancelPropagation = () => {
-    // TODO: handle cancel
     setIsPropagating(false)
+    const source = getCancelToken()
+    source.cancel("Cancel propagating request")
   }
 
   return (
@@ -179,7 +253,7 @@ const PropagationConfig = (props) => {
                 size="small"
                 className={classes.button}
                 startIcon={<PropagateIcon fontSize="small" style={{ transform: `rotate(180deg)` }} />}
-                disabled={!!!annotations[playingFrame]}
+                disabled={!!!annotations[playingFrame] || blockPropagation}
                 onClick={handleStartPropagation}
               >
                 Backward
@@ -206,7 +280,7 @@ const PropagationConfig = (props) => {
             size="small"
             className={classes.configInfo}
             startIcon={<SettingsIcon fontSize="small" />}
-            onClick={(e) => { !isPropagating && setAnchorEl(e.currentTarget) }}
+            onClick={(e) => { !blockPropagation && setAnchorEl(e.currentTarget) }}
           >
             {propagationConfig.frames} frames
           </Button>
@@ -217,7 +291,7 @@ const PropagationConfig = (props) => {
                 size="small"
                 className={classes.button}
                 endIcon={<PropagateIcon fontSize="small" />}
-                disabled={!!!annotations[playingFrame]}
+                disabled={!!!annotations[playingFrame] || blockPropagation}
                 onClick={handleStartPropagation}
               >
                 Forward

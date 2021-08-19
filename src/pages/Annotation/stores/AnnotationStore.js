@@ -211,8 +211,9 @@ const useAnnotationStore = create((set, get) => ({
     let annotations = cloneDeep(get().annotations)
 
     Object.keys(annotations).forEach(annotationImageId => {
-      annotations[annotationImageId] = filter(annotations[annotationImageId], (ann) => ann.id !== propagatingAnnotationId || !ann?.isPropagating)
+      annotations[annotationImageId] = filter(annotations[annotationImageId], (ann) => ann.id !== propagatingAnnotationId)
     })
+    set({ annotations })
   },
 
 
