@@ -58,7 +58,7 @@ const VideoPlayControl = (props) => {
   useEffect(() => {
     if (video && playingState) {
       const currentFrame = video.getCurrentImage(playingState)
-      setCurrentAnnotationImageId(currentFrame.id)
+      setCurrentAnnotationImageId(currentFrame?.id)
       // setCurrentAnnotationImage(currentFrame)
     }
   }, [videoId, playingState])
@@ -73,11 +73,11 @@ const VideoPlayControl = (props) => {
       return
     }
     if (bufferingFrame + 1 < numFrames) {
-      await video.frames[bufferingFrame + 1].original.getBitmap()
+      await video.frames[bufferingFrame + 1]?.original?.getBitmap()
       increaseBufferingFrame(1)
     } else {
       if (lazyBufferingFrame + 1 < numFrames) {
-        await video.frames[lazyBufferingFrame + 1].original.getBitmap()
+        await video.frames[lazyBufferingFrame + 1]?.original?.getBitmap()
         increaseLazyBufferingFrame(1)
       }
     }

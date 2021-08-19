@@ -15,12 +15,14 @@ const ReferringExpression = (props) => {
   const instanceId = useDatasetStore(state => state.instanceId)
   const getCurrentAnnotationImageId = useDatasetStore(state => state.getCurrentAnnotationImageId)
 
+  const getSelectedObjectId = useAnnotationStore(state => state.getSelectedObjectId)
   const getAnnotationByAnnotationObjectId = useAnnotationStore(state => state.getAnnotationByAnnotationObjectId)
   const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
   const setAnnotation = useAnnotationStore(state => state.setAnnotation)
   const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
   const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
   const setAnnotationObjectAttributes = useAnnotationStore(state => state.setAnnotationObjectAttributes)
+  const deleteAnnotation = useAnnotationStore(state => state.deleteAnnotation)
 
   const getCurrentAnnotationObjectId = async (properties = {}, attributes = {}) => {
     const objectId = await getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.MASK, {
@@ -109,6 +111,17 @@ const ReferringExpression = (props) => {
     }, { commitAnnotation: true })
   }
 
+  const handleDeleteAnnotation = () => {
+    const currentObjectId = getSelectedObjectId()
+    if (!currentObjectId) return
+
+    const annotationImageId = getCurrentAnnotationImageId()
+    const currentAnnotation = getAnnotationByAnnotationObjectId(currentObjectId, annotationImageId)
+
+    if (!currentAnnotation) return
+    deleteAnnotation(currentAnnotation.id)
+  }
+
   React.useEffect(() => {
     if (!instanceId) {
       return
@@ -131,6 +144,8 @@ const ReferringExpression = (props) => {
         .subscribe({ next: (e) => handlePredictError(e) }),
       [EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD]: getSubject(EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD)
         .subscribe({ next: (e) => handleUpdateThreshold(e) }),
+      [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.EDIT.DELETE_ANNOTATION)
+        .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
     }
 
     return () => {

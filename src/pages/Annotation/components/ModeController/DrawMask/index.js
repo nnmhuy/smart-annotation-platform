@@ -31,6 +31,7 @@ const ScribbleToMask = (props) => {
   const updateCurrentMousePosition = useGeneralStore(state => state.updateCurrentMousePosition)
   const getCurrentMousePosition = useGeneralStore(state => state.getCurrentMousePosition)
 
+  const getSelectedObjectId = useAnnotationStore(state => state.getSelectedObjectId)
   const getAnnotationByAnnotationObjectId = useAnnotationStore(state => state.getAnnotationByAnnotationObjectId)
   const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
   const setAnnotation = useAnnotationStore(state => state.setAnnotation)
@@ -233,9 +234,15 @@ const ScribbleToMask = (props) => {
   }
 
   const handleDeleteAnnotation = () => {
-    // TODO: only delete if exists
-    // deleteAnnotation(currentAnnotation.id)
-    // setIsDrawingScribble(false)
+    const currentObjectId = getSelectedObjectId()
+    if (!currentObjectId) return
+  
+    const annotationImageId = getCurrentAnnotationImageId()
+    const currentAnnotation = getAnnotationByAnnotationObjectId(currentObjectId, annotationImageId)
+
+    if (!currentAnnotation) return
+    deleteAnnotation(currentAnnotation.id)
+    setIsDrawingScribble(false)
   }
 
   useEffect(() => {

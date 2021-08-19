@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import OutlinedInput from '@material-ui/core/OutlinedInput';
+import Divider from '@material-ui/core/Divider';
 import { find, get, debounce } from 'lodash'
 import usePrevious from '../../../../../../../utils/usePrevious'
 
@@ -14,6 +15,7 @@ import Slider from '../../../../../../../components/Slider'
 
 import { ReactComponent as SendIcon } from '../../../../../../../static/images/icons/ConfigIcon/send.svg'
 import { ReactComponent as ThresholdIcon } from '../../../../../../../static/images/icons/ConfigIcon/threshold.svg'
+import { ReactComponent as DeleteIcon } from '../../../../../../../static/images/icons/ConfigIcon/delete.svg'
 
 import { EVENT_TYPES } from '../../../../../constants'
 
@@ -25,7 +27,8 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   divider: {
-    height: '80%',
+    height: 30,
+    background: theme.palette.secondary.main
   },
   optionContainer: {
     marginLeft: 10,
@@ -212,6 +215,14 @@ const ReferringExpressionConfig = (props) => {
             </div>
           </div>
         </ToolConfigPopUpButton>
+      </div>
+      <Divider orientation="vertical" className={classes.divider} />
+      <div className={classes.optionContainer}>
+        <ToolConfigButton
+          name={'Delete annotation'}
+          handleClick={EventCenter.emitEvent(EVENT_TYPES.EDIT.DELETE_ANNOTATION)}
+          component={<DeleteIcon />}
+        />
       </div>
     </div>
   )
