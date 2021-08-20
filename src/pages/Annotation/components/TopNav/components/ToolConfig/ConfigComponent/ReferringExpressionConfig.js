@@ -2,19 +2,22 @@ import React, { useState, useEffect, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import OutlinedInput from '@material-ui/core/OutlinedInput';
+import Divider from '@material-ui/core/Divider';
 import { find, get, debounce } from 'lodash'
+import usePrevious from '../../../../../../../utils/usePrevious'
 
 import EventCenter from '../../../../../EventCenter'
 import { useAnnotationStore } from '../../../../../stores/index'
 
 import ToolConfigButton from '../components/ToolConfigButton'
 import ToolConfigPopUpButton from '../components/ToolConfigPopUpButton'
+import ToolConfigSelectButton from '../components/ToolConfigSelectButton'
 import Slider from '../../../../../../../components/Slider'
 
-import { ReactComponent as SendIcon } from '../../../../../../../static/images/icons/ConfigIcon/send.svg'
 import { ReactComponent as ThresholdIcon } from '../../../../../../../static/images/icons/ConfigIcon/threshold.svg'
+import { ReactComponent as DeleteIcon } from '../../../../../../../static/images/icons/ConfigIcon/delete.svg'
 
-import { EVENT_TYPES } from '../../../../../constants'
+import { EVENT_TYPES, REFERRING_EXPRESSION_MODELS } from '../../../../../constants'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,7 +27,8 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   divider: {
-    height: '80%',
+    height: 30,
+    background: theme.palette.secondary.main
   },
   optionContainer: {
     marginLeft: 10,
@@ -84,20 +88,17 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const usePrevious = (value) => {
-  const ref = useRef();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-};
 
+const MODEL_OPTIONS = [
+  { name: "CMPC", value: REFERRING_EXPRESSION_MODELS.CMPC },
+  { name: "Rule-based", value: REFERRING_EXPRESSION_MODELS.RULE_BASED },
+]
 
 const ReferringExpressionConfig = (props) => {
   const classes = useStyles()
   const inputRef = useRef(null)
   const { toolConfig, setToolConfig, } = props
-  const { threshold } = toolConfig
+  const { threshold, model } = toolConfig
 
   const [isPredicting, setIsPredicting] = useState(false)
 
@@ -187,10 +188,12 @@ const ReferringExpressionConfig = (props) => {
             className: classes.textFieldInput
           }}
         />
-        <ToolConfigButton
+        <ToolConfigSelectButton
           name={'Run referring expression'}
+          options={MODEL_OPTIONS}
+          value={model}
           handleClick={() => EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.PREDICT)(inputRef?.current?.value)}
-          component={<SendIcon />}
+          handleSelect={(newModel) => setToolConfig({ ...toolConfig, model: newModel })}
           isLoading={isPredicting}
           disabled={isPredicting}
         />
@@ -219,6 +222,14 @@ const ReferringExpressionConfig = (props) => {
             </div>
           </div>
         </ToolConfigPopUpButton>
+      </div>
+      <Divider orientation="vertical" className={classes.divider} />
+      <div className={classes.optionContainer}>
+        <ToolConfigButton
+          name={'Delete annotation'}
+          handleClick={EventCenter.emitEvent(EVENT_TYPES.EDIT.DELETE_ANNOTATION)}
+          component={<DeleteIcon />}
+        />
       </div>
     </div>
   )

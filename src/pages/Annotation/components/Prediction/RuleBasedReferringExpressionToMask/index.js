@@ -6,7 +6,7 @@ import { EVENT_TYPES } from '../../../constants'
 import sendFormData from '../../../../../utils/sendFormData'
 
 
-const CMPCReferringExpressionToMask = (props) => {
+const RuleBasedReferringExpressionToMask = (props) => {
   /**
    * 
    * @param {object} data - annotation_id, expression
@@ -14,7 +14,7 @@ const CMPCReferringExpressionToMask = (props) => {
    */
   const handleRunReferringExpressionToMask = async (data) => {
     const predictedMask = await sendFormData(
-      '/refex/predict',
+      '/refex/rule-based',
       data
     )
       .catch((err) => {
@@ -23,17 +23,17 @@ const CMPCReferringExpressionToMask = (props) => {
       })
 
     if (!predictedMask) {
-      EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK_ERROR)()
+      EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.RULE_BASED_REFERRING_EXPRESSION_TO_MASK_ERROR)()
       return;
     }
 
-    EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK_FINISH)(predictedMask)
+    EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.RULE_BASED_REFERRING_EXPRESSION_TO_MASK_FINISH)(predictedMask)
   }
 
   React.useEffect(() => {
     const { getSubject } = EventCenter
     let subscriptions = {
-      [EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK]: getSubject(EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK)
+      [EVENT_TYPES.REFERRING_EXPRESSION.RULE_BASED_REFERRING_EXPRESSION_TO_MASK]: getSubject(EVENT_TYPES.REFERRING_EXPRESSION.RULE_BASED_REFERRING_EXPRESSION_TO_MASK)
         .subscribe({ next: (data) => handleRunReferringExpressionToMask(data) }),
     }
 
@@ -46,4 +46,4 @@ const CMPCReferringExpressionToMask = (props) => {
   )
 }
 
-export default CMPCReferringExpressionToMask
+export default RuleBasedReferringExpressionToMask

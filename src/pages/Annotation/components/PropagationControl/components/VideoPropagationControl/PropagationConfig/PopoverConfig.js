@@ -35,6 +35,13 @@ const PopoverConfig = (props) => {
     }))
   }
 
+  const handleChangeNumber = ({ name, value}) => {
+    setPropagationConfig(current => ({
+      ...current,
+      [name]: value
+    }))
+  }
+
   return (
     <Popover
       open={open}
@@ -82,11 +89,11 @@ const PopoverConfig = (props) => {
             name="frames"
             fullWidth
             inputProps={{
-              min: "1",
+              min: "0",
               max: "20"
             }}
             value={propagationConfig.frames}
-            onChange={handleChange}
+            onChange={(e) => handleChangeNumber({ name: e.target.name, value: e.target.value !== "" ? Number.parseInt(e.target.value) : 0 })}
           />
         </Grid>
       </Grid>

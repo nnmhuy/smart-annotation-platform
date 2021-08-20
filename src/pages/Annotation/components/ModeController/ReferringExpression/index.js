@@ -2,25 +2,30 @@ import React, { useState } from 'react'
 import { cloneDeep } from 'lodash'
 
 import EventCenter from '../../../EventCenter'
-import { useDatasetStore, useAnnotationStore } from '../../../stores/index'
+import { useDatasetStore, useAnnotationStore, useGeneralStore } from '../../../stores/index'
 
 import MaskAnnotationClass from '../../../../../classes/MaskAnnotationClass'
 
-import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
+import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS, REFERRING_EXPRESSION_MODELS } from '../../../constants';
 import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
 
 
 const ReferringExpression = (props) => {
   const [isPredicting, setIsPredicting] = useState(false)
+
+  const getToolConfig = useGeneralStore(state => state.getToolConfig)
+
   const instanceId = useDatasetStore(state => state.instanceId)
   const getCurrentAnnotationImageId = useDatasetStore(state => state.getCurrentAnnotationImageId)
 
+  const getSelectedObjectId = useAnnotationStore(state => state.getSelectedObjectId)
   const getAnnotationByAnnotationObjectId = useAnnotationStore(state => state.getAnnotationByAnnotationObjectId)
   const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
   const setAnnotation = useAnnotationStore(state => state.setAnnotation)
   const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
   const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
   const setAnnotationObjectAttributes = useAnnotationStore(state => state.setAnnotationObjectAttributes)
+  const deleteAnnotation = useAnnotationStore(state => state.deleteAnnotation)
 
   const getCurrentAnnotationObjectId = async (properties = {}, attributes = {}) => {
     const objectId = await getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.MASK, {
@@ -75,7 +80,17 @@ const ReferringExpression = (props) => {
       expression: value,
     }
 
-    EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK)(data)
+    const toolConfig = getToolConfig()
+    switch (toolConfig.model) {
+      case REFERRING_EXPRESSION_MODELS.CMPC:
+        EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK)(data)
+        break;
+      case REFERRING_EXPRESSION_MODELS.RULE_BASED:
+        EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.RULE_BASED_REFERRING_EXPRESSION_TO_MASK)(data)
+        break;
+      default:
+        break;
+    }
   }
 
   const handleFinishPredict = async (data) => {
@@ -109,6 +124,17 @@ const ReferringExpression = (props) => {
     }, { commitAnnotation: true })
   }
 
+  const handleDeleteAnnotation = () => {
+    const currentObjectId = getSelectedObjectId()
+    if (!currentObjectId) return
+
+    const annotationImageId = getCurrentAnnotationImageId()
+    const currentAnnotation = getAnnotationByAnnotationObjectId(currentObjectId, annotationImageId)
+
+    if (!currentAnnotation) return
+    deleteAnnotation(currentAnnotation.id)
+  }
+
   React.useEffect(() => {
     if (!instanceId) {
       return
@@ -129,8 +155,14 @@ const ReferringExpression = (props) => {
         .subscribe({ next: (e) => handleFinishPredict(e) }),
       [EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK_ERROR]: getSubject(EVENT_TYPES.REFERRING_EXPRESSION.CMPC_REFERRING_EXPRESSION_TO_MASK_ERROR)
         .subscribe({ next: (e) => handlePredictError(e) }),
+      [EVENT_TYPES.REFERRING_EXPRESSION.RULE_BASED_REFERRING_EXPRESSION_TO_MASK_FINISH]: getSubject(EVENT_TYPES.REFERRING_EXPRESSION.RULE_BASED_REFERRING_EXPRESSION_TO_MASK_FINISH)
+        .subscribe({ next: (e) => handleFinishPredict(e) }),
+      [EVENT_TYPES.REFERRING_EXPRESSION.RULE_BASED_REFERRING_EXPRESSION_TO_MASK_ERROR]: getSubject(EVENT_TYPES.REFERRING_EXPRESSION.RULE_BASED_REFERRING_EXPRESSION_TO_MASK_ERROR)
+        .subscribe({ next: (e) => handlePredictError(e) }),
       [EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD]: getSubject(EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD)
         .subscribe({ next: (e) => handleUpdateThreshold(e) }),
+      [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.EDIT.DELETE_ANNOTATION)
+        .subscribe({ next: (e) => handleDeleteAnnotation(e) }),
     }
 
     return () => {

@@ -37,6 +37,7 @@ const useAnnotationStore = create((set, get) => ({
     setIsLoading("loading_annotation_objects", false)
   },
   setSelectedObjectId: (newObjectId) => set({ selectedObjectId: newObjectId }),
+  getSelectedObjectId: () => get().selectedObjectId,
   getOrCreateSelectedObjectId: async (dataInstanceId, annotationType, properties = {}, attributes = {}) => {
     const selectedObjectId = get().selectedObjectId
     const annotationObjects = get().annotationObjects
@@ -158,19 +159,60 @@ const useAnnotationStore = create((set, get) => ({
 
     set({ annotations })
   },
+  updateAnnotation: async (newAnnotation, options = {}) => {
+    const { commitAnnotation = true } = options
+    let annotations = cloneDeep(get().annotations)
+
+    try {
+      if (commitAnnotation) {
+        newAnnotation.applyUpdate()
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+    Object.keys(annotations).forEach(annotationImageId => {
+      annotations[annotationImageId] = annotations[annotationImageId].map((annotation) => {
+        if (annotation.id !== newAnnotation.id) {
+          return annotation
+        } else {
+          return newAnnotation
+        }
+      })
+    })
+
+    set({ annotations })
+  },
   getAnnotationByAnnotationObjectId: (annotationObjectId, annotationImageId) => {
     let annotations = get().annotations
 
     return find(annotations[annotationImageId], { annotationObjectId })
   },
-  deleteAnnotation: (deleteAnnotationId) => {
-    AnnotationService.deleteAnnotationById(deleteAnnotationId)
-    let annotations = get().annotations
+  deleteAnnotation: (deleteAnnotationId, options = {}) => {
+    const { commitAnnotation = true } = options
+
+    try {
+      if (commitAnnotation) {
+        AnnotationService.deleteAnnotationById(deleteAnnotationId)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+    let annotations = cloneDeep(get().annotations)
 
     Object.keys(annotations).forEach(annotationImageId => {
       annotations[annotationImageId] = filter(annotations[annotationImageId], (ann) => ann.id !== deleteAnnotationId)
     }) 
 
+    set({ annotations })
+  },
+  cleanUpPropagatingAnnotation: (propagatingAnnotationId) => {
+    let annotations = cloneDeep(get().annotations)
+
+    Object.keys(annotations).forEach(annotationImageId => {
+      annotations[annotationImageId] = filter(annotations[annotationImageId], (ann) => ann.id !== propagatingAnnotationId)
+    })
     set({ annotations })
   },
 
@@ -188,7 +230,6 @@ const useAnnotationStore = create((set, get) => ({
       console.log(error)
     }
     const annotations = get().annotations
-
     if (!annotations[newAnnotation.annotationImageId]) {
       annotations[newAnnotation.annotationImageId] = []
     }

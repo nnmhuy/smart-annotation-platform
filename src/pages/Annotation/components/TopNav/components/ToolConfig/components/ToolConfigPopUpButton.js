@@ -16,10 +16,11 @@ const useStyles = makeStyles(theme => ({
     padding: 5,
     backgroundColor: theme.palette.secondary.lighter,
     overflow: 'hidden',
+    color: theme.palette.primary.dark,
     '&:hover': {
-      backgroundColor: theme.palette.secondary.lighter
+      backgroundColor: theme.palette.secondary.light,
+      color: theme.palette.primary.darker,
     },
-    color: theme.palette.primary.dark
   },
   activeButton: {
     backgroundColor: theme.palette.secondary.main,

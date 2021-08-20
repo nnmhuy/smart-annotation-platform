@@ -5,12 +5,16 @@ import { useGeneralStore } from '../../stores/index'
 
 import MiVOSScribbleToMask from './MiVOSScribbleToMask/index'
 import CMPCReferringExpressionToMask from './CMPCReferringExpressionToMask/index'
+import RuleBasedReferringExpressionToMask from './RuleBasedReferringExpressionToMask/index'
 
 import { MODES } from '../../constants'
 
 const mapActiveModeToPredictor = {
-  [MODES.DRAW_MASK.name]: MiVOSScribbleToMask,
-  [MODES.REFERRING_EXPRESSION.name]: CMPCReferringExpressionToMask,
+  [MODES.DRAW_MASK.name]: <MiVOSScribbleToMask/>,
+  [MODES.REFERRING_EXPRESSION.name]: [
+    <CMPCReferringExpressionToMask key="cmpc-model"/>,
+    <RuleBasedReferringExpressionToMask key="rule-based-model"/>
+  ],
 }
 
 
@@ -22,9 +26,7 @@ const Prediction = (props) => {
     return null
   }
 
-  return (
-    <ActiveToolRenderComponent />
-  )
+  return ActiveToolRenderComponent
 }
 
 export default Prediction

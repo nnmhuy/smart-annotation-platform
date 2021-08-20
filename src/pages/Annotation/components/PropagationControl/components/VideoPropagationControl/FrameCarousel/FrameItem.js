@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid'
 import clsx from 'clsx'
 import { Slide } from 'pure-react-carousel';
 
+import './index.css'
 
 const useStyles = makeStyles(theme => ({
   frameItem: {
@@ -42,17 +43,17 @@ const useStyles = makeStyles(theme => ({
     background: `repeating-linear-gradient(
         45deg,
         ${theme.palette.primary.light},
-        ${theme.palette.primary.light} 10px,
-        ${theme.palette.primary.dark} 10px,
-        ${theme.palette.primary.dark} 20px
+        ${theme.palette.primary.light} 5px,
+        ${theme.palette.primary.dark} 5px,
+        ${theme.palette.primary.dark} 10px
       )`,
     '&:hover': {
       background: `repeating-linear-gradient(
         45deg,
         ${theme.palette.primary.light},
-        ${theme.palette.primary.light} 10px,
-        ${theme.palette.primary.darker} 10px,
-        ${theme.palette.primary.darker} 20px
+        ${theme.palette.primary.light} 5px,
+        ${theme.palette.primary.darker} 5px,
+        ${theme.palette.primary.darker} 10px
       )`,
     }
   },
@@ -61,13 +62,35 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       background: theme.palette.primary.main,
     }
+  },
+  propagatingFrameIndicator: {
+    background: `repeating-linear-gradient(
+        45deg,
+        ${theme.palette.secondary.light},
+        ${theme.palette.secondary.light} 5px,
+        ${theme.palette.secondary.dark} 5px,
+        ${theme.palette.secondary.dark} 10px
+      )`,
+    '&:hover': {
+      background: `repeating-linear-gradient(
+        45deg,
+        ${theme.palette.secondary.light},
+        ${theme.palette.secondary.light} 5px,
+        ${theme.palette.secondary.darker} 5px,
+        ${theme.palette.secondary.darker} 10px
+      )`,
+    },
+    'animation-name': 'FadeIn',
+    'animation-duration': '2s',
+    'animation-fill-mode': 'forwards',
+    'animation-iteration-count': 'infinite'
   }
 }))
 
 
 const FrameItem = (props) => {
   const classes = useStyles()
-  const { index, isActive, isKeyFrame, hasAnnotation, ...others } = props
+  const { index, isActive, isKeyFrame, annotation, hasAnnotation, ...others } = props
 
   return (
     <Slide {...others}>
@@ -83,6 +106,7 @@ const FrameItem = (props) => {
             isActive && classes.activeAnnotationIndicator,
             hasAnnotation && classes.existAnnotationIndicator,
             isKeyFrame && classes.keyFrameAnnotationIndicator,
+            annotation?.isPropagating && classes.propagatingFrameIndicator,
           )}
         >
 
