@@ -83,7 +83,8 @@ const PropagationConfig = (props) => {
   const { playingFrame, frames, annotations, selectedObjectId } = props
 
   const updateAnnotation = useAnnotationStore(state => state.updateAnnotation)
-  const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
+  const updateAnnotations = useAnnotationStore(state => state.updateAnnotations)
+  const appendAnnotations = useAnnotationStore(state => state.appendAnnotations)
   const cleanUpPropagatingAnnotations = useAnnotationStore(state => state.cleanUpPropagatingAnnotations)
 
 
@@ -152,11 +153,13 @@ const PropagationConfig = (props) => {
       }
       return newAnnotation
     }))
+    let newAnnotationsDict = {}
     newAnnotations.forEach((annotation, index) => {
+      newAnnotationsDict[annotation.id] = annotation
       const frameIndex = propagatedFrames[index]
-      updateAnnotation(annotation, { commitAnnotation: true })
       updateLocalAnnotationStore(frameIndex, annotation)
     })
+    updateAnnotations(newAnnotationsDict, { commitAnnotation: true })
   }
 
   const cleanUpCanceledPropagation = async () => {
@@ -178,6 +181,8 @@ const PropagationConfig = (props) => {
 
     const localAnnotationStore = {}
     // Create local annotations
+    let newAnnotationsDict = {}
+    let newTemporaryAnnotations = []
     for (let i = 1; i <= numFrames; ++i) {
       const frameIndex = keyFrame + (direction === PROPAGATION_DIRECTION.FORWARD ? 1 : -1) * i
       if (!!annotations[frameIndex]) {
@@ -186,17 +191,19 @@ const PropagationConfig = (props) => {
         } else {
           const newAnnotation = cloneDeep(annotations[frameIndex])
           newAnnotation.isPropagating = true
-          updateAnnotation(newAnnotation, { commitAnnotation: false })
+          newAnnotationsDict[newAnnotation.id] = newAnnotation
           localAnnotationStore[frameIndex] = newAnnotation
         }
       } else {
         const newAnnotation = new MaskAnnotationClass('', selectedObjectId, frames[frameIndex].id, {}, false)
         newAnnotation.isPropagating = true
         newAnnotation.isTemporary = true
-        appendAnnotation(newAnnotation, { commitAnnotation: false })
+        newTemporaryAnnotations.push(newAnnotation)
         localAnnotationStore[frameIndex] = newAnnotation
       }
     }
+    updateAnnotations(newAnnotationsDict, { commitAnnotation: false })
+    appendAnnotations(newTemporaryAnnotations, { commitAnnotation: false })
     setLocalAnnotationStore(localAnnotationStore)
     await runPropagation(keyFrame, numFrames, direction)
 

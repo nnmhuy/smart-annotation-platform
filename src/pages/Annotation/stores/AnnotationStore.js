@@ -183,6 +183,30 @@ const useAnnotationStore = create((set, get) => ({
 
     set({ annotations })
   },
+  updateAnnotations: async (newAnnotationsDict, options = {}) => {
+    const { commitAnnotation = true } = options
+    let annotations = cloneDeep(get().annotations)
+
+    try {
+      if (commitAnnotation) {
+        await Promise.all(Object.keys(newAnnotationsDict).map(id => newAnnotationsDict[id].applyUpdate()))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+    Object.keys(annotations).forEach(annotationImageId => {
+      annotations[annotationImageId] = annotations[annotationImageId].map((annotation) => {
+        if (!!newAnnotationsDict[annotation.id]) {
+          return newAnnotationsDict[annotation.id]
+        } else {
+          return annotation
+        }
+      })
+    })
+
+    set({ annotations })
+  },
   getAnnotationByAnnotationObjectId: (annotationObjectId, annotationImageId) => {
     let annotations = get().annotations
 
@@ -241,6 +265,26 @@ const useAnnotationStore = create((set, get) => ({
       annotations[newAnnotation.annotationImageId] = []
     }
     annotations[newAnnotation.annotationImageId] = [...annotations[newAnnotation.annotationImageId], newAnnotation]
+
+    set({ annotations })
+  },
+  appendAnnotations: async (newAnnotations, options = {}) => {
+    const { commitAnnotation = true } = options
+    try {
+      if (commitAnnotation) {
+        await Promise.all(newAnnotations.map((ann) => ann.applyUpdate()))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+    const annotations = get().annotations
+
+    newAnnotations.forEach(newAnnotation => {
+      if (!annotations[newAnnotation.annotationImageId]) {
+        annotations[newAnnotation.annotationImageId] = []
+      }
+      annotations[newAnnotation.annotationImageId] = [...annotations[newAnnotation.annotationImageId], newAnnotation]
+    })
 
     set({ annotations })
   },
