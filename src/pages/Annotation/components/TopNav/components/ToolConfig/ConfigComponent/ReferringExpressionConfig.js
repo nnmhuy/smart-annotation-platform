@@ -11,13 +11,13 @@ import { useAnnotationStore } from '../../../../../stores/index'
 
 import ToolConfigButton from '../components/ToolConfigButton'
 import ToolConfigPopUpButton from '../components/ToolConfigPopUpButton'
+import ToolConfigSelectButton from '../components/ToolConfigSelectButton'
 import Slider from '../../../../../../../components/Slider'
 
-import { ReactComponent as SendIcon } from '../../../../../../../static/images/icons/ConfigIcon/send.svg'
 import { ReactComponent as ThresholdIcon } from '../../../../../../../static/images/icons/ConfigIcon/threshold.svg'
 import { ReactComponent as DeleteIcon } from '../../../../../../../static/images/icons/ConfigIcon/delete.svg'
 
-import { EVENT_TYPES } from '../../../../../constants'
+import { EVENT_TYPES, REFERRING_EXPRESSION_MODELS } from '../../../../../constants'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -89,11 +89,16 @@ const useStyles = makeStyles(theme => ({
 }))
 
 
+const MODEL_OPTIONS = [
+  { name: "CMPC", value: REFERRING_EXPRESSION_MODELS.CMPC },
+  { name: "Rule-based", value: REFERRING_EXPRESSION_MODELS.RULE_BASED },
+]
+
 const ReferringExpressionConfig = (props) => {
   const classes = useStyles()
   const inputRef = useRef(null)
   const { toolConfig, setToolConfig, } = props
-  const { threshold } = toolConfig
+  const { threshold, model } = toolConfig
 
   const [isPredicting, setIsPredicting] = useState(false)
 
@@ -183,10 +188,12 @@ const ReferringExpressionConfig = (props) => {
             className: classes.textFieldInput
           }}
         />
-        <ToolConfigButton
+        <ToolConfigSelectButton
           name={'Run referring expression'}
+          options={MODEL_OPTIONS}
+          value={model}
           handleClick={() => EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.PREDICT)(inputRef?.current?.value)}
-          component={<SendIcon />}
+          handleSelect={(newModel) => setToolConfig({ ...toolConfig, model: newModel })}
           isLoading={isPredicting}
           disabled={isPredicting}
         />
