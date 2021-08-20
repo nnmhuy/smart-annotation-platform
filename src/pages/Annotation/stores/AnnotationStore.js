@@ -207,11 +207,18 @@ const useAnnotationStore = create((set, get) => ({
 
     set({ annotations })
   },
-  cleanUpPropagatingAnnotation: (propagatingAnnotationId) => {
+  cleanUpPropagatingAnnotations: () => {
     let annotations = cloneDeep(get().annotations)
 
     Object.keys(annotations).forEach(annotationImageId => {
-      annotations[annotationImageId] = filter(annotations[annotationImageId], (ann) => ann.id !== propagatingAnnotationId)
+      let newAnnotations = []
+      annotations[annotationImageId].forEach((ann) => {
+        if (!ann.isTemporary) {
+          ann.isPropagating = false
+          newAnnotations.push(ann)
+        }
+      })
+      annotations[annotationImageId] = newAnnotations
     })
     set({ annotations })
   },

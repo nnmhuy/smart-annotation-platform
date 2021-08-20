@@ -74,10 +74,6 @@ const usePropagationStore = create((set, get) => ({
       [key]: value
     }
   })),
-
-  isTemporaryAnnotation: {},
-  setIsTemporaryAnnotation: (newValue) => set({ isTemporaryAnnotation: newValue }),
-  getIsTemporaryAnnotation: () => get().isTemporaryAnnotation,
 }))
 
 const PropagationConfig = (props) => {
@@ -88,7 +84,7 @@ const PropagationConfig = (props) => {
 
   const updateAnnotation = useAnnotationStore(state => state.updateAnnotation)
   const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
-  const cleanUpPropagatingAnnotation = useAnnotationStore(state => state.cleanUpPropagatingAnnotation)
+  const cleanUpPropagatingAnnotations = useAnnotationStore(state => state.cleanUpPropagatingAnnotations)
 
 
   const isPropagating = usePropagationStore(state => state.isPropagating)
@@ -99,8 +95,6 @@ const PropagationConfig = (props) => {
   const getLocalAnnotationStore = usePropagationStore(state => state.getLocalAnnotationStore)
   const setLocalAnnotationStore = usePropagationStore(state => state.setLocalAnnotationStore)
   const updateLocalAnnotationStore = usePropagationStore(state => state.updateLocalAnnotationStore)
-  const getIsTemporaryAnnotation = usePropagationStore(state => state.getIsTemporaryAnnotation)
-  const setIsTemporaryAnnotation = usePropagationStore(state => state.setIsTemporaryAnnotation)
   const setCancelToken = usePropagationStore(state => state.setCancelToken)
   const getCancelToken = usePropagationStore(state => state.getCancelToken)
 
@@ -127,10 +121,6 @@ const PropagationConfig = (props) => {
         }
         propagatingFrames.push(frameIndex)
       }
-      // TODO: should or should not await?
-      // await => cannot cancel immediately
-      // not await => wait performance of models
-      // Promise.all?
       await RestConnector.post('/mask_propagation/predict', {
         "annotation_id": annotations[keyFrame].id,
         "key_frame": keyFrame,
@@ -157,6 +147,9 @@ const PropagationConfig = (props) => {
       const newAnnotation = localAnnotationStore[frameIndex]
       await newAnnotation.setMask(propagatedMasks[index])
       newAnnotation.isPropagating = false
+      if (newAnnotation.isTemporary) {
+        newAnnotation.isTemporary = false
+      }
       return newAnnotation
     }))
     newAnnotations.forEach((annotation, index) => {
@@ -167,24 +160,7 @@ const PropagationConfig = (props) => {
   }
 
   const cleanUpCanceledPropagation = async () => {
-    console.log("clean up")
-    // TODO: this function run too slow (15s)
-    const start_time = performance.now()
-    const localAnnotationStore = getLocalAnnotationStore()
-    const isTemporaryAnnotation = getIsTemporaryAnnotation()
-    Object.keys(localAnnotationStore).forEach(frameIndex => {
-      if (!localAnnotationStore[frameIndex].isPropagating) return;
-
-      if (isTemporaryAnnotation[frameIndex]) {
-        cleanUpPropagatingAnnotation(localAnnotationStore[frameIndex].id)
-      } else {
-        const newAnnotation = localAnnotationStore[frameIndex]
-        newAnnotation.isPropagating = false
-        updateAnnotation(newAnnotation, { commitAnnotation: false })
-      }
-    })
-    console.log("clean up done")
-    console.log(performance.now() - start_time)
+    cleanUpPropagatingAnnotations()
   }
 
   const handleStartPropagation = async () => {
@@ -201,11 +177,10 @@ const PropagationConfig = (props) => {
     updateAnnotation(keyAnnotation, { commitAnnotation: true })
 
     const localAnnotationStore = {}
-    const isTemporaryAnnotation = {}
     // Create local annotations
     for (let i = 1; i <= numFrames; ++i) {
       const frameIndex = keyFrame + (direction === PROPAGATION_DIRECTION.FORWARD ? 1 : -1) * i
-      if (annotations[frameIndex]) {
+      if (!!annotations[frameIndex]) {
         if (annotations[frameIndex].keyFrame) {
           continue;
         } else {
@@ -213,24 +188,21 @@ const PropagationConfig = (props) => {
           newAnnotation.isPropagating = true
           updateAnnotation(newAnnotation, { commitAnnotation: false })
           localAnnotationStore[frameIndex] = newAnnotation
-          isTemporaryAnnotation[frameIndex] = false
         }
       } else {
         const newAnnotation = new MaskAnnotationClass('', selectedObjectId, frames[frameIndex].id, {}, false)
         newAnnotation.isPropagating = true
+        newAnnotation.isTemporary = true
         appendAnnotation(newAnnotation, { commitAnnotation: false })
         localAnnotationStore[frameIndex] = newAnnotation
-        isTemporaryAnnotation[frameIndex] = true
       }
     }
     setLocalAnnotationStore(localAnnotationStore)
-    setIsTemporaryAnnotation(isTemporaryAnnotation)
     await runPropagation(keyFrame, numFrames, direction)
 
     setIsPropagating(false)
     setBlockPropagation(false)
     setLocalAnnotationStore({})
-    setIsTemporaryAnnotation({})
   }
 
   const handleCancelPropagation = () => {

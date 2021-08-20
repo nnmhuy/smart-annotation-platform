@@ -5,7 +5,7 @@ import { get, cloneDeep } from 'lodash'
 import EventCenter from '../../../EventCenter'
 import { useGeneralStore, useAnnotationStore } from '../../../stores/index'
 
-import { EVENT_TYPES, MODES } from '../../../constants'
+import { EVENT_TYPES } from '../../../constants'
 
 const useCutPolygonStore = create((set, get) => ({
   isMouseOverPolygonCutStart: false,
