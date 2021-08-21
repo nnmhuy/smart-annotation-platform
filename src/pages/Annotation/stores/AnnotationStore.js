@@ -1,5 +1,5 @@
 import create from 'zustand'
-import { filter, cloneDeep, find } from 'lodash'
+import { filter, cloneDeep, find, findIndex } from 'lodash'
 
 import LabelService from '../../../services/LabelService'
 import AnnotationObjectService from '../../../services/AnnotationObjectService'
@@ -287,6 +287,39 @@ const useAnnotationStore = create((set, get) => ({
     })
 
     set({ annotations })
+  },
+
+
+  /**
+   * 
+   * @param {*} newAnnotationsDict 
+   * @param {*} options 
+   * @returns {*} reaching keyFrame index
+   */
+  updatePropagatedAnnotations: async (newAnnotations, options = {}) => {
+    const { commitAnnotation = true } = options
+    let annotations = cloneDeep(get().annotations)
+
+    let breakFrameIndex = undefined
+    newAnnotations.every((newAnnotation, index) => {
+      const pos = findIndex(annotations[newAnnotation.annotationImageId], { id: newAnnotation.id })
+      if (annotations[newAnnotation.annotationImageId][pos].keyFrame) {
+        breakFrameIndex = index;
+        return false;
+      }
+
+      annotations[newAnnotation.annotationImageId][pos] = newAnnotation
+      return true;
+    })
+
+
+    if (commitAnnotation) {
+      await Promise.all(newAnnotations.slice(0, breakFrameIndex ? breakFrameIndex - 1 : undefined).map(ann => ann.applyUpdate())
+      )
+    }
+
+    set({ annotations })
+    return breakFrameIndex;
   },
 }))
 

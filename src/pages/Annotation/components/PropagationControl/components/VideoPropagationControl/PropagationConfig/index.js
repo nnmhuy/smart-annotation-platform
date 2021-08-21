@@ -61,6 +61,7 @@ const PropagationConfig = (props) => {
   const updateAnnotation = useAnnotationStore(state => state.updateAnnotation)
   const updateAnnotations = useAnnotationStore(state => state.updateAnnotations)
   const appendAnnotations = useAnnotationStore(state => state.appendAnnotations)
+  const updatePropagatedAnnotations = useAnnotationStore(state => state.updatePropagatedAnnotations)
   const cleanUpPropagatingAnnotations = useAnnotationStore(state => state.cleanUpPropagatingAnnotations)
 
 
@@ -100,22 +101,29 @@ const PropagationConfig = (props) => {
         }
         propagatingFrames.push(frameIndex)
       }
-      await RestConnector.post('/mask_propagation/predict', {
-        "annotation_id": annotations[keyFrame].id,
-        "key_frame": keyFrame,
-        "propagating_frames": propagatingFrames
-      }, {
-        cancelToken: getCancelToken().token
-      })
-        .then(response => response.data)
-        .then((propagatedMasks) => {
-          // Assign urls to annotations and commit
-          return setPropagatedMasks(propagatingFrames, propagatedMasks)
+
+      try {
+        const breakKeyFrame = await RestConnector.post('/mask_propagation/predict', {
+          "annotation_id": annotations[keyFrame].id,
+          "key_frame": keyFrame,
+          "propagating_frames": propagatingFrames
+        }, {
+          cancelToken: getCancelToken().token
         })
-        .catch(() => {
-          console.log("Canceled propagation")
+          .then(response => response.data)
+          .then((propagatedMasks) => {
+            // Assign urls to annotations and commit
+            return setPropagatedMasks(propagatingFrames, propagatedMasks)
+          })
+
+        // Reaching a new key frame => stop propagation
+        if (!!breakKeyFrame) {
           return cleanUpCanceledPropagation()
-        })
+        }
+      } catch (error) {
+        console.log("Canceled propagation")
+        return cleanUpCanceledPropagation()
+      }
     }
   }
 
@@ -126,18 +134,17 @@ const PropagationConfig = (props) => {
       const newAnnotation = localAnnotationStore[frameIndex]
       await newAnnotation.setMask(propagatedMasks[index])
       newAnnotation.isPropagating = false
-      if (newAnnotation.isTemporary) {
-        newAnnotation.isTemporary = false
-      }
+      newAnnotation.isTemporary = false
       return newAnnotation
     }))
-    let newAnnotationsDict = {}
+
     newAnnotations.forEach((annotation, index) => {
-      newAnnotationsDict[annotation.id] = annotation
       const frameIndex = propagatedFrames[index]
       updateLocalAnnotationStore(frameIndex, annotation)
     })
-    updateAnnotations(newAnnotationsDict, { commitAnnotation: true })
+    const breakKeyFrame = await updatePropagatedAnnotations(newAnnotations, { commitAnnotation: true })
+
+    return breakKeyFrame
   }
 
   const cleanUpCanceledPropagation = async () => {
@@ -170,7 +177,7 @@ const PropagationConfig = (props) => {
       const frameIndex = keyFrame + (direction === PROPAGATION_DIRECTION.FORWARD ? 1 : -1) * i
       if (!!annotations[frameIndex]) {
         if (annotations[frameIndex].keyFrame) {
-          continue;
+          break;
         } else {
           const newAnnotation = cloneDeep(annotations[frameIndex])
           newAnnotation.isPropagating = true

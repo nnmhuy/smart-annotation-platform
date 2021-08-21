@@ -11,10 +11,13 @@ const PropagationPreview = (props) => {
   const { playingFrame, annotations } = props
 
   const updateAnnotation = useAnnotationStore(state => state.updateAnnotation)
+  const getSelectedObjectId = useAnnotationStore(state => state.getSelectedObjectId)
   const setAnnotation = useAnnotationStore(state => state.setAnnotation)
+  const getAnnotationByAnnotationObjectId = useAnnotationStore(state => state.getAnnotationByAnnotationObjectId)
 
   const getPropagationTask = usePropagationStore(state => state.getPropagationTask)
   const getIsPropagating = usePropagationStore(state => state.getIsPropagating)
+
 
   useEffect(() => {
     const currentAnnotation = annotations[playingFrame]
@@ -30,11 +33,11 @@ const PropagationPreview = (props) => {
       .then(async maskURLs => {
         const maskURL = maskURLs[0]
         await currentAnnotation.setMask(maskURL)
-        const isPropagating = getIsPropagating()
-        if (isPropagating) {
-          // TODO: only set if currentAnnotation is still isPropagating
-          setAnnotation(currentAnnotation.id, cloneDeep(currentAnnotation.maskData), { commitAnnotation: false })
-        }
+        
+        const latestCurrentAnnotation = getAnnotationByAnnotationObjectId(currentAnnotation.annotationObjectId, currentAnnotation.annotationImageId)
+        if (!latestCurrentAnnotation.isPropagating) return;
+
+        setAnnotation(currentAnnotation.id, cloneDeep(currentAnnotation.maskData), { commitAnnotation: false })
       })
       .catch(err => console.log(err))
     }
