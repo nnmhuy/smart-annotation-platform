@@ -3,10 +3,9 @@ import { makeStyles } from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import { cloneDeep } from 'lodash'
-import create from 'zustand'
 import { CancelToken } from 'axios'
 
-import { useAnnotationStore } from '../../../../../stores'
+import { useAnnotationStore, usePropagationStore } from '../../../../../stores'
 
 import PropagateIcon from '@material-ui/icons/DoubleArrowRounded';
 import SettingsIcon from '@material-ui/icons/SettingsRounded';
@@ -53,29 +52,6 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const usePropagationStore = create((set, get) => ({
-  isPropagating: false,
-  blockPropagation: false,
-  
-  setBlockPropagation: (value) => set({ blockPropagation: value }),
-  setIsPropagating: (value) => set({ isPropagating: value }),
-  getIsPropagating: () => get().isPropagating,
-  
-  cancelToken: null,
-  setCancelToken: (token) => set({ cancelToken: token }),
-  getCancelToken: () => get().cancelToken,
-  
-  localAnnotationStore: {},
-  setLocalAnnotationStore: (newValue) => set({ localAnnotationStore: newValue }),
-  getLocalAnnotationStore: () => get().localAnnotationStore,
-  updateLocalAnnotationStore: (key, value) => set(state => ({
-    localAnnotationStore: {
-      ...state.localAnnotationStore,
-      [key]: value
-    }
-  })),
-}))
-
 const PropagationConfig = (props) => {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null);
@@ -87,6 +63,8 @@ const PropagationConfig = (props) => {
   const appendAnnotations = useAnnotationStore(state => state.appendAnnotations)
   const cleanUpPropagatingAnnotations = useAnnotationStore(state => state.cleanUpPropagatingAnnotations)
 
+
+  const setPropagationTask = usePropagationStore(state => state.setPropagationTask)
 
   const isPropagating = usePropagationStore(state => state.isPropagating)
   const getIsPropagating = usePropagationStore(state => state.getIsPropagating)
@@ -174,6 +152,11 @@ const PropagationConfig = (props) => {
     const keyFrame = cloneDeep(playingFrame)
     const numFrames = cloneDeep(propagationConfig.frames)
     const direction = cloneDeep(propagationConfig.direction)
+    setPropagationTask({
+      keyFrame,
+      numFrames,
+      direction
+    })
 
     const keyAnnotation = cloneDeep(annotations[keyFrame])
     keyAnnotation.keyFrame = true

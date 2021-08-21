@@ -6,6 +6,7 @@ import { find } from 'lodash'
 import { useDatasetStore, useAnnotationStore } from '../../../../stores/index'
 import EventCenter from '../../../../EventCenter'
 
+import PropagationPreview from './PropagationPreview/index.js'
 import FrameCarousel from './FrameCarousel/index.js'
 import PropagationConfig from './PropagationConfig/index.js'
 
@@ -48,8 +49,9 @@ const VideoPropagationControl = (props) => {
 
   return (
     <Grid container className={classes.root} direction="row">
+      <PropagationPreview playingFrame={playingFrame} annotations={currentAnnotations}/>
       <FrameCarousel playingFrame={playingFrame} annotations={currentAnnotations}/>
-      <PropagationConfig 
+      <PropagationConfig
         selectedObjectId={selectedObjectId}
         playingFrame={playingFrame} 
         frames={frames}
