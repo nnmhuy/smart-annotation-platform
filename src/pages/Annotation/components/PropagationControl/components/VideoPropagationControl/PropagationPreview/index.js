@@ -12,6 +12,8 @@ const PropagationPreview = (props) => {
   const updateAnnotation = useAnnotationStore(state => state.updateAnnotation)
 
   const getPropagationTask = usePropagationStore(state => state.getPropagationTask)
+  const getIsPropagating = usePropagationStore(state => state.getIsPropagating)
+
   useEffect(() => {
     const currentAnnotation = annotations[playingFrame]
     if (!!currentAnnotation && currentAnnotation.isPropagating) {
@@ -26,8 +28,12 @@ const PropagationPreview = (props) => {
       .then(async maskURLs => {
         const maskURL = maskURLs[0]
         await currentAnnotation.setMask(maskURL)
-        updateAnnotation(currentAnnotation, { commitAnnotation: false })
+        const isPropagating = getIsPropagating()
+        if (isPropagating) {
+          updateAnnotation(currentAnnotation, { commitAnnotation: false })
+        }
       })
+      .catch(err => console.log(err))
     }
   }, [playingFrame, annotations])
 

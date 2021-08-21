@@ -89,7 +89,7 @@ const ScribbleToMask = (props) => {
     const currentMousePosition = getCurrentMousePosition()
     const toolConfig = getToolConfig()
 
-    let scribbles = cloneDeep(drawingAnnotation.maskData.scribbles)
+    let scribbles = cloneDeep(drawingAnnotation.maskData.scribbles) || []
     scribbles.push({
       points: [[currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]],
       type: toolConfig.scribbleType,

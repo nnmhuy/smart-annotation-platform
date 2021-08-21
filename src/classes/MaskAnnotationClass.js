@@ -38,7 +38,7 @@ export default class MaskAnnotation extends AnnotationClass {
       data.annotation_object,
       data.annotation_image,
       {
-        scribbles: data.scribbles,
+        scribbles: data.scribbles || [],
         mask: maskFile,
         threshold: data.threshold,
       },
