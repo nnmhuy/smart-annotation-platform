@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { cloneDeep } from 'lodash'
 
 
 import { useAnnotationStore, usePropagationStore } from '../../../../../stores'
@@ -10,6 +11,7 @@ const PropagationPreview = (props) => {
   const { playingFrame, annotations } = props
 
   const updateAnnotation = useAnnotationStore(state => state.updateAnnotation)
+  const setAnnotation = useAnnotationStore(state => state.setAnnotation)
 
   const getPropagationTask = usePropagationStore(state => state.getPropagationTask)
   const getIsPropagating = usePropagationStore(state => state.getIsPropagating)
@@ -30,7 +32,8 @@ const PropagationPreview = (props) => {
         await currentAnnotation.setMask(maskURL)
         const isPropagating = getIsPropagating()
         if (isPropagating) {
-          updateAnnotation(currentAnnotation, { commitAnnotation: false })
+          // TODO: only set if currentAnnotation is still isPropagating
+          setAnnotation(currentAnnotation.id, cloneDeep(currentAnnotation.maskData), { commitAnnotation: false })
         }
       })
       .catch(err => console.log(err))
@@ -38,7 +41,6 @@ const PropagationPreview = (props) => {
   }, [playingFrame, annotations])
 
   // TODO: button to get preview or when playing it will load all previews (waste)
-
   return null
 }
 

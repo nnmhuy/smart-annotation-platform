@@ -47,7 +47,7 @@ const ScribbleToMask = (props) => {
   const setMiVOSBuilder = useScribbleToMaskStore(state => state.setMiVOSBuilder)
 
 
-  const getCurrentAnnotation = async () => {
+  const getCurrentAnnotation = async (createIfNotExist = true) => {
     const objectId = await getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.MASK, {
       ...DEFAULT_ANNOTATION_ATTRS,
       fill: '#FFFFFF'
@@ -62,6 +62,9 @@ const ScribbleToMask = (props) => {
 
       return drawingAnnotation
     } else {
+      if (!createIfNotExist) {
+        return null
+      }
       const toolConfig = getToolConfig()
 
       const newAnnotation = new MaskAnnotationClass('', objectId, annotationImageId, {
@@ -75,7 +78,7 @@ const ScribbleToMask = (props) => {
       miVOSBuilder.setScribbles([])
       miVOSBuilder.setMask(null)
   
-      appendAnnotation(newAnnotation, { commitAnnotation: true })
+      await appendAnnotation(newAnnotation, { commitAnnotation: false })
       return newAnnotation
     }
   }
@@ -95,6 +98,7 @@ const ScribbleToMask = (props) => {
       type: toolConfig.scribbleType,
       strokeWidth: toolConfig.scribbleSize,
     })
+
     setAnnotation(drawingAnnotation.id, { scribbles }, { commitAnnotation: true })
 
     setIsDrawingScribble(true)
@@ -106,11 +110,13 @@ const ScribbleToMask = (props) => {
       return
     }
     
+    const drawingAnnotation = await getCurrentAnnotation(false)
+    if (!drawingAnnotation) return;
+
     const renderingSize = getRenderingSize()
     const imageWidth = get(renderingSize, 'width', 1)
     const imageHeight = get(renderingSize, 'height', 1)
 
-    const drawingAnnotation = await getCurrentAnnotation()
     const currentMousePosition = getCurrentMousePosition()
 
     let scribbles = cloneDeep(drawingAnnotation.maskData.scribbles)
@@ -130,21 +136,23 @@ const ScribbleToMask = (props) => {
     }
 
     setIsDrawingScribble(false)
-    const drawingAnnotation = await getCurrentAnnotation()
+    const drawingAnnotation = await getCurrentAnnotation(false)
+    if (!drawingAnnotation) return;
+
     setAnnotation(drawingAnnotation.id, {}, { commitAnnotation: true })
 
     let miVOSBuilder = getMiVOSBuilder()
     await miVOSBuilder.setScribbles(drawingAnnotation.maskData.scribbles)
     setMiVOSBuilder(miVOSBuilder)
-
-    setIsDrawingScribble(false)
   }
 
   const handleClearAllScribbles = async () => {
     if (!instanceId) {
       return
     }
-    const drawingAnnotation = await getCurrentAnnotation()
+    const drawingAnnotation = await getCurrentAnnotation(false)
+    if (!drawingAnnotation) return;
+
     setAnnotation(drawingAnnotation.id, {
       scribbles: []
     }, { commitAnnotation: true })
@@ -185,7 +193,9 @@ const ScribbleToMask = (props) => {
     if (!instanceId) {
       return
     }
-    const drawingAnnotation = await getCurrentAnnotation()
+    const drawingAnnotation = await getCurrentAnnotation(false)
+    if (!drawingAnnotation) return;
+
     const toolConfig = getToolConfig()
 
     setAnnotation(drawingAnnotation.id, {
