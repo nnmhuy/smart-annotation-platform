@@ -142,7 +142,7 @@ const PropagationConfig = (props) => {
       const frameIndex = propagatedFrames[index]
       updateLocalAnnotationStore(frameIndex, annotation)
     })
-    const breakKeyFrame = await updatePropagatedAnnotations(newAnnotations, { commitAnnotation: true })
+    const breakKeyFrame = await updatePropagatedAnnotations(cloneDeep(newAnnotations), { commitAnnotation: true })
 
     return breakKeyFrame
   }
@@ -192,8 +192,8 @@ const PropagationConfig = (props) => {
         localAnnotationStore[frameIndex] = newAnnotation
       }
     }
-    updateAnnotations(newAnnotationsDict, { commitAnnotation: false })
-    appendAnnotations(newTemporaryAnnotations, { commitAnnotation: false })
+    updateAnnotations(cloneDeep(newAnnotationsDict), { commitAnnotation: false })
+    appendAnnotations(cloneDeep(newTemporaryAnnotations), { commitAnnotation: false })
     setLocalAnnotationStore(localAnnotationStore)
     await runPropagation(keyFrame, numFrames, direction)
 

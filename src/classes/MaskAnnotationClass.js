@@ -57,6 +57,7 @@ export default class MaskAnnotation extends AnnotationClass {
         URL: this.maskData.mask.URL,
       }
     }
+
     return await RestConnector.post('/annotations', {
       id: this.id,
       annotation_object_id: this.annotationObjectId,

@@ -163,9 +163,11 @@ const useAnnotationStore = create((set, get) => ({
     const { commitAnnotation = true } = options
     let annotations = cloneDeep(get().annotations)
 
+    let clonedAnnotation = cloneDeep(newAnnotation)
+
     try {
       if (commitAnnotation) {
-        newAnnotation.applyUpdate()
+        clonedAnnotation.applyUpdate()
       }
     } catch (error) {
       console.log(error)
@@ -176,7 +178,7 @@ const useAnnotationStore = create((set, get) => ({
         if (annotation.id !== newAnnotation.id) {
           return annotation
         } else {
-          return newAnnotation
+          return clonedAnnotation
         }
       })
     })
@@ -294,7 +296,7 @@ const useAnnotationStore = create((set, get) => ({
    * 
    * @param {*} newAnnotationsDict 
    * @param {*} options 
-   * @returns {*} reaching keyFrame index
+   * @returns {*} reaching keyFrame index or not propagating
    */
   updatePropagatedAnnotations: async (newAnnotations, options = {}) => {
     const { commitAnnotation = true } = options
@@ -303,7 +305,9 @@ const useAnnotationStore = create((set, get) => ({
     let breakFrameIndex = undefined
     newAnnotations.every((newAnnotation, index) => {
       const pos = findIndex(annotations[newAnnotation.annotationImageId], { id: newAnnotation.id })
-      if (annotations[newAnnotation.annotationImageId][pos].keyFrame) {
+      const oldAnnotation = annotations[newAnnotation.annotationImageId][pos]
+      if (oldAnnotation.keyFrame || !oldAnnotation.isPropagating) {
+        debugger
         breakFrameIndex = index;
         return false;
       }
@@ -314,8 +318,7 @@ const useAnnotationStore = create((set, get) => ({
 
 
     if (commitAnnotation) {
-      await Promise.all(newAnnotations.slice(0, breakFrameIndex ? breakFrameIndex - 1 : undefined).map(ann => ann.applyUpdate())
-      )
+      await Promise.all(newAnnotations.slice(0, breakFrameIndex).map(ann => ann.applyUpdate()))
     }
 
     set({ annotations })
