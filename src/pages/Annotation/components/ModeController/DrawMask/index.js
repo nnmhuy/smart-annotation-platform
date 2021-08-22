@@ -228,7 +228,7 @@ const ScribbleToMask = (props) => {
 
     await drawingAnnotation.setMask(data)
 
-    setAnnotation(drawingAnnotation.id, cloneDeep(drawingAnnotation.maskData), { commitAnnotation: true })
+    setAnnotation(drawingAnnotation.id, cloneDeep(drawingAnnotation.maskData), { commitAnnotation: true, setKeyFrame: true })
     EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT_FINISH)()
     setIsPredicting(false)
   }

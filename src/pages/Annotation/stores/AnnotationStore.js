@@ -138,7 +138,7 @@ const useAnnotationStore = create((set, get) => ({
     setIsLoading("loading_annotations", false)
   },
   setAnnotation: async (annotationId, newEditingAnnotationData, options = {}) => {
-    const { commitAnnotation = true } = options
+    const { commitAnnotation = true, setKeyFrame = false } = options
     let annotations = cloneDeep(get().annotations)
 
     Object.keys(annotations).forEach(annotationImageId => {
@@ -148,6 +148,9 @@ const useAnnotationStore = create((set, get) => ({
         } else {
 
           annotation.updateData = newEditingAnnotationData
+          if (setKeyFrame) {
+            annotation.keyFrame = true
+          }
           if (commitAnnotation) {
             annotation.applyUpdate()
           }
