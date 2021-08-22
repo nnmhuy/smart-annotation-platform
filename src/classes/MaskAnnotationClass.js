@@ -38,7 +38,7 @@ export default class MaskAnnotation extends AnnotationClass {
       data.annotation_object,
       data.annotation_image,
       {
-        scribbles: data.scribbles,
+        scribbles: data.scribbles || [],
         mask: maskFile,
         threshold: data.threshold,
       },
@@ -57,6 +57,7 @@ export default class MaskAnnotation extends AnnotationClass {
         URL: this.maskData.mask.URL,
       }
     }
+
     return await RestConnector.post('/annotations', {
       id: this.id,
       annotation_object_id: this.annotationObjectId,

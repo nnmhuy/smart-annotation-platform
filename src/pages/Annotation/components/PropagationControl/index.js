@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import { find } from 'lodash'
 
-import { useDatasetStore, useAnnotationStore } from '../../stores/index'
+import { useDatasetStore } from '../../stores/index'
 
 import VideoPropagationControl from './components/VideoPropagationControl/index'
 

@@ -1,5 +1,5 @@
 import create from 'zustand'
-import { filter, cloneDeep, find } from 'lodash'
+import { filter, cloneDeep, find, findIndex } from 'lodash'
 
 import LabelService from '../../../services/LabelService'
 import AnnotationObjectService from '../../../services/AnnotationObjectService'
@@ -138,7 +138,7 @@ const useAnnotationStore = create((set, get) => ({
     setIsLoading("loading_annotations", false)
   },
   setAnnotation: async (annotationId, newEditingAnnotationData, options = {}) => {
-    const { commitAnnotation = true } = options
+    const { commitAnnotation = true, setKeyFrame = false } = options
     let annotations = cloneDeep(get().annotations)
 
     Object.keys(annotations).forEach(annotationImageId => {
@@ -148,6 +148,9 @@ const useAnnotationStore = create((set, get) => ({
         } else {
 
           annotation.updateData = newEditingAnnotationData
+          if (setKeyFrame) {
+            annotation.keyFrame = true
+          }
           if (commitAnnotation) {
             annotation.applyUpdate()
           }
@@ -163,9 +166,11 @@ const useAnnotationStore = create((set, get) => ({
     const { commitAnnotation = true } = options
     let annotations = cloneDeep(get().annotations)
 
+    let clonedAnnotation = cloneDeep(newAnnotation)
+
     try {
       if (commitAnnotation) {
-        newAnnotation.applyUpdate()
+        clonedAnnotation.applyUpdate()
       }
     } catch (error) {
       console.log(error)
@@ -176,7 +181,31 @@ const useAnnotationStore = create((set, get) => ({
         if (annotation.id !== newAnnotation.id) {
           return annotation
         } else {
-          return newAnnotation
+          return clonedAnnotation
+        }
+      })
+    })
+
+    set({ annotations })
+  },
+  updateAnnotations: async (newAnnotationsDict, options = {}) => {
+    const { commitAnnotation = true } = options
+    let annotations = cloneDeep(get().annotations)
+
+    try {
+      if (commitAnnotation) {
+        await Promise.all(Object.keys(newAnnotationsDict).map(id => newAnnotationsDict[id].applyUpdate()))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+    Object.keys(annotations).forEach(annotationImageId => {
+      annotations[annotationImageId] = annotations[annotationImageId].map((annotation) => {
+        if (!!newAnnotationsDict[annotation.id]) {
+          return newAnnotationsDict[annotation.id]
+        } else {
+          return annotation
         }
       })
     })
@@ -207,11 +236,18 @@ const useAnnotationStore = create((set, get) => ({
 
     set({ annotations })
   },
-  cleanUpPropagatingAnnotation: (propagatingAnnotationId) => {
+  cleanUpPropagatingAnnotations: () => {
     let annotations = cloneDeep(get().annotations)
 
     Object.keys(annotations).forEach(annotationImageId => {
-      annotations[annotationImageId] = filter(annotations[annotationImageId], (ann) => ann.id !== propagatingAnnotationId)
+      let newAnnotations = []
+      annotations[annotationImageId].forEach((ann) => {
+        if (!ann.isTemporary) {
+          ann.isPropagating = false
+          newAnnotations.push(ann)
+        }
+      })
+      annotations[annotationImageId] = newAnnotations
     })
     set({ annotations })
   },
@@ -236,6 +272,60 @@ const useAnnotationStore = create((set, get) => ({
     annotations[newAnnotation.annotationImageId] = [...annotations[newAnnotation.annotationImageId], newAnnotation]
 
     set({ annotations })
+  },
+  appendAnnotations: async (newAnnotations, options = {}) => {
+    const { commitAnnotation = true } = options
+    try {
+      if (commitAnnotation) {
+        await Promise.all(newAnnotations.map((ann) => ann.applyUpdate()))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+    const annotations = get().annotations
+
+    newAnnotations.forEach(newAnnotation => {
+      if (!annotations[newAnnotation.annotationImageId]) {
+        annotations[newAnnotation.annotationImageId] = []
+      }
+      annotations[newAnnotation.annotationImageId] = [...annotations[newAnnotation.annotationImageId], newAnnotation]
+    })
+
+    set({ annotations })
+  },
+
+
+  /**
+   * 
+   * @param {*} newAnnotationsDict 
+   * @param {*} options 
+   * @returns {*} reaching keyFrame index or not propagating
+   */
+  updatePropagatedAnnotations: async (newAnnotations, options = {}) => {
+    const { commitAnnotation = true } = options
+    let annotations = cloneDeep(get().annotations)
+
+    let breakFrameIndex = undefined
+    newAnnotations.every((newAnnotation, index) => {
+      const pos = findIndex(annotations[newAnnotation.annotationImageId], { id: newAnnotation.id })
+      const oldAnnotation = annotations[newAnnotation.annotationImageId][pos]
+      if (oldAnnotation.keyFrame || !oldAnnotation.isPropagating) {
+        debugger
+        breakFrameIndex = index;
+        return false;
+      }
+
+      annotations[newAnnotation.annotationImageId][pos] = newAnnotation
+      return true;
+    })
+
+
+    if (commitAnnotation) {
+      await Promise.all(newAnnotations.slice(0, breakFrameIndex).map(ann => ann.applyUpdate()))
+    }
+
+    set({ annotations })
+    return breakFrameIndex;
   },
 }))
 

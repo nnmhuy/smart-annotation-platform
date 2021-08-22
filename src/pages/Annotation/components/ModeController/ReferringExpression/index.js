@@ -36,7 +36,7 @@ const ReferringExpression = (props) => {
     return objectId
   }
 
-  const getCurrentAnnotation = async () => {
+  const getCurrentAnnotation = async (createIfNotExist = true) => {
     const objectId = await getCurrentAnnotationObjectId()
     const annotationImageId = getCurrentAnnotationImageId()
 
@@ -45,6 +45,9 @@ const ReferringExpression = (props) => {
     if (drawingAnnotation) {
       return drawingAnnotation
     } else {
+      if (!createIfNotExist) {
+        return null
+      }
       const newAnnotation = new MaskAnnotationClass('', objectId, annotationImageId, {}, true)
 
       await appendAnnotation(newAnnotation, { commitAnnotation: true })
@@ -98,7 +101,11 @@ const ReferringExpression = (props) => {
 
     await currentAnnotation.setMask(data)
 
-    setAnnotation(currentAnnotation.id, cloneDeep(currentAnnotation.maskData))
+    setAnnotation(
+      currentAnnotation.id, 
+      cloneDeep(currentAnnotation.maskData), 
+      { commitAnnotation: true, setKeyFrame: true}
+    )
     EventCenter.emitEvent(EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_FINISH)()
     setIsPredicting(false)
   }
@@ -117,7 +124,8 @@ const ReferringExpression = (props) => {
     if (!instanceId) {
       return
     }
-    const drawingAnnotation = await getCurrentAnnotation()
+    const drawingAnnotation = await getCurrentAnnotation(false)
+    if (!drawingAnnotation) return;
 
     setAnnotation(drawingAnnotation.id, {
       threshold: newThreshold
