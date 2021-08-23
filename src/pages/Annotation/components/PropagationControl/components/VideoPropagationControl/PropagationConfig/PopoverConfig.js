@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 
 const PopoverConfig = (props) => {
   const classes = useStyles()
-  const { anchorEl, setAnchorEl, propagationConfig, setPropagationConfig } = props
+  const { anchorEl, setAnchorEl, propagationConfig, setPropagationConfig, maxValue } = props
 
   const open = Boolean(anchorEl);
 
@@ -90,10 +90,13 @@ const PopoverConfig = (props) => {
             fullWidth
             inputProps={{
               min: "0",
-              max: "20"
+              max: String(maxValue)
             }}
-            value={propagationConfig.frames}
-            onChange={(e) => handleChangeNumber({ name: e.target.name, value: e.target.value !== "" ? Number.parseInt(e.target.value) : 0 })}
+            value={Math.min(propagationConfig.frames, maxValue)}
+            onChange={(e) => {
+              e.target.value = e.target.value.replace(/^0+/, '')
+              handleChangeNumber({ name: e.target.name, value: Math.min(e.target.value !== "" ? Number.parseInt(e.target.value) : 0, maxValue) })
+            }}
           />
         </Grid>
       </Grid>

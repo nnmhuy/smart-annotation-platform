@@ -205,7 +205,10 @@ const ReferringExpressionConfig = (props) => {
             <OutlinedInput
               id="outlined-adornment-weight"
               value={threshold}
-              onChange={(e) => handleThresholdChange(e, Math.max(Math.min(Number(e.target.value), 100), 0))}
+              onChange={(e) => {
+                e.target.value = e.target.value.replace(/^0+/, '')
+                handleThresholdChange(e, Math.max(Math.min(Number(e.target.value), 100), 0))
+              }}
               className={classes.sliderInput}
               type="number"
             />
