@@ -80,6 +80,7 @@ const RenderComponent = (props) => {
 
   useEffect(() => {
     setRenderingSize(renderingSize)
+    window.canvasRenderingSize = renderingSize
     if (stage) {
       stage.position({
         x: (stageSize.width - renderingSize.width) / 2,
