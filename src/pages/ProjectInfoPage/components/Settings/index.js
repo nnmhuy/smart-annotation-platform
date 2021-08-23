@@ -34,7 +34,7 @@ const Settings = (props) => {
   const handleDeleteProject = () => {
     confirm({ 
       title: `Delete project "${project.name}"`,
-      description: `This action is permanent! You'll loose all dataset and annotations in this project.`
+      description: `This action is permanent! You'll lost all dataset and annotations in this project.`
     })
     .then(async () => { 
       await deleteProject()
@@ -45,7 +45,7 @@ const Settings = (props) => {
   return (
     <div className={classes.root}>
       <div className={classes.warningText}>
-        You'll loose all dataset and annotations in this project.
+        You'll lost all dataset and annotations in this project.
       </div>
       <Button 
         className={classes.deleteButton}
