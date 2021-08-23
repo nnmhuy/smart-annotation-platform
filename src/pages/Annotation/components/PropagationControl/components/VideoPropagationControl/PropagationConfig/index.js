@@ -93,6 +93,7 @@ const PropagationConfig = (props) => {
   }, [annotations, playingFrame])
 
 
+  let lastFrame = {}
   const runPropagation = async (keyFrame, numFrames, direction) => {
     const BATCH_SIZE = 10
     const totalFrames = frames.length
@@ -110,16 +111,22 @@ const PropagationConfig = (props) => {
         propagatingFrames.push(frameIndex)
       }
 
+      if (propagatingFrames.length === 0) {
+        return cleanUpCanceledPropagation()
+      }
       try {
-        const breakKeyFrame = await RestConnector.post('/mask_propagation/predict', {
+        let propagationData = {
           "annotation_id": annotations[keyFrame].id,
           "key_frame": keyFrame,
-          "propagating_frames": propagatingFrames
-        }, {
+          "propagating_frames": propagatingFrames,
+          ...lastFrame
+        }
+        const breakKeyFrame = await RestConnector.post('/mask_propagation/predict', propagationData, {
           cancelToken: getCancelToken().token
         })
           .then(response => response.data)
           .then((propagatedMasks) => {
+            lastFrame.mask_url = propagatedMasks[propagatedMasks.length - 1].URL
             // Assign urls to annotations and commit
             return setPropagatedMasks(propagatingFrames, propagatedMasks)
           })
@@ -132,6 +139,8 @@ const PropagationConfig = (props) => {
         console.log("Canceled propagation")
         return cleanUpCanceledPropagation()
       }
+
+      lastFrame.key_frame = propagatingFrames[propagatingFrames.length - 1]
     }
   }
 
