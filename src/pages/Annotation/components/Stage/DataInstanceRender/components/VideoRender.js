@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { get } from 'lodash'
 
 import { useDatasetStore } from '../../../../stores/index'
@@ -10,23 +10,14 @@ const Video = (props) => {
   
   const playingState = useDatasetStore(state => state.playingState)
 
-  const [imageBitmap, setImageBitmap] = useState(null)
-  React.useEffect(() => {
-    const playingFrame = get(playingState, 'playingFrame', 0)
-
-    const loadImageBitmap = async () => {
-      if (video) {
-        const bitmap = await video.frames[playingFrame]?.original?.getBitmap(renderingSize)
-        setImageBitmap(bitmap)
-      }
-    }
-
-    loadImageBitmap()
-  }, [playingState, renderingSize])
+  const playingFrame = get(playingState, 'playingFrame', 0)
+  let bitmap = get(video, `frames[${playingFrame}].original.bitmap`, null)
 
   return (video ?
     <KonvaImage
-      bitmap={imageBitmap}
+      bitmap={bitmap}
+      width={renderingSize.width}
+      height={renderingSize.height}
     />
     : null
   )
