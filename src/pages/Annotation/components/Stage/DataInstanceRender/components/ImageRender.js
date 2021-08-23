@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { get } from 'lodash'
 
 import KonvaImage from '../../../../../../components/KonvaImage'
 
@@ -11,22 +10,16 @@ const ImageRender = (props) => {
   React.useEffect(() => {
     const loadImageBitmap = async () => {
       if (image_data) {
-        const bitmap = await image_data?.image?.original?.getBitmap()
+        const bitmap = await image_data?.image?.original?.getBitmap(renderingSize)
         setImageBitmap(bitmap)
       }
     }
 
     loadImageBitmap()
-  }, [image_data])
-
-  const { width, height } = renderingSize
+  }, [image_data, renderingSize])
 
   return (image_data ?
-    <KonvaImage
-      bitmap={imageBitmap}
-      width={width}
-      height={height}
-    />
+    <KonvaImage bitmap={imageBitmap}/>
     : null
   )
 }

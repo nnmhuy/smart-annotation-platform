@@ -59,7 +59,6 @@ const VideoPlayControl = (props) => {
     if (video && playingState) {
       const currentFrame = video.getCurrentImage(playingState)
       setCurrentAnnotationImageId(currentFrame?.id)
-      // setCurrentAnnotationImage(currentFrame)
     }
   }, [videoId, playingState])
 

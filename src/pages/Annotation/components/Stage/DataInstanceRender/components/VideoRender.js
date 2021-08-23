@@ -7,18 +7,17 @@ import KonvaImage from '../../../../../../components/KonvaImage'
 
 const Video = (props) => {
   const { video, renderingSize } = props
-  const { width, height } = renderingSize
   
   const playingState = useDatasetStore(state => state.playingState)
 
   const playingFrame = get(playingState, 'playingFrame', 0)
-  const bitmap = get(video, `frames[${playingFrame}].original.bitmap`, null)
+  let bitmap = get(video, `frames[${playingFrame}].original.bitmap`, null)
 
   return (video ?
     <KonvaImage
       bitmap={bitmap}
-      width={width}
-      height={height}
+      width={renderingSize.width}
+      height={renderingSize.height}
     />
     : null
   )
