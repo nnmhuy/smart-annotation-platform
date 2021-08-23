@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { makeStyles } from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, findIndex } from 'lodash'
 import { CancelToken } from 'axios'
 
 import { useAnnotationStore, usePropagationStore } from '../../../../../stores'
@@ -83,6 +83,14 @@ const PropagationConfig = (props) => {
     direction: PROPAGATION_DIRECTION.FORWARD,
     frames: 20
   })
+  const nextKeyFrame = useMemo(() => {
+    const nextKeyFrameIndex = findIndex(annotations.slice(playingFrame + 1), ann => !!ann?.keyFrame)
+    if (nextKeyFrameIndex >= 0) {
+      return playingFrame + nextKeyFrameIndex + 1
+    } else {
+      return annotations.length
+    }
+  }, [annotations, playingFrame])
 
 
   const runPropagation = async (keyFrame, numFrames, direction) => {
@@ -245,6 +253,7 @@ const PropagationConfig = (props) => {
             setAnchorEl={setAnchorEl}
             propagationConfig={propagationConfig}
             setPropagationConfig={setPropagationConfig}
+            maxValue={nextKeyFrame - playingFrame - 1}
           />
           <Button
             color="secondary"
@@ -253,7 +262,7 @@ const PropagationConfig = (props) => {
             startIcon={<SettingsIcon fontSize="small" />}
             onClick={(e) => { !blockPropagation && setAnchorEl(e.currentTarget) }}
           >
-            {propagationConfig.frames} frames
+            {Math.min(nextKeyFrame - playingFrame - 1, propagationConfig.frames)} frames
           </Button>
           {(propagationConfig.direction === PROPAGATION_DIRECTION.FORWARD) &&
             (!isPropagating ?
