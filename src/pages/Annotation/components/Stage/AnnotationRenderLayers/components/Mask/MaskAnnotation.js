@@ -60,6 +60,8 @@ const MaskAnnotation = (props) => {
         handleSelectMask={handleSelectMask}
         handleContextMenu={handleContextMenu}
         threshold={threshold}
+        imageWidth={imageWidth}
+        imageHeight={imageHeight}
       />
     </Group>
   )

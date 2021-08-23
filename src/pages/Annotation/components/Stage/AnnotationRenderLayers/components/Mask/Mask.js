@@ -31,7 +31,9 @@ const Mask = (props) => {
     handleContextMenu,
     color,
     opacity,
-    threshold
+    threshold,
+    imageWidth,
+    imageHeight,
   } = props
 
   return (maskBmp && 
@@ -40,6 +42,8 @@ const Mask = (props) => {
       hitFromCache
       bitmap={maskBmp}
       opacity={isSelected ? opacity + 0.2 : opacity}
+      width={imageWidth}
+      height={imageHeight}
       onClick={handleSelectMask}
       onTap={handleSelectMask}
       onContextMenu={handleContextMenu}
