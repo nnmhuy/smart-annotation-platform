@@ -7,7 +7,7 @@ import { useDatasetStore, useAnnotationStore } from '../../../../stores/index'
 import EventCenter from '../../../../EventCenter'
 
 import PropagationPreview from './PropagationPreview/index.js'
-import FrameCarousel from './FrameCarousel/index.js'
+import LightFrameCarousel from './LightFrameCarousel/index.js'
 import PropagationConfig from './PropagationConfig/index.js'
 
 import { EVENT_TYPES } from '../../../../constants'
@@ -50,7 +50,7 @@ const VideoPropagationControl = (props) => {
   return (
     <Grid container className={classes.root} direction="row">
       <PropagationPreview playingFrame={playingFrame} annotations={currentAnnotations}/>
-      <FrameCarousel playingFrame={playingFrame} annotations={currentAnnotations}/>
+      <LightFrameCarousel playingFrame={playingFrame} annotations={currentAnnotations}/>
       <PropagationConfig
         selectedObjectId={selectedObjectId}
         playingFrame={playingFrame} 
