@@ -16,7 +16,7 @@ const Video = (props) => {
 
     const loadImageBitmap = async () => {
       if (video) {
-        const bitmap = await video.frames[playingFrame]?.original?.getBitmap()
+        const bitmap = await video.frames[playingFrame]?.original?.getBitmap(renderingSize)
         setImageBitmap(bitmap)
       }
     }
