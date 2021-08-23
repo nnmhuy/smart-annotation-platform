@@ -14,17 +14,26 @@ import { EVENT_TYPES, MODES, STAGE_PADDING } from '../../constants'
 import getStagePosLimit from '../../utils/getStagePosLimit'
 import getRenderingSize from '../../utils/getRenderingSize'
 
+const CANVAS_SIZE = 300
+
 const useStyles = makeStyles(() => ({
   stageContainer: {
     width: '100%',
     flex: 1,
     overflowY: 'hidden',
+    background: '#f8f8f8',
+    cursor: ({ activeMode }) => get(find(MODES, { name: activeMode }), 'cursor', 'default')
   },
   stage: {
+    width: CANVAS_SIZE,
+    height: CANVAS_SIZE,
+    transformOrigin: '0 0',
+    '-webkit-transform-origin': '0 0',
     background: '#f8f8f8',
     cursor: ({activeMode}) => get(find(MODES, { name: activeMode }), 'cursor', 'default')
   },
 }))
+
 
 const RenderComponent = (props) => {
   const activeMode = useGeneralStore(state => state.activeMode)
@@ -40,13 +49,28 @@ const RenderComponent = (props) => {
 
 
   const stage = useGeneralStore(state => state.stage)
-  const stageSize = useGeneralStore(state => state.stageSize)
   const setStageSize = useGeneralStore(state => state.setStageSize)
 
+
+  const [transformRule, setTransformRule] = React.useState(null)
   const handleNewStageSize = debounce(() => {
     const container = getStageContainerRef()
 
     if (container && container.clientWidth > 0 && container.clientHeight > 0) {
+      // Minimum scale to cover whole canvas
+      const scale = Math.max(
+        container.clientWidth / CANVAS_SIZE,
+        container.clientHeight / CANVAS_SIZE);
+      // Scaled content size
+      const size = CANVAS_SIZE * scale
+      // Offset from top/left
+      const offset = [
+        (container.clientWidth - size) / 2, (container.clientHeight - size) / 2];
+
+      // Apply CSS transform
+      const rule = "translate(" + offset[0] + "px, " + offset[1] + "px) scale(" + scale + ")";
+      setTransformRule(rule)
+
       setStageSize({
         width: container.clientWidth,
         height: container.clientHeight,
@@ -74,8 +98,11 @@ const RenderComponent = (props) => {
 
   const setRenderingSize = useGeneralStore(state => state.setRenderingSize)
   const renderingSize = useMemo(() =>
-    getRenderingSize(stageSize, dataInstance, STAGE_PADDING)
-    , [stageSize, dataInstance]
+    getRenderingSize({
+      width: CANVAS_SIZE,
+      height: CANVAS_SIZE,
+    }, dataInstance, STAGE_PADDING)
+    , [dataInstance]
   )
 
   useEffect(() => {
@@ -83,19 +110,19 @@ const RenderComponent = (props) => {
     window.canvasRenderingSize = renderingSize
     if (stage) {
       stage.position({
-        x: (stageSize.width - renderingSize.width) / 2,
-        y: (stageSize.height - renderingSize.height) / 2,
+        x: (CANVAS_SIZE- renderingSize.width) / 2,
+        y: (CANVAS_SIZE - renderingSize.height) / 2,
       });
       stage.scale({ x: 1, y: 1 })
     }
-  }, [stageSize, renderingSize])
+  }, [renderingSize])
 
 
   const dragBoundFunc = (pos) => {
     // important pos - is absolute position of the node
     // you should return absolute position too
     const stage = stageRef.current
-    let posLimit = getStagePosLimit(stage, stageSize, renderingSize)
+    let posLimit = getStagePosLimit(stage, { width: CANVAS_SIZE, height: CANVAS_SIZE }, renderingSize)
 
     return {
       x: Math.min(Math.max(pos.x, posLimit.xMin), posLimit.xMax),
@@ -107,9 +134,10 @@ const RenderComponent = (props) => {
     <div className={classes.stageContainer} ref={stageContainerRef}>
       <Stage
         ref={stageRef}
-        width={stageSize.width}
-        height={stageSize.height}
+        width={CANVAS_SIZE}
+        height={CANVAS_SIZE}
         className={classes.stage}
+        style={{ transform: transformRule }}
 
         draggable
         dragBoundFunc={dragBoundFunc}
