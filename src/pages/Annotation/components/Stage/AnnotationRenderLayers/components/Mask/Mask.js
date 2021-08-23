@@ -29,8 +29,6 @@ const Mask = (props) => {
     maskBmp,
     handleSelectMask,
     handleContextMenu,
-    imageWidth,
-    imageHeight,
     color,
     opacity,
     threshold
@@ -45,8 +43,6 @@ const Mask = (props) => {
       onClick={handleSelectMask}
       onTap={handleSelectMask}
       onContextMenu={handleContextMenu}
-      width={imageWidth}
-      height={imageHeight}
       fill={color}
       threshold={threshold / 100}
       filters={[ThresholdAndColorFilter]}
