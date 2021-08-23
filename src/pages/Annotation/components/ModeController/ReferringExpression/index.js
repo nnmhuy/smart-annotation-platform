@@ -22,6 +22,7 @@ const ReferringExpression = (props) => {
   const getAnnotationByAnnotationObjectId = useAnnotationStore(state => state.getAnnotationByAnnotationObjectId)
   const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
   const setAnnotation = useAnnotationStore(state => state.setAnnotation)
+  const updateAnnotation = useAnnotationStore(state => state.updateAnnotation)
   const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
   const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
   const setAnnotationObjectAttributes = useAnnotationStore(state => state.setAnnotationObjectAttributes)
@@ -77,6 +78,11 @@ const ReferringExpression = (props) => {
     }
     setIsPredicting(true)
     const currentAnnotation = await getCurrentAnnotation()
+    if (currentAnnotation.isTemporary) {
+      currentAnnotation.isTemporary = false
+      currentAnnotation.keyFrame = true
+      await updateAnnotation(currentAnnotation, { commitAnnotation: true })
+    }
     
     const data = {
       annotation_id: currentAnnotation.id,

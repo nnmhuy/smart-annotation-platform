@@ -150,6 +150,7 @@ const useAnnotationStore = create((set, get) => ({
           annotation.updateData = newEditingAnnotationData
           if (setKeyFrame) {
             annotation.keyFrame = true
+            annotation.isPropagating = false
           }
           if (commitAnnotation) {
             annotation.applyUpdate()
@@ -170,7 +171,7 @@ const useAnnotationStore = create((set, get) => ({
 
     try {
       if (commitAnnotation) {
-        clonedAnnotation.applyUpdate()
+        await clonedAnnotation.applyUpdate()
       }
     } catch (error) {
       console.log(error)
@@ -187,6 +188,7 @@ const useAnnotationStore = create((set, get) => ({
     })
 
     set({ annotations })
+    return "finish"
   },
   updateAnnotations: async (newAnnotationsDict, options = {}) => {
     const { commitAnnotation = true } = options
@@ -265,7 +267,7 @@ const useAnnotationStore = create((set, get) => ({
     } catch (error) {
       console.log(error)
     }
-    const annotations = get().annotations
+    const annotations = cloneDeep(get().annotations)
     if (!annotations[newAnnotation.annotationImageId]) {
       annotations[newAnnotation.annotationImageId] = []
     }
@@ -282,7 +284,7 @@ const useAnnotationStore = create((set, get) => ({
     } catch (error) {
       console.log(error)
     }
-    const annotations = get().annotations
+    const annotations = cloneDeep(get().annotations)
 
     newAnnotations.forEach(newAnnotation => {
       if (!annotations[newAnnotation.annotationImageId]) {
@@ -310,7 +312,6 @@ const useAnnotationStore = create((set, get) => ({
       const pos = findIndex(annotations[newAnnotation.annotationImageId], { id: newAnnotation.id })
       const oldAnnotation = annotations[newAnnotation.annotationImageId][pos]
       if (oldAnnotation.keyFrame || !oldAnnotation.isPropagating) {
-        debugger
         breakFrameIndex = index;
         return false;
       }

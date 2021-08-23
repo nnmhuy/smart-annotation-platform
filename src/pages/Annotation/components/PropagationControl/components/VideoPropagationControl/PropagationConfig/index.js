@@ -167,7 +167,7 @@ const PropagationConfig = (props) => {
 
     const keyAnnotation = cloneDeep(annotations[keyFrame])
     keyAnnotation.keyFrame = true
-    updateAnnotation(keyAnnotation, { commitAnnotation: true })
+    await updateAnnotation(keyAnnotation, { commitAnnotation: true })
 
     const localAnnotationStore = {}
     // Create local annotations
@@ -192,9 +192,11 @@ const PropagationConfig = (props) => {
         localAnnotationStore[frameIndex] = newAnnotation
       }
     }
-    updateAnnotations(cloneDeep(newAnnotationsDict), { commitAnnotation: false })
-    appendAnnotations(cloneDeep(newTemporaryAnnotations), { commitAnnotation: false })
+
+    await updateAnnotations(cloneDeep(newAnnotationsDict), { commitAnnotation: false })
+    await appendAnnotations(cloneDeep(newTemporaryAnnotations), { commitAnnotation: false })
     setLocalAnnotationStore(localAnnotationStore)
+  
     await runPropagation(keyFrame, numFrames, direction)
 
     setIsPropagating(false)

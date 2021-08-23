@@ -105,8 +105,8 @@ const FrameItem = (props) => {
             classes.annotationIndicator, 
             isActive && classes.activeAnnotationIndicator,
             hasAnnotation && classes.existAnnotationIndicator,
-            isKeyFrame && classes.keyFrameAnnotationIndicator,
             annotation?.isPropagating && classes.propagatingFrameIndicator,
+            isKeyFrame && classes.keyFrameAnnotationIndicator,
           )}
         >
 

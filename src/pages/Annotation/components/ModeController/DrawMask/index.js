@@ -35,6 +35,7 @@ const ScribbleToMask = (props) => {
   const getAnnotationByAnnotationObjectId = useAnnotationStore(state => state.getAnnotationByAnnotationObjectId)
   const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
   const setAnnotation = useAnnotationStore(state => state.setAnnotation)
+  const updateAnnotation = useAnnotationStore(state => state.updateAnnotation)
   const deleteAnnotation = useAnnotationStore(state => state.deleteAnnotation)
   const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
   const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
@@ -214,6 +215,11 @@ const ScribbleToMask = (props) => {
     }
     setIsPredicting(true)
     const drawingAnnotation = await getCurrentAnnotation()
+    if (drawingAnnotation.isTemporary) {
+      drawingAnnotation.isTemporary = false
+      drawingAnnotation.keyFrame = true
+      await updateAnnotation(drawingAnnotation, { commitAnnotation: true })
+    }
     let miVOSBuilder = getMiVOSBuilder()
 
     const { scribbles} = drawingAnnotation.maskData
