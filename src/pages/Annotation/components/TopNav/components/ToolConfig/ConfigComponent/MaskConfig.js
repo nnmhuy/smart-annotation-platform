@@ -138,7 +138,10 @@ const ScribbleToMaskConfig = (props) => {
             <OutlinedInput
               id="outlined-adornment-weight"
               value={scribbleSize}
-              onChange={(e) => setToolConfig({ ...toolConfig, scribbleSize: Math.max(Math.min(Number(e.target.value), SCRIBBLE_TO_MASK_CONSTANTS.MAX_SCRIBBLE_SIZE), SCRIBBLE_TO_MASK_CONSTANTS.MIN_SCRIBBLE_SIZE) })}
+              onChange={(e) => {
+                e.target.value = e.target.value.replace(/^0+/, '')
+                setToolConfig({ ...toolConfig, scribbleSize: Math.max(Math.min(Number(e.target.value), SCRIBBLE_TO_MASK_CONSTANTS.MAX_SCRIBBLE_SIZE), SCRIBBLE_TO_MASK_CONSTANTS.MIN_SCRIBBLE_SIZE) })
+              }}
               className={classes.sliderInput}
               type="number"
             />
