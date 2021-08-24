@@ -48,6 +48,10 @@ const DrawingHandler = (props) => {
 
   useEffect(() => {
     setDrawingPoly(null)
+    if (!selectedObjectId) {
+      setDrawingAnnotation(null)
+      setIsMouseOverPolygonStart(false)
+    }
   }, [selectedObjectId])
 
   const handleClickDrawPolygon = async () => {
@@ -144,8 +148,14 @@ const DrawingHandler = (props) => {
         setDrawingPoly(null)
       } else {
         const newPolygon = cloneDeep(drawingPolygon)
-        newPolygon.updateData = {
-          polys: [[...newDrawingPoly, [currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]]]
+        if (!isMobileDevice) {
+          newPolygon.updateData = {
+            polys: [[...newDrawingPoly, [currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]]]
+          }
+        } else {
+          newPolygon.updateData = {
+            polys: [newDrawingPoly]
+          }
         }
         setDrawingPoly(newDrawingPoly)
         setDrawingAnnotation(newPolygon)

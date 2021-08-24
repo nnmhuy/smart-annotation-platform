@@ -150,12 +150,21 @@ const EditingHandler = (props) => {
         )
       } else {
         setCuttingPoly(newCuttingPoly)
-        setAnnotation(currentAnnotation.id,
-          {
-            polys: [...currentPolys, [...newCuttingPoly, [currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]]]
-          },
-          { commitAnnotation: false }
-        )
+        if (!isMobileDevice) {
+          setAnnotation(currentAnnotation.id,
+            {
+              polys: [...currentPolys, [...newCuttingPoly, [currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]]]
+            },
+            { commitAnnotation: false }
+          )
+        } else {
+          setAnnotation(currentAnnotation.id,
+            {
+              polys: [...currentPolys, newCuttingPoly]
+            },
+            { commitAnnotation: false }
+          )
+        }
       }
     }
   }
