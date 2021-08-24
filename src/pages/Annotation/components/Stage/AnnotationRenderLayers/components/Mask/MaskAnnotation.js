@@ -7,6 +7,7 @@ import { useAnnotationStore } from '../../../../../stores/index'
 
 import Scribble from './Scribble'
 import Mask from './Mask'
+import Brush from './Brush'
 
 import { EVENT_TYPES } from '../../../../../constants'
 
@@ -22,7 +23,7 @@ const MaskAnnotation = (props) => {
 
   const isSelected = (annotationObjectId === selectedObjectId)
 
-  const { mask, scribbles, threshold } = maskData
+  const { mask, scribbles, maskBrushes, threshold } = maskData
   const displayMask = get(mask, 'bitmap', null)
   
   let color = get(properties, 'fill', '')
@@ -63,6 +64,20 @@ const MaskAnnotation = (props) => {
         imageWidth={imageWidth}
         imageHeight={imageHeight}
       />
+      {
+        maskBrushes.map((scribble, index) =>
+          <Brush
+            key={`scribble-${id}-${index}`} 
+            scribble={scribble}
+            imageWidth={imageWidth}
+            imageHeight={imageHeight}
+            color={color}
+            opacity={opacity}
+            handleSelectMask={handleSelectMask}
+            handleContextMenu={handleContextMenu}
+          />
+        )
+      }
     </Group>
   )
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import create from 'zustand'
 import { get, cloneDeep } from 'lodash'
 
@@ -10,6 +10,9 @@ import StorageFileClass from '../../../../../classes/StorageFileClass'
 
 import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants'
+
+import drawBrushToMask from './drawBrushToMask'
+import sendFormData from '../../../../../utils/sendFormData'
 
 const useMaskBrushStore = create((set, get) => ({
   isDrawingScribble: false,
@@ -77,7 +80,10 @@ const DrawMaskBrush = () => {
     const currentMousePosition = getCurrentMousePosition()
     const toolConfig = getToolConfig()
 
-    let maskBrushes = cloneDeep(drawingAnnotation.maskData.maskBrushes) || []
+    let maskBrushes = cloneDeep(drawingAnnotation.maskData.maskBrushes)
+    if (maskBrushes.length > 0) {
+      return;
+    }
     maskBrushes.push({
       points: [[currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]],
       type: toolConfig.scribbleType,
@@ -120,14 +126,35 @@ const DrawMaskBrush = () => {
       return
     }
 
-    // TODO: convert drawn scribbles to mask
-    // TODO: upload mask
-
-    setIsDrawingScribble(false)
     const drawingAnnotation = await getCurrentAnnotation(false)
     if (!drawingAnnotation) return;
 
-    setAnnotation(drawingAnnotation.id, {}, { commitAnnotation: true })
+    const renderingSize = getRenderingSize()
+
+    setIsDrawingScribble(false)
+
+    let maskBrushes = cloneDeep(drawingAnnotation.maskData.maskBrushes)
+    const maskBitmap = await drawingAnnotation.maskData.mask.getBitmap()
+    const newMaskBlob = await drawBrushToMask(
+      maskBitmap,
+      maskBrushes, 
+      { canvasWidth: renderingSize.width, canvasHeight: renderingSize.height }
+    )
+    drawingAnnotation.maskData.mask.blob = newMaskBlob
+    await drawingAnnotation.maskData.mask.getBitmap()
+
+    const uploadedMask = await sendFormData(
+      '/annotations/upload-annotation-mask',
+      {
+        annotation_id: drawingAnnotation.id,
+        mask: newMaskBlob
+      }
+    )
+
+    drawingAnnotation.maskData.maskBrushes = []
+    await drawingAnnotation.setMask(uploadedMask)
+
+    setAnnotation(drawingAnnotation.id, cloneDeep(drawingAnnotation.maskData), { commitAnnotation: true, setKeyFrame: true })
   }
 
   
