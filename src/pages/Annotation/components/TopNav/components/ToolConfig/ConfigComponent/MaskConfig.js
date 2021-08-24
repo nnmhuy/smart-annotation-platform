@@ -22,7 +22,7 @@ import { ReactComponent as DeleteIcon } from '../../../../../../../static/images
 
 
 
-import { SCRIBBLE_TO_MASK_CONSTANTS, EVENT_TYPES } from '../../../../../constants'
+import { SCRIBBLE_TO_MASK_CONSTANTS, SCRIBBLE_TYPES, EVENT_TYPES } from '../../../../../constants'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -63,17 +63,17 @@ const useStyles = makeStyles(theme => ({
 
 const scribbleToMaskTools = [
   {
-    tool: SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.POSITIVE,
+    tool: SCRIBBLE_TYPES.POSITIVE,
     name: 'Positive scribble',
     component: <PositiveScribbleIcon/>
   },
   {
-    tool: SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.NEGATIVE,
+    tool: SCRIBBLE_TYPES.NEGATIVE,
     name: 'Negative scribble',
     component: <NegativeScribbleIcon />
   },
   {
-    tool: SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER,
+    tool: SCRIBBLE_TYPES.ERASER,
     name: 'Eraser',
     component: <EraserIcon />
   },

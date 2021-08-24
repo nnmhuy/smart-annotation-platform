@@ -1,8 +1,8 @@
 import React from 'react'
-import { Group, Circle, Line } from 'react-konva'
+import { Group, Line } from 'react-konva'
 
 import pointArrayToFlattenPointArray from '../../../../../utils/pointArrayToFlattenPointArray'
-import { SCRIBBLE_TO_MASK_CONSTANTS, COLOR_BY_SCRIBBLE_TYPE } from '../../../../../constants'
+import { SCRIBBLE_TYPES, COLOR_BY_SCRIBBLE_TYPE } from '../../../../../constants'
 
 const Scribble = (props) => {
   const { scribble, imageWidth, imageHeight, } = props
@@ -33,8 +33,8 @@ const Scribble = (props) => {
         points={flattenPoints}
         {...others}
         strokeWidth={strokeWidth}
-        globalCompositeOperation={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 'destination-out' : undefined}
-        opacity={type === SCRIBBLE_TO_MASK_CONSTANTS.SCRIBBLE_TYPES.ERASER ? 1 : 0.6}
+        globalCompositeOperation={type === SCRIBBLE_TYPES.ERASER ? 'destination-out' : undefined}
+        opacity={type === SCRIBBLE_TYPES.ERASER ? 1 : 0.6}
         stroke={strokeColor}
         listening={false}
         lineCap="round"

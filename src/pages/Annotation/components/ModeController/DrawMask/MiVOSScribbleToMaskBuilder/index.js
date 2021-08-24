@@ -2,8 +2,7 @@ import convertScribbleToBlob from './convertScribbleToBlob'
 import resizeImage from '../../../../../../utils/resizeImage'
 import base64ToBlob from '../../../../../../utils/base64ToBlob'
 
-import { SCRIBBLE_TO_MASK_CONSTANTS } from '../../../../constants'
-const { SCRIBBLE_TYPES } = SCRIBBLE_TO_MASK_CONSTANTS
+import { SCRIBBLE_TYPES } from '../../../../constants'
 
 
 class MiVOSScribbleToMaskBuilder {

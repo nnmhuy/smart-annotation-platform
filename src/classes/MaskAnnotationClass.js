@@ -10,6 +10,7 @@ export default class MaskAnnotation extends AnnotationClass {
 
     this.type = ANNOTATION_TYPE.MASK
     this.maskData = {
+      maskBrushes: [],
       scribbles: [],
       mask: new StorageFileClass(),
       threshold: 50,

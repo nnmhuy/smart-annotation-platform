@@ -3,11 +3,13 @@ import { get } from 'lodash'
 
 import { useGeneralStore } from '../../../stores/index'
 
+import DrawMaskBrush from './DrawMaskBrush/index'
 import DrawMask from './DrawMask/index'
 
 import { MODES } from '../../../constants'
 
 const mapActiveModeToToolRender = {
+  [MODES.DRAW_MASK_BRUSH.name]: DrawMaskBrush,
   [MODES.DRAW_MASK.name]: DrawMask
 }
 

@@ -5,10 +5,9 @@ import Cursor from './Cursor/index'
 import Edit from './Edit/index'
 import DrawBBox from './DrawBBox/index'
 import DrawPolygon from './DrawPolygon/index'
-// import CutPolygon from './CutPolygon/index'
+import DrawMaskBrush from './DrawMaskBrush/index'
 import DrawMask from './DrawMask/index'
 import ReferringExpression from './ReferringExpression/index'
-// import Delete from './Delete/index'
 
 import { MODES } from '../../constants'
 import { ENUM_ANNOTATION_TYPE }from '../../../../constants/constants'
@@ -20,6 +19,7 @@ const mapModeToComponent = {
   [MODES.EDIT.name]: Edit,
   [MODES.DRAW_BBOX.name]: DrawBBox,
   [MODES.DRAW_POLYGON.name]: DrawPolygon,
+  [MODES.DRAW_MASK_BRUSH.name]: DrawMaskBrush,
   [MODES.DRAW_MASK.name]: DrawMask,
   [MODES.REFERRING_EXPRESSION.name]: ReferringExpression,
   // [MODES.CUT_POLYGON.name]: CutPolygon,
@@ -29,7 +29,7 @@ const mapModeToComponent = {
 const mapAnnotationTypeToMode = {
   [ENUM_ANNOTATION_TYPE.BBOX]: [MODES.DRAW_BBOX.name],
   [ENUM_ANNOTATION_TYPE.POLYGON]: [MODES.DRAW_POLYGON.name],
-  [ENUM_ANNOTATION_TYPE.MASK]: [MODES.DRAW_MASK.name, MODES.REFERRING_EXPRESSION.name],
+  [ENUM_ANNOTATION_TYPE.MASK]: [MODES.DRAW_MASK_BRUSH.name, MODES.DRAW_MASK.name, MODES.REFERRING_EXPRESSION.name],
 }
 
 const ModeController = (props) => {

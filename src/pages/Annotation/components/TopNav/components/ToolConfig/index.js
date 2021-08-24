@@ -7,6 +7,7 @@ import { useGeneralStore } from '../../../../stores/index'
 // import EditConfig from './ConfigComponent/EditConfig'
 import BBoxConfig from './ConfigComponent/BBoxConfig'
 import PolygonConfig from './ConfigComponent/PolygonConfig'
+import MaskBrushConfig from './ConfigComponent/MaskBrushConfig'
 import MaskConfig from './ConfigComponent/MaskConfig'
 import ReferringExpressionConfig from './ConfigComponent/ReferringExpressionConfig'
 
@@ -23,6 +24,7 @@ const toolBoxConfigs = {
   // [MODES.EDIT.name]: EditConfig,
   [MODES.DRAW_BBOX.name]: BBoxConfig,
   [MODES.DRAW_POLYGON.name]: PolygonConfig,
+  [MODES.DRAW_MASK_BRUSH.name]: MaskBrushConfig,
   [MODES.DRAW_MASK.name]: MaskConfig,
   [MODES.REFERRING_EXPRESSION.name]: ReferringExpressionConfig,
 }
