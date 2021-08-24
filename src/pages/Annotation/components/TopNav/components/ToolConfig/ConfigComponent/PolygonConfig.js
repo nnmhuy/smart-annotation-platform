@@ -4,8 +4,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import EventCenter from '../../../../../EventCenter'
 
 import ToolConfigButton from '../components/ToolConfigButton'
-import { ReactComponent as DeleteIcon } from '../../../../../../../static/images/icons/ConfigIcon/delete.svg'
-import RemoveIcon from '@material-ui/icons/RemoveCircleOutlineRounded'
+import BackspaceIcon from '@material-ui/icons/BackspaceRounded';
+import DeleteIcon from '@material-ui/icons/DeleteForeverRounded';
 
 import { EVENT_TYPES } from '../../../../../constants'
 
@@ -36,7 +36,7 @@ const PolygonConfig = (props) => {
         <ToolConfigButton
           name={'Remove last point'}
           handleClick={EventCenter.emitEvent(EVENT_TYPES.POLYGON.REMOVE_LAST_DRAWN_POINT)}
-          component={<RemoveIcon/>}
+          component={<BackspaceIcon/>}
         />
         <ToolConfigButton
           name={'Delete annotation'}

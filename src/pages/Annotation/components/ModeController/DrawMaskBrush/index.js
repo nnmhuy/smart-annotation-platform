@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import create from 'zustand'
 import { get, cloneDeep } from 'lodash'
 
@@ -7,23 +7,20 @@ import { useDatasetStore, useGeneralStore, useAnnotationStore } from '../../../s
 
 import MaskAnnotationClass from '../../../../../classes/MaskAnnotationClass'
 import StorageFileClass from '../../../../../classes/StorageFileClass'
-import MiVOSScribbleToMaskBuilder from './MiVOSScribbleToMaskBuilder/index'
 
 import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants'
 
-const useScribbleToMaskStore = create((set, get) => ({
+import drawBrushToMask from './drawBrushToMask'
+import sendFormData from '../../../../../utils/sendFormData'
+
+const useMaskBrushStore = create((set, get) => ({
   isDrawingScribble: false,
   getIsDrawingScribble: () => get().isDrawingScribble,
   setIsDrawingScribble: (value) => set({ isDrawingScribble: value }),
-
-  miVOSBuilder: new MiVOSScribbleToMaskBuilder(),
-  getMiVOSBuilder: () => get().miVOSBuilder,
-  setMiVOSBuilder: (newBuilder) => set({ miVOSBuilder: newBuilder }),
 }))
 
-const ScribbleToMask = (props) => {
-  const [isPredicting, setIsPredicting] = useState(false)
+const DrawMaskBrush = () => {
   const instanceId = useDatasetStore(state => state.instanceId)
   const getCurrentAnnotationImageId = useDatasetStore(state => state.getCurrentAnnotationImageId)
 
@@ -34,19 +31,15 @@ const ScribbleToMask = (props) => {
   const getSelectedObjectId = useAnnotationStore(state => state.getSelectedObjectId)
   const getAnnotationByAnnotationObjectId = useAnnotationStore(state => state.getAnnotationByAnnotationObjectId)
   const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
-  const setAnnotation = useAnnotationStore(state => state.setAnnotation)
-  const updateAnnotation = useAnnotationStore(state => state.updateAnnotation)
+  const setAnnotationWithImageId = useAnnotationStore(state => state.setAnnotationWithImageId)
   const deleteAnnotation = useAnnotationStore(state => state.deleteAnnotation)
   const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
   const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
 
   const getToolConfig = useGeneralStore(state => state.getToolConfig)
 
-  const getIsDrawingScribble = useScribbleToMaskStore(state => state.getIsDrawingScribble)
-  const setIsDrawingScribble = useScribbleToMaskStore(state => state.setIsDrawingScribble)
-  const getMiVOSBuilder = useScribbleToMaskStore(state => state.getMiVOSBuilder)
-  const setMiVOSBuilder = useScribbleToMaskStore(state => state.setMiVOSBuilder)
-
+  const getIsDrawingScribble = useMaskBrushStore(state => state.getIsDrawingScribble)
+  const setIsDrawingScribble = useMaskBrushStore(state => state.setIsDrawingScribble)
 
   const getCurrentAnnotation = async (createIfNotExist = true) => {
     const objectId = await getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.MASK, {
@@ -58,9 +51,6 @@ const ScribbleToMask = (props) => {
     const drawingAnnotation = getAnnotationByAnnotationObjectId(objectId, annotationImageId)
 
     if (drawingAnnotation) {
-      let miVOSBuilder = getMiVOSBuilder()
-      miVOSBuilder.setAnnotationId(drawingAnnotation.id)
-
       return drawingAnnotation
     } else {
       if (!createIfNotExist) {
@@ -69,17 +59,13 @@ const ScribbleToMask = (props) => {
       const toolConfig = getToolConfig()
 
       const newAnnotation = new MaskAnnotationClass('', objectId, annotationImageId, {
+        maskBrushes: [],
         scribbles: [],
         mask: new StorageFileClass(),
         threshold: toolConfig.threshold
       }, true)
   
-      let miVOSBuilder = getMiVOSBuilder()
-      miVOSBuilder.setAnnotationId(newAnnotation.id)
-      miVOSBuilder.setScribbles([])
-      miVOSBuilder.setMask(null)
-  
-      await appendAnnotation(newAnnotation, { commitAnnotation: false })
+      await appendAnnotation(newAnnotation, { commitAnnotation: true })
       return newAnnotation
     }
   }
@@ -93,15 +79,17 @@ const ScribbleToMask = (props) => {
     const currentMousePosition = getCurrentMousePosition()
     const toolConfig = getToolConfig()
 
-    let scribbles = cloneDeep(drawingAnnotation.maskData.scribbles) || []
-    scribbles.push({
+    let maskBrushes = cloneDeep(drawingAnnotation.maskData.maskBrushes)
+    if (maskBrushes.length > 0) {
+      return;
+    }
+    maskBrushes.push({
       points: [[currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]],
       type: toolConfig.scribbleType,
       strokeWidth: toolConfig.scribbleSize,
     })
 
-    setAnnotation(drawingAnnotation.id, { scribbles }, { commitAnnotation: true })
-
+    setAnnotationWithImageId(drawingAnnotation.id, drawingAnnotation.annotationImageId, { maskBrushes }, { commitAnnotation: false })
     setIsDrawingScribble(true)
   }
 
@@ -120,14 +108,15 @@ const ScribbleToMask = (props) => {
 
     const currentMousePosition = getCurrentMousePosition()
 
-    let scribbles = cloneDeep(drawingAnnotation.maskData.scribbles)
-    let drawingScribble = scribbles.pop()
+    let maskBrushes = cloneDeep(drawingAnnotation.maskData.maskBrushes)
+    let drawingScribble = maskBrushes.pop()
     if (!drawingScribble){
       return
     }
     drawingScribble.points.push([currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight])
-    scribbles = [...scribbles, drawingScribble]
-    setAnnotation(drawingAnnotation.id, { scribbles }, { commitAnnotation: false })
+    maskBrushes = [...maskBrushes, drawingScribble]
+
+    setAnnotationWithImageId(drawingAnnotation.id, drawingAnnotation.annotationImageId, { maskBrushes }, { commitAnnotation: false })
   }
 
   const handleFinishDrawByBrush = async () => {
@@ -136,31 +125,35 @@ const ScribbleToMask = (props) => {
       return
     }
 
+    const drawingAnnotation = await getCurrentAnnotation(false)
+    if (!drawingAnnotation) return;
+
+    const renderingSize = getRenderingSize()
+
     setIsDrawingScribble(false)
-    const drawingAnnotation = await getCurrentAnnotation(false)
-    if (!drawingAnnotation) return;
 
-    setAnnotation(drawingAnnotation.id, {}, { commitAnnotation: true })
+    let maskBrushes = cloneDeep(drawingAnnotation.maskData.maskBrushes)
+    const maskBitmap = await drawingAnnotation.maskData.mask.getBitmap()
+    const newMaskBlob = await drawBrushToMask(
+      maskBitmap,
+      maskBrushes, 
+      { canvasWidth: renderingSize.width, canvasHeight: renderingSize.height }
+    )
+    drawingAnnotation.maskData.mask.blob = newMaskBlob
+    await drawingAnnotation.maskData.mask.getBitmap()
 
-    let miVOSBuilder = getMiVOSBuilder()
-    await miVOSBuilder.setScribbles(drawingAnnotation.maskData.scribbles)
-    setMiVOSBuilder(miVOSBuilder)
-  }
+    const uploadedMask = await sendFormData(
+      '/annotations/upload-annotation-mask',
+      {
+        annotation_id: drawingAnnotation.id,
+        mask: newMaskBlob
+      }
+    )
 
-  const handleClearAllScribbles = async () => {
-    if (!instanceId) {
-      return
-    }
-    const drawingAnnotation = await getCurrentAnnotation(false)
-    if (!drawingAnnotation) return;
+    drawingAnnotation.maskData.maskBrushes = []
+    await drawingAnnotation.setMask(uploadedMask)
 
-    setAnnotation(drawingAnnotation.id, {
-      scribbles: []
-    }, { commitAnnotation: true })
-
-    let miVOSBuilder = getMiVOSBuilder()
-    await miVOSBuilder.setScribbles([])
-    setMiVOSBuilder(miVOSBuilder)
+    setAnnotationWithImageId(drawingAnnotation.id, drawingAnnotation.annotationImageId, cloneDeep(drawingAnnotation.maskData), { commitAnnotation: true, setKeyFrame: true })
   }
 
   
@@ -188,61 +181,6 @@ const ScribbleToMask = (props) => {
 
   const handleMouseEnter = () => {
     handleFinishDrawByBrush()
-  }
-
-  const handleUpdateThreshold = async () => {
-    if (!instanceId) {
-      return
-    }
-    const drawingAnnotation = await getCurrentAnnotation(false)
-    if (!drawingAnnotation) return;
-
-    const toolConfig = getToolConfig()
-
-    setAnnotation(drawingAnnotation.id, {
-      threshold: toolConfig.threshold
-    }, { commitAnnotation: true })
-  }
-
-  const handleTriggerPredict = async () => {
-    if (!instanceId) {
-      alert("Image not found")
-      EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT_ERROR)()
-      return
-    }
-    if (isPredicting) {
-      return
-    }
-    setIsPredicting(true)
-    const drawingAnnotation = await getCurrentAnnotation()
-    if (drawingAnnotation.isTemporary) {
-      drawingAnnotation.isTemporary = false
-      drawingAnnotation.keyFrame = true
-      await updateAnnotation(drawingAnnotation, { commitAnnotation: true })
-    }
-    let miVOSBuilder = getMiVOSBuilder()
-
-    const { scribbles} = drawingAnnotation.maskData
-    await miVOSBuilder.setScribbles(scribbles)
-
-    const data = miVOSBuilder.getMiVOSScribbleToMaskInput()
-    EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.MI_VOS_S2M)(data)
-  }
-
-  const handleFinishPredict = async (data) => {
-    const drawingAnnotation = await getCurrentAnnotation()
-
-    await drawingAnnotation.setMask(data)
-
-    setAnnotation(drawingAnnotation.id, cloneDeep(drawingAnnotation.maskData), { commitAnnotation: true, setKeyFrame: true })
-    EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT_FINISH)()
-    setIsPredicting(false)
-  }
-
-  const handlePredictError = () => {
-    alert("Prediction error")
-    EventCenter.emitEvent(EVENT_TYPES.DRAW_MASK.PREDICT_ERROR)()
-    setIsPredicting(false)
   }
 
   const handleUnselectCurrentAnnotationObject = () => {
@@ -283,16 +221,6 @@ const ScribbleToMask = (props) => {
         .subscribe({ next: (e) => handleMouseUp(e) }),
       [EVENT_TYPES.STAGE_MOUSE_ENTER]: getSubject(EVENT_TYPES.STAGE_MOUSE_ENTER)
         .subscribe({ next: (e) => handleMouseEnter(e) }),
-      [EVENT_TYPES.DRAW_MASK.PREDICT]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT)
-        .subscribe({ next: (e) => handleTriggerPredict(e) }),
-      [EVENT_TYPES.DRAW_MASK.MI_VOS_S2M_ERROR]: getSubject(EVENT_TYPES.DRAW_MASK.MI_VOS_S2M_ERROR)
-        .subscribe({ next: (e) => handlePredictError(e) }),
-      [EVENT_TYPES.DRAW_MASK.MI_VOS_S2M_FINISH]: getSubject(EVENT_TYPES.DRAW_MASK.MI_VOS_S2M_FINISH)
-        .subscribe({ next: (e) => handleFinishPredict(e) }),
-      [EVENT_TYPES.DRAW_MASK.CLEAR_ALL]: getSubject(EVENT_TYPES.DRAW_MASK.CLEAR_ALL_SCRIBBLES)
-        .subscribe({ next: (e) => handleClearAllScribbles(e) }),
-      [EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD]: getSubject(EVENT_TYPES.DRAW_MASK.UPDATE_THRESHOLD)
-        .subscribe({ next: (e) => handleUpdateThreshold(e) }),
       [EVENT_TYPES.UNSELECT_CURRENT_ANNOTATION_OBJECT]: getSubject(EVENT_TYPES.UNSELECT_CURRENT_ANNOTATION_OBJECT)
         .subscribe({ next: (e) => handleUnselectCurrentAnnotationObject(e) }),
       [EVENT_TYPES.EDIT.DELETE_ANNOTATION]: getSubject(EVENT_TYPES.EDIT.DELETE_ANNOTATION)
@@ -307,4 +235,4 @@ const ScribbleToMask = (props) => {
   return null
 }
 
-export default ScribbleToMask
+export default DrawMaskBrush

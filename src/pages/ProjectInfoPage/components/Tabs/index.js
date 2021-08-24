@@ -20,7 +20,7 @@ const ProjectTabs = (props) => {
   const classes = useStyles()
   const { value, setValue } = props
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (_, newValue) => {
     setValue(newValue);
   };
 
@@ -34,8 +34,7 @@ const ProjectTabs = (props) => {
     >
       <Tab label="Dataset" {...a11yProps(0)} />
       <Tab label="Labels" {...a11yProps(1)} />
-      <Tab label="Export" {...a11yProps(2)} />
-      <Tab label="Settings" {...a11yProps(3)} />
+      <Tab label="Settings" {...a11yProps(2)} />
     </Tabs>
   )
 }

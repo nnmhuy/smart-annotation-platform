@@ -9,6 +9,7 @@ import { MODES } from '../../constants'
 import { ReactComponent as RectangleIcon } from '../../../../static/images/icons/ToolboxIcon/rectangle.svg'
 import { ReactComponent as PolygonIcon } from '../../../../static/images/icons/ToolboxIcon/polygon.svg'
 import { ReactComponent as PainBrushIcon } from '../../../../static/images/icons/ToolboxIcon/paintbrush.svg'
+import { ReactComponent as ScribblesIcon } from '../../../../static/images/icons/ToolboxIcon/scribbles.svg'
 import { ReactComponent as CursorIcon } from '../../../../static/images/icons/ToolboxIcon/cursor.svg'
 import { ReactComponent as EditIcon } from '../../../../static/images/icons/ToolboxIcon/edit.svg'
 import { ReactComponent as RefExIcon } from '../../../../static/images/icons/ToolboxIcon/refex.svg'
@@ -46,25 +47,20 @@ const toolBoxButtons = [
     component: <PolygonIcon />,
   },
   {
-    name: 'Mask',
-    mode: MODES.DRAW_MASK.name,
+    name: 'Mask brush',
+    mode: MODES.DRAW_MASK_BRUSH.name,
     component: <PainBrushIcon />,
+  },
+  {
+    name: 'Scribble to Mask',
+    mode: MODES.DRAW_MASK.name,
+    component: <ScribblesIcon />,
   },
   {
     name: 'Referring expression',
     mode: MODES.REFERRING_EXPRESSION.name,
     component: <RefExIcon />,
   },
-  // {
-  //   name: 'Cut',
-  //   mode: MODES.CUT_POLYGON.name,
-  //   component: <CutIcon />
-  // },
-  // {
-  //   name: 'Delete',
-  //   mode: MODES.DELETE.name,
-  //   component: <DeleteIcon />,
-  // },
 ]
 
 const Toolbox = () => {

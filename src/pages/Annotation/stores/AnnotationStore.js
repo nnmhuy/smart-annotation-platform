@@ -163,6 +163,30 @@ const useAnnotationStore = create((set, get) => ({
 
     set({ annotations })
   },
+  setAnnotationWithImageId: async (annotationId, annotationImageId, newEditingAnnotationData, options = {}) => {
+    const { commitAnnotation = true, setKeyFrame = false } = options
+    let annotations = cloneDeep(get().annotations)
+
+    annotations[annotationImageId] = annotations[annotationImageId].map((annotation) => {
+      if (annotation.id !== annotationId) {
+        return annotation
+      } else {
+
+        annotation.updateData = newEditingAnnotationData
+        if (setKeyFrame) {
+          annotation.keyFrame = true
+          annotation.isPropagating = false
+        }
+        if (commitAnnotation) {
+          annotation.applyUpdate()
+        }
+
+        return annotation
+      }
+    })
+
+    set({ annotations })
+  },
   updateAnnotation: async (newAnnotation, options = {}) => {
     const { commitAnnotation = true } = options
     let annotations = cloneDeep(get().annotations)
@@ -176,15 +200,14 @@ const useAnnotationStore = create((set, get) => ({
     } catch (error) {
       console.log(error)
     }
-
-    Object.keys(annotations).forEach(annotationImageId => {
-      annotations[annotationImageId] = annotations[annotationImageId].map((annotation) => {
-        if (annotation.id !== newAnnotation.id) {
-          return annotation
-        } else {
-          return clonedAnnotation
-        }
-      })
+    
+    const annotationImageId = newAnnotation.annotationImageId
+    annotations[annotationImageId] = annotations[annotationImageId].map((annotation) => {
+      if (annotation.id !== newAnnotation.id) {
+        return annotation
+      } else {
+        return clonedAnnotation
+      }
     })
 
     set({ annotations })
@@ -259,10 +282,10 @@ const useAnnotationStore = create((set, get) => ({
   getDrawingAnnotation: () => get().drawingAnnotation,
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
   appendAnnotation: async (newAnnotation, options = {} ) => {
-    const { commitAnnotation = true } = options
+    const { commitAnnotation = true, awaitUpdate = true } = options
     try {
       if (commitAnnotation) {
-        await newAnnotation.applyUpdate()
+        awaitUpdate ? await newAnnotation.applyUpdate() : newAnnotation.applyUpdate()
       }
     } catch (error) {
       console.log(error)

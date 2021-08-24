@@ -10,6 +10,9 @@ import PolygonAnnotationClass from '../../../../../classes/PolygonAnnotationClas
 import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
 
+import { getDistance } from '../../../../../utils/geometryUtil'
+import checkIsMobileDevice from '../../../../../utils/checkIsMobileDevice'
+
 const useDrawPolygonStore = create((set, get) => ({
   isMouseOverPolygonStart: false,
   getIsMouseOverPolygonStart: () => get().isMouseOverPolygonStart,
@@ -22,6 +25,8 @@ const useDrawPolygonStore = create((set, get) => ({
 }))
 
 const DrawingHandler = (props) => {
+  const isMobileDevice = checkIsMobileDevice()
+
   const getRenderingSize = useGeneralStore(state => state.getRenderingSize)
   const updateCurrentMousePosition = useGeneralStore(state => state.updateCurrentMousePosition)
   const getCurrentMousePosition = useGeneralStore(state => state.getCurrentMousePosition)
@@ -43,6 +48,10 @@ const DrawingHandler = (props) => {
 
   useEffect(() => {
     setDrawingPoly(null)
+    if (!selectedObjectId) {
+      setDrawingAnnotation(null)
+      setIsMouseOverPolygonStart(false)
+    }
   }, [selectedObjectId])
 
   const handleClickDrawPolygon = async () => {
@@ -54,7 +63,6 @@ const DrawingHandler = (props) => {
     const drawingPolygon = getDrawingAnnotation()
 
     const drawingPoly = getDrawingPoly()
-    const isMouseOverPolygonStart = getIsMouseOverPolygonStart()
 
     if (drawingPoly === null) {
       const objectId = await getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.POLYGON, DEFAULT_ANNOTATION_ATTRS)
@@ -67,7 +75,16 @@ const DrawingHandler = (props) => {
       }, true))
       setDrawingPoly([[currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]])
     } else {
-      if (isMouseOverPolygonStart) {
+      let finishDrawing = false
+      if (!isMobileDevice) {
+        finishDrawing = getIsMouseOverPolygonStart()
+      } else {
+        finishDrawing = drawingPoly.length >= 3 && 
+          getDistance(currentMousePosition, { x: drawingPoly[0][0] * imageWidth, y: drawingPoly[0][1] * imageHeight }) <= 10
+      }
+
+
+      if (finishDrawing) {
         finishDrawPolygon()
       } else {
         const newDrawingAnnotation = cloneDeep(drawingPolygon)
@@ -89,10 +106,10 @@ const DrawingHandler = (props) => {
       polys: [drawingPoly]
     }
 
+    appendAnnotation(finishedPolygon, { commitAnnotation: true, awaitUpdate: false })
     setDrawingAnnotation(null)
     setDrawingPoly(null)
     setIsMouseOverPolygonStart(false)
-    appendAnnotation(finishedPolygon, { commitAnnotation: true })
     // EventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedPolygon.id)
   }
 
@@ -131,8 +148,14 @@ const DrawingHandler = (props) => {
         setDrawingPoly(null)
       } else {
         const newPolygon = cloneDeep(drawingPolygon)
-        newPolygon.updateData = {
-          polys: [[...newDrawingPoly, [currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]]]
+        if (!isMobileDevice) {
+          newPolygon.updateData = {
+            polys: [[...newDrawingPoly, [currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]]]
+          }
+        } else {
+          newPolygon.updateData = {
+            polys: [newDrawingPoly]
+          }
         }
         setDrawingPoly(newDrawingPoly)
         setDrawingAnnotation(newPolygon)

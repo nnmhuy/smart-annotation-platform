@@ -1,5 +1,7 @@
+import { SCRIBBLE_TYPES } from '../../../constants'
+
 // Step 1: Draw all polygons to canvas
-const convertScribbleToBlob = (scribbles, scribbleType, options) => {
+const drawBrushToMask = (maskBitmap, scribbles, options) => {
   const { canvasWidth, canvasHeight } = options
 
   let tmpCanvas = document.createElement("canvas")
@@ -9,14 +11,16 @@ const convertScribbleToBlob = (scribbles, scribbleType, options) => {
 
   let ctx = tmpCanvas.getContext('2d')
 
-  // Step 1: Draw all polygons to canvas
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+  if (maskBitmap) {
+    ctx.drawImage(maskBitmap, 0, 0)
+  }
   ctx.lineCap = 'round'
   ctx.lineJoin = 'round'
   scribbles.forEach((scribble) => {
     const { points, type, strokeWidth } = scribble
-    if (type === scribbleType) {
+    if (type === SCRIBBLE_TYPES.POSITIVE) {
       ctx.fillStyle = '#fff';
       ctx.strokeStyle = '#fff';
     } else {
@@ -30,6 +34,7 @@ const convertScribbleToBlob = (scribbles, scribbleType, options) => {
       ctx.lineTo(point[0] * canvasWidth, point[1] * canvasHeight)
     });
     ctx.stroke();
+    // ctx.fill();
   })
   // let imgData = tmpCanvas.toDataURL();
   
@@ -41,4 +46,4 @@ const convertScribbleToBlob = (scribbles, scribbleType, options) => {
   })
 }
 
-export default convertScribbleToBlob
+export default drawBrushToMask

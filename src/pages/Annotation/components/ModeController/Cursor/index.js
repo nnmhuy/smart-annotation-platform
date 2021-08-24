@@ -8,23 +8,9 @@ import {
   EVENT_TYPES,
   MIN_ZOOM_SCALE, MAX_ZOOM_SCALE, } from '../../../constants';
 
-const useCursorStore = create((set, get) => ({
-  lastCenter: null,
-  lastDist: 0,
-
-  setLastCenter: (newCenter) => set({ lastCenter: newCenter }),
-  getLastCenter: () => get().lastCenter,
-  setLastDist: (newDist) => set({ dist: newDist }),
-  getLastDist: () => get().lastDist,
-}))
 
 const Cursor = (props) => {
   const stage = useGeneralStore(state => state.stage)
-
-  const setLastCenter = useCursorStore(state => state.setLastCenter)
-  const getLastCenter = useCursorStore(state => state.getLastCenter)
-  const setLastDist = useCursorStore(state => state.setLastDist)
-  const getLastDist = useCursorStore(state => state.getLastDist)
 
   function getDistance(p1, p2) {
     return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
@@ -37,75 +23,70 @@ const Cursor = (props) => {
     };
   }
 
+  let lastDist = 0
+  let lastCenter = null
   const handleTouchMove = (e) => {
     window.addEventListener("touchend", handleTouchEnd)
 
     e.evt.preventDefault();
-    var touch1 = e.evt.touches[0];
-    var touch2 = e.evt.touches[1];
-
-    let lastCenter = getLastCenter()
-    let lastDist = getLastDist() 
+    const touch1 = e.evt.touches[0];
+    const touch2 = e.evt.touches[1];
 
     if (touch1 && touch2) {
       // if the stage was under Konva's drag&drop
       // we need to stop it, and implement our own pan logic with two pointers
-      if (stage.isDragging()) {
-        stage.stopDrag();
-      }
+      stage.stopDrag();
 
-      var p1 = {
+      const p1 = {
         x: touch1.clientX,
         y: touch1.clientY,
       };
-      var p2 = {
+      const p2 = {
         x: touch2.clientX,
         y: touch2.clientY,
       };
 
       if (!lastCenter) {
-        setLastCenter(getCenter(p1, p2))
+        lastCenter = getCenter(p1, p2)
         return;
       }
-      var newCenter = getCenter(p1, p2);
+      const newCenter = getCenter(p1, p2);
 
-      var dist = getDistance(p1, p2);
+      const dist = getDistance(p1, p2);
 
       if (!lastDist) {
         lastDist = dist;
-        setLastDist(dist)
       }
 
       // local coordinates of center point
-      var pointTo = {
+      const pointTo = {
         x: (newCenter.x - stage.x()) / stage.scaleX(),
-        y: (newCenter.y - stage.y()) / stage.scaleX(),
+        y: (newCenter.y - stage.y()) / stage.scaleY(),
       };
 
-      var scale = stage.scaleX() * (dist / lastDist);
-
-      stage.scaleX(scale);
-      stage.scaleY(scale);
+      const scale = stage.scaleX() * (dist / lastDist);
+      stage.scale({ x: scale, y: scale })
 
       // calculate new position of the stage
-      var dx = newCenter.x - lastCenter.x;
-      var dy = newCenter.y - lastCenter.y;
+      const dx = newCenter.x - lastCenter.x;
+      const dy = newCenter.y - lastCenter.y;
 
-      var newPos = {
+      const newPos = {
         x: newCenter.x - pointTo.x * scale + dx,
         y: newCenter.y - pointTo.y * scale + dy,
       };
 
       stage.position(newPos);
 
-      setLastDist(dist)
-      setLastCenter(newCenter)
+      lastDist = dist
+      lastCenter = newCenter
+      stage.batchDraw();
     }
   }
 
   const handleTouchEnd = () => {
-    setLastCenter(null)
-    setLastDist(0)
+    lastDist = 0
+    lastCenter = null
 
     window.removeEventListener("touchend", handleTouchEnd)
   }

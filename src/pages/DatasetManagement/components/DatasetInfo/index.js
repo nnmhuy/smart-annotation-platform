@@ -9,15 +9,19 @@ import { withFormik, Field } from 'formik';
 import * as Yup from 'yup'
 import { get, cloneDeep } from 'lodash'
 
+import AnnotateIcon from '@material-ui/icons/PlayArrowRounded';
 import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
 import SettingsIcon from '@material-ui/icons/Settings';
+import ExportIcon from '@material-ui/icons/GetAppRounded';
 
 import NakedField from '../../../../components/NakedField'
 import SettingsMenu from './components/SettingsMenu'
 
 import DatasetClass from '../../../../classes/DatasetClass'
 import useQuery from '../../../../utils/useQuery'
+
+import { backendURL } from '../../../../constants/constants'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,7 +65,7 @@ const DatasetInfo = (props) => {
   const deleteDataset = useStore(state => state.deleteDataset)
   const updateDatasetInfo = useStore(state => state.updateDatasetInfo)
 
-  const { projectId, datatype, instances, } = dataset
+  const { id, projectId, datatype, instances, } = dataset
 
   React.useEffect(() => {
     const { name, description } = dataset
@@ -153,10 +157,10 @@ const DatasetInfo = (props) => {
             <Button
               variant="outlined" className={classes.button}
               color="primary"
-              startIcon={<AddIcon />}
-              href={`/annotations/dataset=${datasetId}?page=${page}`}
+              startIcon={<ExportIcon />}
+              href={`${backendURL}/export/export_dataset?dataset_id=${id}`}
             >
-              Start annotate
+              Export dataset
             </Button>
           </Grid>
           <Grid item>
@@ -167,6 +171,16 @@ const DatasetInfo = (props) => {
               href={`/datasets/upload/dataset=${datasetId}`}
             >
               Add data
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              variant="outlined" className={classes.button}
+              color="primary"
+              startIcon={<AnnotateIcon />}
+              href={`/annotations/dataset=${datasetId}?page=${page}`}
+            >
+              Start annotate
             </Button>
           </Grid>
         </Grid>

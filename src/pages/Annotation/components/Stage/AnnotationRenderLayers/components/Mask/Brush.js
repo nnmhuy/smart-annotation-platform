@@ -2,19 +2,19 @@ import React from 'react'
 import { Group, Line } from 'react-konva'
 
 import pointArrayToFlattenPointArray from '../../../../../utils/pointArrayToFlattenPointArray'
-import { SCRIBBLE_TYPES, COLOR_BY_SCRIBBLE_TYPE } from '../../../../../constants'
+import { SCRIBBLE_TYPES } from '../../../../../constants'
 
-const Scribble = (props) => {
-  const { scribble, imageWidth, imageHeight, } = props
-  
-  const { 
-    type, points, strokeWidth, 
-    ...others 
+const Brush = (props) => {
+  const { scribble, imageWidth, imageHeight, color, opacity } = props
+
+  const {
+    type, points, strokeWidth,
+    ...others
   } = scribble
 
 
   const flattenPoints = pointArrayToFlattenPointArray(points, imageWidth, imageHeight)
-  const strokeColor = COLOR_BY_SCRIBBLE_TYPE[type]
+  const strokeColor = color
 
   return (
     <Group listening={false}>
@@ -33,8 +33,8 @@ const Scribble = (props) => {
         points={flattenPoints}
         {...others}
         strokeWidth={strokeWidth}
-        globalCompositeOperation={type === SCRIBBLE_TYPES.ERASER ? 'destination-out' : undefined}
-        opacity={type === SCRIBBLE_TYPES.ERASER ? 1 : 0.6}
+        globalCompositeOperation={type === SCRIBBLE_TYPES.NEGATIVE ? 'destination-out' : undefined}
+        opacity={opacity}
         stroke={strokeColor}
         listening={false}
         lineCap="round"
@@ -44,4 +44,4 @@ const Scribble = (props) => {
   )
 }
 
-export default Scribble
+export default Brush

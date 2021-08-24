@@ -67,7 +67,7 @@ const DrawingHandler = (props) => {
     finishedRectangle.annotationImageId = annotationImageId
 
     setDrawingAnnotation(null)
-    appendAnnotation(finishedRectangle, { commitAnnotation: true })
+    appendAnnotation(finishedRectangle, { commitAnnotation: true, awaitUpdate: false })
     // EventCenter.emitEvent(EVENT_TYPES.FINISH_ANNOTATION)(finishedRectangle.id)
   }
 
