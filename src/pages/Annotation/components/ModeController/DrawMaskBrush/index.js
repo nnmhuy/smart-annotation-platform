@@ -31,8 +31,7 @@ const DrawMaskBrush = () => {
   const getSelectedObjectId = useAnnotationStore(state => state.getSelectedObjectId)
   const getAnnotationByAnnotationObjectId = useAnnotationStore(state => state.getAnnotationByAnnotationObjectId)
   const appendAnnotation = useAnnotationStore(state => state.appendAnnotation)
-  const setAnnotation = useAnnotationStore(state => state.setAnnotation)
-  const updateAnnotation = useAnnotationStore(state => state.updateAnnotation)
+  const setAnnotationWithImageId = useAnnotationStore(state => state.setAnnotationWithImageId)
   const deleteAnnotation = useAnnotationStore(state => state.deleteAnnotation)
   const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
   const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
@@ -66,7 +65,7 @@ const DrawMaskBrush = () => {
         threshold: toolConfig.threshold
       }, true)
   
-      await appendAnnotation(newAnnotation, { commitAnnotation: false })
+      await appendAnnotation(newAnnotation, { commitAnnotation: true })
       return newAnnotation
     }
   }
@@ -90,8 +89,7 @@ const DrawMaskBrush = () => {
       strokeWidth: toolConfig.scribbleSize,
     })
 
-    setAnnotation(drawingAnnotation.id, { maskBrushes }, { commitAnnotation: true })
-
+    setAnnotationWithImageId(drawingAnnotation.id, drawingAnnotation.annotationImageId, { maskBrushes }, { commitAnnotation: false })
     setIsDrawingScribble(true)
   }
 
@@ -117,7 +115,8 @@ const DrawMaskBrush = () => {
     }
     drawingScribble.points.push([currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight])
     maskBrushes = [...maskBrushes, drawingScribble]
-    setAnnotation(drawingAnnotation.id, { maskBrushes }, { commitAnnotation: false })
+
+    setAnnotationWithImageId(drawingAnnotation.id, drawingAnnotation.annotationImageId, { maskBrushes }, { commitAnnotation: false })
   }
 
   const handleFinishDrawByBrush = async () => {
@@ -154,7 +153,7 @@ const DrawMaskBrush = () => {
     drawingAnnotation.maskData.maskBrushes = []
     await drawingAnnotation.setMask(uploadedMask)
 
-    setAnnotation(drawingAnnotation.id, cloneDeep(drawingAnnotation.maskData), { commitAnnotation: true, setKeyFrame: true })
+    setAnnotationWithImageId(drawingAnnotation.id, drawingAnnotation.annotationImageId, cloneDeep(drawingAnnotation.maskData), { commitAnnotation: true, setKeyFrame: true })
   }
 
   
