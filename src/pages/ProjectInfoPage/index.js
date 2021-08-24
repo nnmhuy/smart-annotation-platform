@@ -9,7 +9,6 @@ import ProjectTabs from './components/Tabs/index'
 import TabPanel from './components/TabPanel/index'
 import DatasetList from './components/DatasetList/index'
 import LabelList from './components/LabelList/index'
-import Export from './components/Export/index'
 import Settings from './components/Settings/index'
 
 import useProjectInfoStore from './store'
@@ -60,9 +59,6 @@ const ProjectInfoPage = () => {
           <LabelList useStore={useProjectInfoStore}/>
         </TabPanel>
         <TabPanel value={activeTab} index={2} dir={theme.direction}>
-          <Export useStore={useProjectInfoStore} />
-        </TabPanel>
-        <TabPanel value={activeTab} index={3} dir={theme.direction}>
           <Settings useStore={useProjectInfoStore} />
         </TabPanel>
       </SwipeableViews>

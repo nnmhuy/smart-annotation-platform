@@ -17,6 +17,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import CreateIcon from '@material-ui/icons/AddCircle';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 
+import Link from '../../../../components/Link'
 import CreateDatasetDialog from './components/CreateDatasetDialog'
 
 const useStyles = makeStyles(() => ({
@@ -25,7 +26,14 @@ const useStyles = makeStyles(() => ({
 
 const tableColumns = [
   {
-    key: 'name', label: 'Name'
+    key: 'name', label: 'Name',
+    formatter: (value, fullValue) => 
+      <Link 
+        to={`/datasets/dataset=${fullValue.id}`}
+        style={{ color: '#2876D4' }}
+      >
+        {value}
+      </Link>
   },
   {
     key: 'datatype', label: 'Type'
@@ -100,7 +108,7 @@ const DatasetList = (props) => {
                 const colValue = get(dataset, col.key, '')
                 return (
                   <TableCell key={`dataset-${dataset.id}-col-${col.key}`}>
-                    {col.formatter ? col.formatter(colValue) : colValue}
+                    {col.formatter ? col.formatter(colValue, dataset) : colValue}
                   </TableCell>
                 )
               })}
