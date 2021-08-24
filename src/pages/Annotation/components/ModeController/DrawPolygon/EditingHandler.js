@@ -6,6 +6,8 @@ import EventCenter from '../../../EventCenter'
 import { useGeneralStore, useAnnotationStore } from '../../../stores/index'
 
 import { EVENT_TYPES } from '../../../constants'
+import checkIsMobileDevice from '../../../../../utils/checkIsMobileDevice'
+import { getDistance } from '../../../../../utils/geometryUtil'
 
 const useCutPolygonStore = create((set, get) => ({
   isMouseOverPolygonCutStart: false,
@@ -22,6 +24,7 @@ const useCutPolygonStore = create((set, get) => ({
 const EditingHandler = (props) => {
   const { currentAnnotation } = props
 
+  const isMobileDevice = checkIsMobileDevice()
   const getRenderingSize = useGeneralStore(state => state.getRenderingSize)
   const updateCurrentMousePosition = useGeneralStore(state => state.updateCurrentMousePosition)
   const getCurrentMousePosition = useGeneralStore(state => state.getCurrentMousePosition)
@@ -49,8 +52,6 @@ const EditingHandler = (props) => {
     const currentMousePosition = getCurrentMousePosition()
 
     const cuttingPoly = getCuttingPoly()
-    const isMouseOverPolygonCutStart = getIsMouseOverPolygonCutStart()
-
 
     if (cuttingPoly === null) {
       const currentPolys = cloneDeep(currentAnnotation.polygon.polys)
@@ -63,7 +64,15 @@ const EditingHandler = (props) => {
       )
       setCuttingPoly([[currentMousePosition.x / imageWidth, currentMousePosition.y / imageHeight]])
     } else {
-      if (isMouseOverPolygonCutStart) {
+      let finishCutting = false
+      if (!isMobileDevice) {
+        finishCutting = getIsMouseOverPolygonCutStart()
+      } else {
+        finishCutting = cuttingPoly.length >= 3 &&
+          getDistance(currentMousePosition, { x: cuttingPoly[0][0] * imageWidth, y: cuttingPoly[0][1] * imageHeight }) <= 10
+      }
+
+      if (finishCutting) {
         finishCutPolygon()
       } else {
         const currentPolys = cloneDeep(currentAnnotation.polygon.polys)
