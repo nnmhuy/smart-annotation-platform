@@ -102,7 +102,7 @@ const DrawingHandler = (props) => {
       polys: [drawingPoly]
     }
 
-    appendAnnotation(finishedPolygon, { commitAnnotation: true })
+    appendAnnotation(finishedPolygon, { commitAnnotation: true, awaitUpdate: false })
     setDrawingAnnotation(null)
     setDrawingPoly(null)
     setIsMouseOverPolygonStart(false)

@@ -259,10 +259,10 @@ const useAnnotationStore = create((set, get) => ({
   getDrawingAnnotation: () => get().drawingAnnotation,
   setDrawingAnnotation: (newDrawingAnnotation) => set({ drawingAnnotation: newDrawingAnnotation }),
   appendAnnotation: async (newAnnotation, options = {} ) => {
-    const { commitAnnotation = true } = options
+    const { commitAnnotation = true, awaitUpdate = true } = options
     try {
       if (commitAnnotation) {
-        await newAnnotation.applyUpdate()
+        awaitUpdate ? await newAnnotation.applyUpdate() : newAnnotation.applyUpdate()
       }
     } catch (error) {
       console.log(error)
