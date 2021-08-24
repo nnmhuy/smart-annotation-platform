@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import create from 'zustand'
 import { get, cloneDeep } from 'lodash'
 
@@ -35,6 +35,10 @@ const EditingHandler = (props) => {
   const getCuttingPoly = useCutPolygonStore(state => state.getCuttingPoly)
   const setCuttingPoly = useCutPolygonStore(state => state.setCuttingPoly)
   const appendCuttingPoly = useCutPolygonStore(state => state.appendCuttingPoly)
+
+  useEffect(() => {
+    setCuttingPoly(null)
+  }, [currentAnnotation?.id])
 
 
   const handleClickCutPolygon = () => {
@@ -202,6 +206,8 @@ const EditingHandler = (props) => {
         .subscribe({ next: (e) => handleMouseMove(e) }),
       [EVENT_TYPES.STAGE_CONTEXT_MENU]: getSubject(EVENT_TYPES.STAGE_CONTEXT_MENU)
         .subscribe({ next: (e) => handleContextMenu(e) }),
+      [EVENT_TYPES.POLYGON.REMOVE_LAST_DRAWN_POINT]: getSubject(EVENT_TYPES.POLYGON.REMOVE_LAST_DRAWN_POINT)
+        .subscribe({ next: (e) => handleRightClickCutPolygon(e) }),
       [EVENT_TYPES.MOUSE_OVER_POLYGON_START]: getSubject(EVENT_TYPES.MOUSE_OVER_POLYGON_START)
         .subscribe({ next: (e) => handleMouseOverPolygonCutStart(e) }),
     }

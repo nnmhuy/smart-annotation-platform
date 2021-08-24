@@ -271,9 +271,15 @@ const ScribbleToMask = (props) => {
         .subscribe({ next: (e) => handleDragStart(e) }),
       [EVENT_TYPES.STAGE_MOUSE_DOWN]: getSubject(EVENT_TYPES.STAGE_MOUSE_DOWN)
         .subscribe({ next: (e) => handleMouseDown(e) }),
+      [EVENT_TYPES.STAGE_TOUCH_START]: getSubject(EVENT_TYPES.STAGE_TOUCH_START)
+        .subscribe({ next: (e) => handleMouseDown(e) }),
       [EVENT_TYPES.STAGE_MOUSE_MOVE]: getSubject(EVENT_TYPES.STAGE_MOUSE_MOVE)
         .subscribe({ next: (e) => handleMouseMove(e) }),
+      [EVENT_TYPES.STAGE_TOUCH_MOVE]: getSubject(EVENT_TYPES.STAGE_TOUCH_MOVE)
+        .subscribe({ next: (e) => handleMouseMove(e) }),
       [EVENT_TYPES.STAGE_MOUSE_UP]: getSubject(EVENT_TYPES.STAGE_MOUSE_UP)
+        .subscribe({ next: (e) => handleMouseUp(e) }),
+      [EVENT_TYPES.STAGE_TOUCH_END]: getSubject(EVENT_TYPES.STAGE_TOUCH_END)
         .subscribe({ next: (e) => handleMouseUp(e) }),
       [EVENT_TYPES.STAGE_MOUSE_ENTER]: getSubject(EVENT_TYPES.STAGE_MOUSE_ENTER)
         .subscribe({ next: (e) => handleMouseEnter(e) }),
