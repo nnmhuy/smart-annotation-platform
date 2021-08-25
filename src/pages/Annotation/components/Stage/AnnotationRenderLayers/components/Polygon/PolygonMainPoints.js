@@ -76,7 +76,7 @@ const PolygonMainPoints = (props) => {
             // disable hitFunc while drawing or cutting or dragging viewport
           }}
           {...startPointAttr}
-          draggable={isSelected}
+          draggable={isSelected && !isDrawing && !isCutting}
           onDragStart={handleStartDraggingMainPoint}
           onDragMove={(e) => handleMoveDraggingMainPoint(e, polyIndex, pointIndex)}
           onDragEnd={handleEndDraggingMainPoint}
