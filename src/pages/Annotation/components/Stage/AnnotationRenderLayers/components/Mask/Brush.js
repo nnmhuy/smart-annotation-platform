@@ -5,7 +5,7 @@ import pointArrayToFlattenPointArray from '../../../../../utils/pointArrayToFlat
 import { SCRIBBLE_TYPES } from '../../../../../constants'
 
 const Brush = (props) => {
-  const { scribble, imageWidth, imageHeight, color, opacity } = props
+  const { isSelected, scribble, imageWidth, imageHeight, color, opacity } = props
 
   const {
     type, points, strokeWidth,
@@ -34,7 +34,7 @@ const Brush = (props) => {
         {...others}
         strokeWidth={strokeWidth}
         globalCompositeOperation={type === SCRIBBLE_TYPES.NEGATIVE ? 'destination-out' : undefined}
-        opacity={opacity}
+        opacity={isSelected ? opacity + 0.2 : opacity}
         stroke={strokeColor}
         listening={false}
         lineCap="round"

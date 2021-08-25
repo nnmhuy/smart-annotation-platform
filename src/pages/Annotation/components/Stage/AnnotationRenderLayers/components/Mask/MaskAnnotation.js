@@ -68,6 +68,7 @@ const MaskAnnotation = (props) => {
         maskBrushes.map((scribble, index) =>
           <Brush
             key={`scribble-${id}-${index}`} 
+            isSelected={isSelected}
             scribble={scribble}
             imageWidth={imageWidth}
             imageHeight={imageHeight}
