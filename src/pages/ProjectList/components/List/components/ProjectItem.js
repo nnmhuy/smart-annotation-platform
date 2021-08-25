@@ -51,7 +51,7 @@ const ProjectItem = (props) => {
 
   return (
     <Grid
-      container xs={12}
+      container
       className={classes.projectContainer}
       component={Link}
       to={`/projects/project=${id}`}

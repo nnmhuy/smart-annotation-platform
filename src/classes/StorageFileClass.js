@@ -29,7 +29,9 @@ export default class StorageFileClass {
         this.bitmap = await this.getBlob().then(blob => createImageBitmap(blob, {
           resizeWidth: canvasRenderingSize.width,
           resizeHeight: canvasRenderingSize.height,
-        }))
+        })).catch(err => {
+          console.log(err)
+        })
       } catch (error) {
         this.bitmap = null
       }

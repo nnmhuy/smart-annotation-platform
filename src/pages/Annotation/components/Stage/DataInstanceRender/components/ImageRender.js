@@ -18,13 +18,13 @@ const ImageRender = (props) => {
     loadImageBitmap()
   }, [image_data, renderingSize])
 
-  return (image_data ?
-    <KonvaImage 
-      bitmap={imageBitmap}
-      width={renderingSize.width}
-      height={renderingSize.height}
-    />
-    : null
+  return (
+    imageBitmap &&
+      <KonvaImage
+        bitmap={imageBitmap}
+        width={renderingSize.width}
+        height={renderingSize.height}
+      />
   )
 }
 
