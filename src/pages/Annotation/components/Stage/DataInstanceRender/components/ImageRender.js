@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import KonvaImage from '../../../../../../components/KonvaImage'
 
 const ImageRender = (props) => {
-  const { image: image_data, renderingSize } = props
+  const { instanceId, image: image_data, renderingSize } = props
 
   const [imageBitmap, setImageBitmap] = useState(null)
 
@@ -19,7 +19,7 @@ const ImageRender = (props) => {
   }, [image_data, renderingSize])
 
   return (
-    imageBitmap &&
+    (imageBitmap && instanceId === image_data.id) &&
       <KonvaImage
         bitmap={imageBitmap}
         width={renderingSize.width}

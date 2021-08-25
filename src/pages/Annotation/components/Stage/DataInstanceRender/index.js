@@ -16,10 +16,10 @@ const DataInstanceRender = (props) => {
   const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))
 
   if (dataInstance instanceof ImageDataInstanceClass) {
-    return <ImageRender image={dataInstance} renderingSize={renderingSize}/>
+    return <ImageRender instanceId={instanceId} image={dataInstance} renderingSize={renderingSize}/>
   }
   if (dataInstance instanceof VideoDataInstanceClass) {
-    return <VideoRender video={dataInstance} renderingSize={renderingSize}/>
+    return <VideoRender instanceId={instanceId} video={dataInstance} renderingSize={renderingSize}/>
   }
   return null
 }
