@@ -89,7 +89,7 @@ const VideoPlayControl = (props) => {
     if (jump) {
       setPlayingState({ bufferingFrame: frame })
     }
-    await video.frames[frame].original.getBitmap()
+    await video.frames[frame]?.original?.getBitmap()
     if (jump) {
       setPlayingState({ playingFrame: frame })
     } else {

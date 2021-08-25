@@ -73,14 +73,15 @@ const RenderComponent = (props) => {
   const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))
 
   const setRenderingSize = useGeneralStore(state => state.setRenderingSize)
-  const renderingSize = useMemo(() =>
-    getRenderingSize(stageSize, dataInstance, STAGE_PADDING)
-    , [stageSize, dataInstance]
-  )
+  const renderingSize = useMemo(() => {
+    const newRenderingSize = getRenderingSize(stageSize, dataInstance, STAGE_PADDING)
+    setRenderingSize(newRenderingSize)
+    window.canvasRenderingSize = newRenderingSize
+
+    return newRenderingSize
+  }, [stageSize, dataInstance])
 
   useEffect(() => {
-    setRenderingSize(renderingSize)
-    window.canvasRenderingSize = renderingSize
     if (stage) {
       stage.position({
         x: (stageSize.width - renderingSize.width) / 2,
