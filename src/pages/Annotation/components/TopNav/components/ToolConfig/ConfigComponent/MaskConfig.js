@@ -108,12 +108,18 @@ const ScribbleToMaskConfig = (props) => {
   useEffect(() => {
     const { getSubject } = EventCenter
     let subscriptions = {
-      [EVENT_TYPES.REFERRING_EXPRESSION.PREDICT]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT)
+      [EVENT_TYPES.DRAW_MASK.PREDICT]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT)
         .subscribe({ next: (e) => handlePredictStart(e) }),
-      [EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_FINISH]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT_FINISH)
+      [EVENT_TYPES.DRAW_MASK.PREDICT_FINISH]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT_FINISH)
         .subscribe({ next: (e) => handlePredictEnd(e) }),
-      [EVENT_TYPES.REFERRING_EXPRESSION.PREDICT_ERROR]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT_ERROR)
+      [EVENT_TYPES.DRAW_MASK.PREDICT_ERROR]: getSubject(EVENT_TYPES.DRAW_MASK.PREDICT_ERROR)
         .subscribe({ next: (e) => handlePredictEnd(e) }),
+      // [EVENT_TYPES.DRAW_MASK.CHOOSE_POSITIVE_SCRIBBLE]: getSubject(EVENT_TYPES.DRAW_MASK.CHOOSE_POSITIVE_SCRIBBLE)
+      //   .subscribe({ next: (e) => setToolConfig({ ...toolConfig, scribbleType: SCRIBBLE_TYPES.POSITIVE }) }),
+      // [EVENT_TYPES.DRAW_MASK.CHOOSE_NEGATIVE_SCRIBBLE]: getSubject(EVENT_TYPES.DRAW_MASK.CHOOSE_NEGATIVE_SCRIBBLE)
+      //   .subscribe({ next: (e) => setToolConfig({ ...toolConfig, scribbleType: SCRIBBLE_TYPES.NEGATIVE }) }),
+      // [EVENT_TYPES.DRAW_MASK.CHOOSE_ERASER_SCRIBBLE]: getSubject(EVENT_TYPES.DRAW_MASK.CHOOSE_ERASER_SCRIBBLE)
+      //   .subscribe({ next: (e) => setToolConfig({ ...toolConfig, scribbleType: SCRIBBLE_TYPES.ERASER }) }),
     }
 
     return () => {

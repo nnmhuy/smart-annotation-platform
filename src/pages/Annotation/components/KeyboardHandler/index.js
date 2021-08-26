@@ -3,6 +3,8 @@ import { get } from 'lodash'
 
 import { useGeneralStore } from '../../stores'
 
+import GeneralKeyboardHandler from './component/GeneralKeyboardHandler'
+import MaskBrushKeyboardHandler from './component/MaskBrushKeyboardHandler'
 import MaskKeyboardHandler from './component/MaskKeyboardHandler'
 import EditKeyboardHandler from './component/EditKeyboardHandler'
 import BBoxKeyboardHandler from './component/BBoxKeyboardHandler'
@@ -15,6 +17,7 @@ const mapModeToKeyboardHandler = {
   [MODES.EDIT.name]: EditKeyboardHandler,
   [MODES.DRAW_BBOX.name]: BBoxKeyboardHandler,
   [MODES.DRAW_POLYGON.name]: PolygonKeyboardHandler,
+  [MODES.DRAW_MASK_BRUSH.name]: MaskBrushKeyboardHandler,
   [MODES.DRAW_MASK.name]: MaskKeyboardHandler,
   [MODES.REFERRING_EXPRESSION.name]: ReferringExpressionKeyboardHandler,
 }
@@ -27,9 +30,10 @@ const KeyboardHandler = (props) => {
     return null
   }
 
-  return (
-    <ActiveKeyboardHandlerComponent {...props} />
-  )
+  return ([
+    <GeneralKeyboardHandler key="general" {...props}/>,
+    ActiveKeyboardHandlerComponent && <ActiveKeyboardHandlerComponent key="tools" {...props} />
+  ])
 }
 
 export default KeyboardHandler

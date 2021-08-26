@@ -54,20 +54,6 @@ const RenderComponent = (props) => {
     }
   }, 500, { leading: true, trailing: true })
 
-  React.useEffect(() => {
-    handleNewStageSize()
-    window.addEventListener('resize', handleNewStageSize)
-    const { getSubject } = EventCenter
-    let subscriptions = {
-      [EVENT_TYPES.RESIZE_STAGE]: getSubject(EVENT_TYPES.RESIZE_STAGE)
-        .subscribe({ next: (e) => handleNewStageSize(e) }),
-    }
-
-    return () => {
-      window.removeEventListener('resize', handleNewStageSize)
-      Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
-    }
-  }, [])
 
   const instanceId = useDatasetStore(state => state.instanceId)
   const dataInstance = useDatasetStore(useCallback(state => find(state.dataInstances, { id: instanceId }), [instanceId]))
@@ -81,15 +67,43 @@ const RenderComponent = (props) => {
     return newRenderingSize
   }, [stageSize, dataInstance])
 
-  useEffect(() => {
+
+  const recenterStage = () => {
+    const stage = stageRef.current
     if (stage) {
       stage.position({
         x: (stageSize.width - renderingSize.width) / 2,
         y: (stageSize.height - renderingSize.height) / 2,
       });
       stage.scale({ x: 1, y: 1 })
+      stage.batchDraw()
+    }
+  }
+
+  useEffect(() => {
+    if (stage) {
+      recenterStage()
     }
   }, [stageSize, renderingSize])
+
+
+  React.useEffect(() => {
+    handleNewStageSize()
+    window.addEventListener('resize', handleNewStageSize)
+    const { getSubject } = EventCenter
+    let subscriptions = {
+      [EVENT_TYPES.RESIZE_STAGE]: getSubject(EVENT_TYPES.RESIZE_STAGE)
+        .subscribe({ next: (e) => handleNewStageSize(e) }),
+      [EVENT_TYPES.VIEW.CENTER_VIEWPOINT]: getSubject(EVENT_TYPES.VIEW.CENTER_VIEWPOINT)
+        .subscribe({ next: (e) => recenterStage(e) }),
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleNewStageSize)
+      Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
+    }
+  }, [])
+
 
 
   const dragBoundFunc = (pos) => {

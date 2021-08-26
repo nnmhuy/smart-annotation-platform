@@ -15,6 +15,10 @@ const EditKeyboardHandler = (props) => {
         handleKeys={['backspace']}
         onKeyEvent={EventCenter.emitEvent(EVENT_TYPES.EDIT.DELETE_ANNOTATION)}
       />
+      <KeyboardEventHandler
+        handleKeys={['esc']}
+        onKeyEvent={EventCenter.emitEvent(EVENT_TYPES.UNSELECT_CURRENT_ANNOTATION_OBJECT)}
+      />
     </>
   )
 }
