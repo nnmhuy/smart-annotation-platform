@@ -95,7 +95,7 @@ const PropagationConfig = (props) => {
 
   let lastFrame = {}
   const runPropagation = async (keyFrame, numFrames, direction) => {
-    const BATCH_SIZE = 10
+    const BATCH_SIZE = 1
     const totalFrames = frames.length
 
     let count = 0
@@ -165,7 +165,7 @@ const PropagationConfig = (props) => {
   }
 
   const cleanUpCanceledPropagation = async () => {
-    cleanUpPropagatingAnnotations()
+    await cleanUpPropagatingAnnotations()
   }
 
   const handleStartPropagation = async () => {

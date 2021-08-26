@@ -45,7 +45,7 @@ const MaskAnnotation = (props) => {
     <Group
       id={id}
     >
-      {activeMode === MODES.DRAW_MASK && isSelected && scribbles &&
+      {activeMode === MODES.DRAW_MASK.name && isSelected && scribbles &&
         scribbles.map((scribble, index) =>
           <Scribble
             key={`scribble-${id}-${index}`} scribble={scribble}
