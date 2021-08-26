@@ -3,17 +3,18 @@ import { Group } from 'react-konva'
 import { get } from 'lodash'
 
 import EventCenter from '../../../../../EventCenter'
-import { useAnnotationStore } from '../../../../../stores/index'
+import { useGeneralStore, useAnnotationStore } from '../../../../../stores/index'
 
 import Scribble from './Scribble'
 import Mask from './Mask'
 import Brush from './Brush'
 
-import { EVENT_TYPES } from '../../../../../constants'
+import { MODES ,EVENT_TYPES } from '../../../../../constants'
 
 const MaskAnnotation = (props) => {
   const { annotation, renderingSize } = props
 
+  const activeMode = useGeneralStore(state => state.activeMode)
   const selectedObjectId = useAnnotationStore(state => state.selectedObjectId)
 
   const { id, annotationObjectId, properties, maskData } = annotation
@@ -44,7 +45,7 @@ const MaskAnnotation = (props) => {
     <Group
       id={id}
     >
-      {isSelected && scribbles &&
+      {activeMode === MODES.DRAW_MASK && isSelected && scribbles &&
         scribbles.map((scribble, index) =>
           <Scribble
             key={`scribble-${id}-${index}`} scribble={scribble}

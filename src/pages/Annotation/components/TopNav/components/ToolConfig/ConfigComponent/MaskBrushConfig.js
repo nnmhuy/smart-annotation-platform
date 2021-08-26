@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 
@@ -6,12 +6,14 @@ import ToolSelector from '../components/ToolSelector'
 import ToolConfigPopUpButton from '../components/ToolConfigPopUpButton'
 import Slider from '../../../../../../../components/Slider'
 
+import EventCenter from '../../../../../EventCenter'
+
 import { ReactComponent as PositiveScribbleIcon } from '../../../../../../../static/images/icons/ConfigIcon/positive_scribble.svg'
 import { ReactComponent as NegativeScribbleIcon } from '../../../../../../../static/images/icons/ConfigIcon/negative_scribble.svg'
 import { ReactComponent as SizeSliderIcon } from '../../../../../../../static/images/icons/ConfigIcon/size_slider.svg'
 
 
-import { SCRIBBLE_TO_MASK_CONSTANTS, SCRIBBLE_TYPES } from '../../../../../constants'
+import { EVENT_TYPES, SCRIBBLE_TO_MASK_CONSTANTS, SCRIBBLE_TYPES } from '../../../../../constants'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -69,6 +71,20 @@ const MaskBrushConfig = (props) => {
   const { toolConfig, setToolConfig, } = props
   const { scribbleSize } = toolConfig
 
+
+  useEffect(() => {
+    const { getSubject } = EventCenter
+    let subscriptions = {
+      [EVENT_TYPES.DRAW_MASK_BRUSH.CHOOSE_POSITIVE_BRUSH]: getSubject(EVENT_TYPES.DRAW_MASK_BRUSH.CHOOSE_POSITIVE_BRUSH)
+        .subscribe({ next: (e) => setToolConfig({ ...toolConfig, scribbleType: SCRIBBLE_TYPES.POSITIVE }) }),
+      [EVENT_TYPES.DRAW_MASK_BRUSH.CHOOSE_NEGATIVE_BRUSH]: getSubject(EVENT_TYPES.DRAW_MASK_BRUSH.CHOOSE_NEGATIVE_BRUSH)
+        .subscribe({ next: (e) => setToolConfig({ ...toolConfig, scribbleType: SCRIBBLE_TYPES.NEGATIVE }) }),
+    }
+
+    return () => {
+      Object.keys(subscriptions).forEach(subscription => subscriptions[subscription].unsubscribe())
+    }
+  }, [])
 
   return (
     <div className={classes.root}>
