@@ -95,7 +95,7 @@ const PropagationConfig = (props) => {
 
   let lastFrame = {}
   const runPropagation = async (keyFrame, numFrames, direction) => {
-    const BATCH_SIZE = 1
+    const BATCH_SIZE = 10
     const totalFrames = frames.length
 
     let count = 0
@@ -172,9 +172,8 @@ const PropagationConfig = (props) => {
     setIsPropagating(true)
     setBlockPropagation(true)
     setCancelToken(CancelToken.source())
-
     const keyFrame = cloneDeep(playingFrame)
-    const numFrames = cloneDeep(propagationConfig.frames)
+    const numFrames = Math.min(nextKeyFrame - playingFrame - 1, cloneDeep(propagationConfig.frames))
     const direction = cloneDeep(propagationConfig.direction)
     setPropagationTask({
       keyFrame,
@@ -182,39 +181,43 @@ const PropagationConfig = (props) => {
       direction
     })
 
-    const keyAnnotation = cloneDeep(annotations[keyFrame])
-    keyAnnotation.keyFrame = true
-    await updateAnnotation(keyAnnotation, { commitAnnotation: true })
-
-    const localAnnotationStore = {}
-    // Create local annotations
-    let newAnnotationsDict = {}
-    let newTemporaryAnnotations = []
-    for (let i = 1; i <= numFrames; ++i) {
-      const frameIndex = keyFrame + (direction === PROPAGATION_DIRECTION.FORWARD ? 1 : -1) * i
-      if (!!annotations[frameIndex]) {
-        if (annotations[frameIndex].keyFrame) {
-          break;
+    try {
+      const keyAnnotation = cloneDeep(annotations[keyFrame])
+      keyAnnotation.keyFrame = true
+      await updateAnnotation(keyAnnotation, { commitAnnotation: true })
+  
+      const localAnnotationStore = {}
+      // Create local annotations
+      let newAnnotationsDict = {}
+      let newTemporaryAnnotations = []
+      for (let i = 1; i <= numFrames; ++i) {
+        const frameIndex = keyFrame + (direction === PROPAGATION_DIRECTION.FORWARD ? 1 : -1) * i
+        if (!!annotations[frameIndex]) {
+          if (annotations[frameIndex].keyFrame) {
+            break;
+          } else {
+            const newAnnotation = cloneDeep(annotations[frameIndex])
+            newAnnotation.isPropagating = true
+            newAnnotationsDict[newAnnotation.id] = newAnnotation
+            localAnnotationStore[frameIndex] = newAnnotation
+          }
         } else {
-          const newAnnotation = cloneDeep(annotations[frameIndex])
+          const newAnnotation = new MaskAnnotationClass('', selectedObjectId, frames[frameIndex].id, {}, false)
           newAnnotation.isPropagating = true
-          newAnnotationsDict[newAnnotation.id] = newAnnotation
+          newAnnotation.isTemporary = true
+          newTemporaryAnnotations.push(newAnnotation)
           localAnnotationStore[frameIndex] = newAnnotation
         }
-      } else {
-        const newAnnotation = new MaskAnnotationClass('', selectedObjectId, frames[frameIndex].id, {}, false)
-        newAnnotation.isPropagating = true
-        newAnnotation.isTemporary = true
-        newTemporaryAnnotations.push(newAnnotation)
-        localAnnotationStore[frameIndex] = newAnnotation
       }
-    }
-
-    await updateAnnotations(cloneDeep(newAnnotationsDict), { commitAnnotation: false })
-    await appendAnnotations(cloneDeep(newTemporaryAnnotations), { commitAnnotation: false })
-    setLocalAnnotationStore(localAnnotationStore)
   
-    await runPropagation(keyFrame, numFrames, direction)
+      await updateAnnotations(cloneDeep(newAnnotationsDict), { commitAnnotation: false })
+      await appendAnnotations(cloneDeep(newTemporaryAnnotations), { commitAnnotation: false })
+      setLocalAnnotationStore(localAnnotationStore)
+    
+      await runPropagation(keyFrame, numFrames, direction)
+    } catch (error) {
+      console.log(error)
+    }
 
     setIsPropagating(false)
     setBlockPropagation(false)
