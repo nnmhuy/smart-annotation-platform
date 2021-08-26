@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     'user-select': 'none'          /* Likely future */
   },
   activeFrameIndex: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
     color: theme.palette.primary.main
   },
