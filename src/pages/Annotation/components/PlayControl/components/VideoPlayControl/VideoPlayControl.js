@@ -51,6 +51,7 @@ const VideoPlayControl = (props) => {
       playingFrame: 0,
       bufferingFrame: -1,
       lazyBufferingFrame: -1,
+      slowDownRate: 1
     })
     handleBufferingVideo(videoId)
   }, [videoId])
@@ -99,7 +100,7 @@ const VideoPlayControl = (props) => {
 
   const handlePlayVideo = async (playingId) => {
     const playingState = getPlayingState()
-    const { playingFrame } = playingState
+    const { playingFrame, slowDownRate = 1 } = playingState
 
     if (playingFrame + 1 < numFrames) {
       await handleGoToFrame(playingFrame + 1)
@@ -109,7 +110,7 @@ const VideoPlayControl = (props) => {
       if (isPlaying && playingId === videoId) {
         setTimeout(() => {
           handlePlayVideo(playingId)
-        }, 1000 / fps);
+        }, 1000 / (fps * slowDownRate));
       }
     } else {
       setIsPlaying(false)
@@ -154,6 +155,8 @@ const VideoPlayControl = (props) => {
         handleSkipFrame={handleSkipFrame}
         handleClickPlay={handleClickPlay}
         handleClickPause={handleClickPause}
+        slowDownRate={playingState.slowDownRate}
+        setPlayingState={setPlayingState}
       />
       <VideoTrack
         numFrames={video.numFrames}

@@ -2,6 +2,10 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
+import FormControl from '@material-ui/core/FormControl'
+import InputLabel from '@material-ui/core/InputLabel'
+import Select from '@material-ui/core/Select'
+import MenuItem from '@material-ui/core/MenuItem'
 
 import PlayIcon from '@material-ui/icons/PlayArrowRounded';
 import PauseIcon from '@material-ui/icons/PauseRounded';
@@ -18,15 +22,38 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 30,
     minHeight: 30,
     marginRight: 5,
+  },
+  speedSelect: {
+    color: theme.palette.primary.contrastText,
   }
 }))
 
 const ButtonControlGroup = (props) => {
   const classes = useStyles()
-  const { isPlaying, handleSkipFrame, handleClickPlay, handleClickPause, } = props
-
+  const { isPlaying, slowDownRate, handleSkipFrame, handleClickPlay, handleClickPause, setPlayingState } = props
+  console.log(slowDownRate)
   return (
-    <Grid container item xs={3} className={classes.root}>
+    <Grid container item xs={4} className={classes.root}>
+      <FormControl
+        variant="outlined" size="small" color="primary"
+        className={classes.speedSelect}
+      >
+        <InputLabel id="select-play-speed-label">Speed</InputLabel>
+        <Select
+          labelId="select-play-speed-label"
+          id="select-speed"
+          value={slowDownRate}
+          onChange={(e) => setPlayingState({ slowDownRate: e.target.value })}
+          label="Speed"
+          size="small"
+        >
+          <MenuItem value={1.5}>1.5</MenuItem>
+          <MenuItem value={1.25}>1.25</MenuItem>
+          <MenuItem value={1}>1</MenuItem>
+          <MenuItem value={0.75}>0.75</MenuItem>
+          <MenuItem value={0.5}>0.5</MenuItem>
+        </Select>
+      </FormControl>
       <Button size="small" color="secondary" onClick={handleSkipFrame(-10)} className={classes.button}>
         <SkipPreviousIcon fontSize="small" />
       </Button>

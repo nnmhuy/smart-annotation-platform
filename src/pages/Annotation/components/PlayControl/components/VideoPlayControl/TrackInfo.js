@@ -50,7 +50,7 @@ const FrameInput = (props) => {
   }
 
   return (
-    <Grid container item xs={4} className={classes.root} alignItems="center" justifyContent="space-between" direction="row">
+    <Grid container item xs={3} className={classes.root} alignItems="center" justifyContent="space-between" direction="row">
       <Grid container item xs={6} className={classes.group} alignItems="center" justifyContent="flex-end">
         <ClockIcon fontSize="small"/>
         <span className={classes.time}>
