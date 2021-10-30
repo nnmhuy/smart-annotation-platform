@@ -39,7 +39,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "yarn build && gsutil rsync -R ./build gs://smart-annotation-platform && gcloud compute url-maps invalidate-cdn-cache smart-annotation-platform --path \"/*\""
   },
   "eslintConfig": {
     "extends": [
