@@ -9,6 +9,9 @@ import generateNewUid from '../../../../utils/uidGenerator'
 import { DATASET_DATATYPE } from '../../../../constants/constants'
 
 const useStyles = makeStyles((theme) => ({
+  dropZoneWrapper: {
+    display: 'flex'
+  },
   dropZone: {
     flex: 1,
     display: 'flex',
@@ -102,19 +105,34 @@ const UploadZone = (props) => {
   return (
     <section className="container">
       <Loading isLoading={isLoading["loading-new-images"]} />
-      {(!isUploaded && !isLoading["uploading"]) &&
-        <div {...getRootProps({ className: classes.dropZone })} style={{ height: files.length ? 100 : 300 }}>
-          <input {...getInputProps()} />
-          <p>{acceptedFormat?.message}</p>
-          <Button
-            color="primary"
-            variant="contained"
-          >
-            Choose files to upload
-          </Button>
-          <p>256MB maximum size</p>
-        </div>
-      }
+      <div className={classes.dropZoneWrapper}>
+        {(!isUploaded && !isLoading["uploading"]) &&
+          <div {...getRootProps({ className: classes.dropZone })} style={{ height: files.length ? 100 : 300 }}>
+            <input {...getInputProps()} directory="" webkitdirectory="" type="file"/>
+            <p>{acceptedFormat?.message}</p>
+            <Button
+              color="primary"
+              variant="contained"
+            >
+              Choose folder to upload
+            </Button>
+            <p>256MB maximum size</p>
+          </div>
+        }
+        {(!isUploaded && !isLoading["uploading"]) &&
+          <div {...getRootProps({ className: classes.dropZone })} style={{ height: files.length ? 100 : 300 }}>
+            <input {...getInputProps()}/>
+            <p>{acceptedFormat?.message}</p>
+            <Button
+              color="primary"
+              variant="contained"
+            >
+              Choose files to upload
+            </Button>
+            <p>256MB maximum size</p>
+          </div>
+        }
+      </div>
     </section>
   );
 }
