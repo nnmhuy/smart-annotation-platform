@@ -64,7 +64,7 @@ const acceptedFormats = {
   [DATASET_DATATYPE.VIDEO]: { accept: "video/*", message: "Drop MP4 files to upload." },
 }
 
-const UploadZone = (props) => {
+const UploadZoneFolder = (props) => {
   const classes = useStyles()
   const { useStore } = props
   const isLoading = useStore(state => state.isLoading)
@@ -119,22 +119,9 @@ const UploadZone = (props) => {
             <p>256MB maximum size</p>
           </div>
         }
-        {(!isUploaded && !isLoading["uploading"]) &&
-          <div {...getRootProps({ className: classes.dropZone })} style={{ height: files.length ? 100 : 300 }}>
-            <input {...getInputProps()}/>
-            <p>{acceptedFormat?.message}</p>
-            <Button
-              color="primary"
-              variant="contained"
-            >
-              Choose files to upload
-            </Button>
-            <p>256MB maximum size</p>
-          </div>
-        }
       </div>
     </section>
   );
 }
 
-export default UploadZone
+export default UploadZoneFolder

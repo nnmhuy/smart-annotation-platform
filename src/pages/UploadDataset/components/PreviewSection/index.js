@@ -9,6 +9,7 @@ import ImagePreview from './components/ImagePreview/index'
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    padding: '0 30 0 30px',
     margin: 'auto',
     marginTop: 30,
   },
@@ -19,10 +20,11 @@ const useStyles = makeStyles((theme) => ({
   collapseTitle: {
     margin: 'auto',
     marginTop: 20,
+    marginBottom: 20,
     maxWidth: 1200,
     fontSize: 25,
     display: 'flex',
-    justifyContent: 'spcae-around'
+    justifyContent: 'space-around'
   }
 }))
 
@@ -31,8 +33,7 @@ const BorderLinearProgress = withStyles((theme) => ({
     margin: 'auto',
     marginTop: 10,
     marginBottom: 10,
-    width: 500,
-    height: 20,
+    height: 10,
     borderRadius: 5,
   },
   colorPrimary: {
@@ -76,18 +77,18 @@ const PreviewSection = (props) => {
   const countSuccess = uploadLogsKey.filter((logId => _.get(uploadLogs[logId], 'success', false))).length
   return (
     files.length ?
-      <Grid container direction="row" spacing={2} className={classes.root}>
+      <Grid container direction="row" spacing={2} className={classes.root} justifyContent='center'>
         <Grid item className={classes.title} xs={12}>
           File list
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={7}>
             <BorderLinearProgress  variant="determinate" value={countSuccess / uploadLogsKey.length * 100}></BorderLinearProgress>
             <label>{countSuccess}/{uploadLogsKey.length}</label>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={11}>
           <div className={classes.collapseTitle}> 
 
-            <label>Success Upload</label>
+            <label>Upload Successful</label>
             <ExpandMore
               expand={expandedSuccess}
               onClick={handleExpandSuccessClick}
@@ -117,9 +118,9 @@ const PreviewSection = (props) => {
             </Grid>
           </Collapse>    
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={11}>
           <div className={classes.collapseTitle}> 
-            <label>Failed Upload</label>
+            <label>Upload Failed</label>
             <ExpandMore
               expand={expandedFailed}
               onClick={handleExpandFailedClick}

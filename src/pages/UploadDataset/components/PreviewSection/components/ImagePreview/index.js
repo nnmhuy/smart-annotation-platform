@@ -23,10 +23,11 @@ const BorderLinearProgress = withStyles((theme) => ({
 
 const useStyles = makeStyles((theme) => ({
   thumb: {
-    border: '4px solid #eaeaea',
-    borderRadius: 10,
-    marginBottom: 8,
-    marginRight: 8,
+    backgroundColor: '#eaeaea',
+    padding: 10,
+    borderRadius: 20,
+    marginBottom: 10,
+    marginRight: 10,
     height: 200,
     boxSizing: 'border-box'
   },
@@ -83,6 +84,7 @@ const ImagePreview = (props) => {
             alt={file.name}
             src={file.preview}
             className={classes.filePreview}
+            style={{borderRadius: 10}}
           />
           : 
           <video
