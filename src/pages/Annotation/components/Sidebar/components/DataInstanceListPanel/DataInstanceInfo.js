@@ -15,6 +15,10 @@ import VideoDataInstanceClass from '../../../../../../classes/VideoDataInstanceC
 
 import ImageIcon from '@material-ui/icons/Image';
 import VideoIcon from '@material-ui/icons/Movie';
+import DoneIcon from '@material-ui/icons/Done'
+import HelpIcon from '@material-ui/icons/HelpOutline'
+import UnfinishedIcon from '@material-ui/icons/NotInterested'
+import { ENUM_ANNOTATE_STATUS } from '../../../../../../constants/constants';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -58,6 +62,12 @@ const mapDataInstanceClsToIcon = {
   [VideoDataInstanceClass._cls]: VideoIcon
 }
 
+const mapStatusToIcon = {
+  [ENUM_ANNOTATE_STATUS.FINSIHED]: DoneIcon,
+  [ENUM_ANNOTATE_STATUS.UNCERTAIN]: HelpIcon,
+  [ENUM_ANNOTATE_STATUS.UNFINISHED]: UnfinishedIcon,
+}
+
 const DataInstanceInfo = (props) => {
   const classes = useStyles()
   const { 
@@ -69,7 +79,7 @@ const DataInstanceInfo = (props) => {
 
   const { id, name, thumbnail } = dataInstance
   const InstanceIcon = mapDataInstanceClsToIcon[dataInstance.__proto__.constructor._cls]
-
+  const AnnotateStatusIcon = mapStatusToIcon[dataInstance.annotateStatus]
   return (
     <>
       <ListItem className={clsx(classes.container, isSelected && classes.selectedContainer)}
@@ -95,8 +105,11 @@ const DataInstanceInfo = (props) => {
           }
           className={classes.objectId}
         />
-        <ListItemSecondaryAction>
+        <ListItemIcon>
           <InstanceIcon/>
+        </ListItemIcon>
+        <ListItemSecondaryAction>
+          <AnnotateStatusIcon/>
         </ListItemSecondaryAction>
       </ListItem>
       {/* <Collapse in={isSelected} className={classes.infoContainerCollapse}>

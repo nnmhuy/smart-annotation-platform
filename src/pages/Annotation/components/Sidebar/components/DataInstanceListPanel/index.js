@@ -59,7 +59,6 @@ const ObjectInfoPanel = (props) => {
   const { datasetId } = useParams()
   let query = useQuery()
   let history = useHistory()
-
   const page = JSON.parse(query.get("page") || 1)
 
   const dataset = useDatasetStore(state => state.dataset)
@@ -69,9 +68,8 @@ const ObjectInfoPanel = (props) => {
   
   const instances = get(dataset, 'instances', 0)
   const maxPage = Number.parseInt((instances / IMAGES_PER_PAGE) + Boolean(instances % IMAGES_PER_PAGE))
-  const handlePageChange = (val) => {
-    let newPage = page + val
-
+  const handlePageChange = (e, val) => {
+    let newPage = val
     newPage = (Math.max(Math.min(maxPage, newPage), 1))
 
     if (newPage !== page) {

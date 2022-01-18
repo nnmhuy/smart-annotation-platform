@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core'
 import ObjectInfoPanel from './components/ObjectInfoPanel/index'
 import LabelInfoPanel from './components/LabelInfoPanel/index'
 import DataInstanceListPanel from './components/DataInstanceListPanel/index'
+import UpdateStatusButtonPanel from './components/UpdateStatusButtonPanel/index'
 
 
 const useStyles = makeStyles(theme => ({
@@ -23,6 +24,7 @@ const SideBar = () => {
       <ObjectInfoPanel/>
       <DataInstanceListPanel/>
       <LabelInfoPanel/>
+      <UpdateStatusButtonPanel/>
     </div>
   )
 }

@@ -28,6 +28,15 @@ class DataInstanceService {
       })
   }
 
+  async putDataInstance(dataInstance)
+  {
+    const updateData = {
+      id: dataInstance.id,
+      annotateStatus: dataInstance.annotateStatus
+    }
+    return await RestConnector.put(`/data`, updateData)
+  }
+
   upload(file, datasetId, onUploadProgress) {
     let formData = new FormData();
 

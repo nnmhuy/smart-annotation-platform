@@ -1,5 +1,6 @@
 import create from 'zustand'
 import { find } from 'lodash'
+import { cloneDeep } from 'lodash'
 
 import DatasetService from '../../../services/DatasetService'
 import DataInstanceService from '../../../services/DataInstanceService'
@@ -45,6 +46,20 @@ const useDatasetStore = create((set, get) => ({
     set({ dataInstances: dataInstancesObj })
 
     setIsLoading("loading_data_instances", false)
+  },
+
+  updateAnnotateStatusDataInstance: (id, annotateStatus) => {
+    const dataInstances = get().dataInstances.map(object => {
+      if (object.id !== id) {
+        return object
+      } else {
+        let newDataInstance = cloneDeep(object)
+        newDataInstance.annotateStatus = annotateStatus
+        DataInstanceService.putDataInstance(newDataInstance)
+        return newDataInstance
+      }
+    })
+    set({dataInstances})
   },
 
   getPlayingState: () => get().playingState,

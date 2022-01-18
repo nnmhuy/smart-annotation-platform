@@ -179,7 +179,7 @@ const DEFAULT_TOOL_CONFIG = {
 }
 
 const DATA_PER_PAGE = 50
-const IMAGES_PER_PAGE = 50
+const IMAGES_PER_PAGE = 5
 
 const PROPAGATION_DIRECTION = {
   FORWARD: 'Forward',
