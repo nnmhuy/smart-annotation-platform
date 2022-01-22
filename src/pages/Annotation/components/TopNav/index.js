@@ -52,7 +52,7 @@ const TopNav = (props) => {
       </div>
       <div className={classes.rightSection}>
         <IconButton
-          href={`/datasets/dataset=${datasetId}?page=${page}`}
+          href={`/datasets/dataset=${datasetId}?page=${1}`}
         >
           <CloseIcon color="secondary"/>
         </IconButton>

@@ -41,7 +41,7 @@ const useDatasetStore = create((set, get) => ({
     const setIsLoading = get().setIsLoading
     setIsLoading("loading_data_instances", true)
 
-    const dataInstancesObj = await DataInstanceService.getDataInstancesByDataset(datasetId, page, IMAGES_PER_PAGE)
+    const dataInstancesObj = await DataInstanceService.getDataInstancesByDataset(datasetId, page)
 
     set({ dataInstances: dataInstancesObj })
 

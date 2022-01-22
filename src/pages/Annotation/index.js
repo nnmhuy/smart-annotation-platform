@@ -17,6 +17,7 @@ import KeyboardHandler from './components/KeyboardHandler/index'
 import annotationEventCenter from './EventCenter'
 import { useDatasetStore, useGeneralStore, useAnnotationStore } from './stores/index'
 import useQuery from '../../utils/useQuery'
+import _, { set } from 'lodash'
 
 
 const useStyles = makeStyles(theme => ({
@@ -55,14 +56,17 @@ const useStyles = makeStyles(theme => ({
 
 const Annotation = (props) => {
   const classes = useStyles()
-  const { datasetId, } = useParams()
+  const { datasetId } = useParams()
   const query = useQuery()
   const page = JSON.parse(query.get("page") || 1)
+
+  const instanceIdQuery = (query.get("instance_id") || '')
 
   const instanceId = useDatasetStore(state => state.instanceId)
   const getDatasetInfo = useDatasetStore(state => state.getDatasetInfo)
   const getDataInstances = useDatasetStore(state => state.getDataInstances)
   const setInstanceId = useDatasetStore(state => state.setInstanceId)
+  const isLoading = useDatasetStore(state => state.isLoading)
 
   const loadAnnotationLabels = useAnnotationStore(state => state.loadAnnotationLabels)
   const loadAnnotationObjects = useAnnotationStore(state => state.loadAnnotationObjects)
@@ -70,7 +74,6 @@ const Annotation = (props) => {
 
   useEffect(() => {
     if (datasetId) {
-      setInstanceId(null)
       getDatasetInfo(datasetId)
       loadAnnotationLabels(datasetId)
     }
@@ -78,7 +81,11 @@ const Annotation = (props) => {
 
   useEffect(() => {
     getDataInstances(datasetId, page)
-  }, [datasetId, page])
+  }, [datasetId])
+
+  useEffect(() => {
+    setInstanceId(instanceIdQuery)
+  }, [instanceIdQuery])
 
   useEffect(() => {
     if (instanceId) {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
@@ -7,15 +7,23 @@ import IconButton from '@material-ui/core/IconButton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import clsx from 'clsx'
 
+import useQuery from '../../../../utils/useQuery'
+import { DATA_PER_PAGE } from '../../constant';
+
 import CheckIcon from '@material-ui/icons/CheckCircle';
 import UncheckIcon from '@material-ui/icons/RadioButtonUnchecked';
+import { ENUM_ANNOTATE_STATUS } from '../../../../constants/constants';
+import DoneIcon from '@material-ui/icons/CheckCircle'
+import HelpIcon from '@material-ui/icons/Help'
+import UnfinishedIcon from '@material-ui/icons/NotInterested'
+
 
 const useStyles = makeStyles((theme) => ({
   dataList: {
     padding: 30,
   },
   icon: {
-    opacity: 0,
+    color: 'white'
   },
   selectedIcon: {
     opacity: 1,
@@ -29,43 +37,49 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+const mapStatusToIcon = {
+  [ENUM_ANNOTATE_STATUS.FINSIHED]: DoneIcon,
+  [ENUM_ANNOTATE_STATUS.UNCERTAIN]: HelpIcon,
+  [ENUM_ANNOTATE_STATUS.UNFINISHED]: UnfinishedIcon,
+}
+
 const DataListSection = (props) => {
   const classes = useStyles()
   const { useStore } = props
-
+  const query = useQuery()
   const isMobileLayout = useMediaQuery('(max-width:800px)');
+
+  const page = JSON.parse(query.get("page") || 1)
+
+  const pageStart = (page - 1) * DATA_PER_PAGE 
+  const pageEnd = page * DATA_PER_PAGE
+
 
   const dataList = useStore(state => state.dataList)
   const setSelectedData = useStore(state => state.setSelectedData)
   const selected = useStore(state => state.selected)
-
+  
   return (
     <ImageList className={classes.dataList} cols={isMobileLayout ? 2 : 4}>
-      {dataList.map(item => {
+      {dataList.map((item, ind) => {
+        if (!(pageStart <= ind && ind < pageEnd)) return;
         const isSelected = selected[item.id]
+        const AnnotateStatusIcon = mapStatusToIcon[item.annotateStatus]
         return (
           <ImageListItem key={item.id}
             className={classes.dataListItem}
           >
-            <img src={item?.thumbnail?.URL} alt={item.name} />
+            <img src={item?.thumbnail?.URL} alt={item.name} onClick={() => setSelectedData(item.id, !selected[item.id])} />
             <ImageListItemBar
               className={clsx(isSelected && classes.selectedItemBar)}
               title={item.name}
+              status={item.annotateStatus}
               actionIcon={
                 <IconButton
                   aria-label={`check ${item.name}`}
                 // className={clsx(classes.icon, isSelected && classes.selectedIcon)}
-                  onClick={() => setSelectedData(item.id, !selected[item.id])}
                 >
-                  {isSelected ?
-                    <CheckIcon
-                      color="secondary"
-                    />
-                    :
-                    <UncheckIcon 
-                      color="primary"
-                    />
-                  }
+                  <AnnotateStatusIcon className={classes.icon}/>
                 </IconButton>
               }
             />

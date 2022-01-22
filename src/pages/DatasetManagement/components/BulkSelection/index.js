@@ -1,10 +1,11 @@
 import React from 'react'
+import { useParams } from 'react-router'
 import { makeStyles } from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import Collapse from '@material-ui/core/Collapse'
 import { filter } from 'lodash'
-import { useConfirm }from 'material-ui-confirm'
+import { useConfirm } from 'material-ui-confirm'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 const BulkSelection = (props) => {
   const classes = useStyles()
   const confirm = useConfirm()
+  const { datasetId } = useParams()
   const { useStore } = props
 
   const selected = useStore(state => state.selected)
@@ -51,6 +53,15 @@ const BulkSelection = (props) => {
           </div>
         </Grid>
         <Grid container item xs={4} justifyContent="flex-end" spacing={1}>
+          <Grid item>
+            <Button
+              color="primary"
+              variant="outlined"
+              href={`/annotations/dataset=${datasetId}?instance_id=${selectedIds[0]}`}
+            >
+              Annotate
+            </Button>
+          </Grid>
           <Grid item>
             <Button
               color="primary"

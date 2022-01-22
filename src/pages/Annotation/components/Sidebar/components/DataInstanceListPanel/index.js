@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import Collapse from '@material-ui/core/Collapse'
@@ -65,6 +65,19 @@ const ObjectInfoPanel = (props) => {
   const dataInstances = useDatasetStore(state => state.dataInstances)
   const instanceId = useDatasetStore(state => state.instanceId)
   const setInstanceId = useDatasetStore(state => state.setInstanceId)
+
+  useEffect(() => {
+    if (dataInstances) {
+      if (instanceId) {
+        const instanceIndex = dataInstances.findIndex((instance) => instance.id == instanceId)
+        const newPage = Number.parseInt(instanceIndex / IMAGES_PER_PAGE) + 1
+        if (page != newPage) {
+          handlePageChange(null, newPage)
+        }
+      }
+    }
+  }, 
+  [dataInstances, instanceId])
   
   const instances = get(dataset, 'instances', 0)
   const maxPage = Number.parseInt((instances / IMAGES_PER_PAGE) + Boolean(instances % IMAGES_PER_PAGE))
@@ -75,6 +88,10 @@ const ObjectInfoPanel = (props) => {
     if (newPage !== page) {
       history.replace(`/annotations/dataset=${datasetId}?page=${newPage}`)
     }
+  }
+
+  const checkInPage = (ind) => {
+    return ((page - 1) * IMAGES_PER_PAGE <= ind) && (ind < page * IMAGES_PER_PAGE)
   }
 
   return (
@@ -104,7 +121,8 @@ const ObjectInfoPanel = (props) => {
               count={maxPage}
               handlePageChange={handlePageChange}
             />
-            {dataInstances.map(instance => {
+            {dataInstances.map((instance, ind) => {
+                if (!checkInPage(ind)) return;
                 return (
                   <DataInstanceInfo 
                     key={instance.id}
