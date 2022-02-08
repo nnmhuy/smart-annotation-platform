@@ -4,6 +4,7 @@ import EventCenter from '../../../EventCenter'
 
 import { EVENT_TYPES } from '../../../constants'
 import sendFormData from '../../../../../utils/sendFormData'
+import {MODEL_SERVER_URL_KEY} from '../../../constants'
 
 
 const MiVOSScribbleToMask = (props) => {
@@ -13,6 +14,9 @@ const MiVOSScribbleToMask = (props) => {
    * @returns 
    */
   const handleScribbleToMask = async (data) => {
+    const server_url = localStorage.getItem(MODEL_SERVER_URL_KEY.S2M) || ''
+    if (server_url)
+      data['server_url'] = server_url
     const predictedMask = await sendFormData(
       '/s2m/predict',
       data

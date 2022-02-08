@@ -12,6 +12,7 @@ import MaskConfig from './ConfigComponent/MaskConfig'
 import ReferringExpressionConfig from './ConfigComponent/ReferringExpressionConfig'
 
 import { MODES } from '../../../../constants'
+import { TextField } from '@material-ui/core'
 
 
 const useStyles = makeStyles(() => ({

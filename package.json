@@ -14,6 +14,7 @@
     "caniuse-lite": "^1.0.30001251",
     "clsx": "^1.1.1",
     "formik": "^2.2.9",
+    "formik-mui": "^4.0.0-alpha.3",
     "konva": "^7.2.5",
     "lodash": "^4.17.21",
     "material-ui-confirm": "^2.1.3",

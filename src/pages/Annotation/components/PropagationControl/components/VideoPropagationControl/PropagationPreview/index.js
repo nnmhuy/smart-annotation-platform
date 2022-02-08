@@ -39,14 +39,18 @@ const PropagationPreview = (props) => {
   const loadPropagationResultPreview = () => {
     setBlockPreview(true)
     const currentAnnotation = annotations[playingFrame]
-    
+
     const propagationTask = getPropagationTask()
     const { keyFrame } = propagationTask
-    RestConnector.post('/mask_propagation/predict', {
+    let propagationData = {
       "annotation_id": annotations[keyFrame].id,
       "key_frame": keyFrame,
       "propagating_frames": [playingFrame]
-    })
+    }
+    const server_url = localStorage.getItem(MODEL_SERVER_URL_KEY.MASK_PROP) || ''
+    if (server_url)
+      propagationData['server_url'] = server_url
+    RestConnector.post('/mask_propagation/predict', propagationData)
       .then(response => response.data)
       .then(async maskURLs => {
         const maskURL = maskURLs[0]

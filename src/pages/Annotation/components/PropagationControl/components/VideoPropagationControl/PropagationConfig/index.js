@@ -16,7 +16,7 @@ import RestConnector from '../../../../../../../connectors/RestConnector'
 
 import MaskAnnotationClass from '../../../../../../../classes/MaskAnnotationClass'
 
-import { PROPAGATION_DIRECTION } from '../../../../../constants'
+import { MODEL_SERVER_URL_KEY, PROPAGATION_DIRECTION } from '../../../../../constants'
 
 
 const useStyles = makeStyles(theme => ({
@@ -121,6 +121,9 @@ const PropagationConfig = (props) => {
           "propagating_frames": propagatingFrames,
           ...lastFrame
         }
+        const server_url = localStorage.getItem(MODEL_SERVER_URL_KEY.MASK_PROP) || ''
+        if (server_url)
+          propagationData['server_url'] = server_url
         const breakKeyFrame = await RestConnector.post('/mask_propagation/predict', propagationData, {
           cancelToken: getCancelToken().token
         })
@@ -185,7 +188,7 @@ const PropagationConfig = (props) => {
       const keyAnnotation = cloneDeep(annotations[keyFrame])
       keyAnnotation.keyFrame = true
       await updateAnnotation(keyAnnotation, { commitAnnotation: true })
-  
+
       const localAnnotationStore = {}
       // Create local annotations
       let newAnnotationsDict = {}
@@ -209,11 +212,11 @@ const PropagationConfig = (props) => {
           localAnnotationStore[frameIndex] = newAnnotation
         }
       }
-  
+
       await updateAnnotations(cloneDeep(newAnnotationsDict), { commitAnnotation: false })
       await appendAnnotations(cloneDeep(newTemporaryAnnotations), { commitAnnotation: false })
       setLocalAnnotationStore(localAnnotationStore)
-    
+
       await runPropagation(keyFrame, numFrames, direction)
     } catch (error) {
       console.log(error)

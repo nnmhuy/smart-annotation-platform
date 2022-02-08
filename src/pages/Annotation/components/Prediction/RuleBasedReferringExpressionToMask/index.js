@@ -2,7 +2,7 @@ import React from 'react'
 
 import EventCenter from '../../../EventCenter'
 
-import { EVENT_TYPES } from '../../../constants'
+import { EVENT_TYPES, MODEL_SERVER_URL_KEY } from '../../../constants'
 import sendFormData from '../../../../../utils/sendFormData'
 
 
@@ -13,6 +13,9 @@ const RuleBasedReferringExpressionToMask = (props) => {
    * @returns 
    */
   const handleRunReferringExpressionToMask = async (data) => {
+    const server_url = localStorage.getItem(MODEL_SERVER_URL_KEY.REFEX_RULE) || ''
+    if (server_url)
+      data['server_url'] = server_url
     const predictedMask = await sendFormData(
       '/refex/rule-based',
       data
