@@ -5,6 +5,8 @@ import { cloneDeep } from 'lodash'
 
 import { useAnnotationStore, usePropagationStore } from '../../../../../stores'
 
+import { MODEL_SERVER_URL_KEY } from '../../../../../constants'
+
 import RestConnector from '../../../../../../../connectors/RestConnector'
 
 import VisibilityIcon from '@material-ui/icons/Visibility';
@@ -47,6 +49,7 @@ const PropagationPreview = (props) => {
       "key_frame": keyFrame,
       "propagating_frames": [playingFrame]
     }
+
     const server_url = localStorage.getItem(MODEL_SERVER_URL_KEY.MASK_PROP) || ''
     if (server_url)
       propagationData['server_url'] = server_url
