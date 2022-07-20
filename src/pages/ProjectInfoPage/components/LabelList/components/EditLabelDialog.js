@@ -11,7 +11,7 @@ import * as Yup from 'yup';
 
 import TextField from '../../../../../components/TextField'
 
-import LabelClass from '../../../../../classes/LabelClass'
+import LabelClass from '../../../../../models/LabelClass'
 
 import { ColorEditInput } from './ColorCell'
 

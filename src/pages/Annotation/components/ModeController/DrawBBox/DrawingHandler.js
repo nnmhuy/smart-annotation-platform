@@ -4,10 +4,10 @@ import { get, cloneDeep } from 'lodash'
 import EventCenter from '../../../EventCenter'
 import { useGeneralStore, useDatasetStore, useAnnotationStore } from '../../../stores/index'
 
-import BBoxAnnotationClass from '../../../../../classes/BBoxAnnotationClass'
+import BBoxAnnotationClass from 'models/BBoxAnnotationClass'
 
-import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
-import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
+import { ENUM_ANNOTATION_TYPE } from 'constants/index'
+import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from 'pages/Annotation/constants';
 
 
 const DrawingHandler = (props) => {

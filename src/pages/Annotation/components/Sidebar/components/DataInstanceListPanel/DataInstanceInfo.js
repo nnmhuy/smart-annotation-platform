@@ -10,15 +10,15 @@ import Avatar from '@material-ui/core/Avatar';
 import Divider from '@material-ui/core/Divider';
 import clsx from 'clsx'
 
-import ImageDataInstanceClass from '../../../../../../classes/ImageDataInstanceClass';
-import VideoDataInstanceClass from '../../../../../../classes/VideoDataInstanceClass';
+import ImageDataInstanceClass from '../../../../../../models/ImageDataInstanceClass';
+import VideoDataInstanceClass from '../../../../../../models/VideoDataInstanceClass';
 
 import ImageIcon from '@material-ui/icons/Image';
 import VideoIcon from '@material-ui/icons/Movie';
 import DoneIcon from '@material-ui/icons/Done'
 import HelpIcon from '@material-ui/icons/HelpOutline'
 import UnfinishedIcon from '@material-ui/icons/NotInterested'
-import { ENUM_ANNOTATE_STATUS } from '../../../../../../constants/constants';
+import { ENUM_ANNOTATE_STATUS } from 'constants/index';
 
 const useStyles = makeStyles((theme) => ({
   container: {

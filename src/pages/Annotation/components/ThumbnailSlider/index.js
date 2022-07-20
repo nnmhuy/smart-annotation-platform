@@ -9,7 +9,7 @@ import { get } from 'lodash'
 
 import EventCenter from '../../EventCenter';
 
-import { IMAGES_PER_PAGE } from '../../constants'
+import { NUM_ANNO_DATA_PER_PAGE } from '../../constants'
 import { EVENT_TYPES } from '../../constants'
 import useQuery from '../../../../utils/useQuery'
 import { useDatasetStore } from '../../stores/index'
@@ -77,7 +77,7 @@ const ThumbnailSlider = (props) => {
 
 
   const instances = get(dataset, 'instances', 0)
-  const maxPage = Number.parseInt((instances / IMAGES_PER_PAGE) + Boolean(instances % IMAGES_PER_PAGE))
+  const maxPage = Number.parseInt((instances / NUM_ANNO_DATA_PER_PAGE) + Boolean(instances % NUM_ANNO_DATA_PER_PAGE))
 
 
   const handleChangePage = async (val) => {

@@ -1,8 +1,8 @@
 import RestConnector from '../connectors/RestConnector'
 
-import BBoxAnnotationClass from '../classes/BBoxAnnotationClass'
-import PolygonAnnotationClass from '../classes/PolygonAnnotationClass'
-import MaskAnnotationClass from '../classes/MaskAnnotationClass'
+import BBoxAnnotationClass from '../models/BBoxAnnotationClass'
+import PolygonAnnotationClass from '../models/PolygonAnnotationClass'
+import MaskAnnotationClass from '../models/MaskAnnotationClass'
 
 
 class AnnotationService {

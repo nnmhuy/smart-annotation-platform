@@ -1,4 +1,4 @@
-import LabelClass from '../classes/LabelClass'
+import LabelClass from '../models/LabelClass'
 
 import RestConnector from '../connectors/RestConnector'
 

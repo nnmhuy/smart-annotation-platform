@@ -32,6 +32,11 @@ const DATASET_DATATYPE = {
   VIDEO: 'video',
 }
 
+// Number data display in dataset management
+const NUM_DISP_DATA_PER_PAGE = 50
+// Number data display in annotation page
+const NUM_ANNO_DATA_PER_PAGE = 5
+
 export {
   backendURL,
   ResponseCode,
@@ -39,5 +44,8 @@ export {
   ANNOTATION_TYPE,
   ENUM_ANNOTATION_TYPE,
   DATASET_DATATYPE,
-  ENUM_ANNOTATE_STATUS
+  ENUM_ANNOTATE_STATUS,
+
+  NUM_DISP_DATA_PER_PAGE,
+  NUM_ANNO_DATA_PER_PAGE,
 }

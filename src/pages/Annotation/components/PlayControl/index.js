@@ -6,8 +6,8 @@ import { useDatasetStore } from '../../stores/index'
 import ImagePlayControl from './components/ImagePlayControl/ImagePlayControl'
 import VideoPlayControl from './components/VideoPlayControl/VideoPlayControl'
 
-import VideoDataInstanceClass from '../../../../classes/VideoDataInstanceClass'
-import ImageDataInstanceClass from '../../../../classes/ImageDataInstanceClass'
+import VideoDataInstanceClass from '../../../../models/VideoDataInstanceClass'
+import ImageDataInstanceClass from '../../../../models/ImageDataInstanceClass'
 
 const PlayControl = (props) => {
   const instanceId = useDatasetStore(state => state.instanceId)

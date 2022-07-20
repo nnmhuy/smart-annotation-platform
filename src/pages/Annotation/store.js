@@ -1,7 +1,7 @@
 import create from 'zustand'
 import { cloneDeep, find, filter, remove } from 'lodash'
 
-import { MODES, STAGE_PADDING, DEFAULT_TOOL_CONFIG, IMAGES_PER_PAGE } from './constants'
+import { MODES, STAGE_PADDING, DEFAULT_TOOL_CONFIG, NUM_ANNO_DATA_PER_PAGE } from 'constants/index'
 import getPointerPosition from './utils/getPointerPosition'
 import loadImageFromURL from '../../utils/loadImageFromURL'
 import resizeImage from '../../utils/resizeImage'
@@ -230,11 +230,11 @@ const useAnnotationStore = create((set, get) => ({
     })
     setIsLoading("isLoadingDatasetData", false)
   },
-  getImagesOfDataset: async (datasetId, page) => {
+  getImagesOfDataset: async (datasetId, page, per_page) => {
     const setIsLoading = get().setIsLoading
     setIsLoading("images", true)
 
-    const imagesObj = await ImageService.getImagesByDataset(datasetId, page, IMAGES_PER_PAGE)
+    const imagesObj = await ImageService.getImagesByDataset(datasetId, page, per_page)
 
     set({ imageList: imagesObj })
 

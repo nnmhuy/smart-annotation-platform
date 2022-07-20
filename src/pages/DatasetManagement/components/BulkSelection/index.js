@@ -4,8 +4,10 @@ import { makeStyles } from '@material-ui/core'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import Collapse from '@material-ui/core/Collapse'
-import { filter } from 'lodash'
+import { filter, get } from 'lodash'
 import { useConfirm } from 'material-ui-confirm'
+import { NUM_DISP_DATA_PER_PAGE, NUM_ANNO_DATA_PER_PAGE } from 'constants/index'
+import useQuery from '../../../../utils/useQuery'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,13 +29,20 @@ const BulkSelection = (props) => {
   const classes = useStyles()
   const confirm = useConfirm()
   const { datasetId } = useParams()
+  const query = useQuery()
+  const page = JSON.parse(query.get("page") || 1)
   const { useStore } = props
 
   const selected = useStore(state => state.selected)
   const deselectAll = useStore(state => state.deselectAll)
   const deleteSelectedData = useStore(state => state.deleteSelectedData)
+  const dataList = useStore(state => state.dataList)
 
   const selectedIds = filter(Object.keys(selected), key => selected[key])
+  let annotatePage = 1
+  if (selectedIds.length > 0)
+    annotatePage = Math.floor((dataList.findIndex(val => val.id === selectedIds[0]) + NUM_DISP_DATA_PER_PAGE * (page - 1)) / NUM_ANNO_DATA_PER_PAGE) + 1
+  console.log(annotatePage)
 
   const handleDeleteSelected = () => {
     confirm({
@@ -57,7 +66,7 @@ const BulkSelection = (props) => {
             <Button
               color="primary"
               variant="outlined"
-              href={`/annotations/dataset=${datasetId}?instance_id=${selectedIds[0]}`}
+              href={`/annotations/dataset=${datasetId}?page=${annotatePage}`}
             >
               Annotate
             </Button>

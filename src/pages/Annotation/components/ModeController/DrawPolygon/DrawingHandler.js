@@ -3,12 +3,12 @@ import create from 'zustand'
 import { get, cloneDeep } from 'lodash'
 
 import EventCenter from '../../../EventCenter'
-import { useGeneralStore, useDatasetStore, useAnnotationStore } from '../../../stores'
+import { useGeneralStore, useDatasetStore, useAnnotationStore } from 'pages/Annotation/stores'
 
-import PolygonAnnotationClass from '../../../../../classes/PolygonAnnotationClass'
+import PolygonAnnotationClass from '../../../../../models/PolygonAnnotationClass'
 
-import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
-import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants';
+import { ENUM_ANNOTATION_TYPE } from 'constants/index'
+import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from 'constants/annotation';
 
 import { getDistance } from '../../../../../utils/geometryUtil'
 import checkIsMobileDevice from '../../../../../utils/checkIsMobileDevice'

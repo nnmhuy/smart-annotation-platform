@@ -1,4 +1,4 @@
-import { DATASET_DATATYPE } from '../constants/constants'
+import { DATASET_DATATYPE } from '../constants'
 
 export default class DatasetClass {
   constructor(id = '', name = '', projectId = '', datatype=DATASET_DATATYPE.IMAGE, otherData = {}) {

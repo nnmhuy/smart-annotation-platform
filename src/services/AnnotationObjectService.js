@@ -1,6 +1,6 @@
 import RestConnector from '../connectors/RestConnector'
 
-import AnnotationObjectClass from '../classes/AnnotationObjectClass'
+import AnnotationObjectClass from '../models/AnnotationObjectClass'
 
 
 class AnnotationObjectService {

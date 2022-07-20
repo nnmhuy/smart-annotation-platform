@@ -12,7 +12,7 @@ import { get } from 'lodash'
 import { useDatasetStore } from '../../../../stores/index'
 import useQuery from '../../../../../../utils/useQuery'
 
-import { IMAGES_PER_PAGE } from '../../../../constants'
+import { NUM_ANNO_DATA_PER_PAGE } from '../../../../constants'
 import ArrowRightIcon from '@material-ui/icons/ChevronRightRounded'
 import ArrowDownIcon from '@material-ui/icons/ExpandMoreRounded'
 
@@ -65,22 +65,9 @@ const ObjectInfoPanel = (props) => {
   const dataInstances = useDatasetStore(state => state.dataInstances)
   const instanceId = useDatasetStore(state => state.instanceId)
   const setInstanceId = useDatasetStore(state => state.setInstanceId)
-
-  useEffect(() => {
-    if (dataInstances) {
-      if (instanceId) {
-        const instanceIndex = dataInstances.findIndex((instance) => instance.id == instanceId)
-        const newPage = Number.parseInt(instanceIndex / IMAGES_PER_PAGE) + 1
-        if (page != newPage) {
-          handlePageChange(null, newPage)
-        }
-      }
-    }
-  }, 
-  [dataInstances, instanceId])
   
   const instances = get(dataset, 'instances', 0)
-  const maxPage = Number.parseInt((instances / IMAGES_PER_PAGE) + Boolean(instances % IMAGES_PER_PAGE))
+  const maxPage = Number.parseInt((instances / NUM_ANNO_DATA_PER_PAGE) + Boolean(instances % NUM_ANNO_DATA_PER_PAGE))
   const handlePageChange = (e, val) => {
     let newPage = val
     newPage = (Math.max(Math.min(maxPage, newPage), 1))
@@ -88,10 +75,6 @@ const ObjectInfoPanel = (props) => {
     if (newPage !== page) {
       history.replace(`/annotations/dataset=${datasetId}?page=${newPage}`)
     }
-  }
-
-  const checkInPage = (ind) => {
-    return ((page - 1) * IMAGES_PER_PAGE <= ind) && (ind < page * IMAGES_PER_PAGE)
   }
 
   return (
@@ -121,17 +104,13 @@ const ObjectInfoPanel = (props) => {
               count={maxPage}
               handlePageChange={handlePageChange}
             />
-            {dataInstances.map((instance, ind) => {
-                if (!checkInPage(ind)) return;
-                return (
-                  <DataInstanceInfo 
-                    key={instance.id}
-                    dataInstance={instance}
-                    isSelected={instance.id === instanceId}
-                    setSelectedInstanceId={setInstanceId}
-                  />
-                )
-              })
+            {dataInstances.map((instance) => (
+              <DataInstanceInfo
+                key={instance.id}
+                dataInstance={instance}
+                isSelected={instance.id === instanceId}
+                setSelectedInstanceId={setInstanceId} />
+            ))
             }
           </List>
         </Collapse>

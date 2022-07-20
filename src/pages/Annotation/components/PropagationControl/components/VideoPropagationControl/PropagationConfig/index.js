@@ -14,7 +14,7 @@ import CancelIcon from '@material-ui/icons/CancelRounded';
 import PopoverConfig from './PopoverConfig'
 import RestConnector from '../../../../../../../connectors/RestConnector'
 
-import MaskAnnotationClass from '../../../../../../../classes/MaskAnnotationClass'
+import MaskAnnotationClass from '../../../../../../../models/MaskAnnotationClass'
 
 import { MODEL_SERVER_URL_KEY, PROPAGATION_DIRECTION } from '../../../../../constants'
 

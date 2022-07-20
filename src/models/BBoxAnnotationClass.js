@@ -1,7 +1,7 @@
 import Annotation from "./AnnotationClass";
 
-import RestConnector from '../connectors/RestConnector'
-import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from '../constants/constants'
+import RestConnector from 'connectors/RestConnector'
+import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from 'constants/index.js'
 
 export default class BBoxAnnotation extends Annotation {
   constructor(id, annotationObjectId, annotationImageId, bBox, keyFrame=false) {

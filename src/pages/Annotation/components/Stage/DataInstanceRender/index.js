@@ -6,8 +6,8 @@ import { useDatasetStore, useGeneralStore } from '../../../stores/index'
 import ImageRender from './components/ImageRender'
 import VideoRender from './components/VideoRender'
 
-import ImageDataInstanceClass from '../../../../../classes/ImageDataInstanceClass'
-import VideoDataInstanceClass from '../../../../../classes/VideoDataInstanceClass'
+import ImageDataInstanceClass from '../../../../../models/ImageDataInstanceClass'
+import VideoDataInstanceClass from '../../../../../models/VideoDataInstanceClass'
 
 const DataInstanceRender = (props) => {
   const renderingSize = useGeneralStore(state => state.renderingSize)

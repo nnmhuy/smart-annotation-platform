@@ -15,7 +15,7 @@ import SelectField from '../../../../../components/SelectField'
 
 import DatasetService from '../../../../../services/DatasetService'
 
-import { DATASET_DATATYPE } from '../../../../../constants/constants'
+import { DATASET_DATATYPE } from 'constants/index'
 
 const fields = [
   {

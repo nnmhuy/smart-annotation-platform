@@ -10,7 +10,7 @@ import { get, cloneDeep } from 'lodash'
 
 import NakedField from '../../../../components/NakedField'
 
-import ProjectClass from '../../../../classes/ProjectClass'
+import ProjectClass from '../../../../models/ProjectClass'
 
 
 const useStyles = makeStyles((theme) => ({

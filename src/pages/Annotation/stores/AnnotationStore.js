@@ -4,7 +4,7 @@ import { filter, cloneDeep, find, findIndex } from 'lodash'
 import LabelService from '../../../services/LabelService'
 import AnnotationObjectService from '../../../services/AnnotationObjectService'
 import AnnotationService from '../../../services/AnnotationService'
-import AnnotationObjectClass from '../../../classes/AnnotationObjectClass'
+import AnnotationObjectClass from '../../../models/AnnotationObjectClass'
 
 
 const useAnnotationStore = create((set, get) => ({

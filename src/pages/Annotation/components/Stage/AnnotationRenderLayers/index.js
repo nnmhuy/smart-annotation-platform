@@ -2,9 +2,9 @@ import React from 'react'
 import { Layer } from 'react-konva'
 import { filter, cloneDeep, get, find } from 'lodash'
 
-import BBoxAnnotation from '../../../../../classes/BBoxAnnotationClass'
-import PolygonAnnotation from '../../../../../classes/PolygonAnnotationClass'
-import MaskAnnotation from '../../../../../classes/MaskAnnotationClass'
+import BBoxAnnotation from '../../../../../models/BBoxAnnotationClass'
+import PolygonAnnotation from '../../../../../models/PolygonAnnotationClass'
+import MaskAnnotation from '../../../../../models/MaskAnnotationClass'
 
 import BBox from './components/BBox/BBox'
 import Polygon from './components/Polygon/Polygon'

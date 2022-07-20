@@ -18,6 +18,7 @@ import annotationEventCenter from './EventCenter'
 import { useDatasetStore, useGeneralStore, useAnnotationStore } from './stores/index'
 import useQuery from '../../utils/useQuery'
 import _, { set } from 'lodash'
+import { NUM_DISP_DATA_PER_PAGE, NUM_ANNO_DATA_PER_PAGE } from 'constants/annotation'
 
 
 const useStyles = makeStyles(theme => ({
@@ -80,7 +81,7 @@ const Annotation = (props) => {
   }, [datasetId])
 
   useEffect(() => {
-    getDataInstances(datasetId, page)
+    getDataInstances(datasetId, page, NUM_ANNO_DATA_PER_PAGE)
   }, [datasetId])
 
   useEffect(() => {

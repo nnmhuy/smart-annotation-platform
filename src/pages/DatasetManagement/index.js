@@ -10,6 +10,7 @@ import DataPagination from './components/DataPagination/index'
 import useDatasetManagementStore from './store.js'
 
 import useQuery from '../../utils/useQuery'
+import { NUM_DISP_DATA_PER_PAGE } from 'constants/index'
 
 const DatasetManagement = (props) => {
   const { datasetId } = useParams()
@@ -26,7 +27,7 @@ const DatasetManagement = (props) => {
   }, [datasetId])
   
   React.useEffect(() => {
-    getData(datasetId, page)
+    getData(datasetId, page, NUM_DISP_DATA_PER_PAGE)
   }, [page])
 
   return (

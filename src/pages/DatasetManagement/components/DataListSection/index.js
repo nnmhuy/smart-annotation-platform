@@ -8,11 +8,11 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import clsx from 'clsx'
 
 import useQuery from '../../../../utils/useQuery'
-import { DATA_PER_PAGE } from '../../constant';
+import { NUM_DISP_DATA_PER_PAGE } from 'constants/index';
 
 import CheckIcon from '@material-ui/icons/CheckCircle';
 import UncheckIcon from '@material-ui/icons/RadioButtonUnchecked';
-import { ENUM_ANNOTATE_STATUS } from '../../../../constants/constants';
+import { ENUM_ANNOTATE_STATUS } from '../../../../constants';
 import DoneIcon from '@material-ui/icons/CheckCircle'
 import HelpIcon from '@material-ui/icons/Help'
 import UnfinishedIcon from '@material-ui/icons/NotInterested'
@@ -51,8 +51,8 @@ const DataListSection = (props) => {
 
   const page = JSON.parse(query.get("page") || 1)
 
-  const pageStart = (page - 1) * DATA_PER_PAGE 
-  const pageEnd = page * DATA_PER_PAGE
+  const pageStart = (page - 1) * NUM_DISP_DATA_PER_PAGE 
+  const pageEnd = page * NUM_DISP_DATA_PER_PAGE
 
 
   const dataList = useStore(state => state.dataList)
@@ -61,8 +61,7 @@ const DataListSection = (props) => {
   
   return (
     <ImageList className={classes.dataList} cols={isMobileLayout ? 2 : 4}>
-      {dataList.map((item, ind) => {
-        if (!(pageStart <= ind && ind < pageEnd)) return;
+      {dataList.map((item) => {
         const isSelected = selected[item.id]
         const AnnotateStatusIcon = mapStatusToIcon[item.annotateStatus]
         return (

@@ -31,11 +31,11 @@ const useDatasetManagementStore = create((set, get) => ({
     set({ dataset: updatedDataset })
   },
 
-  getData: async (datasetId, page) => {
+  getData: async (datasetId, page, per_page = 20) => {
     const setIsLoadingField = get().setIsLoadingField
     setIsLoadingField("dataList", true)
 
-    const dataList = await DataInstanceService.getDataInstancesByDataset(datasetId, page)
+    const dataList = await DataInstanceService.getDataInstancesByDataset(datasetId, page, per_page)
     set({ dataList })
 
     setIsLoadingField("dataList", false)

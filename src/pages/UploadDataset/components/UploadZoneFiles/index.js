@@ -6,7 +6,7 @@ import { useDropzone } from 'react-dropzone'
 import Loading from '../../../../components/Loading'
 
 import generateNewUid from '../../../../utils/uidGenerator'
-import { DATASET_DATATYPE } from '../../../../constants/constants'
+import { DATASET_DATATYPE } from 'constants/index'
 
 const useStyles = makeStyles((theme) => ({
   dropZoneWrapper: {

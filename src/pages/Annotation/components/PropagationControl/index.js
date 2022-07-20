@@ -5,7 +5,7 @@ import { useDatasetStore } from '../../stores/index'
 
 import VideoPropagationControl from './components/VideoPropagationControl/index'
 
-import VideoDataInstanceClass from '../../../../classes/VideoDataInstanceClass'
+import VideoDataInstanceClass from '../../../../models/VideoDataInstanceClass'
 
 const PropagationControl = () => {
   const instanceId = useDatasetStore(state => state.instanceId)

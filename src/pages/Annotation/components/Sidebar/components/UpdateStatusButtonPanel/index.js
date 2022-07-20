@@ -2,7 +2,7 @@ import { Button, Grid, makeStyles, styled } from '@material-ui/core'
 import React from 'react'
 
 import { useDatasetStore } from '../../../../stores/index'
-import { ENUM_ANNOTATE_STATUS } from '../../../../../../constants/constants'
+import { ENUM_ANNOTATE_STATUS } from '../../../../../../constants'
 
 const useStyles = makeStyles(theme => ({
   container: {

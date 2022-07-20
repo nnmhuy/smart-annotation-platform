@@ -1,7 +1,7 @@
 import RestConnector from '../connectors/RestConnector'
 
-import ImageDataInstanceClass from '../classes/ImageDataInstanceClass'
-import VideoDataInstanceClass from '../classes/VideoDataInstanceClass'
+import ImageDataInstanceClass from '../models/ImageDataInstanceClass'
+import VideoDataInstanceClass from '../models/VideoDataInstanceClass'
 
 
 class DataInstanceService {
@@ -13,7 +13,7 @@ class DataInstanceService {
     return {}
   }
 
-  async getDataInstancesByDataset(datasetId, page = 1, per_page = 0) {
+  async getDataInstancesByDataset(datasetId, page = 1, per_page = 20) {
     const dataInstancesResponse = await RestConnector.get(`/data?dataset_id=${datasetId}&page=${page}&per_page=${per_page}`)
 
     const dataInstancesObj = await Promise.all(dataInstancesResponse.data.map(instance => this.parseDataInstanceFromServer(instance)))

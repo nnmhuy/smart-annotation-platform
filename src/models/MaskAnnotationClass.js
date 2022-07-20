@@ -2,7 +2,7 @@ import RestConnector from '../connectors/RestConnector'
 import AnnotationClass from "./AnnotationClass";
 import StorageFileClass from './StorageFileClass'
 
-import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from '../constants/constants'
+import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from '../constants'
 
 export default class MaskAnnotation extends AnnotationClass {
   constructor(id, annotationObjectId, annotationImageId, maskData = {}, keyFrame=false) {

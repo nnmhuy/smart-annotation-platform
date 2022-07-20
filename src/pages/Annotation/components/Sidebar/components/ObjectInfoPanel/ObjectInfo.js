@@ -20,7 +20,7 @@ import { ReactComponent as BBoxIcon } from '../../../../../../static/images/icon
 import { ReactComponent as PolygonIcon } from '../../../../../../static/images/icons/ToolboxIcon/polygon.svg'
 import { ReactComponent as MaskIcon } from '../../../../../../static/images/icons/ToolboxIcon/paintbrush.svg'
 
-import { ENUM_ANNOTATION_TYPE } from '../../../../../../constants/constants'
+import { ENUM_ANNOTATION_TYPE } from 'constants/index'
 
 import LabelSelection from './LabelSelection'
 

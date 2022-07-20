@@ -10,7 +10,7 @@ import DrawMask from './DrawMask/index'
 import ReferringExpression from './ReferringExpression/index'
 
 import { MODES } from '../../constants'
-import { ENUM_ANNOTATION_TYPE }from '../../../../constants/constants'
+import { ENUM_ANNOTATION_TYPE }from '../../../../constants'
 
 import { useGeneralStore, useAnnotationStore } from '../../stores/index'
 

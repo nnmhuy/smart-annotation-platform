@@ -1,6 +1,6 @@
 import RestConnector from '../connectors/RestConnector'
 
-import DatasetClass from '../classes/DatasetClass'
+import DatasetClass from '../models/DatasetClass'
 
 class DatasetService {
   getDatasetById(id) {

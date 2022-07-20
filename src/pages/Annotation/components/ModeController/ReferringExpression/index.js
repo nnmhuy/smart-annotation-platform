@@ -4,10 +4,10 @@ import { cloneDeep } from 'lodash'
 import EventCenter from '../../../EventCenter'
 import { useDatasetStore, useAnnotationStore, useGeneralStore } from '../../../stores/index'
 
-import MaskAnnotationClass from '../../../../../classes/MaskAnnotationClass'
+import MaskAnnotationClass from '../../../../../models/MaskAnnotationClass'
 
-import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS, REFERRING_EXPRESSION_MODELS } from '../../../constants';
-import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
+import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS, REFERRING_EXPRESSION_MODELS } from 'constants/annotation';
+import { ENUM_ANNOTATION_TYPE } from 'constants/index'
 
 
 const ReferringExpression = (props) => {

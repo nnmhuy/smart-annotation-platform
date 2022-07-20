@@ -18,10 +18,10 @@ import ExportIcon from '@material-ui/icons/GetAppRounded';
 import NakedField from '../../../../components/NakedField'
 import SettingsMenu from './components/SettingsMenu'
 
-import DatasetClass from '../../../../classes/DatasetClass'
+import DatasetClass from '../../../../models/DatasetClass'
 import useQuery from '../../../../utils/useQuery'
 
-import { backendURL } from '../../../../constants/constants'
+import { backendURL } from '../../../../constants'
 
 const useStyles = makeStyles((theme) => ({
   root: {

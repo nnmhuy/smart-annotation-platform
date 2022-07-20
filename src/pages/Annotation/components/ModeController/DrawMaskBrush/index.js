@@ -5,11 +5,11 @@ import { get, cloneDeep } from 'lodash'
 import EventCenter from '../../../EventCenter'
 import { useDatasetStore, useGeneralStore, useAnnotationStore } from '../../../stores/index'
 
-import MaskAnnotationClass from '../../../../../classes/MaskAnnotationClass'
-import StorageFileClass from '../../../../../classes/StorageFileClass'
+import MaskAnnotationClass from '../../../../../models/MaskAnnotationClass'
+import StorageFileClass from '../../../../../models/StorageFileClass'
 
-import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
-import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants'
+import { ENUM_ANNOTATION_TYPE } from 'constants/index'
+import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from 'constants/annotation'
 
 import drawBrushToMask from './drawBrushToMask'
 import sendFormData from '../../../../../utils/sendFormData'

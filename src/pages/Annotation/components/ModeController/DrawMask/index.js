@@ -5,11 +5,11 @@ import { get, cloneDeep } from 'lodash'
 import EventCenter from '../../../EventCenter'
 import { useDatasetStore, useGeneralStore, useAnnotationStore } from '../../../stores/index'
 
-import MaskAnnotationClass from '../../../../../classes/MaskAnnotationClass'
-import StorageFileClass from '../../../../../classes/StorageFileClass'
+import MaskAnnotationClass from '../../../../../models/MaskAnnotationClass'
+import StorageFileClass from '../../../../../models/StorageFileClass'
 import MiVOSScribbleToMaskBuilder from './MiVOSScribbleToMaskBuilder/index'
 
-import { ENUM_ANNOTATION_TYPE } from '../../../../../constants/constants'
+import { ENUM_ANNOTATION_TYPE } from '../../../../../constants'
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants'
 
 const useScribbleToMaskStore = create((set, get) => ({

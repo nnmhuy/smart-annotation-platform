@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { backendURL } from '../constants/constants'
+import { backendURL } from '../constants'
 
 const RestConnector = () => {
   const instance = axios.create({ 

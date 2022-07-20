@@ -1,6 +1,6 @@
 import RestConnector from '../connectors/RestConnector'
 
-import ProjectClass from '../classes/ProjectClass'
+import ProjectClass from '../models/ProjectClass'
 
 class ProjectService {
   async getProjects() {

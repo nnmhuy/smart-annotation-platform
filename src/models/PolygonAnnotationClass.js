@@ -1,7 +1,7 @@
 import Annotation from "./AnnotationClass";
 
 import RestConnector from '../connectors/RestConnector'
-import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from "../constants/constants";
+import { ANNOTATION_TYPE, ENUM_ANNOTATION_TYPE } from "../constants";
 
 export default class PolygonAnnotation extends Annotation {
   constructor(id, annotationObjectId, annotationImageId, polygon, keyFrame=false) {

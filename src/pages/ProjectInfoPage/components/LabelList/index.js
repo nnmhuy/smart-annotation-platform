@@ -18,7 +18,7 @@ import CreateIcon from '@material-ui/icons/AddCircle';
 import EditLabelDialog from './components/EditLabelDialog';
 import { ColorCell } from './components/ColorCell'
 
-import LabelClass from '../../../../classes/LabelClass'
+import LabelClass from '../../../../models/LabelClass'
 import randomColor from '../../../../utils/randomColor'
 
 const useStyles = makeStyles(() => ({

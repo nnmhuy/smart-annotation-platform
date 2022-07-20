@@ -6,7 +6,7 @@ import { useParams, useHistory } from 'react-router'
 
 import useQuery from '../../../../utils/useQuery'
 
-import { DATA_PER_PAGE } from '../../constant'
+import { NUM_DISP_DATA_PER_PAGE } from 'constants/index'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,8 +40,8 @@ const DataPagination = (props) => {
     history.push(`/datasets/dataset=${datasetId}?page=${value}`)
   };
 
-  const pageStart = Math.min((page - 1) * DATA_PER_PAGE + 1, instances)
-  const pageEnd = Math.min(page * DATA_PER_PAGE, instances)
+  const pageStart = Math.min((page - 1) * NUM_DISP_DATA_PER_PAGE + 1, instances)
+  const pageEnd = Math.min(page * NUM_DISP_DATA_PER_PAGE, instances)
 
   return (
     <div className={classes.root}>
@@ -49,7 +49,7 @@ const DataPagination = (props) => {
         {pageStart} - {pageEnd}
       </div>
       <Pagination
-        count={Number.parseInt((instances / DATA_PER_PAGE) + Boolean(instances % DATA_PER_PAGE))}
+        count={Number.parseInt((instances / NUM_DISP_DATA_PER_PAGE) + Boolean(instances % NUM_DISP_DATA_PER_PAGE))}
         showFirstButton 
         showLastButton
         color="primary"
