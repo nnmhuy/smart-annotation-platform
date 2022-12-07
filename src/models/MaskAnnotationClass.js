@@ -41,7 +41,7 @@ export default class MaskAnnotation extends AnnotationClass {
       {
         scribbles: data.scribbles || [],
         mask: maskFile,
-        threshold: data.threshold,
+        threshold: data.threshold || 0,
       },
       data.key_frame
     )
@@ -50,7 +50,7 @@ export default class MaskAnnotation extends AnnotationClass {
   async applyUpdate() {
     let data = {
       scribbles: this.maskData.scribbles,
-      threshold: this.maskData.threshold,
+      threshold: this.maskData.threshold || 0,
     }
     if (this.maskData.mask.URL) {
       data.mask = {

@@ -62,6 +62,20 @@ const useDatasetStore = create((set, get) => ({
     set({dataInstances})
   },
 
+  setDescriptionDataInstance: (id, description) => {
+    const dataInstances = get().dataInstances.map(object => {
+      if (object.id !== id) {
+        return object
+      } else {
+        let newDataInstance = cloneDeep(object)
+        newDataInstance.description = description
+        DataInstanceService.putDataInstance(newDataInstance)
+        return newDataInstance
+      }
+    })
+    set({dataInstances}) 
+  },
+
   getPlayingState: () => get().playingState,
   setPlayingState: (newState) => set(state => ({ playingState: {...state.playingState, ...newState }})),
   increaseBufferingFrame: (skip) => set(state => ({ playingState: { ...state.playingState, bufferingFrame: state.playingState.bufferingFrame + skip }})),

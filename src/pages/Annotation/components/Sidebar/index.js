@@ -5,6 +5,7 @@ import ObjectInfoPanel from './components/ObjectInfoPanel/index'
 import LabelInfoPanel from './components/LabelInfoPanel/index'
 import DataInstanceListPanel from './components/DataInstanceListPanel/index'
 import UpdateStatusButtonPanel from './components/UpdateStatusButtonPanel/index'
+import DescriptionBox from './components/DescriptionBox'
 
 
 const useStyles = makeStyles(theme => ({
@@ -25,6 +26,7 @@ const SideBar = () => {
       <DataInstanceListPanel/>
       <LabelInfoPanel/>
       <UpdateStatusButtonPanel/>
+      <DescriptionBox/>
     </div>
   )
 }

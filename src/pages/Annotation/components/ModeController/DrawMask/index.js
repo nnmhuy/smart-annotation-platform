@@ -9,6 +9,7 @@ import MaskAnnotationClass from '../../../../../models/MaskAnnotationClass'
 import StorageFileClass from '../../../../../models/StorageFileClass'
 import MiVOSScribbleToMaskBuilder from './MiVOSScribbleToMaskBuilder/index'
 
+
 import { ENUM_ANNOTATION_TYPE } from '../../../../../constants'
 import { EVENT_TYPES, DEFAULT_ANNOTATION_ATTRS } from '../../../constants'
 
@@ -39,6 +40,8 @@ const ScribbleToMask = (props) => {
   const deleteAnnotation = useAnnotationStore(state => state.deleteAnnotation)
   const setSelectedObjectId = useAnnotationStore(state => state.setSelectedObjectId)
   const getOrCreateSelectedObjectId = useAnnotationStore(state => state.getOrCreateSelectedObjectId)
+  const getIsLoading = useAnnotationStore(state => state.getIsLoading)
+  const setIsLoading = useAnnotationStore(state => state.setIsLoading)
 
   const getToolConfig = useGeneralStore(state => state.getToolConfig)
 
@@ -47,8 +50,9 @@ const ScribbleToMask = (props) => {
   const getMiVOSBuilder = useScribbleToMaskStore(state => state.getMiVOSBuilder)
   const setMiVOSBuilder = useScribbleToMaskStore(state => state.setMiVOSBuilder)
 
-
   const getCurrentAnnotation = async (createIfNotExist = true) => {
+    if (getIsLoading("create_new_annotation"))
+      return null
     const objectId = await getOrCreateSelectedObjectId(instanceId, ENUM_ANNOTATION_TYPE.MASK, {
       ...DEFAULT_ANNOTATION_ATTRS,
       fill: '#FFFFFF'
@@ -80,16 +84,19 @@ const ScribbleToMask = (props) => {
       miVOSBuilder.setMask(null)
   
       await appendAnnotation(newAnnotation, { commitAnnotation: false })
+      setIsLoading('create_new_annotation', false)
       return newAnnotation
     }
   }
 
   const handleStartDrawByBrush = async () => {
+    const drawingAnnotation = await getCurrentAnnotation()
+    if (!drawingAnnotation) return;
+    
     const renderingSize = getRenderingSize()
     const imageWidth = get(renderingSize, 'width', 1)
     const imageHeight = get(renderingSize, 'height', 1)
-
-    const drawingAnnotation = await getCurrentAnnotation()
+    
     const currentMousePosition = getCurrentMousePosition()
     const toolConfig = getToolConfig()
 

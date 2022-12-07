@@ -166,6 +166,7 @@ const DEFAULT_TOOL_CONFIG = {
   [MODES.DRAW_MASK_BRUSH.name]: {
     scribbleSize: 20,
     scribbleType: SCRIBBLE_TYPES.POSITIVE,
+    threshold: 50,
   },
   [MODES.DRAW_MASK.name]: {
     scribbleSize: 20,

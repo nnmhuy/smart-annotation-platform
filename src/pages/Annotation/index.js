@@ -82,7 +82,7 @@ const Annotation = (props) => {
 
   useEffect(() => {
     getDataInstances(datasetId, page, NUM_ANNO_DATA_PER_PAGE)
-  }, [datasetId])
+  }, [page, datasetId])
 
   useEffect(() => {
     setInstanceId(instanceIdQuery)
