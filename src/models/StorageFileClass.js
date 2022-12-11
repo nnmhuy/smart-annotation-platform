@@ -20,15 +20,16 @@ export default class StorageFileClass {
 
   async getBitmap(renderingSize) {
     const canvasRenderingSize = renderingSize || window.canvasRenderingSize
+    if (!canvasRenderingSize || !this.bitmap) return null
     if (
-      !this.bitmap 
+      this.bitmap 
       || this.bitmap.width !== canvasRenderingSize.width
       || this.bitmap.height !== canvasRenderingSize.height 
     ) {
       try {
         this.bitmap = await this.getBlob().then(blob => createImageBitmap(blob, {
-          resizeWidth: canvasRenderingSize.width,
-          resizeHeight: canvasRenderingSize.height,
+          resizeWidth: canvasRenderingSize?.width,
+          resizeHeight: canvasRenderingSize?.height,
         })).catch(err => {
           console.log(err)
         })

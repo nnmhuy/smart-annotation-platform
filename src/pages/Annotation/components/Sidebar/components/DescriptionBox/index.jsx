@@ -1,21 +1,41 @@
 import { Box, TextField } from '@material-ui/core'
+import { makeStyles } from "@material-ui/core/styles";
 import { useDatasetStore } from 'pages/Annotation/stores'
 import React from 'react'
-import { useState } from 'react'
+import { useEffect } from 'react';
 
-const DescriptionBox = (props) => {
+const useStyles = makeStyles((theme) => ({
+  input: {
+    background: "rgb(232, 241, 250)",
+    borderRadius: 10
+  }
+}));
+
+const DescriptionBox = () => {
   const instanceId = useDatasetStore(state => state.instanceId)
-  const dataInstance = useDatasetStore(state => state.getDataInstance)
+  const dataInstances = useDatasetStore(state => state.dataInstances)
   const setDescriptionDataInstance = useDatasetStore(state => state.setDescriptionDataInstance)
+
+  const classes = useStyles()
+
   const handleChange = (event) => {
+    console.log(event.target.value)
     setDescriptionDataInstance(instanceId, event.target.value)
   }
+
+  const description = dataInstances.find(dataInstance => dataInstance.id === instanceId)?.description || ''
   return (
-    <Box>
+    <Box sx={{backgroundColor: 'white', width: '100%', marginTop: 20, borderRadius: 0}}>
       <TextField
         id="data-description"
-        value={dataInstance.description || ''}
-        handleChange={handleChange}
+        label="Description"
+        variant='filled'
+        InputProps={{ className: classes.input }}
+        value={description}
+        onChange={handleChange}
+        fullWidth
+        multiline
+        rows={4}
       />
     </Box>
   )

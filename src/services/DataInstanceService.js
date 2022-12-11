@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash'
 import RestConnector from '../connectors/RestConnector'
 
 import ImageDataInstanceClass from '../models/ImageDataInstanceClass'
@@ -30,14 +31,14 @@ class DataInstanceService {
 
   async putDataInstance(dataInstance)
   {
-    const updateData = {
-      id: dataInstance.id,
-      annotateStatus: dataInstance.annotateStatus
-    }
+    const updateData = cloneDeep(dataInstance)
+    delete updateData._cls
+    delete updateData.image
+    delete updateData.thumbnail
     return await RestConnector.put(`/data`, updateData)
   }
 
-  upload(file, datasetId, onUploadProgress) {
+  async upload(file, datasetId, onUploadProgress) {
     let formData = new FormData();
 
     formData.append("dataset_id", datasetId);

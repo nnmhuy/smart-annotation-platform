@@ -10,6 +10,7 @@ const ImageRender = (props) => {
   React.useEffect(() => {
     const loadImageBitmap = async () => {
       if (image_data) {
+        console.log(image_data)
         const bitmap = await image_data?.image?.original?.getBitmap(renderingSize)
         setImageBitmap(bitmap)
       }

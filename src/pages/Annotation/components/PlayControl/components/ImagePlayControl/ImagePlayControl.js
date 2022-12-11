@@ -19,6 +19,8 @@ const ImagePlayControl = (props) => {
   useEffect(() => {
     if (imageData) {
       const image = imageData.getCurrentImage(playingState)
+      console.log(playingState)
+      console.log(image)
       setCurrentAnnotationImageId(image.id)
     }
   }, [imageId, playingState])
