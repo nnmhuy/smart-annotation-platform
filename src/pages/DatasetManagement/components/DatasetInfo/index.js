@@ -22,14 +22,15 @@ import DatasetClass from "../../../../models/DatasetClass";
 import useQuery from "../../../../utils/useQuery";
 
 import DataInstanceService from "services/DataInstanceService.js";
-import AnnotationService from "services/AnnotationService";
+import AnnotationObjectService from "services/AnnotationObjectService";
+import LabelService from "services/LabelService";
 
 import JSZip from "jszip";
 import FileSaver from "file-saver";
 
-import { backendURL } from "../../../../constants";
+import { backendURL, DATASET_DATATYPE } from "../../../../constants";
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -125,34 +126,47 @@ const DatasetInfo = (props) => {
   };
 
   const handleExportData = async () => {
-
-    toastId.current = toast.loading('Please wait...')
+    toastId.current = toast.loading("Please wait...");
     const allDataInstances =
       await DataInstanceService.getDataInstancesByDataset(datasetId, 1, 0);
     const zipFile = JSZip();
+    const nSamples = allDataInstances.length;
+    let nFinished = 0;
     const allDataInstancesWithLabel = await Promise.all(
       allDataInstances.map(async (dataInstance) => {
         const annotations =
-          await AnnotationService.getAnnotationsByDataInstance(dataInstance.id);
+          await AnnotationObjectService.getAnnotationObjectsByDataInstance(
+            dataInstance.id
+          );
         const dataAnnotationInfo = {
           ...dataInstance,
           annotations: annotations,
         };
+        // Update progress
+        nFinished += 1;
+        toast.update(toastId.current, {
+          progress: nFinished / nSamples,
+        });
         return dataAnnotationInfo;
       })
     );
+    // Add label information
+    const labelMetadata = await LabelService.getLabelByDataset(datasetId);
+    zipFile.file("labels.json", JSON.stringify(labelMetadata));
+    // Add data instance information
     allDataInstancesWithLabel.forEach((val) => {
       const jsonData = JSON.stringify(val);
       zipFile.file(`${val.id}.json`, jsonData);
     });
+    // Create zip file and download
     zipFile.generateAsync({ type: "blob" }).then(function (content) {
       FileSaver.saveAs(content, `${name}.zip`);
       toast.update(toastId.current, {
-        render: 'Exported successfully',
-        type: 'success',
+        render: "Exported successfully",
+        type: "success",
         isLoading: false,
-        autoClose: 1000
-      })
+        autoClose: 1000,
+      });
     });
   };
 

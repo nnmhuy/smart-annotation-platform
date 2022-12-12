@@ -3,32 +3,34 @@ import LabelClass from '../models/LabelClass'
 import RestConnector from '../connectors/RestConnector'
 
 class LabelService {
-  getLabelByProject(projectId) {
-    return RestConnector.get(`/annotation_labels?project_id=${projectId}`)
-      .then(response => response.data.map(label => LabelClass.constructorFromServerData(label)))
+  async getLabelByProject(projectId) {
+    const response = await RestConnector.get(`/annotation_labels?project_id=${projectId}`)
+    return response.data.map(label => LabelClass.constructorFromServerData(label))
   }
 
-  getLabelByDataset(datasetId) {
-    return RestConnector.get(`/annotation_labels?dataset_id=${datasetId}`)
-      .then(response => response.data.map(label => LabelClass.constructorFromServerData(label)))
+  async getLabelByDataset(datasetId) {
+    const response = await RestConnector.get(`/annotation_labels?dataset_id=${datasetId}`)
+    return response.data.map(label => LabelClass.constructorFromServerData(label))
   }
 
-  createLabel(data) {
-    return RestConnector.post('/annotation_labels', {
+  async createLabel(data) {
+    const response = await RestConnector.post('/annotation_labels', {
       label: data.label,
       project_id: data.projectId,
       properties: data.properties,
       annotation_properties: data.annotationProperties
-    }).then(response => LabelClass.constructorFromServerData(response.data))
+    })
+    return LabelClass.constructorFromServerData(response.data)
   }
 
-  updateLabel(data) {
-    return RestConnector.put('/annotation_labels', {
+  async updateLabel(data) {
+    const response = await RestConnector.put('/annotation_labels', {
       id: data.id,
       label: data.label,
       properties: data.properties,
       annotation_properties: data.annotationProperties
-    }).then(response => LabelClass.constructorFromServerData(response.data))
+    })
+    return LabelClass.constructorFromServerData(response.data)
   }
 
   deleteLabelById(id) {
@@ -36,4 +38,6 @@ class LabelService {
   }
 }
 
-export default new LabelService()
+const labelService = new LabelService()
+
+export default labelService
