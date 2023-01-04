@@ -19,7 +19,6 @@ const DescriptionBox = () => {
   const classes = useStyles()
 
   const handleChange = (event) => {
-    console.log(event.target.value)
     setDescriptionDataInstance(instanceId, event.target.value)
   }
 

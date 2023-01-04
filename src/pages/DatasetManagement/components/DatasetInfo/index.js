@@ -31,6 +31,7 @@ import FileSaver from "file-saver";
 import { backendURL, DATASET_DATATYPE } from "../../../../constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AnnotationService from "services/AnnotationService";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -132,24 +133,35 @@ const DatasetInfo = (props) => {
     const zipFile = JSZip();
     const nSamples = allDataInstances.length;
     let nFinished = 0;
-    const allDataInstancesWithLabel = await Promise.all(
-      allDataInstances.map(async (dataInstance) => {
-        const annotations =
-          await AnnotationObjectService.getAnnotationObjectsByDataInstance(
-            dataInstance.id
-          );
-        const dataAnnotationInfo = {
-          ...dataInstance,
-          annotations: annotations,
-        };
-        // Update progress
-        nFinished += 1;
-        toast.update(toastId.current, {
-          progress: nFinished / nSamples,
-        });
-        return dataAnnotationInfo;
-      })
-    );
+    const batchSize = 100
+    let nBatch = Math.ceil(nSamples / batchSize)
+    let allDataInstancesWithLabel = []
+    for (let i = 0; i <= nBatch; ++i) {
+      const startInd = i * batchSize
+      const endInd = Math.min((i + 1) * batchSize, nSamples)
+      let batchData = await Promise.all(
+        allDataInstances.slice(startInd, endInd).map(async (dataInstance) => {
+          const annotationObjects =
+            await AnnotationObjectService.getAnnotationObjectsByDataInstance(
+              dataInstance.id
+            );
+          const annotations =
+            await AnnotationService.getAnnotationsByDataInstance(dataInstance.id);
+          const dataAnnotationInfo = {
+            ...dataInstance,
+            annotations: annotations,
+            annotationObjects: annotationObjects,
+          };
+          // Update progress
+          nFinished += 1;
+          toast.update(toastId.current, {
+            progress: nFinished / nSamples,
+          });
+          return dataAnnotationInfo;
+        })
+      );
+      allDataInstancesWithLabel = allDataInstancesWithLabel.concat(batchData)
+    }
     // Add label information
     const labelMetadata = await LabelService.getLabelByDataset(datasetId);
     zipFile.file("labels.json", JSON.stringify(labelMetadata));

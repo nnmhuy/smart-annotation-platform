@@ -20,6 +20,7 @@ export default class StorageFileClass {
 
   async getBitmap(renderingSize) {
     const canvasRenderingSize = renderingSize || window.canvasRenderingSize
+    if (!canvasRenderingSize) return null
     if (
       !this.bitmap 
       || this.bitmap.width !== canvasRenderingSize.width

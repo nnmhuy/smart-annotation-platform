@@ -50,7 +50,6 @@ const ToolURLConfig = (props) => {
     const server_key = MODEL_SERVER_URL_KEY[key] || ''
     initialValues[server_key] = localStorage.getItem(server_key) || ''
   })
-  console.log(initialValues)
   const formik = useFormik({
     initialValues: initialValues,
     onSubmit: (values) => {

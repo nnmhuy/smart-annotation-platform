@@ -42,7 +42,6 @@ const BulkSelection = (props) => {
   let annotatePage = 1
   if (selectedIds.length > 0)
     annotatePage = Math.floor((dataList.findIndex(val => val.id === selectedIds[0]) + NUM_DISP_DATA_PER_PAGE * (page - 1)) / NUM_ANNO_DATA_PER_PAGE) + 1
-  console.log(annotatePage)
 
   const handleDeleteSelected = () => {
     confirm({
