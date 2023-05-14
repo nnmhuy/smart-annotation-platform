@@ -1,47 +1,61 @@
-import React from 'react'
-import { Collapse, LinearProgress, makeStyles, withStyles, styled, IconButton, Divider } from '@material-ui/core'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import React from "react";
+import {
+  Collapse,
+  LinearProgress,
+  makeStyles,
+  withStyles,
+  styled,
+  IconButton,
+  Divider,
+} from "@material-ui/core";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
-import Grid from '@material-ui/core/Grid'
-import _ from 'lodash'
+import Grid from "@material-ui/core/Grid";
+import _ from "lodash";
 
-import ImagePreview from './components/ImagePreview/index'
+import ImagePreview from "./components/ImagePreview/index";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: '0 30 0 30px',
-    margin: 'auto',
+    padding: "0 30 0 30px",
+    margin: "auto",
     marginTop: 30,
   },
   title: {
     fontSize: 30,
-    color: theme.palette.primary.dark
+    color: theme.palette.primary.dark,
   },
   collapseTitle: {
-    margin: 'auto',
+    margin: "auto",
     marginTop: 20,
     marginBottom: 20,
     maxWidth: 1200,
     fontSize: 25,
-    display: 'flex',
-    justifyContent: 'space-around'
-  }
-}))
+    display: "flex",
+    justifyContent: "space-around",
+  },
+}));
 
 const BorderLinearProgress = withStyles((theme) => ({
   root: {
-    margin: 'auto',
+    margin: "auto",
     marginTop: 10,
     marginBottom: 10,
     height: 10,
     borderRadius: 5,
   },
   colorPrimary: {
-    backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 200 : 700],
+    backgroundColor:
+      theme.palette.grey[theme.palette.type === "light" ? 200 : 700],
   },
   bar: (props) => ({
     borderRadius: 5,
-    backgroundColor: props.status === "error" ? 'red' : (props.status === "uploading" ? '#1a90ff' : "green"),
+    backgroundColor:
+      props.status === "error"
+        ? "red"
+        : props.status === "uploading"
+        ? "#1a90ff"
+        : "green",
   }),
 }))(LinearProgress);
 
@@ -49,16 +63,16 @@ const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
   return <IconButton {...other} />;
 })(({ theme, expand }) => ({
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
-  transition: theme.transitions.create('transform', {
+  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+  marginLeft: "auto",
+  transition: theme.transitions.create("transform", {
     duration: theme.transitions.duration.shortest,
   }),
 }));
 
 const PreviewSection = (props) => {
-  const classes = useStyles()
-  const { useStore } = props
+  const classes = useStyles();
+  const { useStore } = props;
   const [expandedSuccess, setExpandedSuccess] = React.useState(false);
   const [expandedFailed, setExpandedFailed] = React.useState(false);
 
@@ -68,24 +82,42 @@ const PreviewSection = (props) => {
   const handleExpandFailedClick = () => {
     setExpandedFailed(!expandedFailed);
   };
-  const files = useStore(state => state.files)
-  const uploadLogs = useStore(state => state.uploadLogs)
-  const progressInfos = useStore(state => state.progressInfos)
-  const deleteFileById = useStore(state => state.deleteFileById)
-  // console.log(uploadLogs)
-  const uploadLogsKey = files.map(file => file.id)
-  const countSuccess = uploadLogsKey.filter((logId => _.get(uploadLogs[logId], 'success', false))).length
-  return (
-    files.length ?
-      <Grid container direction="row" spacing={2} className={classes.root} justifyContent='center'>
-        <Grid item className={classes.title} xs={12}>
-          File list
-        </Grid>
-        <Grid item xs={7}>
-            <BorderLinearProgress  variant="determinate" value={countSuccess / uploadLogsKey.length * 100}></BorderLinearProgress>
-            <label>{countSuccess}/{uploadLogsKey.length}</label>
-        </Grid>
-        <Grid item xs={11}>
+  const files = useStore((state) => state.files);
+  const uploadLogs = useStore((state) => state.uploadLogs);
+  const progressInfos = useStore((state) => state.progressInfos);
+  const deleteFileById = useStore((state) => state.deleteFileById);
+  const uploadLogsKey = files.map((file) => file.id);
+  // Use memo to update count number of logs that have message !== 'Uploading' 
+  const countSuccess = React.useMemo(() => {
+    return uploadLogsKey.reduce((acc, key) => {
+      if (uploadLogs[key] && uploadLogs[key].message !== "Uploading") {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
+  }, [uploadLogsKey, uploadLogs]);
+
+  return files.length ? (
+    <Grid
+      container
+      direction="row"
+      spacing={2}
+      className={classes.root}
+      justifyContent="center"
+    >
+      <Grid item className={classes.title} xs={12}>
+        File list
+      </Grid>
+      <Grid item xs={7}>
+        <BorderLinearProgress
+          variant="determinate"
+          value={(countSuccess / uploadLogsKey.length) * 100}
+        ></BorderLinearProgress>
+        <label>
+          {countSuccess}/{uploadLogsKey.length}
+        </label>
+      </Grid>
+      {/* <Grid item xs={11}>
           <div className={classes.collapseTitle}> 
 
             <label>Upload Successful</label>
@@ -150,10 +182,9 @@ const PreviewSection = (props) => {
               }
             </Grid>
           </Collapse>    
-        </Grid>
-      </Grid>
-      : null
-  )
-}
+        </Grid> */}
+    </Grid>
+  ) : null;
+};
 
-export default PreviewSection
+export default PreviewSection;

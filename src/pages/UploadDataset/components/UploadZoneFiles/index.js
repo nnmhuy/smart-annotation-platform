@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button'
 import { useDropzone } from 'react-dropzone'
 
 import Loading from '../../../../components/Loading'
+import _ from 'lodash'
 
 import generateNewUid from '../../../../utils/uidGenerator'
 import { DATASET_DATATYPE } from 'constants/index'
@@ -85,22 +86,31 @@ const UploadZoneFolder = (props) => {
   const { getRootProps, getInputProps } = useDropzone({
     accept: acceptedFormat?.accept,
     onDrop: async (acceptedFiles) => {
-      acceptedFiles.map((file) => new Promise((resolve, reject) => {
-        try {
-          let processedFile = file
-
-          const objectUrl = URL.createObjectURL(file);
-          processedFile = Object.assign(processedFile, {
-            id: generateNewUid(),
-            preview: objectUrl
-          })
-          resolve(processedFile)
-        } catch (error) {
-          reject(error)
-        }
-      }).then(processedFile => appendFile(processedFile)))
+      // Split accepted files into 100 files each batch
+      // Each batch will handle sequentially, so that we can update the UI
+      const batch_size = 100
+      const batches = _.chunk(acceptedFiles, batch_size)
+      for (let i = 0; i < batches.length; i++) {
+        const batch = batches[i]
+        await Promise.all(batch.map(async (file) => {
+          try {
+            let processedFile = file
+  
+            const objectUrl = URL.createObjectURL(file);
+            processedFile = Object.assign(processedFile, {
+              id: generateNewUid(),
+              preview: objectUrl
+            })
+            await appendFile(processedFile)
+          } catch (error) {
+            console.log(error)
+          }
+        }))
+        // Paused for 1 second to update the UI
+        await new Promise(r => setTimeout(r, 1000))
+      }
     }
-  });
+  })
 
   return (
     <section className="container">

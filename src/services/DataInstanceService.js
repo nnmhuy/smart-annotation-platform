@@ -3,6 +3,7 @@ import RestConnector from '../connectors/RestConnector'
 
 import ImageDataInstanceClass from '../models/ImageDataInstanceClass'
 import VideoDataInstanceClass from '../models/VideoDataInstanceClass'
+import { file } from 'jszip'
 
 
 class DataInstanceService {
@@ -60,6 +61,36 @@ class DataInstanceService {
     }).then(response => {
       const data = response.data
       return this.parseDataInstanceFromServer(data)
+    })
+  }
+
+  async uploadMultipleFiles(datasetId, files, onUploadProgress) {
+    let formData = new FormData();
+    let uploadURL = ""
+    formData.append("dataset_id", datasetId);
+  
+    // Get file type
+    if (files[0].type.includes("image")) {
+      uploadURL = "/data/upload_multiple_images"
+      for (let i = 0; i < files.length; i++) {
+        formData.append("images", files[i]);
+      } 
+    } else {
+      uploadURL = "/data/upload_multiple_videos"
+      for (let i = 0; i < files.length; i++) {
+        formData.append("videos", files[i]);
+      } 
+    }
+
+    return RestConnector.post(uploadURL, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      onUploadProgress,
+    }).then(response => {
+      const data = response.data
+      // Parse data
+      return data.map(instance => this.parseDataInstanceFromServer(instance))
     })
   }
 }

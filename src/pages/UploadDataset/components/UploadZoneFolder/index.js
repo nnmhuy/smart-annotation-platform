@@ -3,6 +3,8 @@ import { makeStyles } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import { useDropzone } from 'react-dropzone'
 
+import _ from 'lodash'
+
 import Loading from '../../../../components/Loading'
 
 import generateNewUid from '../../../../utils/uidGenerator'
@@ -80,25 +82,26 @@ const UploadZoneFolder = (props) => {
   }, [datasetInfo])
 
   const files = useStore(state => state.files)
-  const appendFile = useStore(state => state.appendFile)
+  const appendFiles = useStore(state => state.appendFiles)
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: acceptedFormat?.accept,
     onDrop: async (acceptedFiles) => {
-      acceptedFiles.map((file) => new Promise((resolve, reject) => {
-        try {
+      try {
+        // Create processed files
+        const processedFiles = acceptedFiles.map(file => {
           let processedFile = file
-
-          const objectUrl = URL.createObjectURL(file);
-          processedFile = Object.assign(processedFile, {
+          return Object.assign(processedFile, {
             id: generateNewUid(),
-            preview: objectUrl
+            preview: URL.createObjectURL(file)
           })
-          resolve(processedFile)
-        } catch (error) {
-          reject(error)
-        }
-      }).then(processedFile => appendFile(processedFile)))
+        })
+        // Append files
+        appendFiles(processedFiles)
+      }
+      catch (err) {
+        console.log(err)
+      }
     }
   });
 
