@@ -159,7 +159,7 @@ const useUploadDatasetStore = create((set, get) => ({
     setUploadLogs(newLogs);
     // Split files to 100 files each batch
     // Each batch will handle sequentially, so that we can wait for response
-    const batch_size = 10;
+    const batch_size = 5;
     const batches = _.chunk(files, batch_size);
     for (let i = 0; i < batches.length; i++) {
       const batch = batches[i];

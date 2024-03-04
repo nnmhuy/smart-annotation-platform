@@ -62,8 +62,8 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const acceptedFormats = {
-  [DATASET_DATATYPE.IMAGE]: { accept: "image/*", message: "Drop PNG, JPEG files to upload." },
-  [DATASET_DATATYPE.VIDEO]: { accept: "video/*", message: "Drop MP4 files to upload." },
+  [DATASET_DATATYPE.IMAGE]: { accept: "image/*", message: "Drop PNG, JPEG folder to upload." },
+  [DATASET_DATATYPE.VIDEO]: { accept: "video/*", message: "Drop MP4 folder to upload." },
 }
 
 const UploadZoneFolder = (props) => {
